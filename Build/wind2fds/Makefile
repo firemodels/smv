@@ -134,7 +134,7 @@ gnu_linux_64_db : $(obj)
 
 # ------------- gnu osx 64 ----------------
 
-gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+gnu_osx_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : exe       = wind2fds_osx_64
 
@@ -143,7 +143,7 @@ gnu_osx_64 : $(obj)
 
 # ------------- gnu osx 64 db ----------------
 
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -D pp_OSX -Wall $(GITINFO) $(GNU_COMPINFO)
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : exe       = wind2fds_osx_64_db
 
@@ -152,7 +152,7 @@ gnu_osx_64_db : $(obj)
 
 # ------------- clang osx 64 ----------------
 
-clang_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+clang_osx_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
 clang_osx_64 : CC        = clang
 clang_osx_64 : exe       = wind2fds_osx_64
 
@@ -161,7 +161,7 @@ clang_osx_64 : $(obj)
 
 # ------------- gnu osx 64 db ----------------
 
-clang_osx_64_db : CFLAGS    = -O0 -m64 -D pp_OSX -Wall $(GITINFO) $(GNU_COMPINFO)
+clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
 clang_osx_64_db : CC        = clang
 clang_osx_64_db : exe       = wind2fds_osx_64_db
 

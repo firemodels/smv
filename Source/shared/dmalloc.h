@@ -1,6 +1,8 @@
 #ifndef dmalloc_H_DEFINED
 #define dmalloc_H_DEFINED
 
+#include "options_common.h"
+
 #ifdef __MINGW32__
 #include "options.h"
 #endif

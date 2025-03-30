@@ -1,6 +1,10 @@
 #ifndef OPTIONS_COMMON_H_DEFINED
 #define OPTIONS_COMMON_H_DEFINED
 
+#if defined(__APPLE__) && defined(__MACH__)
+#define pp_OSX
+#endif
+
 //*** options: all platforms
 
 #ifndef _DEFAULT_SOURCE

@@ -129,7 +129,7 @@ gnu_linux_64_db: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
 
 # ------------- gcc OSX 64 ----------------
-gnu_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+gnu_osx_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : exe       = background_osx_64
 
@@ -138,7 +138,7 @@ gnu_osx_64 : $(obj)
 
 # ------------- gnu OSX debug ----------------
 
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D pp_OSX -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : exe       = background_osx_64_db
 
@@ -146,7 +146,7 @@ gnu_osx_64_db : $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj)  -lm
 
 # ------------- clang OSX 64 ----------------
-clang_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+clang_osx_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 clang_osx_64 : CC        = clang
 clang_osx_64 : exe       = background_osx_64
 
@@ -155,7 +155,7 @@ clang_osx_64 : $(obj)
 
 # ------------- clang OSX debug ----------------
 
-clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D pp_OSX -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
+clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
 clang_osx_64_db : CC        = clang
 clang_osx_64_db : exe       = background_osx_64_db
 

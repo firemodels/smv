@@ -80,7 +80,7 @@ gcc_linux_64 : $(obj)
 
 # ------------- gcc osx 64 ----------------
 
-gcc_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+gcc_osx_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 gcc_osx_64 : CC        = clang
 gcc_osx_64 : exe       = makepo_osx_64
 
@@ -89,7 +89,7 @@ gcc_osx_64 : $(obj)
 
 # ------------- clang osx 64 ----------------
 
-clang_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+clang_osx_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 clang_osx_64 : CC        = gcc
 clang_osx_64 : exe       = makepo_osx_64
 

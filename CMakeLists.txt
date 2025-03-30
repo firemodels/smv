@@ -71,7 +71,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 # Detect and set flags for Mac
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(MACOSX TRUE)
-    add_definitions(-Dpp_OSX)
 endif()
 if (UNIX AND NOT MACOSX)
     set(LINUX TRUE)

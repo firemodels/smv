@@ -95,7 +95,7 @@ intel_linux_64 : $(obj)
 
 # ------------- gnu osx 64 ----------------
 
-gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX -Wno-write-strings $(GNU_COMPINFO)
+gnu_osx_64 : CFLAGS    = -O0 -m64 -Wno-write-strings $(GNU_COMPINFO)
 gnu_osx_64 : LFLAGS    = -m64
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : CPP       = g++
@@ -106,7 +106,7 @@ gnu_osx_64 : $(obj)
 
 # ------------- clang osx 64 ----------------
 
-clang_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX -Wno-write-strings $(GNU_COMPINFO)
+clang_osx_64 : CFLAGS    = -O0 -m64 -Wno-write-strings $(GNU_COMPINFO)
 clang_osx_64 : LFLAGS    = -m64
 clang_osx_64 : CC        = clang
 clang_osx_64 : CPP       = clang

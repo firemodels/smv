@@ -117,7 +117,7 @@ intel_linux_64 : $(obj)
 
 # ------------- gnu_osx_64 ----------------
 
-gnu_osx_64 : CFLAGS    = -O0 -m64              -D pp_OSX -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings
+gnu_osx_64 : CFLAGS    = -O0 -m64              -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings
 gnu_osx_64 : C_STANDARD    = -std=gnu99
 gnu_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/gnu_osx_64
 ifeq ($(GLUT),freeglut)
@@ -135,7 +135,7 @@ gnu_osx_64 : $(obj)
 
 # ------------- clang_osx_64 ----------------
 
-clang_osx_64 : CFLAGS    = -O0 -m64              -D pp_OSX -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings
+clang_osx_64 : CFLAGS    = -O0 -m64              -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings
 clang_osx_64 : C_STANDARD    = -std=gnu99
 clang_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/clang_osx_64
 ifeq ($(GLUT),freeglut)

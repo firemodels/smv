@@ -134,7 +134,7 @@ gnu_linux_64_db : $(obj)
 
 # ------------- gnu osx 64 ----------------
 
-gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG) -Wno-unknown-pragmas
+gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG) -Wno-unknown-pragmas
 gnu_osx_64 : LFLAGS    = -m64
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : exe       = fds2fed_osx_64
@@ -144,7 +144,7 @@ gnu_osx_64 : $(obj)
 
 # ------------- gnu osx 64 db ----------------
 
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
 gnu_osx_64_db : LFLAGS    = -m64
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : exe       = fds2fed_osx_64_db
@@ -154,7 +154,7 @@ gnu_osx_64_db : $(obj)
 
 # ------------- clang osx 64 ----------------
 
-clang_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG) -Wno-unknown-pragmas
+clang_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG) -Wno-unknown-pragmas
 clang_osx_64 : LFLAGS    = -m64
 clang_osx_64 : CC        = clang
 clang_osx_64 : exe       = fds2fed_osx_64
@@ -164,7 +164,7 @@ clang_osx_64 : $(obj)
 
 # ------------- gnu osx 64 db ----------------
 
-clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
+clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
 clang_osx_64_db : LFLAGS    = -m64
 clang_osx_64_db : CC        = clang
 clang_osx_64_db : exe       = fds2fed_osx_64_db
