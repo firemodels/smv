@@ -2,7 +2,7 @@
 #define SMOKEVIEWVARS_H_DEFINED
 #include <time.h>
 #include "dmalloc.h"
-#ifdef CPP
+#ifdef __cplusplus
 #include "glui.h"
 #endif
 #include "datadefs.h"
@@ -17,7 +17,7 @@
 #include "readobject.h"
 #include "readtour.h"
 #include "readlabel.h"
-#ifndef CPP
+#ifndef __cplusplus
 #include <zlib.h>
 #endif
 #include "smokeheaders.h"

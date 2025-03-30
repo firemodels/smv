@@ -23,7 +23,7 @@ typedef struct _lanlistdata {
 } langlistdata;
 
 /* --------------------------  procdata ------------------------------------ */
-#ifdef CPP
+#ifdef __cplusplus
 typedef struct _procdata {
   GLUI_Rollout *rollout;
   GLUI *dialog;
@@ -74,7 +74,7 @@ typedef struct _inifiledata {
 
 /* --------------------------  rolloutlistdata ------------------------------------ */
 
-#ifdef CPP
+#ifdef __cplusplus
 typedef struct _rolloutlistdata {
   struct _rolloutlistdata *prev, *next;
   GLUI_Rollout *rollout;

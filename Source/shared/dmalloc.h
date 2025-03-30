@@ -18,7 +18,7 @@
 typedef int mallocflag;
 typedef char bbyte;
 
-#ifdef CPP
+#ifdef __cplusplus
 #define MMCCC "C"
 #else
 #define MMCCC
@@ -98,7 +98,7 @@ int MemoryLoad(void);
 
 #ifdef pp_MEMDEBUG
 void getMemusage(MMsize totalmemory,char *MEMlabel);
-#ifdef CPP
+#ifdef __cplusplus
 extern "C" void _CheckMemory(void);
 #else
 void _CheckMemory(void);

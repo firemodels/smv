@@ -1,12 +1,12 @@
 #ifndef THREADER_H_DEFINED
 #define THREADER_H_DEFINED
-#ifndef CPP
+#ifndef __cplusplus
 #ifdef pp_THREAD
 #include <pthread.h>
 #endif
 #endif
 
-#ifdef CPP
+#ifdef __cplusplus
 #define CCC "C"
 #else
 #define CCC
@@ -77,7 +77,7 @@ MT_EXTERN int mt_compress;
 MT_EXTERN int mt_nthreads;
 #endif
 
-#ifndef CPP
+#ifndef __cplusplus
 #ifdef pp_THREAD
 MT_EXTERN pthread_mutex_t mutexCOMPRESS,mutexPATCH,mutexSLICE,mutexISOS,mutexSMOKE,mutexVOLSLICE;
 MT_EXTERN pthread_mutex_t mutexSLICE_BOUND,mutexPATCH_BOUND,mutexPART2ISO,mutexPRINT;

@@ -108,7 +108,7 @@ EXTERNCPP void GLUISetCurrentViewPoint(char *viewpoint_label);
 EXTERNCPP void GLUIUpdateUseGeomFactors(void);
 EXTERNCPP void GLUIUpdateWindowAspect(void);
 EXTERNCPP void GLUIShrinkDialogs(void);
-#ifdef CPP
+#ifdef __cplusplus
 EXTERNCPP void GLUICloseRollouts(GLUI *dialog);
 EXTERNCPP void GLUIToggleRollout(procdata *procinfo, int nprocinfo, int motion_id);
 #endif
@@ -146,7 +146,7 @@ EXTERNCPP void GLUIUpdateMeshList1(int val);
 EXTERNCPP void GLUIUpdateTranslate(void);
 EXTERNCPP void GLUIShowHideTranslate(int var);
 EXTERNCPP void GLUISetStartupView(void);
-#ifdef CPP
+#ifdef __cplusplus
 EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 #endif
 EXTERNCPP void InitRolloutList(void);
@@ -158,4 +158,3 @@ EXTERNCPP void UpdateMovieType(int type);
 EXTERNCPP void RenderCB(int var);
 
 #endif
-

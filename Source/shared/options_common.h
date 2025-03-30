@@ -96,7 +96,7 @@
 
 #define FILE_SIZE unsigned long long
 
-#ifdef CPP
+#ifdef __cplusplus
 #define CCC "C"
 #define EXTERNCPP extern "C"
 #else
