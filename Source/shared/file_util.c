@@ -483,7 +483,7 @@ int Writable(char *dir){
 
   if(dir == NULL || strlen(dir) == 0)return NO;
 
-#ifdef pp_LINUX
+#ifdef __linux__
   if(ACCESS(dir,F_OK|W_OK)==-1){
     return NO;
   }

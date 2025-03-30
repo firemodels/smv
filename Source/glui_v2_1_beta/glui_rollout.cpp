@@ -1,5 +1,5 @@
 /****************************************************************************
-  
+
   GLUI User Interface Toolkit
   ---------------------------
 
@@ -19,7 +19,7 @@
 #include "glui.h"
 #include "stdinc.h"
 
-#ifdef pp_LINUX
+#ifdef __linux__
 #define pp_REFRESH
 #endif
 
@@ -58,7 +58,7 @@ void    GLUI_Rollout::open( void )
     ((GLUI_Control*) child_head)->unhide_internal( true );
   }
 
-#ifndef pp_GLUI_ORIG  
+#ifndef pp_GLUI_ORIG
   execute_callback();
 #endif
 
@@ -137,7 +137,7 @@ int   GLUI_Rollout::mouse_up_handler( int local_x, int local_y, int inside )
 {
   draw_unpressed();
 
-  if ( currently_inside ) {    
+  if ( currently_inside ) {
     if ( is_open )
       close();
     else
@@ -160,13 +160,13 @@ void   GLUI_Rollout::draw( int x, int y )
     return;
 
   orig = set_to_glut_window();
-	
+
   left   = 5;
   right  = w-left;
   top    = 3;
   bottom = 3+16;
 
-  if ( is_open ) 
+  if ( is_open )
     draw_emboss_box( 0, w, top+3, h );
   else
     draw_emboss_box( 0, w, top+3, h-7 );
@@ -183,9 +183,9 @@ void   GLUI_Rollout::draw( int x, int y )
 
   draw_name( left+8, top+11 );
 
-  if ( active ) 
+  if ( active )
     /*draw_active_box( left+4, left+string_width( name.string )+12,       */
-    draw_active_box( left+4, right-17, 
+    draw_active_box( left+4, right-17,
 		     top+2, bottom-2 );
 
 
@@ -254,7 +254,7 @@ void   GLUI_Rollout::draw_pressed( void )
 
   orig  = set_to_glut_window();
   state = glui->set_front_draw_buffer();
-  
+
   glColor3f( 0.0, 0.0, 0.0 );
   glPushMatrix();
   translate_to_origin();
@@ -290,8 +290,8 @@ void   GLUI_Rollout::draw_unpressed( void )
 
 /**************************** GLUI_Rollout::mouse_held_down_handler() ****/
 
-int  GLUI_Rollout::mouse_held_down_handler( 
-					   int local_x, int local_y, 
+int  GLUI_Rollout::mouse_held_down_handler(
+					   int local_x, int local_y,
 					   int new_inside )
 {
   if ( NOT initially_inside )
@@ -302,12 +302,12 @@ int  GLUI_Rollout::mouse_held_down_handler(
 
   if ( NOT new_inside AND currently_inside == true ) {
     draw_unpressed();
-  } 
+  }
   else if ( new_inside AND currently_inside == false ) {
     draw_pressed();
   }
 
   currently_inside = new_inside;
-  
+
   return false;
 }

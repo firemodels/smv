@@ -2374,7 +2374,7 @@ void OpenUrl(char *url){
   system(command);
 }
 #endif
-#ifdef pp_LINUX
+#ifdef __linux__
 void OpenUrl(char *url){
   char command[1000];
 
@@ -11800,7 +11800,7 @@ static int menu_count=0;
     glutAddMenuEntry("  Platform: OSX64", 1);
 #endif
 #endif
-#ifdef pp_LINUX
+#ifdef __linux__
     glutAddMenuEntry("  Platform: LINUX64", 1);
 #endif
     GLUTADDSUBMENU(_("Disclaimer"),disclaimermenu);
@@ -11829,7 +11829,7 @@ static int menu_count=0;
   glutAddMenuEntry(_("Release notes"),           MENU_HELP_RELEASENOTES);
   glutAddMenuEntry(_("Home page"),               MENU_HELP_FDSWEB);
 #endif
-#ifdef pp_LINUX
+#ifdef __linux__
   glutAddMenuEntry(_("Downloads: https://pages.nist.gov/fds-smv/"),                                   MENU_HELP_DOWNLOADS);
   glutAddMenuEntry(_("Documentation:  https://pages.nist.gov/fds-smv/manuals.html"),                  MENU_HELP_DOCUMENTATION);
   glutAddMenuEntry(_("Discussion forum: https://github.com/firemodels/fds/discussions"),              MENU_HELP_FORUM);

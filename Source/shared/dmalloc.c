@@ -52,7 +52,7 @@ int MemoryLoad(void){
   return (int)stat.dwMemoryLoad;
 }
 #endif
-#ifdef pp_LINUX
+#ifdef __linux__
 int MemoryLoad(void){
   FILE *fp = fopen("/proc/meminfo", "r");
   if(fp == NULL)return -1;

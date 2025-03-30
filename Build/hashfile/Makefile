@@ -65,7 +65,7 @@ gnu_win_64 : $(obj)
 
 # ------------- gnu linux 64 ----------------
 
-gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = hashfile_linux_64
 
@@ -93,7 +93,7 @@ clang_osx_64: $(obj)
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = hashfile_linux_64
 

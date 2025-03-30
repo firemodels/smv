@@ -86,10 +86,6 @@ if (WIN32)
         add_compile_definitions(pp_UNICODE_PATHS)
     endif()
 endif()
-# Set flags for Linux
-if (LINUX)
-    add_definitions(-Dpp_LINUX)
-endif()
 
 add_compile_definitions(GL_SILENCE_DEPRECATION)
 

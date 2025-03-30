@@ -2170,7 +2170,7 @@ void PRINTversion(char *progname){
 #ifdef pp_OSX
   PRINTF("Platform         : OSX64\n");
 #endif
-#ifdef pp_LINUX
+#ifdef __linux__
   PRINTF("Platform         : LINUX64\n");
 #endif
   FREEMEMORY(progfullpath);

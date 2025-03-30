@@ -96,7 +96,7 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu win 64 ----------------
 
-gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
+gnu_win_64 : CFLAGS    = -O0 -m64 -D GLEW_STATIC -D MINGW
 gnu_win_64 : CC        = gcc
 gnu_win_64 : exe       = wind2fds_win_64.exe
 
@@ -105,7 +105,7 @@ gnu_win_64 : $(obj)
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = wind2fds_linux_64
 
@@ -124,7 +124,7 @@ gnu_linux_64 : $(obj)
 
 # ------------- gnu linux 64 db ----------------
 
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64_db : CFLAGS    = -O0 -m64 -D pp_GCC -Wall $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : exe       = wind2fds_linux_64_db

@@ -103,7 +103,7 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu win 64 ----------------
 
-gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW $(SMV_TESTFLAG)
+gnu_win_64 : CFLAGS    = -O0 -m64 -D GLEW_STATIC -D MINGW $(SMV_TESTFLAG)
 gnu_win_64 : LFLAGS    = -m64
 gnu_win_64 : CC        = gcc
 gnu_win_64 : exe       = fds2fed_win_64.exe
@@ -113,7 +113,7 @@ gnu_win_64 : $(obj)
 
 # ------------- gnu linux 64 ----------------
 
-gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_GCC $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
 gnu_linux_64 : LFLAGS    = -m64 -lm
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = fds2fed_linux_64
@@ -123,7 +123,7 @@ gnu_linux_64 : $(obj)
 
 # ------------- gnu linux 64 db ----------------
 
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_GCC $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
 gnu_linux_64_db : LFLAGS    = -m64 -lm
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : exe       = fds2fed_linux_64_db
@@ -175,7 +175,7 @@ clang_osx_64_db : $(obj)
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
+intel_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
 intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = fds2fed_linux_64
 
@@ -184,7 +184,7 @@ intel_linux_64 : $(obj)
 
 # ------------- intel linux 64 db ----------------
 
-intel_linux_64_db : CFLAGS    = -O0 -m64 -D pp_LINUX -g -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
+intel_linux_64_db : CFLAGS    = -O0 -m64 -g -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
 intel_linux_64_db : CC        = $(I_ICC)
 intel_linux_64_db : exe       = fds2fed_linux_64_db
 

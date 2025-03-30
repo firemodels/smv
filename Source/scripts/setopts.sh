@@ -86,8 +86,6 @@ if [ "`uname`" == "Darwin" ]; then
   if [ "$LOWRES" != "" ]; then
     PLATFORM="$PLATFORM -D pp_OSX_LOWRES"
   fi
-else
-  PLATFORM="-D pp_LINUX"
 fi
 export COMPILER
 export COMPILER2

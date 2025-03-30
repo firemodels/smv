@@ -22,7 +22,7 @@ int getnprocs(char *command);
 #endif
 unsigned char cpuusage(void);
 
-#ifdef pp_LINUX
+#ifdef __linux__
 int get_ncores(void);
 float get_load(void);
 float get_host_load(char *host);
@@ -71,10 +71,10 @@ void Usage(int option){
   printf("  arguments - command line arguments of prog\n\n");
   if(option == HELP_ALL){
     printf("  -debug    - display debug messages\n");
-#ifdef pp_LINUX
+#ifdef __linux__
     printf("  -hosts hostfiles - file containing a list of host names to run jobs on\n");
 #endif
-#ifdef pp_LINUX
+#ifdef __linux__
     printf("  -p path   - specify directory path to change to after ssh'ing to remote host\n");
 #endif
     UsageCommon(HELP_ALL);
@@ -100,7 +100,7 @@ int main(int argc, char **argv){
   int cpu_usage, cpu_usage_max=25;
   int mem_usage, mem_usage_max=75;
   int nprocs_max=-1;
-#ifdef pp_LINUX
+#ifdef __linux__
   FILE *stream=NULL;
 #endif
 
@@ -112,7 +112,7 @@ int main(int argc, char **argv){
 
   SetStdOut(stdout);
   initMALLOC();
-#ifdef pp_LINUX
+#ifdef __linux__
   hostlistfile=NULL;
   host=NULL;
   strcpy(user_path,"");
@@ -167,7 +167,7 @@ int main(int argc, char **argv){
             }
 #endif
             break;
-#ifdef pp_LINUX
+#ifdef __linux__
           case 'h':
             if(strcmp(arg,"-hosts")==0){
               i++;
@@ -227,7 +227,7 @@ int main(int argc, char **argv){
 
     }
   }
-#ifdef pp_LINUX
+#ifdef __linux__
   nhostinfo=0;
   if(hostlistfile!=NULL){
     stream=FOPEN(hostlistfile,"r");
@@ -551,7 +551,7 @@ float get_host_load(char *host){
   return load;
 }
 #endif
-#ifdef pp_LINUX
+#ifdef __linux__
 
 /* ------------------ get_ncores ------------------------ */
 

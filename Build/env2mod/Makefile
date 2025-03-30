@@ -53,7 +53,7 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu win 64 ----------------
 
-gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
+gnu_win_64 : CFLAGS    = -O0 -m64 -D GLEW_STATIC -D MINGW
 gnu_win_64 : CC        = Gcc
 gnu_win_64 : exe       = env2mod_win_64.exe
 
@@ -62,7 +62,7 @@ gnu_win_64 : $(obj)
 
 # ------------- gnu linux 64 ----------------
 
-gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D pp_GCC -Wno-write-strings $(GNU_COMPINFO)
+gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_GCC -Wno-write-strings $(GNU_COMPINFO)
 gnu_linux_64 : LFLAGS    = -m64
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : CPP       = g++
@@ -74,7 +74,7 @@ gnu_linux_64 : $(obj)
 
 # ------------- gnu linux 64 ----------------
 
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64_db : LFLAGS    = -m64
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : CPP       = g++
@@ -86,7 +86,7 @@ gnu_linux_64_db : $(obj)
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = env2mod_linux_64
 

@@ -66,7 +66,7 @@ gnu_win_64 : $(obj)
 
 # ------------- gnu linux 64 db ----------------
 
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GNU_COMPINFO) $(GITINFO)
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_GCC $(GNU_COMPINFO) $(GITINFO)
 gnu_linux_64_db : LFLAGS    =
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : exe       = timep_linux_64_db
@@ -77,7 +77,7 @@ gnu_linux_64_db: $(obj)
 # ------------- gnu linux 64----------------
 
 gnu_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
-gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64 : LFLAGS    =
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = timep_linux_64
@@ -88,7 +88,7 @@ gnu_linux_64: $(obj)
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = timep_linux_64
 

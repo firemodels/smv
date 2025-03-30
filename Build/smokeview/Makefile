@@ -282,7 +282,7 @@ SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm -lrt
 intel_linux_64 : DYNLIB_EXT = .so
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
 intel_linux_64 : CPP_STANDARD = -std=c++11 -stdlib=libc++
-intel_linux_64 : CFLAGS    = -O0 -traceback -m64 -D pp_LINUX -D NDEBUG $(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : CFLAGS    = -O0 -traceback -m64 -D NDEBUG $(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(SANITIZE),1)
 intel_linux_64 : CFLAGS   += $(SANITIZE_OPTIONS)
 endif
@@ -302,7 +302,7 @@ intel_linux_64 : $(obj)
 # ------------- intel_linux_64_db ----------------
 
 intel_linux_64_db : CPP_STANDARD = -std=c++11 -stdlib=libc++
-intel_linux_64_db : CFLAGS    = -O0 -g -m64 $(SMV_TESTFLAG) -D _DEBUG -D pp_LINUX $(SMV_PROFILEFLAG) \
+intel_linux_64_db : CFLAGS    = -O0 -g -m64 $(SMV_TESTFLAG) -D _DEBUG $(SMV_PROFILEFLAG) \
 	                        -fstack-protector -fno-omit-frame-pointer -traceback -debug variable-locations \
                                 -Wall -Wextra -Wuninitialized -Wunused-function -Wunused-variable -Wno-sign-compare \
                                 -Wno-unused-parameter $(GITINFO) $(INTEL_COMPINFO)
@@ -325,7 +325,7 @@ intel_linux_64_db : $(obj)
 # ------------- gnu_linux_64_db ----------------
 
 gnu_linux_64_db : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
-gnu_linux_64_db : CFLAGS    = -O0  -m64 -ggdb -Wall -Wunreachable-code -Wswitch-default -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized -Wno-address -Wno-format-overflow -Wno-format-truncation -Wno-undef -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(SMV_TESTFLAG) $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
+gnu_linux_64_db : CFLAGS    = -O0  -m64 -ggdb -Wall -Wunreachable-code -Wswitch-default -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized -Wno-address -Wno-format-overflow -Wno-format-truncation -Wno-undef -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_GCC $(SMV_TESTFLAG) $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
 gnu_linux_64_db : C_STANDARD    = -std=gnu99
 gnu_linux_64_db : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 gnu_linux_64_db : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
@@ -341,7 +341,7 @@ gnu_linux_64_db : $(obj)
 
 gnu_linux_64 : DYNLIB_EXT = .so
 gnu_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
-gnu_linux_64 : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings           -D pp_LINUX -D pp_GCC -D NDEBUG $(SMV_TESTFLAG) $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
+gnu_linux_64 : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings           -D pp_GCC -D NDEBUG $(SMV_TESTFLAG) $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
 gnu_linux_64 : C_STANDARD    = -std=gnu99
 gnu_linux_64 : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 gnu_linux_64 : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
