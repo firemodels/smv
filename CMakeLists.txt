@@ -32,11 +32,7 @@ else()
     # etc).
     include(GNUInstallDirs)
 endif()
-# Pass a flag to to the source code. There's no great need for this but allows
-# us to have conditional code based on the build method.
-# add_definitions(-Dpp_CMAKE)
 add_compile_definitions(pp_GITHASH="${PROJECT_VERSION}+sc2")
-
 
 include(InstallRequiredSystemLibraries)
 configure_file(LICENSE.md LICENSE.txt)
