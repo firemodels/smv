@@ -30,7 +30,7 @@
 
 #ifdef INTEL_COMPILER_ANY
 #define pp_FSEEK
-#ifdef WIN32
+#ifdef _WIN32
 #define HAVE_MSVS
 #define INTEL_WIN_COMPILER
 #endif
@@ -52,7 +52,7 @@
 
 //*** options: windows
 
-#ifdef WIN32
+#ifdef _WIN32
 
 //*** needed when using Windows Intel compilers
 //    to prevent warnings/errors

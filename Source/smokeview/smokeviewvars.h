@@ -1825,7 +1825,7 @@ SVEXTERN int SVDECL(overwrite_all,0),SVDECL(erase_all,0);
 SVEXTERN int SVDECL(compress_autoloaded,0);
 SVEXTERN tridata SVDECL(**opaque_triangles,NULL),SVDECL(**transparent_triangles,NULL),SVDECL(**alltriangles,NULL);
 SVEXTERN int SVDECL(nopaque_triangles,0),SVDECL(ntransparent_triangles,0),SVDECL(nalltriangles,0);
-#ifdef WIN32
+#ifdef _WIN32
 SVEXTERN   char openfilebuffer[1024];
 SVEXTERN   int openfileflag;
 #endif

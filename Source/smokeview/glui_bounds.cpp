@@ -4547,7 +4547,7 @@ void ScriptCB(int var){
     len = strlen(script_renderdir);
     if(len == 0)break;
     for(i = 0;i < len;i++){
-#ifdef WIN32
+#ifdef _WIN32
       if(name[i] == '/'){
         set_renderlabel = 1;
         name[i] = '\\';
@@ -4559,7 +4559,7 @@ void ScriptCB(int var){
       }
 #endif
     }
-#ifdef WIN32
+#ifdef _WIN32
     if(name[len - 1] != '\\'){
       set_renderlabel = 1;
       strcat(name, dirseparator);

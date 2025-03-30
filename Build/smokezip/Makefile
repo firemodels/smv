@@ -52,7 +52,7 @@ CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur
 # don't think the following is needed anymore - keeping it around for awhile to make it easier to put
 # back in case it is needed
-#main.obj: CFLAGS = -Od /nologo -D WIN32 -D pp_WIN_INTEL $(OPT)
+#main.obj: CFLAGS = -Od /nologo -D pp_WIN_INTEL $(OPT)
 
 #*** General Purpose Rules ***
 
@@ -89,7 +89,7 @@ linux_osx_check : $(linux_osx_chk)
 
 # ------------- win_check ----------------
 
-win_check : CFLAGS    = -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
+win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
 win_check : INC_DIR += -I $(SOURCE_DIR)/pthreads
 win_check : $(win_chk)
 	$(CLANGWINSUMMARY) smokezip.summary
@@ -97,7 +97,7 @@ win_check : $(win_chk)
 # ------------- intel win 64 ----------------
 
 intel_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads
-intel_win_64 : CFLAGS    = -Od /nologo -D WIN32 -D PTW32_STATIC_LIB -D X64  $(OPT) $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
+intel_win_64 : CFLAGS    = -Od /nologo -D PTW32_STATIC_LIB -D X64  $(OPT) $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = smokezip_win_64.exe
 

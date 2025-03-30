@@ -6,7 +6,7 @@
 #include <math.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 #include GLUT_H
@@ -32,7 +32,7 @@ int       part_file_count;
 FILE_SIZE part_load_size;
 float     part_load_time;
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <direct.h>
 #endif
 
@@ -331,7 +331,7 @@ void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time){
   }
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 
 /* ------------------ OpenSMVFile ------------------------ */
 
@@ -2387,7 +2387,7 @@ void OpenUrl(char *url){
 
 /* ------------------ HelpMenu ------------------------ */
 
-#ifdef WIN32
+#ifdef _WIN32
 #define OPENURL(url) ShellExecute(NULL,"open", url,NULL,NULL,SW_SHOWNORMAL)
 #else
 #define OPENURL(url) OpenUrl(url)
@@ -11785,7 +11785,7 @@ static int menu_count=0;
     }
     glutAddMenuEntry(menulabel,1);
 #endif
-#ifdef WIN32
+#ifdef _WIN32
     glutAddMenuEntry("  Platform: WIN64", 1);
 #endif
 #ifdef pp_OSX
@@ -11811,7 +11811,7 @@ static int menu_count=0;
 
   CREATEMENU(webhelpmenu,HelpMenu);
 
-#ifdef WIN32
+#ifdef _WIN32
   glutAddMenuEntry(_("Downloads"),               MENU_HELP_DOWNLOADS);
   glutAddMenuEntry(_("Documentation"),           MENU_HELP_DOCUMENTATION);
   glutAddMenuEntry(_("Discussion forum"),        MENU_HELP_FORUM);

@@ -11,7 +11,7 @@
 #include <unistd.h>
 #endif
 #include <math.h>
-#ifdef WIN32
+#ifdef _WIN32
 #ifdef __MINGW32__
 #undef S_IFBLK
 #undef S_ISBLK
@@ -266,7 +266,7 @@ char *GetSmokeZipPath(char *progdir){
   }
 
   strcat(zip_path,"smokezip");
-#ifdef WIN32
+#ifdef _WIN32
   strcat(zip_path,".exe");
 #endif
   if(FILE_EXISTS(zip_path)==YES)return zip_path;
@@ -295,7 +295,7 @@ char *GetBaseFileName(char *buffer, const char *file){
   char *filebase,*ext;
 
   strcpy(buffer,file);
-#ifdef WIN32
+#ifdef _WIN32
   filebase=strrchr(buffer,'\\');
 #else
   filebase=strrchr(buffer,'/');
@@ -1578,7 +1578,7 @@ char *GetSmvRootSubPath(const char *subdir) {
 /* ------------------ GetHomeDir ------------------------ */
 
 char *GetHomeDir() {
-#ifdef WIN32
+#ifdef _WIN32
   char *homedir_env = getenv("userprofile");
 #else
   char *homedir_env = getenv("HOME");
@@ -1770,7 +1770,7 @@ char *Which(char *progname, char **fullprognameptr){
   char *dir,*pathentry;
   char pathsep[2], dirsep[2];
 
-#ifdef WIN32
+#ifdef _WIN32
   strcpy(pathsep,";");
   strcpy(dirsep,"\\");
 #else
@@ -1787,7 +1787,7 @@ char *Which(char *progname, char **fullprognameptr){
   NewMemory((void **)&pathlistcopy, (unsigned int)(strlen(pathlist)+1));
   strcpy(pathlistcopy, pathlist);
 
-#ifdef WIN32
+#ifdef _WIN32
   {
     const char *ext;
 

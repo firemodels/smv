@@ -28,12 +28,12 @@ void Usage(int option){
   fprintf(stdout, "    source bash_script.sh\n");
   fprintf(stdout, "    env | sort > file2\n");
   fprintf(stdout, "and then running env2mod specifying file1 and file2 with the -f option\n");
-#ifndef WIN32
+#ifndef _WIN32
   fprintf(stdout, "or by specifying the script file with the -s option\n");
 #endif
   fprintf(stdout, "\n");
   fprintf(stdout, "options:\n");
-#ifndef WIN32
+#ifndef _WIN32
   fprintf(stdout, " -s script.sh");
 #endif
   fprintf(stdout, " -m module_file");
@@ -42,7 +42,7 @@ void Usage(int option){
   fprintf(stdout, "       and after a bash script has been run (not used if -s is specified)\n");
   fprintf(stdout, "    -m modulefile - file containing module commands or if '-' is specified,\n");
   fprintf(stdout, "       module commands are output to the screen\n");
-#ifndef WIN32
+#ifndef _WIN32
   fprintf(stdout, "    -s script.sh - bash script used to create a module file (not used if\n");
   fprintf(stdout, "       -f is specified).  If script.sh has arguemnts enclose in quotes as in:\n");
   fprintf(stdout, "        -s \"script.sh arg1 arg2\"\n");
@@ -77,7 +77,7 @@ int main(int argc, char **argv){
   char *file1 = NULL, *file2 = NULL, *modulefile_ptr=NULL;
   char scriptfile[1024], *scriptfile_ptr;
   char *script_command, *script_args;
-#ifndef WIN32
+#ifndef _WIN32
   char file1val[1024], file2val[1024];
 #endif
   char modulefile[1024];
@@ -159,7 +159,7 @@ int main(int argc, char **argv){
     error = 1;
   }
 
-#ifdef WIN32
+#ifdef _WIN32
   if(f_opt == 0){
     fprintf(stderr, "***error: -f option required for Windows version of env2mod\n");
     error = 1;
@@ -191,7 +191,7 @@ int main(int argc, char **argv){
   if(create_script==1){
     CreateScript(file1, file2, scriptfile_ptr);
   }
-#ifndef WIN32
+#ifndef _WIN32
   if(s_opt==1){
     if(FileExistsOrig(file1))UNLINK(file1);
     if(FileExistsOrig(file2))UNLINK(file2);

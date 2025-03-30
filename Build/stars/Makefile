@@ -25,7 +25,7 @@ cobj = $(csrc:.c=.o)
 obj = $(cobj)
 
 
-incs = 
+incs =
 
 objwin = $(obj:.o=.obj)
 
@@ -79,7 +79,7 @@ WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 
 intel_win_64 : DYNLIB_EXT = .dll
 intel_win_64 : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/stars
-intel_win_64 : CFLAGS    = -O1  -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
+intel_win_64 : CFLAGS    = -O1  -D NDEBUG -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
 intel_win_64 : C_STANDARD    = -Qstd=gnu99
 ifeq ($(GLUT),freeglut)
 intel_win_64 : CFLAGS   += -D FREEGLUT_STATIC
@@ -100,7 +100,7 @@ intel_win_64 : $(objwin)
 
 intel_linux_64 : DYNLIB_EXT = .so
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
-intel_linux_64 : CFLAGS    = -O0 -traceback -m64 
+intel_linux_64 : CFLAGS    = -O0 -traceback -m64
 intel_linux_64 : C_STANDARD    = -std=gnu99
 intel_linux_64 : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 intel_linux_64 : LFLAGS    = -m64

@@ -935,7 +935,7 @@ int CompileScript(char *scriptfile){
         }
         len = strlen(param_buffer);
         if(len>0){
-#ifdef WIN32
+#ifdef _WIN32
           for(i=0;i<len;i++){
             if(param_buffer[i]=='/')param_buffer[i]='\\';
           }

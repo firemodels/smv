@@ -8,7 +8,7 @@ FILTERF =
 # Intel compiler definitions
 include ../../scripts/intel_compiler.mak
 
-VPATH = $(SOURCE_DIR)/getdate  
+VPATH = $(SOURCE_DIR)/getdate
 bin = .
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
@@ -31,7 +31,7 @@ no_target:
 	@echo \******** You did not specify a make target \********
 	@echo Use one of targets found in the Makefile
 
-.SUFFIXES: .c .obj .o 
+.SUFFIXES: .c .obj .o
 
 .c.obj:
 	$(CC) -c $(CFLAGS) $(FILTERC) $<
@@ -53,7 +53,7 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu win 64 ----------------
 
-gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
+gnu_win_64 : CFLAGS    = -O0 -m64 -D GLEW_STATIC -D MINGW
 gnu_win_64 : CC        = gcc
 gnu_win_64 : exe       = getdate_win_64.exe
 
@@ -67,4 +67,4 @@ intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = getdate_linux_64
 
 intel_linux_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) 
+	$(CC) -o $(bin)/$(exe) $(obj)

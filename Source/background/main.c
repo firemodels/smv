@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <process.h>
 #include <windows.h>
 #endif
@@ -16,7 +16,7 @@
 #include "dmalloc.h"
 #include "file_util.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 void GetSystemTimesAddress(void);
 int getnprocs(char *command);
 #endif
@@ -34,7 +34,7 @@ int get_host_ncores(char *host);
 int cpuusage_host(char *host,int ncores);
 #endif
 
-#ifndef WIN32
+#ifndef _WIN32
 
 /* ------------------ Sleep ------------------------ */
 
@@ -63,7 +63,7 @@ void Usage(int option){
   printf("  -d dtime  - wait dtime seconds before running prog in the background\n");
   printf("  -m max    - wait to run prog until memory usage is less than max (25-100%s)\n", pp);
   printf("  -u max    - wait to run prog until cpu usage is less than max (25-100%s)\n", pp);
-#ifdef WIN32
+#ifdef _WIN32
   printf("  -U max    - wait to run prog until number of instances of prog is less than max \n");
 #endif
   UsageCommon(HELP_SUMMARY);
@@ -88,7 +88,7 @@ void Usage(int option){
 
 int main(int argc, char **argv){
   int i;
-#ifdef WIN32
+#ifdef _WIN32
   int nprocs;
 #else
   int debug=0;
@@ -106,7 +106,7 @@ int main(int argc, char **argv){
 
   int itime;
   char *arg;
-#ifdef WIN32
+#ifdef _WIN32
   char *command, *base;
 #endif
 
@@ -161,7 +161,7 @@ int main(int argc, char **argv){
                 if(delay_time<0.0)delay_time=0.0;
               }
             }
-#ifndef WIN32
+#ifndef _WIN32
             else{
               debug=1;
             }
@@ -270,7 +270,7 @@ int main(int argc, char **argv){
     Sleep(itime);
   }
 
-#ifdef WIN32
+#ifdef _WIN32
   GetSystemTimesAddress();
   command=argv[argstart];
   base = strrchr(command,'\\');
@@ -356,7 +356,7 @@ int main(int argc, char **argv){
   return 0;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 typedef BOOL ( __stdcall * pfnGetSystemTimes)( LPFILETIME lpIdleTime, LPFILETIME lpKernelTime, LPFILETIME lpUserTime );
 static pfnGetSystemTimes s_pfnGetSystemTimes = NULL;
 
@@ -378,7 +378,7 @@ void GetSystemTimesAddress(){
 
 /* ------------------ getnprocs ------------------------ */
 
-#ifdef WIN32
+#ifdef _WIN32
 int getnprocs(char *command){
   FILE *stream;
   int count=0;
@@ -666,7 +666,7 @@ float get_load(void){
 }
 #endif
 
-#ifndef WIN32
+#ifndef _WIN32
 
 /* ------------------ cpuusage_host ------------------------ */
 

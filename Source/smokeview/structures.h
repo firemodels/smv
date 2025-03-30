@@ -1,7 +1,7 @@
 #ifndef STRUCTURES_H_DEFINED
 #define STRUCTURES_H_DEFINED
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #include <windows.h>
 #endif
 #include GL_H
