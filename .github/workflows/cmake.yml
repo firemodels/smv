@@ -99,7 +99,7 @@ jobs:
         run: |
           cd C:\vcpkg
           git fetch
-          git checkout 2024.03.25
+          git checkout 5c6220035e9de2741e9f55571d63e4f97839b36e
           .\\bootstrap-vcpkg.bat
       - name: build smokeview
         shell: cmd
