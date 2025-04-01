@@ -5588,6 +5588,10 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     STRCPY(smoke3di->size_file, bufferptr);
     STRCAT(smoke3di->size_file, ".sz");
 #endif
+#ifdef pp_SMOKE3D_FORCE
+    smoke3di->dummy = 0;
+    if(strcmp(smoke3di->reg_file, "dummy.xyz") == 0)smoke3di->dummy = 1;
+#endif
     for(i=0; i<6; i++){
       smoke3di->alphas_smokedir[i] = smoke3di->alphas_smokebuffer + 256*i;
       smoke3di->alphas_firedir[i]  = smoke3di->alphas_firebuffer  + 256*i;

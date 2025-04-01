@@ -444,6 +444,17 @@ char *ProcessCommandLine(CommandlineArgs *args){
     STRCPY(global_scase.paths.trainer_filename, global_scase.fdsprefix);
     STRCAT(global_scase.paths.trainer_filename, ".svd");
   }
+#ifdef pp_SMOKE3D_FORCE
+  if(global_scase.paths.smoke3d_filename == NULL){
+    char *smoke3d_filename;
+
+    NewMemory(( void ** )&smoke3d_filename, ( unsigned int )(len_casename + 11));
+    STRCPY(smoke3d_filename, global_scase.fdsprefix);
+    STRCAT(smoke3d_filename, ".s3d_dummy");
+    global_scase.paths.smoke3d_filename = GetScratchFilename(smoke3d_filename);
+    FREEMEMORY(smoke3d_filename);
+  }
+#endif
   if(global_scase.paths.test_filename == NULL){
     NewMemory((void **)&global_scase.paths.test_filename, (unsigned int)(len_casename + 6));
     STRCPY(global_scase.paths.test_filename, global_scase.fdsprefix);

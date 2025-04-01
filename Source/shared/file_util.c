@@ -862,6 +862,29 @@ FILE *fopen_indir(char *dir, char *file, char *mode){
   return stream;
 }
 
+/* ------------------ GetScratchFilename ------------------------ */
+
+char *GetScratchFilename(char *file){
+  char *smokeview_scratchdir = GetUserConfigDir();
+  char *fullfile;
+
+  if(smokeview_scratchdir!=NULL){
+    int len;
+
+    len = strlen(file) + strlen(smokeview_scratchdir) + 2;
+      NewMemory((void **)&fullfile,len);
+      strcpy(fullfile, smokeview_scratchdir);
+      strcat(fullfile, dirseparator);
+      strcat(fullfile, file);
+  }
+  else{
+    fullfile = file;
+  }
+  return fullfile;
+}
+
+/* ------------------ fopen_2dir_scratch ------------------------ */
+
 FILE *fopen_2dir_scratch(char *file, char *mode) {
   char *smokeview_scratchdir = GetUserConfigDir();
   FILE *f = fopen_2dir(file, mode, smokeview_scratchdir);

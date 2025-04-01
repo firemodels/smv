@@ -260,6 +260,22 @@ int SetupCase(char *filename){
     smv_streaminfo = AppendFileBuffer(smv_streaminfo, global_scase.paths.iso_filename);
     smv_streaminfo = AppendFileBuffer(smv_streaminfo, global_scase.paths.fedsmv_filename);
 
+#ifdef pp_SMOKE3D_FORCE
+    FILE *stream_smoke3d=NULL;
+
+    stream_smoke3d = fopen(global_scase.paths.smoke3d_filename, "w");
+    if(stream_smoke3d!=NULL){
+      fprintf(stream_smoke3d,"SMOKF3D 1 8700.0                                    \n");
+      fprintf(stream_smoke3d," dummy.xyz                                          \n");
+      fprintf(stream_smoke3d,"                                                    \n");
+      fprintf(stream_smoke3d,"                                                    \n");
+      fprintf(stream_smoke3d,"                                                    \n");
+      fclose(stream_smoke3d);
+      smv_streaminfo = AppendFileBuffer(smv_streaminfo, global_scase.paths.smoke3d_filename);
+    }
+#endif
+
+
     return_code = ReadSMV(smv_streaminfo);
     if(smv_streaminfo!=NULL){
       FCLOSE(smv_streaminfo);
