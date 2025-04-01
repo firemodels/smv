@@ -3392,12 +3392,18 @@ void UpdateSmoke3DTypes(void){
   for(i = 0; i<global_scase.smoke3dcoll.nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
     int j;
-    smokestatedata *smokestate;
+    smokestatedata *smokestate=NULL;
 
     smoke3di = global_scase.smoke3dcoll.smoke3dinfo+i;
+#ifdef pp_SMOKE3D_FORCE
+    if(smoke3di->dummy == 1)continue;
+#endif
+
     smoke3di->type = GetSmoke3DType(&global_scase, smoke3di->label.shortlabel);
 
-    NewMemory((void **)&smokestate, global_scase.smoke3dcoll.nsmoke3dtypes*sizeof(smokestatedata));
+    if(global_scase.smoke3dcoll.nsmoke3dtypes>0){
+      NewMemory((void **)&smokestate, global_scase.smoke3dcoll.nsmoke3dtypes*sizeof(smokestatedata));
+    }
     smoke3di->smokestate = smokestate;
     for(j = 0; j<global_scase.smoke3dcoll.nsmoke3dtypes; j++){
       smoke3di->smokestate[j].color = NULL;
