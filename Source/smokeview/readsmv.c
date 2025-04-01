@@ -3354,6 +3354,9 @@ void UpdateSmoke3DTypes(void){
     smoke3dtypedata *typen;
 
     smoke3di = global_scase.smoke3dcoll.smoke3dinfo+i;
+#ifdef pp_SMOKE3D_FORCE
+    if(smoke3di->dummy == 1)continue;
+#endif
     labeli = smoke3di->label.shortlabel;
     doit = 1;
     for(j = 0; j<i; j++){
@@ -3361,6 +3364,9 @@ void UpdateSmoke3DTypes(void){
       char *labelj;
 
       smoke3dj = global_scase.smoke3dcoll.smoke3dinfo+j;
+#ifdef pp_SMOKE3D_FORCE
+      if(smoke3dj->dummy == 1)continue;
+#endif
       labelj = smoke3dj->label.shortlabel;
       if(strcmp(labeli, labelj)==0){
         doit = 0;
@@ -5587,6 +5593,10 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     smoke3di->size_file = SMOKE3DBUFFER(len + 3 + 1);
     STRCPY(smoke3di->size_file, bufferptr);
     STRCAT(smoke3di->size_file, ".sz");
+#endif
+#ifdef pp_SMOKE3D_FORCE
+    smoke3di->dummy = 0;
+    if(strcmp(smoke3di->reg_file, "dummy.xyz") == 0)smoke3di->dummy = 1;
 #endif
     for(i=0; i<6; i++){
       smoke3di->alphas_smokedir[i] = smoke3di->alphas_smokebuffer + 256*i;
