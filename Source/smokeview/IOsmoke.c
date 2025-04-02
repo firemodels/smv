@@ -4060,6 +4060,9 @@ void SetSmokeColorFlags(smoke3d_collection *smoke3dcoll_arg){
     int j;
 
     smoke3di = smoke3dcoll_arg->smoke3dinfo + i;
+#ifdef pp_SMOKE3D_FORCE
+    if(smoke3di->dummy == 1)continue;
+#endif
     for(j = 0;j < smoke3dcoll_arg->nsmoke3dtypes;j++){
       smoke3di->smokestate[j].loaded = 0;
     }
@@ -4070,6 +4073,9 @@ void SetSmokeColorFlags(smoke3d_collection *smoke3dcoll_arg){
     int j;
 
     smoke3di = smoke3dcoll_arg->smoke3dinfo+i;
+#ifdef pp_SMOKE3D_FORCE
+    if(smoke3di->dummy == 1)continue;
+#endif
     for(j = 0;j <smoke3dcoll_arg->nsmoke3dtypes;j++){
       smoke3di->smokestate[j].color = NULL;
       smoke3di->smokestate[j].index = -1;
@@ -4090,6 +4096,9 @@ void SetSmokeColorFlags(smoke3d_collection *smoke3dcoll_arg){
 
       if(i==j)continue;
       smoke3dj = smoke3dcoll_arg->smoke3dinfo+j;
+#ifdef pp_SMOKE3D_FORCE
+      if(smoke3dj->dummy == 1)continue;
+#endif
       if(smoke3dj->loaded==0)continue;
       if(smoke3di->blocknumber!=smoke3dj->blocknumber)continue;
       if(smoke3di->is1!=smoke3dj->is1)continue;
