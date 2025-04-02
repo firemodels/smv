@@ -4095,10 +4095,10 @@ void SetSmokeColorFlags(smoke3d_collection *smoke3dcoll_arg){
       int k;
 
       if(i==j)continue;
+      smoke3dj = smoke3dcoll_arg->smoke3dinfo+j;
 #ifdef pp_SMOKE3D_FORCE
       if(smoke3dj->dummy == 1)continue;
 #endif
-      smoke3dj = smoke3dcoll_arg->smoke3dinfo+j;
       if(smoke3dj->loaded==0)continue;
       if(smoke3di->blocknumber!=smoke3dj->blocknumber)continue;
       if(smoke3di->is1!=smoke3dj->is1)continue;
