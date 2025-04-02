@@ -11839,6 +11839,8 @@ void InitScase(smv_case *scase) {
   scase->color_defs.block_ambient2=GetColorPtr(scase, block_ambient_orig);
   scase->color_defs.block_specular2=GetColorPtr(scase, block_specular_orig);
 
+  scase->visFrame = 1;
+
   InitLabelsCollection(&scase->labelscoll);
 
   InitObjectCollection(&scase->objectscoll);
