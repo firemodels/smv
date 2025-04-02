@@ -880,6 +880,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int load_fl
       }
       val->display=display;
       val->vloaded=0;
+      CheckMemory;
     }
     vd->loaded=0;
     vd->display=0;
@@ -3877,6 +3878,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   meshi = global_scase.meshescoll.meshinfo + blocknumber;
 
   if(load_flag != RESETBOUNDS){
+    CheckMemory;
     if(sd->loaded == 0 && load_flag == UNLOAD)return 0;
     sd->display = 0;
 #ifdef pp_MEMDEBUG
@@ -3986,8 +3988,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         }
       }
       UpdateUnitDefs();
-      update_times = 1;
       PrintMemoryInfo;
+      CheckMemory;
       return 0;
     }
 

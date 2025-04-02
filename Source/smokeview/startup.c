@@ -267,15 +267,13 @@ int SetupCase(char *filename){
     if(stream_smoke3d!=NULL){
       fprintf(stream_smoke3d,"SMOKF3D 1 8700.0                                    \n");
       fprintf(stream_smoke3d," dummy.xyz                                          \n");
-      fprintf(stream_smoke3d,"                                                    \n");
-      fprintf(stream_smoke3d,"                                                    \n");
-      fprintf(stream_smoke3d,"                                                    \n");
+      fprintf(stream_smoke3d," SOOT DENSITY                                       \n");
+      fprintf(stream_smoke3d," rho_C                                              \n");
+      fprintf(stream_smoke3d," kg / m3                                            \n");
       fclose(stream_smoke3d);
       smv_streaminfo = AppendFileBuffer(smv_streaminfo, global_scase.paths.smoke3d_filename);
     }
 #endif
-
-
     return_code = ReadSMV(smv_streaminfo);
     if(smv_streaminfo!=NULL){
       FCLOSE(smv_streaminfo);
