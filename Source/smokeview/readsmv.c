@@ -11782,12 +11782,49 @@ int ReadSMV_Configure(){
   return 0;
 }
 
+/* ------------------ InitScase ------------------------ */
+
 /// @brief Initialize a smokeview case (smv_case) which has already been
 /// allocated. This should be avoided and CreateScase/DestroyScase should be
 /// used instead.
 /// @param scase An uninitialized scase
 void InitScase(smv_case *scase) {
   // set all of the defaults that are non-zero
+
+  assert(scase->smoke3dcoll.nsmoke3dinfo == 0);
+  assert(scase->smoke3dcoll.smoke3dinfo == NULL);
+  assert(scase->smoke3dcoll.nsmoke3dtypes == 0);
+  assert(scase->smoke3dcoll.smoke3dtypes == NULL);
+  assert(scase->smoke3dcoll.smoke3d_other == 0);
+  assert(scase->smoke3dcoll.smoke3dinfo_sorted == NULL);
+
+  assert(scase->slicecoll.nsliceinfo == 0);
+  assert(scase->slicecoll.sliceinfo == NULL);
+  assert(scase->slicecoll.nmultisliceinfo == 0);
+  assert(scase->slicecoll.multisliceinfo == NULL);
+  assert(scase->slicecoll.nmultivsliceinfo == 0);
+  assert(scase->slicecoll.multivsliceinfo == NULL);
+  assert(scase->slicecoll.nvsliceinfo == 0);
+  assert(scase->slicecoll.vsliceinfo == NULL);
+
+  assert(NULL == 0);
+
+  scase->smoke3dcoll.nsmoke3dinfo       = 0;
+  scase->smoke3dcoll.smoke3dinfo        = NULL;
+  scase->smoke3dcoll.nsmoke3dtypes      = 0;
+  scase->smoke3dcoll.smoke3dtypes       = NULL;
+  scase->smoke3dcoll.smoke3d_other      = 0;
+  scase->smoke3dcoll.smoke3dinfo_sorted = NULL;
+
+  scase->slicecoll.nsliceinfo       = 0;
+  scase->slicecoll.sliceinfo        = NULL;
+  scase->slicecoll.nmultisliceinfo  = 0;
+  scase->slicecoll.multisliceinfo   = NULL;
+  scase->slicecoll.nmultivsliceinfo = 0;
+  scase->slicecoll.multivsliceinfo  = NULL;
+  scase->slicecoll.nvsliceinfo      = 0;
+  scase->slicecoll.vsliceinfo       = NULL;
+
   scase->tourcoll.ntourinfo = 0;
   scase->tourcoll.tourinfo = NULL;
   scase->tourcoll.tour_ntimes = 1000;
@@ -11846,6 +11883,8 @@ void InitScase(smv_case *scase) {
   InitObjectCollection(&scase->objectscoll);
 }
 
+/* ------------------ CreateScase ------------------------ */
+
 /// @brief Create and initalize and a smokeview case (smv_case).
 /// @return An initialized smv_case.
 smv_case *CreateScase() {
@@ -11854,6 +11893,8 @@ smv_case *CreateScase() {
   InitScase(scase);
   return scase;
 }
+
+/* ------------------ DestroyScase ------------------------ */
 
 /// @brief Cleanup and free the memory of an smv_case.
 /// @param scase An smv_case created with CreateScase.
@@ -11867,7 +11908,7 @@ void DestroyScase(smv_case *scase) {
 
 /// @brief Parse an SMV file.
 /// @param stream the file stream to parse.
-/// @return zero on sucess, non-zero on error
+/// @return zero on success, non-zero on error
 int ReadSMV(bufferstreamdata *stream){
   InitScase(&global_scase);
   //** initialize multi-threading
