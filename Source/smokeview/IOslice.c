@@ -3988,7 +3988,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         }
       }
       UpdateUnitDefs();
-      update_times = 1;
       PrintMemoryInfo;
       CheckMemory;
       return 0;
