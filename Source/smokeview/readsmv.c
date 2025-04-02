@@ -11793,11 +11793,16 @@ void InitScase(smv_case *scase) {
   assert(scase->smoke3dcoll.smoke3dinfo == NULL);
   assert(scase->smoke3dcoll.nsmoke3dtypes == 0);
   assert(scase->smoke3dcoll.smoke3dtypes == NULL);
+  assert(scase->smoke3dcoll.smoke3d_other == 0);
+  assert(scase->smoke3dcoll.smoke3dinfo_sorted == NULL);
+  assert(NULL == 0);
 
-  scase->smoke3dcoll.nsmoke3dinfo  = 0;
-  scase->smoke3dcoll.smoke3dinfo   = NULL;
-  scase->smoke3dcoll.nsmoke3dtypes = 0;
-  scase->smoke3dcoll.smoke3dtypes  = NULL;
+  scase->smoke3dcoll.nsmoke3dinfo       = 0;
+  scase->smoke3dcoll.smoke3dinfo        = NULL;
+  scase->smoke3dcoll.nsmoke3dtypes      = 0;
+  scase->smoke3dcoll.smoke3dtypes       = NULL;
+  scase->smoke3dcoll.smoke3d_other      = 0;
+  scase->smoke3dcoll.smoke3dinfo_sorted = NULL;
 
   scase->tourcoll.ntourinfo = 0;
   scase->tourcoll.tourinfo = NULL;
