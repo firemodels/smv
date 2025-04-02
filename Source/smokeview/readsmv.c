@@ -11788,6 +11788,17 @@ int ReadSMV_Configure(){
 /// @param scase An uninitialized scase
 void InitScase(smv_case *scase) {
   // set all of the defaults that are non-zero
+
+  assert(scase->smoke3dcoll.nsmoke3dinfo == 0);
+  assert(scase->smoke3dcoll.smoke3dinfo == NULL);
+  assert(scase->smoke3dcoll.nsmoke3dtypes == 0);
+  assert(scase->smoke3dcoll.smoke3dtypes == NULL);
+
+  scase->smoke3dcoll.nsmoke3dinfo  = 0;
+  scase->smoke3dcoll.smoke3dinfo   = NULL;
+  scase->smoke3dcoll.nsmoke3dtypes = 0;
+  scase->smoke3dcoll.smoke3dtypes  = NULL;
+
   scase->tourcoll.ntourinfo = 0;
   scase->tourcoll.tourinfo = NULL;
   scase->tourcoll.tour_ntimes = 1000;
