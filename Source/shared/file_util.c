@@ -1323,26 +1323,38 @@ char *GetUserConfigSubPath(const char *subdir) {
   return JoinPath(config_dir,subdir);
 }
 
+/* ------------------ GetUserIniPath ------------------------ */
+
 char *GetSystemIniPath() {
   return GetSmvRootSubPath("smokeview.ini");
 }
+
+/* ------------------ GetUserIniPath ------------------------ */
 
 char *GetUserIniPath() {
   return GetUserConfigSubPath("smokeview.ini");
 }
 
+/* ------------------ GetUserColorbarDirPath ------------------------ */
+
 char *GetUserColorbarDirPath() {
   return GetUserConfigSubPath("colorbars");
 }
+
+/* ------------------ GetSmokeviewHtmlPath ------------------------ */
 
 char *GetSmokeviewHtmlPath() {
   return GetSmvRootSubPath("smokeview.html");
 }
 
+/* ------------------ GetSmokeviewHtmlVrPath ------------------------ */
+
 // TODO: This is currently unused
 char *GetSmokeviewHtmlVrPath() {
   return GetSmvRootSubPath("smokeview_vr.html");
 }
+
+/* ------------------ GetSmvScreenIni ------------------------ */
 
 // TODO: This is currently unused
 char *GetSmvScreenIni() {
