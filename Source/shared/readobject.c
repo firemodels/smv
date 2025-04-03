@@ -1481,7 +1481,7 @@ void LoadDefaultObjectDefs(object_collection *objectscoll){
       objectscoll->std_object_defs.smoke_detector_object_backup;
 }
 
-/* ----------------------- InitObjectDefs ----------------------------- */
+/* ----------------------- ReadDefaultObjectCollection ----------------------------- */
 
 void ReadDefaultObjectCollection(object_collection *objectscoll,
                                  const char *fdsprefix,
