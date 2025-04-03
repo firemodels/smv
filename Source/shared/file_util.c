@@ -1283,13 +1283,12 @@ char *GetSmvRootDir(){
     STRCPY(buffer, bindir);
 #endif
   }
-  if(buffer[len - 1] != dirseparator[0]){
-    STRCAT(buffer, dirseparator);
-    len++;
-  }
-  buffer[len] = '\0';
+  STRCAT(buffer, dirseparator);
+  buffer[len+1] = '\0';
   return buffer;
 }
+
+/* ------------------ GetSmvRootSubPath ------------------------ */
 
 char *GetSmvRootSubPath(const char *subdir) {
   char *root_dir = GetSmvRootDir();
