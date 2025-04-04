@@ -5121,6 +5121,7 @@ void LoadSliceMenu(int value){
             }
           }
         }
+        UpdateTimes();
         break;
       case MENU_SHOWSLICE_IN_GAS:
         GLUISliceInObstMenu2Dialog(ONLY_IN_GAS);
@@ -5496,6 +5497,7 @@ void LoadMultiSliceMenu(int value){
       file_count++;
 #endif
     }
+    UpdateTimes();
     STOP_TIMER(load_time);
 #ifndef pp_SLICEFRAME
     PrintFileLoadTimes(file_count,load_size,load_time);
@@ -12298,6 +12300,9 @@ static int menu_count=0;
             smoke3ddata *smoke3di;
 
             smoke3di = global_scase.smoke3dcoll.smoke3dinfo+i;
+#ifdef pp_SMOKE3D_FORCE
+            if(smoke3di->dummy == 1)continue;
+#endif
             if(smoke3di->type!=ii)continue;
             strcpy(menulabel, "");
             if(smoke3di->loaded==1){
@@ -12320,6 +12325,9 @@ static int menu_count=0;
             nloaded=0;
             is_zlib = 0;
             for(jj=0;jj<global_scase.smoke3dcoll.nsmoke3dinfo;jj++){
+#ifdef pp_SMOKE3D_FORCE
+              if(global_scase.smoke3dcoll.smoke3dinfo[jj].dummy == 1)continue;
+#endif
               if(global_scase.smoke3dcoll.smoke3dinfo[jj].type==ii){
                 if(global_scase.smoke3dcoll.smoke3dinfo[jj].loaded==1)nloaded++;
                 if(global_scase.smoke3dcoll.smoke3dinfo[jj].compression_type == COMPRESSED_ZLIB){
@@ -12967,8 +12975,20 @@ static int menu_count=0;
       strcpy(steplabel,_("error: steplabel not defined"));
 
       // 3d smoke
+      int n_smoke3d_present = 0;
+#ifdef pp_SMOKE3D_FORCE
+      for(i = 0; i < global_scase.smoke3dcoll.nsmoke3dinfo; i++){
+        smoke3ddata *smoke3di;
 
-      if(global_scase.smoke3dcoll.nsmoke3dinfo>0){
+        smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+        if(smoke3di->dummy == 1)continue;
+        n_smoke3d_present = 1;
+        break;
+      }
+#else
+      if(global_scase.smoke3dcoll.nsmoke3dinfo > 0)n_smoke3d_present = 1;
+#endif
+      if(n_smoke3d_present==1){
         strcpy(loadmenulabel,_("3D smoke"));
         if(tload_step > 1){
           sprintf(steplabel,"/Skip %i",tload_skip);

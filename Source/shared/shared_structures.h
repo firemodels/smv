@@ -1098,6 +1098,9 @@ typedef struct {
   char *smvzip_filename;
   char *sliceinfo_filename;
   char *deviceinfo_filename;
+#ifdef pp_SMOKE3D_FORCE
+  char *smoke3d_filename;
+#endif
   char *iso_filename;
   char *trainer_filename;
   char *test_filename;
@@ -1480,6 +1483,9 @@ typedef struct _smoke3ddata {
   char *smoke_density_file;
 #ifdef pp_SMOKEFRAME
   char *size_file;
+#endif
+#ifdef pp_SMOKE3D_FORCE
+  int dummy;
 #endif
   int filetype;
   int skip_smoke, skip_fire;

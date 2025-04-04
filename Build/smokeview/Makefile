@@ -190,6 +190,28 @@ SMV_LIBS_GNU = $(SMV_GNU_LIBDIR)\glui.a $(GLUT_GNU_LIB) $(SMV_GNU_LIBDIR)\gd.a $
 
 WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 
+# ------------- intel_win_64_san ----------------
+
+intel_win_64_san : DYNLIB_EXT = .dll
+intel_win_64_san : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
+intel_win_64_san : CFLAGS    = /Od /W4 /Wno-cast-function-type-mismatch /Wno-unused-function /Wno-unused-parameter
+intel_win_64_san : CFLAGS   += /debug:full /Zi  -D pp_INTEL -D _DEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC
+intel_win_64_san : CFLAGS   += -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64_san : CFLAGS   += $(SANITIZE_OPTIONS)
+intel_win_64_san : C_STANDARD    = -Qstd=gnu99
+
+ifeq ($(GLUT),freeglut)
+intel_win_64_san : CFLAGS   += -D FREEGLUT_STATIC
+endif
+intel_win_64_san : LFLAGS    = /F32768000 /traceback /Zi $(SANITIZE_OPTIONS)
+intel_win_64_san : CC        = icx
+intel_win_64_san : CPP       = icx
+
+intel_win_64_san : exe       = smokeview_win_$(SMV_TESTSTRING)64
+
+intel_win_64_san : $(objwin)
+	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(SMV_LIBS_WIN)
+
 # ------------- intel_win_64_db ----------------
 
 intel_win_64_db : DYNLIB_EXT = .dll

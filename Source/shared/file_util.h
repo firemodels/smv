@@ -257,6 +257,7 @@ EXTERNCPP char *GetSystemIniPath();
  *
  * @return The path allocated with NEWMEMORY.
  */
+EXTERNCPP char *GetScratchFilename(char *file);
 EXTERNCPP char *GetUserIniPath();
 EXTERNCPP char *GetUserColorbarDirPath();
 EXTERNCPP char *GetSmokeviewHtmlPath();

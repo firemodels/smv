@@ -236,10 +236,20 @@ void DisplayVersionInfo(char *progname){
   if(user_ini_path != NULL && FileExistsOrig(user_ini_path) == 1){
     PRINTF("User ini         : %s\n", user_ini_path);
   }
-  else{
-    PRINTF("User ini         : not found\n");
-  }
   FREEMEMORY(user_ini_path);
+
+  char objectfile[1024];
+  if(smv_bindir != NULL){
+    strcpy(objectfile, smv_bindir);
+    strcat(objectfile, "objects.svo");
+  }
+  if(smv_bindir != NULL && FileExistsOrig(objectfile) == 1){
+    PRINTF("objects.svo      : %s\n", objectfile);
+  }
+  else{
+    PRINTF("objects.svo      : not found\n");
+  }
+
   char fullini_filename[256];
   strcpy(fullini_filename, "");
   char *smokeview_scratchdir = GetUserConfigDir();

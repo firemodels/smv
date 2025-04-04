@@ -1015,6 +1015,9 @@ void UpdateSmoke3DTypes(void){
     smoke3dtypedata *typen;
 
     smoke3di = global_scase.smoke3dcoll.smoke3dinfo+i;
+#ifdef pp_SMOKE3D_FORCE
+    if(smoke3di->dummy == 1)continue;
+#endif
     labeli = smoke3di->label.shortlabel;
     doit = 1;
     for(j = 0; j<i; j++){
@@ -1022,6 +1025,9 @@ void UpdateSmoke3DTypes(void){
       char *labelj;
 
       smoke3dj = global_scase.smoke3dcoll.smoke3dinfo+j;
+#ifdef pp_SMOKE3D_FORCE
+      if(smoke3dj->dummy == 1)continue;
+#endif
       labelj = smoke3dj->label.shortlabel;
       if(strcmp(labeli, labelj)==0){
         doit = 0;
@@ -1047,12 +1053,18 @@ void UpdateSmoke3DTypes(void){
   for(i = 0; i<global_scase.smoke3dcoll.nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
     int j;
-    smokestatedata *smokestate;
+    smokestatedata *smokestate=NULL;
+
 
     smoke3di = global_scase.smoke3dcoll.smoke3dinfo+i;
+#ifdef pp_SMOKE3D_FORCE
+    if(smoke3di->dummy == 1)continue;
+#endif
     smoke3di->type = GetSmoke3DType(&global_scase, smoke3di->label.shortlabel);
 
-    NewMemory((void **)&smokestate, global_scase.smoke3dcoll.nsmoke3dtypes*sizeof(smokestatedata));
+    if(global_scase.smoke3dcoll.nsmoke3dtypes>0){
+      NewMemory((void **)&smokestate, global_scase.smoke3dcoll.nsmoke3dtypes*sizeof(smokestatedata));
+    }
     smoke3di->smokestate = smokestate;
     for(j = 0; j<global_scase.smoke3dcoll.nsmoke3dtypes; j++){
       smoke3di->smokestate[j].color = NULL;
