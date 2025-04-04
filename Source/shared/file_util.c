@@ -1245,42 +1245,50 @@ void SetSmvRootOverride(const char *path){
 /* ------------------ GetSmvRootDir ------------------------ */
 
 char *GetSmvRootDir(){
-  char *envar_path = getenv("SMV_ROOT_OVERRIDE");
+  char *envar_path, *buffer;
+  int len;
+
+  envar_path = getenv("SMV_ROOT_OVERRIDE");
+
   if(smv_root_override != NULL){
     // Take the SMV_ROOT as defined on the command line
-    char *buffer;
-    int len = strlen(smv_root_override);
-    NEWMEMORY(buffer, (len + 1) * sizeof(char));
+    len = strlen(smv_root_override);
+    NEWMEMORY(buffer, (len + 2) * sizeof(char));
     STRCPY(buffer, smv_root_override);
-    buffer[len] = '\0';
-    return buffer;
   }
   else if(envar_path != NULL){
     // Take the SMV_ROOT as defined by the SMV_ROOT_OVERRIDE environment
     // variable
-    char *buffer;
-    int len = strlen(envar_path);
-    NEWMEMORY(buffer, (len + 1) * sizeof(char));
+    
+    len = strlen(envar_path);
+    NEWMEMORY(buffer, (len + 2) * sizeof(char));
     STRCPY(buffer, envar_path);
-    buffer[len] = '\0';
-    return buffer;
   }
   else{
 #ifdef SMV_ROOT_OVERRIDE
     // Take the SMV_ROOT as defined by the SMV_ROOT_OVERRIDE macro
-    char *buffer;
-    int len = strlen(SMV_ROOT_OVERRIDE);
-    NEWMEMORY(buffer, (len + 1) * sizeof(char));
+    len = strlen(SMV_ROOT_OVERRIDE);
+    NEWMEMORY(buffer, (len + 2) * sizeof(char));
     STRCPY(buffer, SMV_ROOT_OVERRIDE);
-    buffer[len] = '\0';
-    return buffer;
 #else
     // Otherwise simply return the directory of the running executable (using
     // the platform-dependent code).
-    return GetBinDir();
+    char *bindir;
+
+    bindir =  GetBinDir();
+    if(bindir == NULL)return NULL;
+
+    len = strlen(bindir);
+    NEWMEMORY(buffer, (len + 2) * sizeof(char));
+    STRCPY(buffer, bindir);
 #endif
   }
+  STRCAT(buffer, dirseparator);
+  buffer[len+1] = '\0';
+  return buffer;
 }
+
+/* ------------------ GetSmvRootSubPath ------------------------ */
 
 char *GetSmvRootSubPath(const char *subdir) {
   char *root_dir = GetSmvRootDir();
@@ -1323,26 +1331,38 @@ char *GetUserConfigSubPath(const char *subdir) {
   return JoinPath(config_dir,subdir);
 }
 
+/* ------------------ GetUserIniPath ------------------------ */
+
 char *GetSystemIniPath() {
   return GetSmvRootSubPath("smokeview.ini");
 }
+
+/* ------------------ GetUserIniPath ------------------------ */
 
 char *GetUserIniPath() {
   return GetUserConfigSubPath("smokeview.ini");
 }
 
+/* ------------------ GetUserColorbarDirPath ------------------------ */
+
 char *GetUserColorbarDirPath() {
   return GetUserConfigSubPath("colorbars");
 }
+
+/* ------------------ GetSmokeviewHtmlPath ------------------------ */
 
 char *GetSmokeviewHtmlPath() {
   return GetSmvRootSubPath("smokeview.html");
 }
 
+/* ------------------ GetSmokeviewHtmlVrPath ------------------------ */
+
 // TODO: This is currently unused
 char *GetSmokeviewHtmlVrPath() {
   return GetSmvRootSubPath("smokeview_vr.html");
 }
+
+/* ------------------ GetSmvScreenIni ------------------------ */
 
 // TODO: This is currently unused
 char *GetSmvScreenIni() {

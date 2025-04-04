@@ -1481,7 +1481,7 @@ void LoadDefaultObjectDefs(object_collection *objectscoll){
       objectscoll->std_object_defs.smoke_detector_object_backup;
 }
 
-/* ----------------------- InitObjectDefs ----------------------------- */
+/* ----------------------- ReadDefaultObjectCollection ----------------------------- */
 
 void ReadDefaultObjectCollection(object_collection *objectscoll,
                                  const char *fdsprefix,
@@ -1500,7 +1500,7 @@ void ReadDefaultObjectCollection(object_collection *objectscoll,
 
   // Read "objects.svo" from bin dir
   char *smv_bindir = GetSmvRootDir();
-  if(smv_bindir){
+  if(smv_bindir != NULL){
     strcpy(objectfile, smv_bindir);
     strcat(objectfile, "objects.svo");
     ReadObjectDefs(objectscoll, objectfile);
