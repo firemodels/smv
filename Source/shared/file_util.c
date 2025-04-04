@@ -1102,8 +1102,15 @@ char *JoinPath(const char *path, const char *segment) {
   int newlen = path_len + strlen(dirseparator) + strlen(segment) + 1;
   NEWMEMORY(new_path, (newlen + 1) * sizeof(char));
   strcpy(new_path, path);
-  strcat(new_path, dirseparator);
-  strcat(new_path, segment);
+  int new_path_len;
+  new_path_len = strlen(new_path);
+  if(strcmp(new_path + new_path_len - 1, dirseparator) == 0){
+    strcat(new_path, segment);
+  }
+  else{
+    strcat(new_path, dirseparator);
+    strcat(new_path, segment);
+  }
   return new_path;
 }
 
@@ -1331,7 +1338,7 @@ char *GetUserConfigSubPath(const char *subdir) {
   return JoinPath(config_dir,subdir);
 }
 
-/* ------------------ GetUserIniPath ------------------------ */
+/* ------------------ GetSystemIniPath ------------------------ */
 
 char *GetSystemIniPath() {
   return GetSmvRootSubPath("smokeview.ini");
