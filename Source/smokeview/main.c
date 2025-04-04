@@ -190,6 +190,9 @@ char *ProcessCommandLine(CommandlineArgs *args){
     SMV_EXIT(0);
   }
   if(args->print_version){
+    if(args->bindir != NULL){
+      SetSmvRootOverride(args->bindir);
+    }
     show_version = 1;
   }
   strcpy(SMVFILENAME, "");
