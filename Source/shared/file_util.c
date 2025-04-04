@@ -1283,8 +1283,8 @@ char *GetSmvRootDir(){
     STRCPY(buffer, bindir);
 #endif
   }
-  STRCAT(buffer, dirseparator);
-  buffer[len+1] = '\0';
+  len = strlen(buffer);
+  if(strcmp(buffer+len-1,dirseparator)!=0)STRCAT(buffer, dirseparator);
   return buffer;
 }
 
