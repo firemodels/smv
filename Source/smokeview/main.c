@@ -11,6 +11,7 @@
 #include "string_util.h"
 #include "smokeviewvars.h"
 #include "command_args.h"
+#include "readsmvfile.h"
 #include "IOscript.h"
 #include "IOvolsmoke.h"
 
