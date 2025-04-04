@@ -2930,7 +2930,7 @@ int ReadSMV_Configure(){
 
 /// @brief Parse an SMV file.
 /// @param stream the file stream to parse.
-/// @return zero on sucess, non-zero on error
+/// @return zero on success, non-zero on error
 int ReadSMV(bufferstreamdata *stream){
   InitScase(&global_scase);
   //** initialize multi-threading
