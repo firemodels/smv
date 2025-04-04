@@ -238,7 +238,6 @@ void DisplayVersionInfo(char *progname){
   }
   FREEMEMORY(user_ini_path);
 
-#ifdef pp_OBJECT
   char objectfile[1024];
   if(smv_bindir != NULL){
     strcpy(objectfile, smv_bindir);
@@ -250,7 +249,6 @@ void DisplayVersionInfo(char *progname){
   else{
     PRINTF("objects.svo      : not found\n");
   }
-#endif
 
   char fullini_filename[256];
   strcpy(fullini_filename, "");
