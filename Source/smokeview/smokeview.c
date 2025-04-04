@@ -236,9 +236,6 @@ void DisplayVersionInfo(char *progname){
   if(user_ini_path != NULL && FileExistsOrig(user_ini_path) == 1){
     PRINTF("User ini         : %s\n", user_ini_path);
   }
-  else{
-    PRINTF("User ini         : not found\n");
-  }
   FREEMEMORY(user_ini_path);
 
 #ifdef pp_OBJECT
