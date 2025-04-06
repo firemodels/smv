@@ -2943,8 +2943,11 @@ int ReadSMV_Configure(){
 /// @brief Parse an SMV file.
 /// @param stream the file stream to parse.
 /// @return zero on success, non-zero on error
-int ReadSMV(bufferstreamdata *stream){
-  InitScase(&global_scase);
+int ReadSMV(bufferstreamdata *stream) {
+  // TODO: This is where global_scase should be initialised. However, it's
+  // currenly initialised in InitVars for a few compatability reasons. This
+  // would be a better location when those compatbilities are resolved.
+  // InitScase(&global_scase);
   //** initialize multi-threading
   if(runscript == 1){
     use_checkfiles_threads  = 0;

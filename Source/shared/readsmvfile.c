@@ -8999,6 +8999,7 @@ void InitScase(smv_case *scase) {
 smv_case *CreateScase() {
   smv_case *scase;
   NewMemory((void **)&scase, sizeof(smv_case));
+  memset(scase, 0, sizeof(smv_case));
   InitScase(scase);
   return scase;
 }
