@@ -357,16 +357,16 @@ extern "C" void GLUISmoke3dColorbarCB(int var){
       global_hrrpuv_cb_min = 0.0;
       update_local = 1;
     }
-    if(global_hrrpuv_cb_min > global_hrrpuv_max){
-      global_hrrpuv_cb_min = global_hrrpuv_max;
+    if(global_hrrpuv_cb_min > global_scase.hrrpuv_max){
+      global_hrrpuv_cb_min = global_scase.hrrpuv_max;
       update_local = 1;
     }
     if(global_hrrpuv_cb_max < 0.0){
       global_hrrpuv_cb_max = 0.0;
       update_local = 1;
     }
-    if(global_hrrpuv_cb_max > global_hrrpuv_max){
-      global_hrrpuv_cb_max = global_hrrpuv_max;
+    if(global_hrrpuv_cb_max > global_scase.hrrpuv_max){
+      global_hrrpuv_cb_max = global_scase.hrrpuv_max;
       update_local = 1;
     }
     if(global_hrrpuv_cb_min > global_hrrpuv_cb_max){
@@ -385,16 +385,16 @@ extern "C" void GLUISmoke3dColorbarCB(int var){
       global_temp_cb_min = 0.0;
       update_local = 1;
     }
-    if(global_temp_cb_min > global_temp_max){
-      global_temp_cb_min = global_temp_max;
+    if(global_temp_cb_min > global_scase.temp_max){
+      global_temp_cb_min = global_scase.temp_max;
       update_local = 1;
     }
     if(global_temp_cb_max < 0.0){
       global_temp_cb_max = 0.0;
       update_local = 1;
     }
-    if(global_temp_cb_max > global_temp_max){
-      global_temp_cb_max = global_temp_max;
+    if(global_temp_cb_max > global_scase.temp_max){
+      global_temp_cb_max = global_scase.temp_max;
       update_local = 1;
     }
     if(global_temp_cb_min > global_temp_cb_max){
@@ -1062,12 +1062,12 @@ extern "C" void GLUISmoke3dCB(int var){
     }
     break;
   case TEMP_MIN:
-    if(global_temp_min < 0.0){
-      global_temp_min = 0.0;
-      SPINNER_temperature_min->set_float_val(global_temp_min);
+    if(global_scase.temp_min < 0.0){
+      global_scase.temp_min = 0.0;
+      SPINNER_temperature_min->set_float_val(global_scase.temp_min);
     }
-    if(global_temp_cb_max<global_temp_min){
-      global_temp_cb_max = global_temp_min+1.0;
+    if(global_temp_cb_max<global_scase.temp_min){
+      global_temp_cb_max = global_scase.temp_min+1.0;
       SPINNER_temperature_max->set_float_val(global_temp_cb_max);
     }
     UpdateSmokeColormap(smoke_render_option);
