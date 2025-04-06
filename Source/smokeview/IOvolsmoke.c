@@ -656,8 +656,8 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
         int index;
         float temp_factor;
 
-        temp_factor = (float)MAXSMOKERGB/(global_temp_cb_max - global_temp_min);
-        index = CLAMP(temp_factor*(temperature - global_temp_min), 0, MAXSMOKERGB - 1);
+        temp_factor = (float)MAXSMOKERGB/(global_temp_cb_max - global_scase.temp_min);
+        index = CLAMP(temp_factor*(temperature - global_scase.temp_min), 0, MAXSMOKERGB - 1);
         memcpy(fire_emission, rgb_volsmokecolormap + 4*index, 3*sizeof(float));
       }
       else{
@@ -2409,7 +2409,7 @@ void DrawSmoke3DGPUVol(void){
   glUniform1f(GPUvol_fire_opacity_factor,fire_opacity_factor);
   glUniform1f(GPUvol_mass_extinct,mass_extinct);
   glUniform1i(GPUvol_volbw,volbw);
-  glUniform1f(GPUvol_temperature_min, global_temp_min);
+  glUniform1f(GPUvol_temperature_min, global_scase.temp_min);
   glUniform1f(GPUvol_temperature_cutoff, global_temp_cb_min);
   glUniform1f(GPUvol_temperature_max, global_temp_cb_max);
   glUniform1i(GPUvol_block_volsmoke,block_volsmoke);
