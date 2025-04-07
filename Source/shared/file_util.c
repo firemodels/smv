@@ -1288,25 +1288,24 @@ char *GetSmvRootDir(){
 
     strcpy(repo_bindir, bindir);
     if(strcmp(bindir+strlen(bindir)-1,dirseparator)!=0)STRCAT(repo_bindir, dirseparator);
-    char *end;
-    end = strrchr(repo_bindir, dirseparator[0]);
-    if(end != NULL){
-      end[0] = 0;
-      end = strrchr(repo_bindir, dirseparator[0]);
-      if(end != NULL){
-        end[0] = 0;
-        end = strrchr(repo_bindir, dirseparator[0]);
-        if(end != NULL){
-          end[0] = 0;
+
+    int i, count=0;
+
+    for(i = strlen(repo_bindir) - 1;i >= 0;i--){
+      if(repo_bindir[i] == dirseparator[0]){
+        count++;
+        if(count == 3){
+          repo_bindir[i] = 0;
           strcat(repo_bindir, dirseparator);
           strcat(repo_bindir, "for_bundle");
           strcat(repo_bindir, dirseparator);
+          break;
         }
       }
     }
 
     stream1 = fopen_indir(bindir, ".smokeview_bin", "r");
-    if(stream1 == NULL && end!=NULL)stream2 = fopen_indir(repo_bindir, ".smokeview_bin", "r");
+    if(stream1 == NULL && count==3)stream2 = fopen_indir(repo_bindir, ".smokeview_bin", "r");
     
     if(stream1 != NULL || stream2 == NULL){
       len = strlen(bindir);
