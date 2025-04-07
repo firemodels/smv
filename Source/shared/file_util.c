@@ -1280,14 +1280,46 @@ char *GetSmvRootDir(){
 #else
     // Otherwise simply return the directory of the running executable (using
     // the platform-dependent code).
-    char *bindir;
+    char *bindir, repo_bindir[1024];
+    FILE *stream1=NULL, *stream2=NULL;
 
     bindir =  GetBinDir();
     if(bindir == NULL)return NULL;
 
-    len = strlen(bindir);
-    NEWMEMORY(buffer, (len + 2) * sizeof(char));
-    STRCPY(buffer, bindir);
+    strcpy(repo_bindir, bindir);
+    if(strcmp(bindir+strlen(bindir)-1,dirseparator)!=0)STRCAT(repo_bindir, dirseparator);
+
+    int i, count=0;
+
+    for(i = strlen(repo_bindir) - 1;i >= 0;i--){
+      if(repo_bindir[i] == dirseparator[0]){
+        count++;
+        if(count == 3){
+          repo_bindir[i] = 0;
+          strcat(repo_bindir, dirseparator);
+          strcat(repo_bindir, "for_bundle");
+          strcat(repo_bindir, dirseparator);
+          break;
+        }
+      }
+    }
+
+    stream1 = fopen_indir(bindir, ".smokeview_bin", "r");
+    if(stream1 == NULL && count==3)stream2 = fopen_indir(repo_bindir, ".smokeview_bin", "r");
+    
+    if(stream1 != NULL || stream2 == NULL){
+      len = strlen(bindir);
+      NEWMEMORY(buffer, len + 2);
+      STRCPY(buffer, bindir);
+    }
+    else{ // look for root directory in ../../for_bundle
+          //  this is used when using smokeview located in the build directory
+      len = strlen(repo_bindir);
+      NEWMEMORY(buffer, len + 2);
+      STRCPY(buffer, repo_bindir);
+    }
+    if(stream1!=NULL)fclose(stream1);
+    if(stream2!=NULL)fclose(stream2);
 #endif
   }
   len = strlen(buffer);
