@@ -1124,7 +1124,8 @@ void UpdateMeshCoords(void){
   int factor;
   int igrid;
 
-  if(global_scase.setPDIM==0){
+  if(current_mesh == NULL)current_mesh = global_scase.meshescoll.meshinfo;
+  if(global_scase.setPDIM==0&&current_mesh!=NULL){
     for(nn=0;nn<=current_mesh->ibar;nn++){
       current_mesh->xplt[nn]=global_scase.xbar0+(float)nn*(global_scase.xbar-global_scase.xbar0)/(float)current_mesh->ibar;
     }
