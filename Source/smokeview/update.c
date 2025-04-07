@@ -16,6 +16,7 @@
 #include "glui_motion.h"
 #include "glui_bounds.h"
 #include "IOobjects.h"
+#include "readsmvfile.h"
 
 /* ------------------ CompareFloat ------------------------ */
 

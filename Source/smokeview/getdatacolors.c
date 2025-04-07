@@ -1082,15 +1082,15 @@ void UpdateSmokeColormap(int option){
 
   rgb_colormap = rgb_slicesmokecolormap_01;
   if(have_fire==HRRPUV_index){
-    valmin    = global_hrrpuv_min;
+    valmin    = global_scase.hrrpuv_min;
     valmin_cb = global_hrrpuv_cb_min;
-    valmax    = global_hrrpuv_max;
+    valmax    = global_scase.hrrpuv_max;
     valmax_cb = global_hrrpuv_cb_max;
   }
   if(have_fire==TEMP_index){
-    valmin    = global_temp_min;
+    valmin    = global_scase.temp_min;
     valmin_cb = global_temp_cb_min;
-    valmax    = global_temp_max;
+    valmax    = global_scase.temp_max;
     valmax_cb = global_temp_cb_max;
   }
 
