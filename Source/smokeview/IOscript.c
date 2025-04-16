@@ -2239,7 +2239,7 @@ void ScriptLoadSLCF(scriptdata *scripti){
   if(scripti->c_pbxyz!=NULL){
     if(count2++!=0)printf(", ");
     if(strcmp(scripti->c_pbxyz,"PB3D")==0){
-      PRINTF("PB3D=T\n");
+      PRINTF("PB3D=T");
     }
     else{
       PRINTF("%s=%f", scripti->c_pbxyz, scripti->pbxyz_val);
