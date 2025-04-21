@@ -680,7 +680,6 @@ void InitDefaultColorbars(colorbar_collection *colorbars, int nini,
 
   // Add colorbars as defined in the code.
   CreateColorbarRainbow(NewColorbar(colorbars));
-  CreateColorbarRainbow(NewColorbar(colorbars));
   CreateColorbarOriginalRainbow(NewColorbar(colorbars));
   CreateColorbarRainbow2(NewColorbar(colorbars));
   CreateColorbarYellowRed(NewColorbar(colorbars));
