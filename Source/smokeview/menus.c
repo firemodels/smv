@@ -12004,6 +12004,7 @@ static int menu_count=0;
   }
   glutAddMenuEntry(_("Misc"), MENU_DUMMY);
   glutAddMenuEntry(_("  A: toggle between plot types (device and HRRPUV)"), MENU_DUMMY);
+  glutAddMenuEntry(_("  B: when the mouse is down, hide OBSTS and geometry - draw an outline instead"), MENU_DUMMY);
   glutAddMenuEntry(_("  e: toggle between view rotation types: scene centered 2 axis, 1 axis, 3 axis and eye centered"), MENU_DUMMY);
   if(global_scase.ntotal_blockages>0||global_scase.isZoneFireModel==1){
     glutAddMenuEntry(_("  g: toggle grid visibility modes"), MENU_DUMMY);
