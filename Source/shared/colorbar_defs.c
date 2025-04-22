@@ -3,8 +3,10 @@
 #include "dmalloc.h"
 #include "colorbars.h"
 
+/* ------------------ CreateColorbarRainbow ------------------------ */
+
+void CreateColorbarRainbow(colorbardata *cbi){
 // rainbow colorbar
-void CreateColorbarRainbow(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "Rainbow");
   cbi->nnodes = 5;
@@ -36,8 +38,11 @@ void CreateColorbarRainbow(colorbardata *cbi) {
   cbi->node_rgb[14] = 0;
   strcpy(cbi->colorbar_type, "rainbow");
 }
+
+/* ------------------ CreateColorbarOriginalRainbow ------------------------ */
+
+void CreateColorbarOriginalRainbow(colorbardata *cbi){
 // original rainbow colorbar
-void CreateColorbarOriginalRainbow(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "Rainbow_orig");
   cbi->nnodes = 5;
@@ -70,8 +75,11 @@ void CreateColorbarOriginalRainbow(colorbardata *cbi) {
   cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "original");
 }
+
+/* ------------------ CreateColorbarRainbow2 ------------------------ */
+
+void CreateColorbarRainbow2(colorbardata *cbi){
 // Rainbow 2 colorbar
-void CreateColorbarRainbow2(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "Rainbow 2");
   cbi->nnodes = 12;
@@ -138,8 +146,11 @@ void CreateColorbarRainbow2(colorbardata *cbi) {
   cbi->node_rgb[35] = 13;
   strcpy(cbi->colorbar_type, "deprecated");
 }
+
+/* ------------------ CreateColorbarYellowRed ------------------------ */
+
+void CreateColorbarYellowRed(colorbardata *cbi){
 // yellow/red
-void CreateColorbarYellowRed(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "yellow->red");
   cbi->nnodes = 2;
@@ -156,8 +167,11 @@ void CreateColorbarYellowRed(colorbardata *cbi) {
   cbi->node_rgb[5] = 0;
   strcpy(cbi->colorbar_type, "original");
 }
+
+/* ------------------ CreateColorbarBlueRedGreen ------------------------ */
+
+void CreateColorbarBlueRedGreen(colorbardata *cbi){
 // blue/green/red
-void CreateColorbarBlueRedGreen(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "blue->green->red");
   cbi->nnodes = 3;
@@ -179,8 +193,11 @@ void CreateColorbarBlueRedGreen(colorbardata *cbi) {
   cbi->node_rgb[8] = 0;
   strcpy(cbi->colorbar_type, "original");
 }
+
+/* ------------------ CreateColorbarBlueYellowWhite ------------------------ */
+
+void CreateColorbarBlueYellowWhite(colorbardata *cbi){
 // blue/yellow/white
-void CreateColorbarBlueYellowWhite(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "blue->yellow->white");
   cbi->nnodes = 4;
@@ -207,8 +224,11 @@ void CreateColorbarBlueYellowWhite(colorbardata *cbi) {
   cbi->node_rgb[11] = 255;
   strcpy(cbi->colorbar_type, "deprecated");
 }
+
+/* ------------------ CreateColorbarBlueRedSplit ------------------------ */
+
+void CreateColorbarBlueRedSplit(colorbardata *cbi){
 // blue->red split
-void CreateColorbarBlueRedSplit(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "blue->red split");
   cbi->nnodes = 4;
@@ -237,8 +257,11 @@ void CreateColorbarBlueRedSplit(colorbardata *cbi) {
   cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "divergent");
 }
+
+/* ------------------ CreateColorbarAfacSplit ------------------------ */
+
+void CreateColorbarAfacSplit(colorbardata *cbi){
 // AFAC split
-void CreateColorbarAfacSplit(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "AFAC split");
   cbi->nnodes = 8;
@@ -287,8 +310,11 @@ void CreateColorbarAfacSplit(colorbardata *cbi) {
   cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "divergent");
 }
+
+/* ------------------ CreateColorbarBlackWhite ------------------------ */
+
+void CreateColorbarBlackWhite(colorbardata *cbi){
 // black->white
-void CreateColorbarBlackWhite(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "black->white");
 
@@ -306,8 +332,11 @@ void CreateColorbarBlackWhite(colorbardata *cbi) {
   cbi->node_rgb[5] = 255;
   strcpy(cbi->colorbar_type, "original");
 }
+
+/* ------------------ CreateColorbarFed ------------------------ */
+
+void CreateColorbarFed(colorbardata *cbi){
 // FED
-void CreateColorbarFed(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "FED");
 
@@ -347,8 +376,11 @@ void CreateColorbarFed(colorbardata *cbi) {
   cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "original");
 }
+
+/* ------------------ CreateColorbarFireOriginal ------------------------ */
+
+void CreateColorbarFireOriginal(colorbardata *cbi){
 // fire (original)
-void CreateColorbarFireOriginal(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "fire");
 
@@ -378,8 +410,11 @@ void CreateColorbarFireOriginal(colorbardata *cbi) {
   cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "original");
 }
+
+/* ------------------ CreateColorbarFire2 ------------------------ */
+
+void CreateColorbarFire2(colorbardata *cbi){
 // fire 2
-void CreateColorbarFire2(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "fire 2");
 
@@ -439,8 +474,11 @@ void CreateColorbarFire2(colorbardata *cbi) {
   cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "original");
 }
+
+/* ------------------ CreateColorbarFire3 ------------------------ */
+
+void CreateColorbarFire3(colorbardata *cbi){
 // fire 3
-void CreateColorbarFire3(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "fire 3");
 
@@ -468,8 +506,11 @@ void CreateColorbarFire3(colorbardata *cbi) {
   cbi->node_rgb[11] = 255;
   strcpy(cbi->colorbar_type, "original");
 }
+
+/* ------------------ CreateColorbarCool ------------------------ */
+
+void CreateColorbarCool(colorbardata *cbi){
 // cool
-void CreateColorbarCool(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "cool");
 
@@ -512,8 +553,11 @@ void CreateColorbarCool(colorbardata *cbi) {
   cbi->node_rgb[20] = 255;
   strcpy(cbi->colorbar_type, "deprecated");
 }
+
+/* ------------------ CreateColorbarFireLineLevelSet ------------------------ */
+
+void CreateColorbarFireLineLevelSet(colorbardata *cbi){
 // fire line (level set)
-void CreateColorbarFireLineLevelSet(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "fire line (level set)");
 
@@ -553,8 +597,11 @@ void CreateColorbarFireLineLevelSet(colorbardata *cbi) {
   cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "original");
 }
+
+/* ------------------ CreateColorbarFireLineWallThickness ------------------------ */
+
+void CreateColorbarFireLineWallThickness(colorbardata *cbi){
 // fire line (wall thickness)
-void CreateColorbarFireLineWallThickness(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "fire line (wall thickness)");
 
@@ -584,8 +631,11 @@ void CreateColorbarFireLineWallThickness(colorbardata *cbi) {
   cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "original");
 }
+
+/* ------------------ CreateColorbarSplit ------------------------ */
+
+void CreateColorbarSplit(colorbardata *cbi){
 // split
-void CreateColorbarSplit(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "split");
   // TODO: It would seem this would be fine, but not sure.
@@ -598,15 +648,18 @@ void CreateColorbarSplit(colorbardata *cbi) {
   cbi->node_index[1] = 127;
   cbi->node_index[2] = 128;
   cbi->node_index[3] = 255;
-  for (int i = 0; i < 12; i++) {
+  for (int i = 0; i < 12; i++){
     cbi->node_rgb[i] = colorsplit[i];
   }
 
   cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "original");
 }
+
+/* ------------------ CreateColorbarMethanol ------------------------ */
+
+void CreateColorbarMethanol(colorbardata *cbi){
 // Methanol
-void CreateColorbarMethanol(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "Methanol");
 
@@ -634,8 +687,11 @@ void CreateColorbarMethanol(colorbardata *cbi) {
   cbi->node_rgb[11] = 255;
   strcpy(cbi->colorbar_type, "original");
 }
+
+/* ------------------ CreateColorbarPropane ------------------------ */
+
+void CreateColorbarPropane(colorbardata *cbi){
 // Propane
-void CreateColorbarPropane(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "Propane");
 
@@ -670,8 +726,11 @@ void CreateColorbarPropane(colorbardata *cbi) {
   cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "original");
 }
+
+/* ------------------ CreateColorbarCo2 ------------------------ */
+
+void CreateColorbarCo2(colorbardata *cbi){
 // CO2
-void CreateColorbarCo2(colorbardata *cbi) {
   memset(cbi, 0, sizeof(colorbardata));
   strcpy(cbi->menu_label, "CO2");
 

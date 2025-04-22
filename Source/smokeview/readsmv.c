@@ -6198,13 +6198,14 @@ int ReadIni2(const char *inifile, int localfile){
         sscanf(buffer, "%i", &ncolorbarini);
 
         ncolorbarini = MAX(ncolorbarini, 0);
-        InitDefaultColorbars(&colorbars, ncolorbarini, show_extreme_mindata,
+        if(colorbars.ndefaultcolorbars==0){
+          InitDefaultColorbars(&colorbars, ncolorbarini, show_extreme_mindata,
                              rgb_below_min, show_extreme_maxdata,
                              rgb_above_max, &colorbarcopyinfo);
-        UpdateColorbarDialogs();
-        UpdateCurrentColorbar(colorbars.colorbarinfo + colorbartype);
-        update_colorbar_dialog = 0;
-
+          UpdateColorbarDialogs();
+          UpdateCurrentColorbar(colorbars.colorbarinfo + colorbartype);
+          update_colorbar_dialog = 0;
+        }
         colorbars.ncolorbars = colorbars.ndefaultcolorbars + ncolorbarini;
         for(n = colorbars.ndefaultcolorbars; n<colorbars.ncolorbars; n++){
           char *cb_buffptr;
@@ -7009,7 +7010,7 @@ int ReadIni(char *inifile){
   if(use_graphics==1){
     if(showall_textures==1)TextureShowMenu(MENU_TEXTURE_SHOWALL);
   }
-  if(colorbars.ncolorbars<=colorbars.ndefaultcolorbars){
+  if(colorbars.ndefaultcolorbars==0){
     InitDefaultColorbars(&colorbars, 0, show_extreme_mindata, rgb_below_min,
                          show_extreme_maxdata, rgb_above_max, &colorbarcopyinfo);
     UpdateColorbarDialogs();

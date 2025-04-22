@@ -13,7 +13,6 @@
 #include "glui_bounds.h"
 #include "histogram.h"
 
-
 /* ------------------ GetColorTableIndex ------------------------ */
 
 int GetColorTableIndex(int *color){
