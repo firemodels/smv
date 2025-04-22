@@ -64,6 +64,7 @@ erase_helpinfo_files()
   rm -f smokezip.version
   rm -f background.version
   rm -f wind2fds.version
+  rm -f fds.version
 
   rm -f smokeview.help
   rm -f smokediff.help
@@ -98,6 +99,11 @@ make_helpinfo_files()
   $SMOKEDIFF -v        > smokediff.version
   $BACKGROUND -version > background.version
   $WIND2FDS            > wind2fds.version
+  if [ -e $FDSEXE ]; then
+    echo "" | $FDSEXE 2> $GITROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
+  else
+    echo "unknown"     > $GITROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
+  fi
 }
 
 # ---------------------------------------------------------------------------
@@ -174,13 +180,13 @@ export GITROOT=`pwd`
 cd $CURDIR/..
 export BASEDIR=`pwd`
 
-if [ "$QUEUE" == "none" ]; then
-  PREFIX=i
+PREFIX=i
+FDSEXE=$GITROOT/fds/Build/${PREFIX}mpi_${COMPILER}_$PLATFORM/fds_${PREFIX}mpi_${COMPILER}_$PLATFORM
+if [ ! -e $FDSEXE ]; then
+  PREFIX=o  
   FDSEXE=$GITROOT/fds/Build/${PREFIX}mpi_${COMPILER}_$PLATFORM/fds_${PREFIX}mpi_${COMPILER}_$PLATFORM
-  if [ ! -e $FDSEXE ]; then
-    PREFIX=o  
-    FDSEXE=$GITROOT/fds/Build/${PREFIX}mpi_${COMPILER}_$PLATFORM/fds_${PREFIX}mpi_${COMPILER}_$PLATFORM
-  fi
+fi
+if [ "$QUEUE" == "none" ]; then
   if [ -e $FDSEXE ]; then
     echo "" | $FDSEXE 2> $GITROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
   else
