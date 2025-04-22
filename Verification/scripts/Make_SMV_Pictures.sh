@@ -190,7 +190,7 @@ fi
 
 if [ "$use_installed" == "1" ] ; then
   export SMV=smokeview
-  export SMOKEZIP=smokezip -f
+  export SMOKEZIP=smokezip
   export SMOKEDIFF=smokediff
   export FDS2FED=fds2fed
   export WIND2FDS=wind2fds
@@ -201,7 +201,7 @@ if [ "$use_installed" == "1" ] ; then
   fi
 else
   export SMV=$GITROOT/smv/Build/smokeview/${COMPILER}_$VERSION2/smokeview_$VERSION
-  export SMOKEZIP=$GITROOT/smv/Build/smokezip/${COMPILER}_$VERSION2/smokezip_$VERSION2 -f
+  export SMOKEZIP=$GITROOT/smv/Build/smokezip/${COMPILER}_$VERSION2/smokezip_$VERSION2
   export SMOKEDIFF=$GITROOT/smv/Build/smokediff/${COMPILER}_$VERSION2/smokediff_$VERSION2
   export FDS2FED=$GITROOT/smv/Build/fds2fed/${COMPILER}_$VERSION2/fds2fed_$VERSION2
   export WIND2FDS=$GITROOT/smv/Build/wind2fds/${COMPILER}_$VERSION2/wind2fds_$VERSION2
@@ -265,7 +265,7 @@ if [ "$RUN_SMV" == "1" ]; then
 
   cd $GITROOT/smv/Verification/Visualization
   echo Compressing sphere_propanec case
-  $SMOKEZIP sphere_propanec
+  $SMOKEZIP -f sphere_propanec
 
 # compute isosurface from particles
 
