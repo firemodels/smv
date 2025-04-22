@@ -2546,6 +2546,9 @@ int ReadSMV_Configure(){
     }
   }
   if(global_scase.ntotal_blockages > 250000)hide_scene = 1;
+  if(global_scase.meshescoll.nmeshes > 100){
+    blocklocation = BLOCKlocation_exact;
+  }
 
   if(checkfiles_threads != NULL){
     checkfiles_threads = THREADinit(&n_checkfiles_threads, &use_checkfiles_threads, CheckFiles);

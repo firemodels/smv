@@ -64,6 +64,7 @@ erase_helpinfo_files()
   rm -f smokezip.version
   rm -f background.version
   rm -f wind2fds.version
+  rm -f fds.version
 
   rm -f smokeview.help
   rm -f smokediff.help
@@ -98,6 +99,11 @@ make_helpinfo_files()
   $SMOKEDIFF -v        > smokediff.version
   $BACKGROUND -version > background.version
   $WIND2FDS            > wind2fds.version
+  if [ -e $FDSEXE ]; then
+    echo "" | $FDSEXE 2> $GITROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
+  else
+    echo "unknown"     > $GITROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
+  fi
 }
 
 # ---------------------------------------------------------------------------
@@ -174,13 +180,13 @@ export GITROOT=`pwd`
 cd $CURDIR/..
 export BASEDIR=`pwd`
 
-if [ "$QUEUE" == "none" ]; then
-  PREFIX=i
+PREFIX=i
+FDSEXE=$GITROOT/fds/Build/${PREFIX}mpi_${COMPILER}_$PLATFORM/fds_${PREFIX}mpi_${COMPILER}_$PLATFORM
+if [ ! -e $FDSEXE ]; then
+  PREFIX=o  
   FDSEXE=$GITROOT/fds/Build/${PREFIX}mpi_${COMPILER}_$PLATFORM/fds_${PREFIX}mpi_${COMPILER}_$PLATFORM
-  if [ ! -e $FDSEXE ]; then
-    PREFIX=o  
-    FDSEXE=$GITROOT/fds/Build/${PREFIX}mpi_${COMPILER}_$PLATFORM/fds_${PREFIX}mpi_${COMPILER}_$PLATFORM
-  fi
+fi
+if [ "$QUEUE" == "none" ]; then
   if [ -e $FDSEXE ]; then
     echo "" | $FDSEXE 2> $GITROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
   else
@@ -190,7 +196,7 @@ fi
 
 if [ "$use_installed" == "1" ] ; then
   export SMV=smokeview
-  export SMOKEZIP=smokediff
+  export SMOKEZIP=smokezip
   export SMOKEDIFF=smokediff
   export FDS2FED=fds2fed
   export WIND2FDS=wind2fds
@@ -265,7 +271,7 @@ if [ "$RUN_SMV" == "1" ]; then
 
   cd $GITROOT/smv/Verification/Visualization
   echo Compressing sphere_propanec case
-  $SMOKEZIP sphere_propanec
+  $SMOKEZIP -f sphere_propanec
 
 # compute isosurface from particles
 
