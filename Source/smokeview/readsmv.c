@@ -2545,10 +2545,6 @@ int ReadSMV_Configure(){
       break;
     }
   }
-  if(global_scase.ntotal_blockages > 250000)hide_scene = 1;
-  if(global_scase.meshescoll.nmeshes > 100){
-    blocklocation = BLOCKlocation_exact;
-  }
 
   if(checkfiles_threads != NULL){
     checkfiles_threads = THREADinit(&n_checkfiles_threads, &use_checkfiles_threads, CheckFiles);
@@ -2879,6 +2875,15 @@ int ReadSMV_Configure(){
   GetFaceInfo();
   GetBoxGeomCorners();
   GetBoxSkyCorners();
+
+  //*** hide_scene when moving objects if there are are lot of OBSTs or geometry triangles
+  if(global_scase.ntotal_blockages > 250000 || GetNCGeomTriangles() > 250000)hide_scene = 1;
+
+  if(global_scase.meshescoll.nmeshes > 100){
+    blocklocation   = BLOCKlocation_exact;
+    glui_use_cfaces = 0;
+  }
+
   PRINT_TIMER(timer_readsmv, "update trianglesfaces");
 
   if(global_scase.ngeominfo>0&&global_scase.auto_terrain==1){
