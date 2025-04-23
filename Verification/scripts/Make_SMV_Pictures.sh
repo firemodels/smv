@@ -212,7 +212,7 @@ else
   export FDS2FED=$GITROOT/smv/Build/fds2fed/${COMPILER}_$VERSION2/fds2fed_$VERSION2
   export WIND2FDS=$GITROOT/smv/Build/wind2fds/${COMPILER}_$VERSION2/wind2fds_$VERSION2
   export BACKGROUND=$GITROOT/smv/Build/background/${COMPILER}_$VERSION2/background_$VERSION2
-  export SMVBINDIR=$GITROOT/bot/Bundlebot/smv/for_bundle
+  export SMVBINDIR=$GITROOT/smv/Build/for_bundle
 fi
 
 SMOKEBOT=$GITROOT/bot/Smokebot/run_smokebot.sh

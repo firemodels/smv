@@ -292,7 +292,7 @@ if [ ! -e $SMOKEVIEW ]; then
   SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_test_64
 fi
 
-SMVBINDIR=$BOTREPO/Bundlebot/smv/for_bundle
+SMVBINDIR=$SMVREPO/Build/for_bundle
 
 CONFIGDIR=$HOME/.smokeview
 if [ ! -e $CONFIGDIR ]; then
