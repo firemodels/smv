@@ -3786,7 +3786,14 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     else{
       smoke3di->file = smoke3di->reg_file;
     }
-
+#ifdef pp_SMOKE3D_FORCE
+    if(strcmp(smoke3di->file, "dummy.xyz") == 0){
+      smoke3di->dummy = 1;
+    }
+    else{
+      smoke3di->dummy = 0;
+    }
+#endif
     char buffer_s3dd[256], *ext;
 
     strcpy(buffer_s3dd, bufferptr);
