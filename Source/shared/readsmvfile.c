@@ -4844,7 +4844,32 @@ int ReadSMV_Init(smv_case *scase){
   return 0;
 }
 
+#ifdef pp_SMOKE3D_FORCE
+/* ------------------ HaveSmoke3D ------------------------ */
+
+int HaveSmoke3D(bufferstreamdata *stream){
+  char buffer[256];
+
+  for(;;){
+    if(FEOF(stream) != 0){
+      BREAK;
+    }
+    if(FGETS(buffer, 255, stream) == NULL){
+      BREAK;
+    }
+    TrimBack(buffer);
+    if(strncmp(buffer, " ", 1) == 0 || buffer[0] == 0)continue;
+    if(MatchSMV(buffer,"SMOKE3D") == 1 || MatchSMV(buffer,"SMOKF3D") == 1 || MatchSMV(buffer, "SMOKG3D") == 1){
+      rewind_buffer(stream->fileinfo);
+      return 1;
+      }
+  }
+  rewind_buffer(stream->fileinfo);
+  return 0;
+}
+#endif
 /* ------------------ ReadSMV_Parse ------------------------ */
+
 /// @brief Parse an SMV file into global variables. This should only be called
 /// after ReadSMV_Init to ensure that the appropriate variables are set.
 /// @param stream the smv file stream

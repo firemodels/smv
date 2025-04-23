@@ -38,7 +38,7 @@
 #define pp_DIALOG_SHORTCUTS // dialog shortcuts
 #endif
 
-//*** options: Mac
+//*** options: OSX
 
 #ifdef pp_OSX
 #define pp_SMOKE3D_FORCE        // always have at least one smoke3d entry to prevent crash when unloading slices
