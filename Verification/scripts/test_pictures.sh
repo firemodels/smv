@@ -20,7 +20,7 @@ QUEUE=batch2
 JOBPREFIX=SMV_
 
 export SMV=$GITROOT/smv/Build/smokeview/${COMPILER}_$VERSION2/smokeview_$VERSION
-export SMVBINDIR=$GITROOT/bot/Bundlebot/smv/for_bundle
+export SMVBINDIR=$GITROOT/smv/Build/for_bundle
 
 RUNSMV="$GITROOT/smv/Utilities/Scripts/qsmv.sh -j $JOBPREFIX $use_installed -q $QUEUE"
 export QFDS=$RUNSMV
