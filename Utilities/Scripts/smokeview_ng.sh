@@ -115,7 +115,7 @@ VERSION2=$PLATFORM$SIZE
 SMOKEVIEW=$FIREMODELS_ROOT/smv/Build/smokeview/intel_$VERSION2/smokeview_$VERSION
 
 if [ "$BINDIR" == "" ]; then
-  BINDIR="$FIREMODELS_ROOT/bot/Bundlebot/smv/for_bundle"
+  BINDIR="$FIREMODELS_ROOT/smv/Build/for_bundle"
 fi
 SMVBINDIR="-bindir $BINDIR"
 

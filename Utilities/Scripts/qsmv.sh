@@ -322,7 +322,7 @@ else
     exe=$REPOROOT/smv/Build/smokeview/intel_linux_64/smokeview_linux_64
     smvdir=$(dirname "${smvpath}")
     if [ "$SMVBINDIR" == "" ]; then
-      SMVBINDIR="-bindir $REPOROOT/bot/Bundlebot/smv/for_bundle"
+      SMVBINDIR="-bindir $REPOROOT/smv/Build/for_bundle"
     fi
   fi
 fi
