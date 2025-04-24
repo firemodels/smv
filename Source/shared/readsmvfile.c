@@ -3012,6 +3012,8 @@ void MakeFileLists(smv_case *scase){
   strcpy(filter_casedir, "");
   scase->filelist_coll.nfilelist_casedir = GetFileListSize(".", filter_casedir, FILE_MODE);
   MakeFileList(".", filter_casedir, scase->filelist_coll.nfilelist_casedir, YES, &scase->filelist_coll.filelist_casedir, FILE_MODE);
+
+  scase->results_dir = NULL;
 }
 
 #define RETURN_TWO        2

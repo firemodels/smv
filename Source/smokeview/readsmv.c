@@ -2502,6 +2502,27 @@ int ReadSMV_Configure(){
 
   PRINTF("  wrapping up\n");
 
+ // set results directory
+  if(global_scase.npartinfo > 0 && global_scase.results_dir == NULL){
+    global_scase.results_dir = SetResultsDir(global_scase.partinfo[0].reg_file);
+  }
+  if(global_scase.npatchinfo > 0 && global_scase.results_dir == NULL){
+    global_scase.results_dir = SetResultsDir(global_scase.patchinfo[0].reg_file);
+  }
+  if(global_scase.smoke3dcoll.nsmoke3dinfo > 0 && global_scase.results_dir == NULL){
+    global_scase.results_dir = SetResultsDir(global_scase.smoke3dcoll.smoke3dinfo[0].reg_file);
+  }
+  if(global_scase.slicecoll.nsliceinfo > 0 && global_scase.results_dir == NULL){
+    global_scase.results_dir = SetResultsDir(global_scase.slicecoll.sliceinfo[0].reg_file);
+  }
+  if(global_scase.nisoinfo > 0 && global_scase.results_dir == NULL){
+    global_scase.results_dir = SetResultsDir(global_scase.isoinfo[0].reg_file);
+  }
+  if(global_scase.nplot3dinfo > 0 && global_scase.results_dir == NULL){
+    global_scase.results_dir = SetResultsDir(global_scase.plot3dinfo[0].reg_file);
+  }
+
+
   GetSkyBoxTextures();
   GetSkyImageTexture();
   InitTextures(use_graphics);

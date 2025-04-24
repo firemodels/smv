@@ -930,6 +930,21 @@ FILE *fopen_3dir(char *file, char *mode, char *dir1, char *dir2){
   return stream;
 }
 
+/* ------------------ SetResultsDir ------------------------ */
+
+char *SetResultsDir(char *file){
+  char *dirsep, filecopy[1024], *results_dir;
+
+  if(file==NULL)return NULL;
+  strcpy(filecopy, file);
+  dirsep = strchr(filecopy, '/');
+  if(dirsep == NULL)return NULL;
+  dirsep[0] = 0;
+  NewMemory((void **)&results_dir,strlen(filecopy)+1);
+  strcpy(results_dir, filecopy);
+  return results_dir;
+}
+
 /* ------------------ fopen_2dir ------------------------ */
 
 FILE *fopen_2dir(char *file, char *mode, char *scratch_dir){
