@@ -386,6 +386,7 @@ EXTERNCPP void DrawBoxMinMax(float *bbmin, float *bbmax, float *box_color);
 EXTERNCPP void DrawBoxOutline(float *bb, float *box_color);
 EXTERNCPP void DrawBoxShaded(float *bb, int flag, int *hidden6, float *box_color);
 EXTERNCPP void DrawCGeom(int flag, geomdata *cgeom);
+EXTERNCPP int  GetNCGeomTriangles(void);
 EXTERNCPP void DrawGeom(int flag,int frameflag);
 EXTERNCPP void DrawGeomBoundingBox(float *boundingbox_color);
 EXTERNCPP void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type);

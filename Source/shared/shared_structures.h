@@ -1775,6 +1775,7 @@ typedef struct {
   char *fds_title;
   char *fds_version;
   char *fds_githash;
+  char *results_dir;
 
   colordata *firstcolor;
 
