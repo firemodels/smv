@@ -4615,6 +4615,24 @@ void DrawGeomValues(slicedata *sd, patchdata *patchi, int geom_type){
   }
 }
 
+/* ------------------ GetNCGeomTriangles ------------------------ */
+
+int GetNCGeomTriangles(void){
+  int ntriangles = 0, i;
+
+  if(global_scase.cgeominfo==NULL)return 0;
+  for(i = 0; i < global_scase.ncgeominfo; i++){
+    geomdata *geomi;
+    geomlistdata *geomlisti;
+
+    geomi = global_scase.cgeominfo + i;
+    if(geomi->geomlistinfo == NULL)continue;
+    geomlisti   = geomi->geomlistinfo-1;
+    ntriangles += geomlisti->ntriangles;
+  }
+  return ntriangles;
+}
+
 /* ------------------ DrawCGeom ------------------------ */
 
 void DrawCGeom(int flag, geomdata *cgeom){

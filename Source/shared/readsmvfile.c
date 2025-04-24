@@ -3012,6 +3012,8 @@ void MakeFileLists(smv_case *scase){
   strcpy(filter_casedir, "");
   scase->filelist_coll.nfilelist_casedir = GetFileListSize(".", filter_casedir, FILE_MODE);
   MakeFileList(".", filter_casedir, scase->filelist_coll.nfilelist_casedir, YES, &scase->filelist_coll.filelist_casedir, FILE_MODE);
+
+  scase->results_dir = NULL;
 }
 
 #define RETURN_TWO        2
@@ -3786,7 +3788,14 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     else{
       smoke3di->file = smoke3di->reg_file;
     }
-
+#ifdef pp_SMOKE3D_FORCE
+    if(strcmp(smoke3di->file, "dummy.xyz") == 0){
+      smoke3di->dummy = 1;
+    }
+    else{
+      smoke3di->dummy = 0;
+    }
+#endif
     char buffer_s3dd[256], *ext;
 
     strcpy(buffer_s3dd, bufferptr);
@@ -4844,7 +4853,32 @@ int ReadSMV_Init(smv_case *scase){
   return 0;
 }
 
+#ifdef pp_SMOKE3D_FORCE
+/* ------------------ HaveSmoke3D ------------------------ */
+
+int HaveSmoke3D(bufferstreamdata *stream){
+  char buffer[256];
+
+  for(;;){
+    if(FEOF(stream) != 0){
+      BREAK;
+    }
+    if(FGETS(buffer, 255, stream) == NULL){
+      BREAK;
+    }
+    TrimBack(buffer);
+    if(strncmp(buffer, " ", 1) == 0 || buffer[0] == 0)continue;
+    if(MatchSMV(buffer,"SMOKE3D") == 1 || MatchSMV(buffer,"SMOKF3D") == 1 || MatchSMV(buffer, "SMOKG3D") == 1){
+      rewind_buffer(stream->fileinfo);
+      return 1;
+      }
+  }
+  rewind_buffer(stream->fileinfo);
+  return 0;
+}
+#endif
 /* ------------------ ReadSMV_Parse ------------------------ */
+
 /// @brief Parse an SMV file into global variables. This should only be called
 /// after ReadSMV_Init to ensure that the appropriate variables are set.
 /// @param stream the smv file stream

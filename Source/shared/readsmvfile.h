@@ -27,5 +27,8 @@ EXTERNCPP void ReadSMVDynamic(smv_case *scase, char *file);
 EXTERNCPP FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag);
 EXTERNCPP void ReadHRR(smv_case *scase, int flag);
 EXTERNCPP int GetSmoke3DType(smv_case *scase, const char *label);
+#ifdef pp_SMOKE3D_FORCE
+EXTERNCPP int HaveSmoke3D(bufferstreamdata *stream);
+#endif
 
 #endif
