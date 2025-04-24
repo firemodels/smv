@@ -892,6 +892,44 @@ FILE *fopen_2dir_scratch(char *file, char *mode) {
   return f;
 }
 
+/* ------------------ fopen_3dir ------------------------ */
+
+FILE *fopen_3dir(char *file, char *mode, char *dir1, char *dir2){
+  FILE *stream;
+  char buffer[4096];
+  // try opening file in the current directory, dir1 or dir2
+
+  if(file == NULL)return NULL;
+#ifdef WIN32
+  stream = _fsopen(file, mode, _SH_DENYNO);
+#else
+  stream = fopen(file, mode);
+#endif
+  if(stream!=NULL)return stream;
+  if(dir1 != NULL && strcmp(dir1,".") != 0){
+    strcpy(buffer, dir1);
+    strcat(buffer, dirseparator);
+    strcat(buffer, file);
+#ifdef WIN32
+    stream = _fsopen(buffer, mode, _SH_DENYNO);
+#else
+    stream = fopen(buffer, mode);
+#endif
+    if(stream!=NULL)return stream;
+  }
+  if(dir2 != NULL && strcmp(dir2, ".") != 0){
+    strcpy(buffer, dir2);
+    strcat(buffer, dirseparator);
+    strcat(buffer, file);
+#ifdef WIN32
+    stream = _fsopen(buffer, mode, _SH_DENYNO);
+#else
+    stream = fopen(buffer, mode);
+#endif
+  }
+  return stream;
+}
+
 /* ------------------ fopen_2dir ------------------------ */
 
 FILE *fopen_2dir(char *file, char *mode, char *scratch_dir){
