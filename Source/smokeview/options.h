@@ -40,7 +40,6 @@
 
 //*** options: OSX
 
-#define pp_SMOKE3D_FORCE        // always have at least one smoke3d entry to prevent crash when unloading slices
 #ifdef pp_OSX
 #define pp_SMOKE3D_FORCE        // always have at least one smoke3d entry to prevent crash when unloading slices
 #define GL_SILENCE_DEPRECATION
