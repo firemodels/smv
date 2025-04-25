@@ -849,7 +849,8 @@ int GetCsvindex(const char *key) {
 }
 
 void LoadCsv(csvfiledata *csventry) {
-  ReadCSVFile(csventry, LOAD);
+// add global_scase to first argument of ReadCSVFile
+  ReadCSVFile(NULL, csventry, LOAD);
   csventry->loaded = 1;
 }
 

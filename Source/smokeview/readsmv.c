@@ -81,7 +81,7 @@ FILE_SIZE ReadAllCSVFiles(int flag){
     csvfiledata *csvfi;
 
     csvfi = global_scase.csvcoll.csvfileinfo + i;
-    ReadCSVFile(csvfi, UNLOAD);
+    ReadCSVFile(&global_scase, csvfi, UNLOAD);
   }
   if(flag == UNLOAD)return 0;
   for(i = 0; i < global_scase.csvcoll.ncsvfileinfo; i++){
@@ -92,7 +92,7 @@ FILE_SIZE ReadAllCSVFiles(int flag){
       continue;
     }
     csvfi->defined = CSV_DEFINING;
-    file_size += ReadCSVFile(csvfi, flag);
+    file_size += ReadCSVFile(&global_scase, csvfi, flag);
     plot2d_max_columns = MAX(plot2d_max_columns, csvfi->ncsvinfo);
     csvfi->defined = CSV_DEFINED;
     UpdateCSVFileTypes();
