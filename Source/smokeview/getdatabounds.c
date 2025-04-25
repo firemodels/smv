@@ -644,7 +644,10 @@ FILE *FopenGbndFile(int file_type, char *mode){
     file = NULL;
   }
   if(file != NULL){
-    stream = FOPEN_2DIR(file, mode);
+    char *smokeview_scratchdir = GetUserConfigDir();
+    char current_dir[3]=".";
+
+    stream = fopen_3dir(file, mode, global_scase.results_dir, current_dir, smokeview_scratchdir);
   }
   return stream;
 }
