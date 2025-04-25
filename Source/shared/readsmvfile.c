@@ -116,7 +116,7 @@ void GetHoc(smv_case *scase, float *hoc, char *name){
   }
   strcpy(outfile, scase->fdsprefix);
   strcat(outfile, ".out");
-  stream = fopen(outfile, "r");
+  stream = fopen_3dir(outfile, "r", scase->results_dir, ".", NULL);
   if(stream==NULL){
     *hoc = 0.0;
     strcpy(name, "");
@@ -205,7 +205,7 @@ int IsDimensionless(char *unit){
 
 /* ------------------ ReadCSVFile ------------------------ */
 
-FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag){
+FILE_SIZE ReadCSVFile(smv_case *scase, csvfiledata *csvfi, int flag){
   FILE *stream;
   int nrows, ncols;
   int nunits, nlabels;
@@ -236,7 +236,10 @@ FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag){
     return 0;
   }
 
-  stream = fopen(csvfi->file, "r");
+  char *results_dir=NULL;
+
+  if(scase != NULL)results_dir = scase->results_dir;
+  stream = fopen_3dir(csvfi->file, "r", results_dir, ".", NULL);
   if(stream == NULL){
     csvfi->defined = CSV_UNDEFINED;
     return 0;
@@ -517,7 +520,7 @@ void ReadHRR(smv_case *scase, int flag){
   scase->qradi_col = -1;
   if(flag==UNLOAD)return;
 
-  stream = fopen(scase->paths.hrr_csv_filename, "r");
+  stream = fopen_3dir(scase->paths.hrr_csv_filename, "r", scase->results_dir, ".", NULL);
   if(stream==NULL)return;
 
   len_buffer = GetRowCols(stream, &nrows, &ncols);
@@ -2600,7 +2603,7 @@ void ReadDeviceHeader(smv_case *scase, char *file, devicedata *devices, int ndev
   int buffer_len = BUFFER_LEN;
 
   if(file == NULL)return;
-  stream = fopen(file, "r");
+  stream = fopen_3dir(file, "r", scase->results_dir, ".", NULL);
   if(stream == NULL)return;
 
   devicecopy = devices;
@@ -2718,10 +2721,10 @@ void UpdateSortedSurfIdList(surf_collection *surfcoll){
 }
 
 
-/* ------------------ ParseDatabase ------------------------ */
-// TODO: this needs to be renamed as it never actually parses a database
-void ParseDatabase(smv_case *scase, char *file){
-  FILE *stream;
+/* ------------------ ParseSurfs ------------------------ */
+
+void ParseSurfs(smv_case *scase, char *file){
+  FILE *stream=NULL;
   char buffer[1000], *buffer2 = NULL, *buffer3, *slashptr;
   size_t lenbuffer, lenbuffer2;
   size_t sizebuffer2;
@@ -2742,8 +2745,8 @@ void ParseDatabase(smv_case *scase, char *file){
   FREEMEMORY(scase->surfcoll.surfids);
   scase->surfcoll.nsurfids = 0;
 
-
-  if(file==NULL||strlen(file)==0||(stream = fopen(file, "r"))==NULL){
+  if(file != NULL && strlen(file) != 0)stream = fopen_3dir(file, "r", scase->results_dir, ".", NULL);
+  if(file==NULL||strlen(file)==0||stream==NULL){
     NewMemory((void **)&scase->surfcoll.surfids, (scase->surfcoll.nsurfids+1)*sizeof(surfid));
     surf_id = NULL;
     NewMemory((void **)&surf_id, 6);
@@ -2753,7 +2756,6 @@ void ParseDatabase(smv_case *scase, char *file){
     scase->surfcoll.surfids[0].show = 1;
     scase->surfcoll.nsurfids = 1;
   }
-
   else{
     sizebuffer2 = 1001;
     NewMemory((void **)&buffer2, sizebuffer2);
@@ -6968,7 +6970,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
   START_TIMER(scase->pass3_time);
 
   CheckMemory;
-  ParseDatabase(scase, NULL);
+  ParseSurfs(scase, NULL);
 
   if(setGRID==0){
     meshdata *meshi;
