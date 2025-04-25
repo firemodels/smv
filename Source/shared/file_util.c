@@ -942,7 +942,7 @@ char *SetResultsDir(char *file){
 
   if(file==NULL)return NULL;
   strcpy(filecopy, file);
-  dirsep = strchr(filecopy, '/');
+  dirsep = strrchr(filecopy, '/');
   if(dirsep == NULL)return NULL;
   dirsep[0] = 0;
   NewMemory((void **)&results_dir,strlen(filecopy)+1);
