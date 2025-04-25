@@ -43,10 +43,9 @@ case $OPTION in
   ;;
   h)
   echo "options:"
-  echo "-f - use freeglut (not glut)
+  echo "-f - use freeglut (not glut)"
   echo "-g - use the gnu gcc compiler"
   echo "-i - use the Intel icc compiler"
-  echo "-l - use lua 
   echo "-q - on the Mac use the X11 include files and libraries supplied by Quartz"
   echo "-t target - makefile target"
   exit
@@ -56,20 +55,20 @@ case $OPTION in
      if [ "`uname`" == "Darwin" ]; then
        COMPILER="icc"
        COMPILER2="icpc"
-     else 
+     else
        COMPILER=$INTEL_ICC
        COMPILER2=$INTEL_ICPP
-     fi       
+     fi
    fi
   ;;
   I)
     if [ "`uname`" == "Darwin" ]; then
      COMPILER="icc"
      COMPILER2="icpc"
-   else 
+   else
      COMPILER=$INTEL_ICC
      COMPILER2=$INTEL_ICPP
-   fi       
+   fi
    FORCE_i=1
   ;;
   l)

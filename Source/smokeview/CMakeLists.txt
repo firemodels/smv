@@ -40,7 +40,6 @@ add_executable(smokeview
     unit.c
     colortable.c
     command_args.c
-    c_api.c
 )
 
 # GLUI sources are separate here. In some branches GLUI is conditional.

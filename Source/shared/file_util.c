@@ -9,9 +9,6 @@
 #include <stdlib.h>
 #ifdef pp_OSX
 #include <unistd.h>
-#ifdef pp_LUA
-#include <sys/syslimits.h>
-#endif
 #endif
 #include <math.h>
 #ifdef WIN32
@@ -1324,7 +1321,7 @@ char *GetSmvRootDir(){
   else if(envar_path != NULL){
     // Take the SMV_ROOT as defined by the SMV_ROOT_OVERRIDE environment
     // variable
-    
+
     len = strlen(envar_path);
     NEWMEMORY(buffer, (len + 2) * sizeof(char));
     STRCPY(buffer, envar_path);
@@ -1364,7 +1361,7 @@ char *GetSmvRootDir(){
 
     stream1 = fopen_indir(bindir, ".smokeview_bin", "r");
     if(stream1 == NULL && count==3)stream2 = fopen_indir(repo_bindir, ".smokeview_bin", "r");
-    
+
     if(stream1 != NULL || stream2 == NULL){
       len = strlen(bindir);
       NEWMEMORY(buffer, len + 2);

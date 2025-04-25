@@ -2,9 +2,7 @@ OPTS="-g"
 LIBDIR=$(shell pwd)
 SRCDIR=$(LIBDIR)/../../../Source
 
-all: libgd.a libglui.a libglut.a libjpeg.a libpng.a libz.a liblua.a lpeg.so
-all_nolua: libgd.a libglui.a libglut.a libjpeg.a libpng.a libz.a
-all_nolua_noglut: libgd.a libglui.a libjpeg.a libpng.a libz.a
+all: libgd.a libglui.a libglut.a libjpeg.a libpng.a libz.a
 
 # GD
 libgd.a:
@@ -44,20 +42,4 @@ libz.a:
 		./makelib.sh $(OPTS); \
 		cp libz.a $(LIBDIR)/.
 
-# Lua # Lua interpreter
-liblua.a:
-	cd $(SRCDIR)/lua-5.3.1; \
-		export TARGET=linux; \
-		./makelib.sh $(OPTS); \
-		cp src/liblua.a $(LIBDIR)/.
-
-# LPEG # Lua parsing libarary to parse SSF files
-# This depends on lua being built first
-lpeg.so: liblua.a
-	cd $(SRCDIR)/lpeg-1.0.0; \
-		pwd; \
-		export TARGET=linux; \
-		./makelib.sh $(OPTS); \
-		cp lpeg.so $(LIBDIR)/.
-
-.PHONY: all,all_nolua
+.PHONY: all

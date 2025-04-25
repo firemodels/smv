@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
-project(lua LANGUAGES C VERSION 5.2.1)
+project(zlib LANGUAGES C VERSION 5.2.1)
 
 set(FILES
     adler32.c compress.c crc32.c gzclose.c gzlib.c gzread.c gzwrite.c
