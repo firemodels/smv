@@ -3552,9 +3552,16 @@ void DrawSmokeFrame(void){
   int i;
   int blend_mode;
   int nsmoke_triangles=0;
+  int usepgu_local;
 
   if(use_tload_begin==1 && global_times[itimes]<global_scase.tload_begin)return;
   if(use_tload_end==1   && global_times[itimes]>global_scase.tload_end)return;
+
+#ifdef pp_SMOKE3D_GPU
+  usegpu_local = usegpu;
+#else 
+  usepgu_local = 0;
+#endif
   triangle_count = 0;
 #ifdef pp_GPU
   if(usegpu==1){
