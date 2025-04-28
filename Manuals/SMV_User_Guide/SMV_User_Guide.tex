@@ -7044,6 +7044,15 @@ the FDS/Smokeview website, \hhref{http://pages.nist.gov/fds/}, for details.}.   
 
 \hitemNULL{BOUNDARYTWOSIDE}
 
+\hitemini{COLORBARTYPE}\ Specifies the name of the default colorbar.
+The format of this keyword is
+\begin{lstlisting}
+COLORBARTYPE
+ unused ! colorbar_name
+\end{lstlisting}
+where unused is an integer currently not used by smokeview and colorbar\_name is
+a character string appearing after the ! symbol representing the name of the colorbar.
+
 \hitemini{CLIP}\ Specifies the near and far clipping plane
 locations.  Dimensions are relative to the longest side of
 an FDS scene. (default: 0.001 3.000)
