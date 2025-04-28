@@ -3552,7 +3552,7 @@ void DrawSmokeFrame(void){
   int i;
   int blend_mode;
   int nsmoke_triangles=0;
-  int usepgu_local;
+  int usegpu_local;
 
   if(use_tload_begin==1 && global_times[itimes]<global_scase.tload_begin)return;
   if(use_tload_end==1   && global_times[itimes]>global_scase.tload_end)return;
@@ -3560,11 +3560,11 @@ void DrawSmokeFrame(void){
 #ifdef pp_SMOKE3D_GPU
   usegpu_local = usegpu;
 #else 
-  usepgu_local = 0;
+  usegpu_local = 0;
 #endif
   triangle_count = 0;
 #ifdef pp_GPU
-  if(usegpu==1){
+  if(usegpu_local == 1) {
     LoadSmokeShaders();
     load_shaders = 1;
   }
@@ -3573,7 +3573,7 @@ void DrawSmokeFrame(void){
   float smoke3d_timer;
   START_TIMER(smoke3d_timer);
   blend_mode = 0;
-  if(usegpu==0&&hrrpuv_max_blending==1){
+  if(usegpu_local==0&&hrrpuv_max_blending==1){
     blend_mode = 1;
     glBlendEquation(GL_MAX);
   }
@@ -3602,7 +3602,7 @@ void DrawSmokeFrame(void){
       if(smoke3di->smokeframe_loaded!=NULL&&smoke3di->smokeframe_loaded[smoke3di->ismoke3d_time]==0)continue;
     }
 #ifdef pp_GPU
-    if(usegpu==1){
+    if(usegpu_local == 1) {
       DrawSmoke3DGPU(smoke3di);
       nsmoke_triangles = -1;
     }
@@ -4942,7 +4942,9 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     assert(firecolor_data!=NULL||smokecolor_data!=NULL||co2color_data!=NULL);
 
 #ifdef pp_GPU
+#ifdef pp_SMOKE3D_GPU
     if(usegpu==1)continue;
+#endif
 #endif
     if(mesh_smoke3d->merge_color == NULL){
       NewMemory((void **)&mesh_smoke3d->merge_color,4*smoke3di->nchars_uncompressed*sizeof(unsigned char));
@@ -5159,7 +5161,9 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
       }
     }
 #ifdef pp_GPU
+#ifdef pp_SMOKE3D_GPU
     if(usegpu==1)continue;
+#endif
 #endif
     assert(firecolor_data!=NULL||smokecolor_data!=NULL);
     meshi->smokecolor_ptr = firecolor_data;
