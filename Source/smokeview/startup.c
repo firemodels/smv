@@ -13,9 +13,6 @@
 #include GLUT_H
 
 #include "infoheader.h"
-#ifdef pp_LUA
-#include "lua_api.h"
-#endif
 #include "stdio_buffer.h"
 
 #include "readobject.h"

@@ -5,9 +5,8 @@ env:
 
 jobs:
   build_unix_gcc:
-    # Set the name of this build, variable depending on the OS and whether it
-    # includes the lua engine
-    name: build ${{ matrix.os }} - lua=${{ matrix.lua }} - gcc
+    # Set the name of this build, variable depending on the OS
+    name: build ${{ matrix.os }} - gcc
     strategy:
       fail-fast: false
       # The matrix sets all the different combinations of builds, e.g. platforms
@@ -16,9 +15,6 @@ jobs:
         os:
           - ubuntu-24.04
           - macos-latest
-        lua:
-          - on
-          - off
     # Set the platform to build on
     runs-on: ${{ matrix.os }}
     steps:
@@ -31,7 +27,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev libglew-dev libgd-dev liblua5.4-dev libjson-c-dev
+          sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev libglew-dev libgd-dev libjson-c-dev
       # If we are building on macos configure the environment to use gcc-14 as
       # the compiler
       - name: set macos gcc
@@ -40,7 +36,7 @@ jobs:
         run: |
           echo "CC=gcc-14" >> $GITHUB_ENV
           echo "CXX=g++-14" >> $GITHUB_ENV
-          brew install glew lua gd zlib json-c
+          brew install glew gd zlib json-c
       # If we are building on linux configure the environment to use gcc as the
       # compiler
       - name: set linux gcc
@@ -53,7 +49,7 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          cmake -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
+          cmake -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
           cmake --build ${{github.workspace}}/cbuild -j4
           cp ${{github.workspace}}/cbuild/smokeview smokeview
       # Run the CMake-based tests on MacOS
@@ -68,26 +64,19 @@ jobs:
         shell: bash
         run: |
           xvfb-run ctest --test-dir cbuild -j10 --output-on-failure -V
-      # Set a suffix based on whether lua is included
-      - name: Set exec suffix
-        if: matrix.lua == 'on'
-        run: echo "exec_suffix=-lua" >> $GITHUB_ENV
       # Archive the smokeview executable
       - name: Archive production artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: smokeview-${{ runner.os }}${{ env.exec_suffix }}
+          name: smokeview-${{ runner.os }}
           path: smokeview
   build_windows_msvc:
-    name: build ${{ matrix.os }} - lua=${{ matrix.lua }} - msvc
+    name: build ${{ matrix.os }} - msvc
     strategy:
       fail-fast: false
       matrix:
         os:
           - windows-2022
-        lua:
-          - on
-          - off
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -105,21 +94,16 @@ jobs:
         shell: cmd
         run: |
           cmake --version
-          cmake -B ${{github.workspace}}\cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA_UTIL_LIBS=ON -DLUA=${{ matrix.lua }} -DLUA_BUILD_BINARY=${{ matrix.lua }} -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%/scripts/buildsystems/vcpkg.cmake -DLUA_BUILD_BINARY=ON
+          cmake -B ${{github.workspace}}\cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%/scripts/buildsystems/vcpkg.cmake
           cmake --build ${{github.workspace}}\cbuild -j4 --config ${{env.BUILD_TYPE}}
           copy ${{github.workspace}}\cbuild\Release\smokeview.exe smokeview.exe
       - name: Test
         shell: bash
         working-directory: ${{github.workspace}}/cbuild
-        env:
-          LUA: ${{ matrix.lua }}
         run: |
           ctest -j10 -C ${{env.BUILD_TYPE}} --output-on-failure
-      - name: Set exec suffix
-        if: matrix.lua == 'on'
-        run: echo "exec_suffix=-lua" >> $GITHUB_ENV
       - name: Archive production artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: smokeview-windows-msvc-${{ env.exec_suffix }}
+          name: smokeview-windows-msvc
           path: smokeview.exe

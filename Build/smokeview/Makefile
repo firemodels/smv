@@ -15,7 +15,6 @@ SMV_PROFILESTRING =
 include ../../scripts/intel_compiler.mak
 
 COMP_VERSION =
-LUA_SCRIPTING =
 ifeq ($(shell echo "check_quotes"),"check_quotes")
   GIT_HASH   := $(shell ..\..\..\Utilities\Scripts\githash)
   GIT_DATE   := $(shell ..\..\..\Utilities\Scripts\gitlog)
@@ -82,17 +81,12 @@ CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
 
 incs = compress.h scontour2d.h csphere.h datadefs.h dirent_win.h file_util.h glui_bounds.h \
        glui_motion.h glui_smoke.h glui_tour.h histogram.h infoheader.h interp.h isobox.h \
-       IOobjects.h IOscript.h IOvolsmoke.h lint.h lua_api.h dmalloc.h options.h options_common.h \
+       IOobjects.h IOscript.h IOvolsmoke.h lint.h dmalloc.h options.h options_common.h \
        pragmas.h smokeheaders.h smokeviewdefs.h smokeviewvars.h \
        stdio_buffer.h stdio_m.h string_util.h structures.h translate.h threader.h viewports.h command_args.h
 
 ifeq ($(ICON),icon)
 obj += resource.o
-endif
-
-ifeq ($(LUA_SCRIPTING),true)
-obj += c_api.o lua_api.o
-incs += c_api.h
 endif
 
 objwin = $(obj:.o=.obj)
@@ -107,28 +101,6 @@ else
   WININC = -I $(SOURCE_DIR)/glut_gl
 endif
 WININC += -I $(SOURCE_DIR)/pthreads
-
-ifeq ($(LUA_SCRIPTING),true)
-INC += -I $(SOURCE_DIR)/lua-5.3.1/src
-endif
-
-SMVLUACORE_DIR = $(SOURCE_DIR)/smvluacore
-SMVLUACORE_FILES = $(SMVLUACORE_DIR)/smv.lua $(SMVLUACORE_DIR)/ssf.lua \
-	$(SMVLUACORE_DIR)/ssfparser.lua $(SMVLUACORE_DIR)/ssfcommands.lua \
-	$(SMVLUACORE_DIR)/clipping.lua $(SMVLUACORE_DIR)/bounds.lua \
-	$(SMVLUACORE_DIR)/render.lua $(SMVLUACORE_DIR)/load.lua \
-	$(SMVLUACORE_DIR)/view.lua $(SMVLUACORE_DIR)/tour.lua \
-	$(SMVLUACORE_DIR)/iniparser.lua $(SMVLUACORE_DIR)/inioptions.lua \
-	$(SMVLUACORE_DIR)/unload.lua $(SMVLUACORE_DIR)/constants.lua \
-	$(SMVLUACORE_DIR)/gnuplot.lua $(SMVLUACORE_DIR)/plot.lua \
-	$(SMVLUACORE_DIR)/pl3d.lua \
-	$(SMVLUACORE_DIR)/camera.lua
-SMVLUALIB_FILES = $(LIB_DIR_PLAT)/lfs$(DYNLIB_EXT)
-
-smvluacore: $(SMVLUACORE_FILES) $(SMVLUALIB_FILES)
-	cp $(SMVLUACORE_FILES) .
-	cp $(SMVLUALIB_FILES) .
-# cannot use $^ here
 
 #*** General Purpose Rules ***
 
@@ -249,11 +221,6 @@ intel_win_64 : C_STANDARD    = -Qstd=gnu99
 ifeq ($(GLUT),freeglut)
 intel_win_64 : CFLAGS   += -D FREEGLUT_STATIC
 endif
-ifeq ($(LUA_SCRIPTING),true)
-intel_win_64 : CFLAGS    += -D pp_LUA
-intel_win_64 : SMVLUACORE_FILES += $(SMV_WIN_LIBDIR)\lpeg.dll
-intel_win_64 : SMVLUACORE_FILES += $(SMV_WIN_LIBDIR)\lua.dll
-endif
 intel_win_64 : LFLAGS    = /F32768000 -D FREEGLUT_STATIC
 ifeq ($(SANITIZE),1)
 intel_win_64 : LFLAGS   += $(SANITIZE_OPTIONS)
@@ -321,12 +288,6 @@ intel_linux_64 : CFLAGS   += $(SANITIZE_OPTIONS)
 endif
 intel_linux_64 : C_STANDARD    = -std=gnu99
 intel_linux_64 : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
-intel_linux_64 : LIBLUA    =
-ifeq ($(LUA_SCRIPTING),true)
-intel_linux_64 : CFLAGS    += -D pp_LUA
-intel_linux_64 : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
-intel_linux_64 : LIBLUA    += $(LIB_DIR_PLAT)/liblua.a -ldl
-endif
 intel_linux_64 : LFLAGS    = -m64 $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
 ifeq ($(SANITIZE),1)
 intel_linux_64 : LFLAGS   += $(SANITIZE_OPTIONS)
@@ -335,8 +296,8 @@ intel_linux_64 : CC        = icx
 intel_linux_64 : CPP       = icpx
 intel_linux_64 : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
-intel_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(SMV_LIBS_LINUX) $(INTEL_LIBS_LINUX) $(SYSTEM_LIBS_LINUX) $(LIBLUA)
+intel_linux_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(SMV_LIBS_LINUX) $(INTEL_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
 
 # ------------- intel_linux_64_db ----------------
 
@@ -367,10 +328,6 @@ gnu_linux_64_db : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
 gnu_linux_64_db : CFLAGS    = -O0  -m64 -ggdb -Wall -Wunreachable-code -Wswitch-default -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized -Wno-address -Wno-format-overflow -Wno-format-truncation -Wno-undef -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(SMV_TESTFLAG) $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
 gnu_linux_64_db : C_STANDARD    = -std=gnu99
 gnu_linux_64_db : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
-ifeq ($(LUA_SCRIPTING),true)
-gnu_linux_64_db : CFLAGS    += -D pp_LUA
-gnu_linux_64_db : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
-endif
 gnu_linux_64_db : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : CPP       = g++
@@ -378,8 +335,7 @@ gnu_linux_64_db : exe       = smokeview_linux_$(SMV_TESTSTRING)64_db$(SMV_PROFIL
 
 gnu_linux_64_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
-		$(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX) \
-		$(if $(LUA_SCRIPTING),$(LIB_DIR_PLAT)/liblua.a -ldl)
+		$(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
 
 # ------------- gnu_linux_64 ----------------
 
@@ -388,20 +344,14 @@ gnu_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
 gnu_linux_64 : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings           -D pp_LINUX -D pp_GCC -D NDEBUG $(SMV_TESTFLAG) $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
 gnu_linux_64 : C_STANDARD    = -std=gnu99
 gnu_linux_64 : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
-ifeq ($(LUA_SCRIPTING),true)
-gnu_linux_64 : CFLAGS    += -D pp_LUA
-gnu_linux_64 : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
-gnu_linux_64 : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lua.so
-endif
 gnu_linux_64 : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : CPP       = g++
 gnu_linux_64 : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
-gnu_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
+gnu_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
-		$(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX) \
-		$(if $(LUA_SCRIPTING),$(LIB_DIR_PLAT)/liblua.a -ldl)
+		$(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   check source   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
@@ -476,7 +426,7 @@ gnu_osx_64 : $(obj)
 
 .PHONY : clean
 clean:
-	rm -f *.o *.mod *.lua *.dll *.so
+	rm -f *.o *.mod *.dll *.so
 
 #-------------- force compilation of string_util.c -----------
 

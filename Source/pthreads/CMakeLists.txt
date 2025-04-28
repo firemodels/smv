@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
-project(lua LANGUAGES C VERSION 5.2.1)
+project(pthreads LANGUAGES C VERSION 5.2.1)
 
 
 set(FILES

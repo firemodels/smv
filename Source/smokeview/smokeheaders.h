@@ -1,10 +1,6 @@
 #ifndef SMOKEHEADERS_H_DEFINED
 #define SMOKEHEADERS_H_DEFINED
 
-#ifdef pp_LUA
-#include "gd.h"
-#endif
-
 #ifndef TERRAIN_FIRE_LINE_UPDATE
 #define TERRAIN_FIRE_LINE_UPDATE 39
 #endif
@@ -776,9 +772,6 @@ EXTERNCPP void ResetRenderResolution(int *width_low, int *height_low, int *width
 EXTERNCPP void *SetupFF(void *arg);
 EXTERNCPP void SetupScreeninfo(void);
 EXTERNCPP int  SmokeviewImage2File(char *directory, char *GIFfilename, int rendertype, int woffset, int width, int hoffset, int height);
-#ifdef pp_LUA
-EXTERNCPP int SVimage2var(int rendertype, int woffset, int width, int hoffset, int height, gdImagePtr *RENDERimage);
-#endif
 
 //*** shaders.c headers
 

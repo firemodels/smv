@@ -5,7 +5,6 @@
 
 //#define pp_FRAME           // turn on frame code
 //#define pp_SHOW_UPDATE      // show what is being updated in the UpdateShowScene routine
-//#define pp_LUA            // turn on LUA option
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading
 //#define pp_FIRE_HIST        // option to output histogram of 3d fire data
@@ -66,4 +65,3 @@
 #define pp_RENDER360_DEBUG
 
 #endif
-
