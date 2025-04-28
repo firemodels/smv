@@ -19,11 +19,6 @@
 #include <direct.h>
 #endif
 
-#ifdef pp_LUA
-#include "c_api.h"
-#include "lua_api.h"
-#endif
-
 #include <assert.h>
 
 /* ------------------ Usage ------------------------ */
@@ -74,10 +69,6 @@ void Usage(int option){
     PRINTF("%s\n", _("                  (override directory specified by RENDERDIR script keyword)"));
     PRINTF("%s\n", _(" -setup         - only show geometry"));
     PRINTF("%s\n", _(" -script scriptfile - run the script file scriptfile"));
-#ifdef pp_LUA
-    PRINTF("%s\n", " -luascript scriptfile - run the Lua script file scriptfile");
-    PRINTF("%s\n", " -killscript    - exit smokeview (with an error code) if the script fails");
-#endif
     PRINTF("%s\n", _(" -htmlscript scriptfile - run the script file scriptfile without using the video card"));
     PRINTF("%s\n", _(" -runhtmlscript - run the script file casename.ssf without using the video card"));
     PRINTF("%s\n", _("     the -htmlscript and -runhtmlscript keywords are used to generate JSON files"));
@@ -642,9 +633,6 @@ char *ProcessCommandLine(CommandlineArgs *args){
     if(args->runscript){
       from_commandline = 1;
       use_iso_threads=0;
-#ifdef pp_LUA
-      strcpy(script_filename, "");
-#endif
       runscript = 1;
     }
     if(args->runhtmlscript){
@@ -653,20 +641,6 @@ char *ProcessCommandLine(CommandlineArgs *args){
       use_iso_threads = 0;
       runhtmlscript = 1;
     }
-#ifdef pp_LUA
-    if(args->runluascript){
-      from_commandline = 1;
-      use_iso_threads=0;
-      strcpy(luascript_filename, "");
-      strncpy(luascript_filename, global_scase.fdsprefix, MAX_LUASCRIPT_FILENAME_BUFFER-5);
-      strcat(luascript_filename, ".lua");
-      runluascript = 1;
-    }
-    if(args->killscript){
-      from_commandline = 1;
-      exit_on_script_crash = 1;
-    }
-#endif
     if(args->scriptrenderdir != NULL){
       int nrenderdir = strlen(args->scriptrenderdir);
       if(nrenderdir>0){
@@ -710,7 +684,7 @@ char *ProcessCommandLine(CommandlineArgs *args){
           strcpy(scriptbuffer, args->htmlscript);
         }
         else{
-          fprintf(stderr, "*** Error: luascript filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
+          fprintf(stderr, "*** Error: htmlscript filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
           SMV_EXIT(1);
         }
       }
@@ -720,18 +694,6 @@ char *ProcessCommandLine(CommandlineArgs *args){
         runscript = 1;
       }
     }
-#ifdef pp_LUA
-    if(args->luascript != NULL){
-      from_commandline = 1;
-      use_iso_threads=0;
-      if(strlen(args->luascript) > MAX_LUASCRIPT_FILENAME_BUFFER-1){
-        fprintf(stderr, "*** Error: luascript filename exceeds maximum length of %d\n", MAX_SMV_FILENAME_BUFFER-1);
-        SMV_EXIT(1);
-      }
-      strncpy(luascript_filename, args->luascript, MAX_LUASCRIPT_FILENAME_BUFFER-1);
-      runluascript = 1;
-    }
-#endif
     if(args->noexit){
       noexit = 1;
     }
@@ -833,17 +795,6 @@ int main(int argc, char **argv){
   x[0] = 1.0;
   printf("after accessing null variable: %f\n", x[0]);
 */
-#ifdef pp_LUA
-  // If we are using lua, let lua take control here.
-  // Initialise the lua interpreter, it does not take control at this point
-  lua_State *L = InitLua();
-  // This code branch gives more control to the interpreter during startup.
-  return_code = RunLuaBranch(L, argc, argv);
-  // All of the below code is run by the lua interpreter, therefore if we want
-  // to use the lua interpreter we ignore the code below and exit once the lua
-  // run is complete.
-  return return_code;
-#endif
   SetStdOut(stdout);
   initMALLOC();
   InitRandAB(1000000);

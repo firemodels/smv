@@ -267,22 +267,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     } else if (strcmp(argv[i], "-runhtmlscript") == 0) {
       args.runhtmlscript = true;
     }
-#ifdef pp_LUA
-    else if (strcmp(argv[i], "-runluascript") == 0) {
-      args.runluascript = true;
-    } else if (strcmp(argv[i], "-killscript") == 0) {
-      args.killscript = true;
-    } else if (strcmp(argv[i], "-luascript") == 0) {
-      ++i;
-      if (i < argc) {
-        NewMemory((void **)&args.luascript, strlen(argv[i]) + 1);
-        strcpy(args.luascript, argv[i]);
-      } else {
-        *error = CLE_ARGUMENT_EXPECTED;
-        return args;
-      }
-    }
-#endif
     else if (strcmp(argv[i], "-scriptrenderdir") == 0) {
       i++;
       if (i < argc) {
