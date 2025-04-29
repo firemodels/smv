@@ -9,7 +9,7 @@
 #define pp_THREAD           // turn on multi-threading
 //#define pp_FIRE_HIST        // option to output histogram of 3d fire data
 //#define pp_SMOKE3D          // tentative correction to 3D smoke using temperature
-//#define pp_SMOKE3D_GPU       // enable GPU option for 3D smoke
+#define pp_SMOKE3D_GPU       // enable GPU option for 3D smoke
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
 #define pp_BOUNDFRAME    // turn on frame code for boundary files
