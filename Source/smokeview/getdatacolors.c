@@ -1111,7 +1111,7 @@ void UpdateSmokeColormap(int option){
           float val;
 
           val = valmin + (float)n*(valmax-valmin)/(float)(MAXSMOKERGB-1);
-          if(val>valmin_cb){
+          if(val>=valmin_cb){
             use_smoke = 0;
           }
         }
