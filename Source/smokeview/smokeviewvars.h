@@ -1993,6 +1993,13 @@ SVEXTERN texturedata SVDECL(*textureinfo,NULL), SVDECL(*terrain_textures,NULL);
 
 SVEXTERN int SVDECL(visSkysphere, 0), SVDECL(visSkybox, 1), SVDECL(visSkySpheretexture, 1);
 SVEXTERN float box_sky_corners[8][3];
+#ifdef INMAIN
+SVEXTERN  int horizon_color[3] = {160, 160, 255}, zenith_color[3] = {32, 32, 255}, ground_color[3]={87,108,67};
+SVEXTERN  int horizon_color_save[3] = {160, 160, 255}, zenith_color_save[3] = {32, 32, 255}, ground_color_save[3]={87,108,67};
+#else
+SVEXTERN  int horizon_color[3], zenith_color[3], ground_color[3];
+SVEXTERN  int horizon_color_save[3], zenith_color_save[3], ground_color_save[3];
+#endif
 
 SVEXTERN float SVDECL(sky_diam, 4.0);
 SVEXTERN int SVDECL(visSkyboxoutline, 0);

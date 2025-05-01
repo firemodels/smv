@@ -1582,11 +1582,14 @@ void DrawHalfSphere(void){
   }
 
   if(visSkyground == 1){
-    unsigned char forest_green[3]={87,108,67};
+    unsigned char ground_color_uc[3];
 
     j = nlat_hsphere / 2;
     glBegin(GL_TRIANGLES);
-    glColor3ubv(forest_green);
+    ground_color_uc[0] = (unsigned char)ground_color[0];
+    ground_color_uc[1] = (unsigned char)ground_color[1];
+    ground_color_uc[2] = (unsigned char)ground_color[2];
+    glColor3ubv(ground_color_uc);
     for(i = 0; i < nlong_hsphere; i++){
       int ip1;
       float x[2], y[2], z[2];
@@ -1634,17 +1637,17 @@ void DrawHalfSphere(void){
     if(use_sky == 0){
       float f1, f2;
 
-      f1 = (float)(j - nlat_hsphere / 2) / (float)nlats;
+      f1 = (float)(j - nlat_hsphere / 2)/(float)nlats;
       f2 = 1.0 - f1;
-      r[0] = (f1 * 32.0 + f2 * 160.0) / 256.0;
-      g[0] = r[0];
-      b[0] = 1.0;
+      r[0] = (f1*zenith_color[0] + f2*horizon_color[0])/255.0;
+      g[0] = (f1*zenith_color[1] + f2*horizon_color[1])/255.0;
+      b[0] = (f1*zenith_color[2] + f2*horizon_color[2])/255.0;
 
-      f1 = (float)(j+1 - nlat_hsphere / 2) / (float)nlats;
+      f1 = (float)(j+1 - nlat_hsphere / 2)/(float)nlats;
       f2 = 1.0 - f1;
-      r[1] = (f1 * 32.0 + f2 * 160.0) / 256.0;
-      g[1] = r[1];
-      b[1] = 1.0;
+      r[1] = (f1 * zenith_color[0] + f2 * horizon_color[0])/255.0;
+      g[1] = (f1 * zenith_color[1] + f2 * horizon_color[1])/255.0;
+      b[1] = (f1 * zenith_color[2] + f2 * horizon_color[2])/255.0;
     }
     for(i = 0; i < nlong_hsphere; i++){
       float x[4], y[4], z[4];

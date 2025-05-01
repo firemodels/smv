@@ -96,6 +96,9 @@ GLUI_Spinner *SPINNER_ngridloc_digits = NULL;
 GLUI_Spinner *SPINNER_mesh_debug = NULL;
 GLUI_Spinner *SPINNER_blockage_min_debug = NULL;
 GLUI_Spinner *SPINNER_blockage_n_debug = NULL;
+GLUI_Spinner *SPINNER_horizon_color[3];
+GLUI_Spinner *SPINNER_zenith_color[3];
+GLUI_Spinner *SPINNER_ground_color[3];
 
 GLUI_Checkbox *CHECKBOX_visaxislabels = NULL;
 GLUI_Checkbox *CHECKBOX_labels_showtick = NULL;
@@ -186,6 +189,10 @@ GLUI_Panel *PANEL_surfs = NULL;
 GLUI_Panel *PANEL_texture_display = NULL;
 GLUI_Panel *PANEL_sky = NULL;
 GLUI_Panel *PANEL_sphere = NULL;
+GLUI_Panel *PANEL_skycolor = NULL;
+GLUI_Panel *PANEL_horizon_color = NULL;
+GLUI_Panel *PANEL_zenith_color = NULL;
+GLUI_Panel *PANEL_ground_color = NULL;
 GLUI_Panel *PANEL_box = NULL;
 
 GLUI_RadioGroup *RADIO_timebar_overlap = NULL;
@@ -779,6 +786,14 @@ extern "C" void GLUISkyCB(int var){
       }
       GetBoxSkyCorners();
       break;
+    case RESET_COLORS:
+      int i;
+      for(i=0;i<3;i++){
+        SPINNER_horizon_color[i]->set_int_val(horizon_color_save[i]);
+        SPINNER_zenith_color[i]->set_int_val(zenith_color_save[i]);
+        SPINNER_ground_color[i]->set_int_val(ground_color_save[i]);
+      }
+      break;
     default:
       assert(0);
       break;
@@ -1220,6 +1235,29 @@ extern "C" void GLUIDisplaySetup(int main_window){
   PANEL_sphere=glui_labels->add_panel_to_panel(ROLLOUT_sky,_("hemisphere"));
   CHECKBOX_visSkysphere = glui_labels->add_checkbox_to_panel(PANEL_sphere, _("show"), &visSkysphere, SKY_SPHERE, GLUISkyCB);
   CHECKBOX_visSkyground = glui_labels->add_checkbox_to_panel(PANEL_sphere, _("show ground"), &visSkyground, SKY_SPHERE, GLUISkyCB);
+  PANEL_skycolor = glui_labels->add_panel_to_panel(PANEL_sphere, "", false);
+  PANEL_horizon_color = glui_labels->add_panel_to_panel(PANEL_skycolor, _("horizon color"));
+  SPINNER_horizon_color[0] = glui_labels->add_spinner_to_panel(PANEL_horizon_color, "red",   GLUI_SPINNER_INT, horizon_color);
+  SPINNER_horizon_color[1] = glui_labels->add_spinner_to_panel(PANEL_horizon_color, "green", GLUI_SPINNER_INT, horizon_color+1);
+  SPINNER_horizon_color[2] = glui_labels->add_spinner_to_panel(PANEL_horizon_color, "blue",  GLUI_SPINNER_INT, horizon_color+2);
+
+  PANEL_zenith_color = glui_labels->add_panel_to_panel(PANEL_skycolor, _("zenith color"));
+  SPINNER_zenith_color[0] = glui_labels->add_spinner_to_panel(PANEL_zenith_color, "red",   GLUI_SPINNER_INT, zenith_color);
+  SPINNER_zenith_color[1] = glui_labels->add_spinner_to_panel(PANEL_zenith_color, "green", GLUI_SPINNER_INT, zenith_color+1);
+  SPINNER_zenith_color[2] = glui_labels->add_spinner_to_panel(PANEL_zenith_color, "blue",  GLUI_SPINNER_INT, zenith_color+2);
+
+  PANEL_ground_color = glui_labels->add_panel_to_panel(PANEL_skycolor, _("ground color"));
+  SPINNER_ground_color[0] = glui_labels->add_spinner_to_panel(PANEL_ground_color, "red",   GLUI_SPINNER_INT, ground_color);
+  SPINNER_ground_color[1] = glui_labels->add_spinner_to_panel(PANEL_ground_color, "green", GLUI_SPINNER_INT, ground_color+1);
+  SPINNER_ground_color[2] = glui_labels->add_spinner_to_panel(PANEL_ground_color, "blue",  GLUI_SPINNER_INT, ground_color+2);
+  glui_labels->add_button_to_panel(PANEL_skycolor,_("Reset colors"),RESET_COLORS,GLUISkyCB);
+
+  for(i=0;i<3;i++){
+    SPINNER_horizon_color[i]->set_int_limits(0,255);
+    SPINNER_zenith_color[i]->set_int_limits(0,255);
+    SPINNER_ground_color[i]->set_int_limits(0,255);
+  }
+  
   SPINNER_sky_diam = glui_labels->add_spinner_to_panel(PANEL_sphere, _("diameter"), GLUI_SPINNER_FLOAT, &sky_diam, SKY_BOX, GLUISkyCB);
   if(global_scase.sky_texture != NULL){
     glui_labels->add_checkbox_to_panel(PANEL_sphere, _("show texture"), &visSkySpheretexture, SKY_SPHERE, GLUISkyCB);
