@@ -444,7 +444,7 @@ extern "C" void GLUISmoke3dColorbarCB(int var){
     break;
   }
   ForceIdle();
-  UpdateSmokeColormap(smoke_render_option);
+  UpdateSmokeColormap();
   glutPostRedisplay();
 }
 
@@ -809,7 +809,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     BUTTON_startrender = glui_3dsmoke->add_button_to_panel(ROLLOUT_generate_images, _("Generate images"), GENERATE_IMAGES, GLUISmoke3dCB);
     BUTTON_cancelrender = glui_3dsmoke->add_button_to_panel(ROLLOUT_generate_images, _("Cancel"), CANCEL_GENERATE_IMAGES, GLUISmoke3dCB);
     BUTTON_volunload = glui_3dsmoke->add_button_to_panel(ROLLOUT_generate_images, _("Unload"), VOL_UNLOAD_ALL, GLUISmoke3dCB);
-    UpdateSmokeColormap(RENDER_VOLUME);
+    UpdateSmokeColormap();
     GLUISmoke3dCB(SMOKE_OPTIONS);
 
     ROLLOUT_loadframe = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _("Load frame"), false, VOLSMOKE_LOADFRAME_ROLLOUT, VolSmokeRolloutCB);
@@ -1056,7 +1056,7 @@ extern "C" void GLUISmoke3dCB(int var){
     DefineVolsmokeTextures();
     break;
   case SHOW_FIRECOLORMAP:
-    UpdateSmokeColormap(smoke_render_option);
+    UpdateSmokeColormap();
     if(show_firecolormap!=0){
       GLUIShowColorbar();
     }
@@ -1073,7 +1073,7 @@ extern "C" void GLUISmoke3dCB(int var){
       global_temp_cb_max = global_scase.temp_min+1.0;
       SPINNER_temperature_max->set_float_val(global_temp_cb_max);
     }
-    UpdateSmokeColormap(smoke_render_option);
+    UpdateSmokeColormap();
     break;
   case EXTINCTION_RESET_FDS:
     if(SOOT_index>=0){
@@ -1249,7 +1249,7 @@ extern "C" void GLUISmoke3dCB(int var){
     case FIRECOLOR_RGB:
       fire_colorbar_index_save = colorbars.fire_colorbar_index;
       UpdateRGBColors(colorbar_select_index);
-      UpdateSmokeColormap(smoke_render_option);
+      UpdateSmokeColormap();
       break;
     default:
 #ifdef _DEBUG
@@ -1260,11 +1260,11 @@ extern "C" void GLUISmoke3dCB(int var){
     if(LISTBOX_smoke_colorbar->get_int_val()!=colorbars.fire_colorbar_index){
       LISTBOX_smoke_colorbar->set_int_val(colorbars.fire_colorbar_index);
     }
-    UpdateSmokeColormap(smoke_render_option);
+    UpdateSmokeColormap();
     break;
   case SMOKE_COLORBAR_LIST:
     SmokeColorbarMenu(colorbars.fire_colorbar_index);
-    UpdateSmokeColormap(smoke_render_option);
+    UpdateSmokeColormap();
     updatemenu=1;
     break;
   case CO2_COLORBAR_LIST:
@@ -1322,7 +1322,7 @@ extern "C" void GLUISmoke3dCB(int var){
     glutPostRedisplay();
     force_redisplay = 1;
     UpdateRGBColors(colorbar_select_index);
-    UpdateSmokeColormap(smoke_render_option);
+    UpdateSmokeColormap();
     GLUISmoke3dCB(UPDATE_SMOKECOLORS);
     IdleCB();
     break;
@@ -1335,8 +1335,7 @@ extern "C" void GLUISmoke3dCB(int var){
     }
     glutPostRedisplay();
     force_redisplay=1;
-    UpdateSmokeColormap(RENDER_SLICE);
-    UpdateSmokeColormap(smoke_render_option);
+    UpdateSmokeColormap();
     IdleCB();
      break;
     case SMOKE_FRAME_INC:

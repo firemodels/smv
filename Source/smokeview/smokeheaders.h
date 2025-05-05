@@ -344,7 +344,7 @@ EXTERNCPP void UpdateAllBoundaryColors(int flag);
 EXTERNCPP void UpdateChopColors(void);
 EXTERNCPP void UpdateAllPlot3DColors(int flag);
 EXTERNCPP void UpdateCO2Colormap(void);
-EXTERNCPP void UpdateSmokeColormap(int option);
+EXTERNCPP void UpdateSmokeColormap(void);
 EXTERNCPP void UpdatePart5Extremes(void);
 EXTERNCPP void UpdateRGBColors(int colorindex);
 EXTERNCPP void UpdateSliceBounds2(void);
