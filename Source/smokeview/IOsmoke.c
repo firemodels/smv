@@ -376,8 +376,11 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   meshi = global_scase.meshescoll.meshinfo+smoke3di->blocknumber;
   if(meshvisptr[meshi-global_scase.meshescoll.meshinfo]==0)return;
 
-  if(HRRPUV_index>=0){
+  if(smoke3di->type == HRRPUV_index && HRRPUV_index >= 0) {
     firecolor = smoke3di->smokestate[HRRPUV_index].color;
+  }
+  else if(smoke3di->type == TEMP_index && TEMP_index >= 0) {
+    firecolor = smoke3di->smokestate[TEMP_index].color;
   }
   else{
     firecolor = NULL;
@@ -462,8 +465,14 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   glUniform1i(GPU_use_fire_alpha, use_fire_alpha);
   glUniform1i(GPU_have_smoke, have_smoke_local);
   glUniform1i(GPU_smokecolormap, 2);
-  glUniform1f(GPU_global_hrrpuv_max,    global_scase.hrrpuv_max);
-  glUniform1f(GPU_global_hrrpuv_cb_min, global_hrrpuv_cb_min);
+  if(smoke3di->type == TEMP_index && TEMP_index >= 0) {
+    glUniform1f(GPU_global_hrrpuv_max, global_scase.temp_max);
+    glUniform1f(GPU_global_hrrpuv_cb_min, global_temp_cb_min);
+  }
+  else{
+    glUniform1f(GPU_global_hrrpuv_max, global_scase.hrrpuv_max);
+    glUniform1f(GPU_global_hrrpuv_cb_min, global_hrrpuv_cb_min);
+  }
   glUniform1f(GPU_fire_alpha, smoke3di->fire_alpha);
 
   TransparentOn();
