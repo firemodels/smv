@@ -4827,7 +4827,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 
 #ifdef pp_SMOKE3D
   for(i=first;i<=last;i++){
-    smoke3ddata *smoke3di, *smoke3d_soot;
+    smoke3ddata *smoke3di;
     meshdata *mesh_smoke3d;
 
     smoke3di=global_scase.smoke3dcoll.smoke3dinfo + i;
