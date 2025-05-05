@@ -461,7 +461,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   glUniform1f(GPU_emission_factor, emission_factor);
   glUniform1i(GPU_use_fire_alpha, use_fire_alpha);
   glUniform1i(GPU_have_smoke, have_smoke_local);
-  glUniform1i(GPU_smokecolormap, 0);
+  glUniform1i(GPU_smokecolormap, 2);
   glUniform1f(GPU_global_hrrpuv_max,    global_scase.hrrpuv_max);
   glUniform1f(GPU_global_hrrpuv_cb_min, global_hrrpuv_cb_min);
   glUniform1f(GPU_fire_alpha, smoke3di->fire_alpha);
@@ -3461,11 +3461,13 @@ void DrawSmoke3DColorMap(void){
 
   glBegin(GL_QUADS);
   for(i = 0; i < 255; i++){
+    float *rgb;
 
     ybot = (float)i/255.0;
     ytop = (float)(i+1)/255.0;
 
-    glColor4fv(rgb_slicesmokecolormap_01+4*i);
+    rgb = rgb_slicesmokecolormap_01 + 4 * i;
+    glColor4fv(rgb);
     glVertex3f(yleft,  0.0, ybot);
     glVertex3f(yright, 0.0, ybot);
     glVertex3f(yright, 0.0, ytop);

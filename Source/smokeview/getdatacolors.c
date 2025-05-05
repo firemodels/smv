@@ -969,9 +969,11 @@ void UpdateTexturebar(void){
   glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,256,0,GL_RGBA,GL_FLOAT,rgb_iso);
   SNIFF_ERRORS("UpdateTexturebar - glTexImage1D (rgb_iso) ");
 
-  glBindTexture(GL_TEXTURE_1D,slicesmoke_colormap_id);
-  glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_slicesmokecolormap_01);
-  SNIFF_ERRORS("UpdateTexturebar - glTexImage1D (rgb_slicesmokecolormap_01) ");
+  glActiveTexture(GL_TEXTURE2);
+  glBindTexture(GL_TEXTURE_1D, slicesmoke_colormap_id);
+  glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, MAXSMOKERGB, 0, GL_RGBA, GL_FLOAT, rgb_slicesmokecolormap_01);
+  SNIFF_ERRORS("UpdateTexturebar - glTexImage1D (rgb_slicesmokecolormap_01)");
+  glActiveTexture(GL_TEXTURE0);
 
   glBindTexture(GL_TEXTURE_1D,volsmoke_colormap_id);
   glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_volsmokecolormap);
@@ -1071,7 +1073,7 @@ void UpdateCO2Colormap(void){
 
 /* ------------------ UpdateSmokeColormap ------------------------ */
 
-void UpdateSmokeColormap(int option){
+void UpdateSmokeColormap(void){
   int n;
   float transparent_level_local=1.0;
   unsigned char *alpha_rgb;
@@ -1219,8 +1221,7 @@ void UpdateRGBColors(int colorbar_index){
         rgb_full[n][3]=transparent_level_local;
       }
     }
-    UpdateSmokeColormap(RENDER_SLICE);
-    UpdateSmokeColormap(RENDER_VOLUME);
+    UpdateSmokeColormap();
   }
   else{
     for(n=0;n<nrgb_full;n++){
