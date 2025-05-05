@@ -192,7 +192,7 @@ typedef struct _meshdata {
 
 #ifdef pp_SMOKE3D
   int have_smoke3d_temp;
-@endif
+#endif
 
   int *cutcells, ncutcells;
   int update_smoke3dcolors;
