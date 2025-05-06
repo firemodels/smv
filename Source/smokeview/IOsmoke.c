@@ -386,22 +386,13 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
     firecolor = NULL;
   }
 
-  {
-    smoke3ddata *sooti = NULL;
-
-    if(SOOT_index>=0&&smoke3di->smokestate[SOOT_index].index>=0){
-      sooti = global_scase.smoke3dcoll.smoke3dinfo+smoke3di->smokestate[SOOT_index].index;
-    }
-    else{
-      sooti = NULL;
-    }
-    if(sooti!=NULL&&sooti->display==1){
-      have_smoke_local = 1;
-    }
-    else{
-      have_smoke_local = 0;
-    }
+  smoke3ddata *sooti = NULL;
+  have_smoke_local = 0;
+  if(SOOT_index >= 0 && smoke3di->smokestate[SOOT_index].index>=0) {
+    sooti = global_scase.smoke3dcoll.smoke3dinfo+smoke3di->smokestate[SOOT_index].index;
+    if(sooti != NULL && sooti->display == 1)have_smoke_local = 1;
   }
+
   iblank_smoke3d = meshi->iblank_smoke3d;
 
   // meshi->global_hrrpuv_cb_min
