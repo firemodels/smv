@@ -376,10 +376,10 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   meshi = global_scase.meshescoll.meshinfo+smoke3di->blocknumber;
   if(meshvisptr[meshi-global_scase.meshescoll.meshinfo]==0)return;
 
-  if(smoke3di->type == HRRPUV_index && HRRPUV_index >= 0) {
+  if(HRRPUV_index >= 0 && smoke3di->smokestate[HRRPUV_index].index >= 0){
     firecolor = smoke3di->smokestate[HRRPUV_index].color;
   }
-  else if(smoke3di->type == TEMP_index && TEMP_index >= 0) {
+  else if(TEMP_index >= 0 && smoke3di->smokestate[TEMP_index].index >= 0){
     firecolor = smoke3di->smokestate[TEMP_index].color;
   }
   else{
