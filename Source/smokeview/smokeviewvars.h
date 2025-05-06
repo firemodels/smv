@@ -2009,7 +2009,6 @@ SVEXTERN GLuint texture_colorbar_id, texture_slice_colorbar_id, texture_patch_co
 SVEXTERN GLuint volsmoke_colormap_id,slice3d_colormap_id,slicesmoke_colormap_id;
 SVEXTERN int SVDECL(volsmoke_colormap_id_defined,-1);
 SVEXTERN int SVDECL(slice3d_colormap_id_defined,-1);
-SVEXTERN int SVDECL(slicesmoke_colormap_id_defined, -1);
 #ifdef INMAIN
 SVEXTERN float mscale[3]={1.0,1.0,1.0};
 #else
