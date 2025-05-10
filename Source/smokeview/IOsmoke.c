@@ -469,6 +469,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   glUniform1f(GPU_emission_factor, emission_factor);
   glUniform1i(GPU_use_fire_alpha, use_fire_alpha);
   glUniform1i(GPU_have_smoke, have_smoke_local);
+  glUniform1i(GPU_force_alpha_opaque, force_alpha_opaque);
   glUniform1i(GPU_smokecolormap, 2);
   if(smoke3di->type == TEMP_index && TEMP_index >= 0) {
     glUniform1f(GPU_global_hrrpuv_max, global_scase.temp_max);
