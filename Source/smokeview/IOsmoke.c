@@ -342,6 +342,20 @@ int IsSmokeComponentPresent(smoke3ddata *smoke3di){
   return 0;
 }
 
+/* ------------------ IsSmokeLoaded ------------------------ */
+
+int IsSmokeLoaded(smv_case *scase){
+  int i;
+
+  for(i = 0;i < scase->smoke3dcoll.nsmoke3dinfo;i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = scase->smoke3dcoll.smoke3dinfo + i;
+    if(smoke3di->is_smoke==1 && smoke3di->loaded==1 && smoke3di->display==1)return 1;
+  }
+  return 0;
+}
+
 #ifdef pp_GPU
   /* ------------------ DrawSmoke3DGPU ------------------------ */
 
