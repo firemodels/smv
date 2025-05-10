@@ -3589,19 +3589,11 @@ void LoadUnloadMenu(int value){
 
       parti = global_scase.partinfo+i;
       if(parti->loaded==1){
-        parti->reload=1;
-        npartloaded_local++;
-        ReadPart(parti->file,i,UNLOAD,&errorcode);
+        npartloaded_local = 1;
+        break;
       }
-      else{
-        parti->reload=0;
-      }
-      parti->loadstatus = FILE_UNLOADED;
     }
-    if(npartloaded_local>0){
-      npartframes_max = GetMinPartFrames(PARTFILE_RELOADALL);
-      LoadAllPartFilesMT(RELOAD_LOADED_PART_FILES);
-    }
+    if(npartloaded_local>0)LoadParticleMenu(MENU_PARTICLE_ALLMESHES);
 #endif
 
     //*** reload isosurface files
@@ -4347,7 +4339,7 @@ void LoadParticleMenu(int value){
           UnloadAllPartFiles();
         }
 
-        // load particle files unless we are reloading and the were not loaded before
+        // load particle files unless we are reloading and they were not loaded before
 
         START_TIMER(part_load_time);
         int have_particles = 0, load_particles=0;
