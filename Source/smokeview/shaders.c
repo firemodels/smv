@@ -606,11 +606,12 @@ int SetSmokeShaders(){
   if(ShaderLinkStatus(p_smoke)==GL_FALSE)return 0;
 
 #ifdef pp_SMOKE3D_FRAGMENT
+  GPU_hrr                    = glGetAttribLocation(p_smoke,  "fire_a");
+  GPU_smokealpha             = glGetAttribLocation(p_smoke,  "smoke_alpha0255_a");
+
   GPU_global_hrrpuv_max      = glGetUniformLocation(p_smoke, "global_hrrpuv_max_u");
   GPU_global_hrrpuv_cb_min   = glGetUniformLocation(p_smoke, "global_hrrpuv_cb_min_u");
   GPU_fire_alpha             = glGetUniformLocation(p_smoke, "fire_alpha0255_u");
-  GPU_hrr                    = glGetAttribLocation(p_smoke,  "fire_a");
-  GPU_smokealpha             = glGetAttribLocation(p_smoke,  "smoke_alpha0255_a");
   GPU_have_fire              = glGetUniformLocation(p_smoke, "have_fire_u");
   GPU_smokecolormap          = glGetUniformLocation(p_smoke, "smokecolormap_u");
   GPU_have_smoke             = glGetUniformLocation(p_smoke, "have_smoke_u");
