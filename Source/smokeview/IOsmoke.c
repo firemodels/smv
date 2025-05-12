@@ -381,6 +381,9 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   int ssmokedir;
   unsigned char *iblank_smoke3d, *is_firenode;
   int have_smoke_local;
+#ifdef pp_SMOKE3D_FRAGMENT
+  int have_fire_local;
+#endif
 
   unsigned char *firecolor, *alphaf_in;
   float value[4], fvalue[4];
@@ -406,6 +409,19 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
     sooti = global_scase.smoke3dcoll.smoke3dinfo+smoke3di->smokestate[SOOT_index].index;
     if(sooti != NULL && sooti->display == 1)have_smoke_local = 1;
   }
+
+#ifdef pp_SMOKE3D_FRAGMENT
+  smoke3ddata *firei = NULL;
+  have_fire_local = 0;
+  if(HRRPUV_index >= 0 && smoke3di->smokestate[HRRPUV_index].index >= 0) {
+    firei = global_scase.smoke3dcoll.smoke3dinfo + smoke3di->smokestate[HRRPUV_index].index;
+    if(firei != NULL && firei->display == 1)have_fire_local = 1;
+  }
+  if(have_fire_local==0 && TEMP_index >= 0 && smoke3di->smokestate[TEMP_index].index >= 0) {
+    firei = global_scase.smoke3dcoll.smoke3dinfo + smoke3di->smokestate[TEMP_index].index;
+    if(firei != NULL && firei->display == 1)have_fire_local = 1;
+  }
+#endif
 
   iblank_smoke3d = meshi->iblank_smoke3d;
 
@@ -469,6 +485,9 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   glUniform1f(GPU_emission_factor, emission_factor);
   glUniform1i(GPU_use_fire_alpha, use_fire_alpha);
   glUniform1i(GPU_have_smoke, have_smoke_local);
+#ifdef pp_SMOKE3D_FRAGMENT
+  glUniform1i(GPU_have_fire, have_fire_local);
+#endif
   glUniform1i(GPU_force_alpha_opaque, force_alpha_opaque);
   glUniform1i(GPU_smokecolormap, 2);
   if(smoke3di->type == TEMP_index && TEMP_index >= 0) {
