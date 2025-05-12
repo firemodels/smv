@@ -3,7 +3,8 @@
 
 #include "options_common.h"
 
-//#define pp_FRAME           // turn on frame code
+#define pp_HIDE_BLOCK_FACES   // add sub-menu for hiding, internal, external and all blockage faces
+// #define pp_FRAME           // turn on frame code
 //#define pp_SHOW_UPDATE      // show what is being updated in the UpdateShowScene routine
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading

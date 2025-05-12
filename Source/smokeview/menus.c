@@ -8976,6 +8976,9 @@ static int sliceloadoptionmenu = 0, vectorsliceloadoptionmenu = 0;
 static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, griddigitsmenu=0, blockagemenu=0, immersedmenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
+#ifdef pp_HIDE_BLOCK_FACES  
+static int blockagehidemenu=0;
+#endif
 static int loadisomenu=0, isosurfacetypemenu=0,showpatchextmenu=0;
 static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, fileinfomenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
 static int scriptmenu=0;
@@ -9356,7 +9359,30 @@ static int menu_count=0;
     glutAddMenuEntry(_("Hilight skinny triangles"), GEOMETRY_HILIGHTSKINNY);
   }
 
-/* --------------------------------blockage menu -------------------------- */
+#ifdef pp_HIDE_BLOCK_FACES  
+  /* --------------------------------blockagehide menu -------------------------- */
+
+  CREATEMENU(blockagehidemenu, BlockageMenu);
+  if(visBlocks==visBLOCKInternalHide){
+    glutAddMenuEntry(_("   *All internal blockage faces"),visBLOCKInternalHide);
+  }
+  else{
+    glutAddMenuEntry(_("   All internal blockage faces"),visBLOCKInternalHide);
+  }
+  if(visBlocks==visBLOCKExternalHide){
+    glutAddMenuEntry(_("   *All external blockage faces"),visBLOCKExternalHide);
+  }
+  else{
+    glutAddMenuEntry(_("   All external blockage faces"),visBLOCKExternalHide);
+  }
+  if(visBlocks==visBLOCKHide){
+    glutAddMenuEntry(_("   *All blockage faces"),visBLOCKHide);
+  }
+  else{
+    glutAddMenuEntry(_("   All blockage faces"),visBLOCKHide);
+  }
+#endif
+  /* --------------------------------blockage menu -------------------------- */
 
   CREATEMENU(blockagemenu,BlockageMenu);
   glutAddMenuEntry(_("View Method:"),MENU_DUMMY);
@@ -9404,12 +9430,16 @@ static int menu_count=0;
       glutAddMenuEntry(_("   Cad surface drawn opaque"),visCADOpaque);
     }
   }
+#ifdef pp_HIDE_BLOCK_FACES  
+  GLUTADDSUBMENU(_("Hide"),blockagehidemenu);
+#else
   if(visBlocks==visBLOCKHide){
     glutAddMenuEntry(_("   *Hidden"),visBLOCKHide);
   }
   else{
     glutAddMenuEntry(_("   Hidden"),visBLOCKHide);
   }
+#endif
   if(light_faces == 1){
     glutAddMenuEntry(_("   *Light faces"), visLightFaces);
   }
