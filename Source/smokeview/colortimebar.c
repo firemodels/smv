@@ -1224,14 +1224,14 @@ void DrawHorizontalColorbarRegLabels(void){
     if(parttype != 0){
       int partunitclass, partunittype;
 
-      GetUnitInfo(partunitlabel2, &partunitclass, &partunittype);
+      GetUnitInfo(partunitlabel, &partunitclass, &partunittype);
       if(partunitclass >= 0 && partunitclass < nunitclasses && partunittype >= 0){
         partflag = 1;
         partfactor = unitclasses[partunitclass].units[partunittype].scale;
-        strcpy(partunitlabel, unitclasses[partunitclass].units[partunittype].unit);
+        strcpy(partunitlabel2, unitclasses[partunitclass].units[partunittype].unit);
       }
-      OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, partshortlabel);
-      OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, partunitlabel);
+      OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, partshortlabel2);
+      OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, partunitlabel2);
     }
     glPopMatrix();
   }
