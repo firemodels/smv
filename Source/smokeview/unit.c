@@ -256,12 +256,15 @@ void InitUnits(void){
 
   NewMemory((void **)&(ut->units),ut->nunits*sizeof(f_unit));
   units=ut->units;
+
   strcpy(units[0].unit,(const char *)degC);
   units[0].scale[0]=1.0;
   units[0].scale[1]=0.0;
+
   strcpy(units[1].unit,(const char *)degF);
   units[1].scale[0]=1.8;
   units[1].scale[1]=32.0;
+
   strcpy(units[2].unit,"K");
   units[2].scale[0]=1.0;
   units[2].scale[1]=273.15;
@@ -276,15 +279,19 @@ void InitUnits(void){
 
   NewMemory((void **)&(ut->units),ut->nunits*sizeof(f_unit));
   units=ut->units;
+
   strcpy(units[0].unit,"m/s");
   units[0].scale[0]=1.0;
   units[0].scale[1]=0.0;
+
   strcpy(units[1].unit,"mph");
   units[1].scale[0]=2.236931818;
   units[1].scale[1]=0.0;
+
   strcpy(units[2].unit,"ft/s");
   units[2].scale[0]=3.2808333333;
   units[2].scale[1]=0.0;
+
   CheckMemory;
 
   // distance units
@@ -297,9 +304,11 @@ void InitUnits(void){
 
   NewMemory((void **)&(ut->units),ut->nunits*sizeof(f_unit));
   units=ut->units;
+
   strcpy(units[0].unit,"m");
   units[0].scale[0]=1.0;
   units[0].scale[1]=0.0;
+
   strcpy(units[1].unit,"ft");
   units[1].scale[0]=3.280833333;
   units[1].scale[1]=0.0;
@@ -315,9 +324,11 @@ void InitUnits(void){
 
   NewMemory((void **)&(ut->units),ut->nunits*sizeof(f_unit));
   units=ut->units;
+
   strcpy(units[0].unit,"m^3/s");
   units[0].scale[0]=1.0;
   units[0].scale[1]=0.0;
+
   strcpy(units[1].unit,"cfm");
   units[1].scale[0]=2118.86720;
   units[1].scale[1]=0.0;
@@ -333,9 +344,11 @@ void InitUnits(void){
 
   NewMemory((void **)&(ut->units),ut->nunits*sizeof(f_unit));
   units=ut->units;
+
   strcpy(units[0].unit,"kg/kg");
   units[0].scale[0]=1.0;
   units[0].scale[1]=0.0;
+
   strcpy(units[1].unit,"g/kg");
   units[1].scale[0]=1000.0;
   units[1].scale[1]=0.0;
@@ -352,9 +365,11 @@ void InitUnits(void){
 
   NewMemory((void **)&(ut->units),ut->nunits*sizeof(f_unit));
   units=ut->units;
+
   strcpy(units[0].unit,"mol/mol");
   units[0].scale[0]=1.0;
   units[0].scale[1]=0.0;
+
   strcpy(units[1].unit,"ppm");
   units[1].scale[0]=1000000.0;
   units[1].scale[1]=0.0;
