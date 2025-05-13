@@ -1320,7 +1320,7 @@ void DrawHorizontalColorbarRegLabels(void){
     strcpy(unitlabel, up3label);
     GetUnitInfo(up3label, &plot3dunitclass, &plot3dunittype);
     if(plot3dunitclass >= 0 && plot3dunitclass < nunitclasses){
-      if(plot3dunittype > 0){
+      if(plot3dunittype >= 0){
         plot3dflag = 1;
         plot3dfactor = unitclasses[plot3dunitclass].units[plot3dunittype].scale;
         strcpy(unitlabel, unitclasses[plot3dunitclass].units[plot3dunittype].unit);
@@ -1670,12 +1670,12 @@ void DrawHorizontalColorbarRegLabels(void){
         if(iposition == i)continue;
         if(plot3dflag == 1){
           val = tttmin + i*plot3drange / (global_scase.nrgb - 2);
+          if(plot3dfactor != NULL)val = plot3dfactor[0]*val + plot3dfactor[1];
         }
         else{
           val = colorvaluesp3[plotn - 1][i];
         }
         plot3dcolorlabel_ptr = plot3dcolorlabel;
-        ScaleFloat2String(val, plot3dcolorlabel, plot3dfactor);
         Float2String(plot3dcolorlabel, val, ncolorlabel_digits, force_fixedpoint);
         OutputBarText(horiz_position, 0.0, foreground_color, plot3dcolorlabel_ptr);
       }
