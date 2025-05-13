@@ -8,8 +8,8 @@
 # and license in png.h
 
 # Location of the zlib library and include files
-ZLIBINC = ../zlib
-ZLIBLIB = ../zlib
+ZLIBINC = ../zlib131
+ZLIBLIB = ../zlib131
 
 # Compiler, linker, lib and other tools
 COMPILER=ics
