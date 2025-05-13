@@ -1859,7 +1859,6 @@ void SetupMeshWalls(void){
     xyz[1] = bmid[1];
     xyz[2] = bmax[2] + EPSMESH;
     if(InExterior(xyz) == 0)is_extface[5] = 0;
-#ifdef pp_HIDE_BLOCK_FACES  
     int j;
     for(j = 0; j < meshi->nbptrs; j++) {
       blockagedata *bc;
@@ -1880,8 +1879,7 @@ void SetupMeshWalls(void){
       if(meshi->is_extface[4] == 1 && bc->ijk[4] == 0) is_extface[4] = 1;
       if(meshi->is_extface[5] == 1 && bc->ijk[5] == meshi->kbar)is_extface[1] = 1;
     }
-#endif
-   }
+  }
 }
 /* ------------------ SetupIsosurface ------------------------ */
 

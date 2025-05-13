@@ -7905,14 +7905,6 @@ typedef struct {
           bc->texture_origin[0]=t_origin[0];
           bc->texture_origin[1]=t_origin[1];
           bc->texture_origin[2]=t_origin[2];
-#ifdef pp_HIDE_BLOCK_FACES  
-          bc->is_extface[0] = -1;
-          bc->is_extface[1] = -1;
-          bc->is_extface[2] = -1;
-          bc->is_extface[3] = -1;
-          bc->is_extface[4] = -1;
-          bc->is_extface[5] = -1;
-#endif
           if(bc->blockage_id < 0) {
             bc->changed=1;
             bc->blockage_id=-bc->blockage_id;

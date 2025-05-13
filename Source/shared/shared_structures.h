@@ -800,9 +800,7 @@ typedef struct _blockagedata {
   int useblockcolor;
   struct _facedata *faceinfo[6];
   float texture_origin[3];
-#ifdef pp_HIDE_BLOCK_FACES  
   int is_extface[6]; //  1 if adjacent to exterior, 0 if adjacent to interior, -1 if unknown
-#endif
 } blockagedata;
 
 /* -------------------------- xbdata ------------------------------------ */

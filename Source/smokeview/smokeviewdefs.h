@@ -639,8 +639,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define visLightFaces          18
 #define ANIMATE_BLOCKAGES      19
 #define visBLOCKHide            0
-#define visBLOCKInternalHide   20
-#define visBLOCKExternalHide   21
 
 #define OUTLINE_NONE     0
 #define OUTLINE_ONLY     1
