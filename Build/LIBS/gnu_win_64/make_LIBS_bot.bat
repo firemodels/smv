@@ -13,7 +13,7 @@ set BUILDDIR=%CD%
 erase *.a
 
 :: ZLIB
-cd %SRCDIR%\zlib128
+cd %SRCDIR%\zlib131
 call makelib %OPTS% 
 copy libz.a %LIBDIR%\zlib.a
 
@@ -23,7 +23,7 @@ call makelib %OPTS%
 copy libjpeg.a  %LIBDIR%\jpeg.a
 
 :: PNG
-cd %SRCDIR%\png-1.6.21
+cd %SRCDIR%\png-1.6.48
 call makelib %OPTS% 
 copy libpng.a %LIBDIR%\png.a
 

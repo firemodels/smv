@@ -48,7 +48,7 @@ fi
 if [[ "$target" == "all" ]] || [[ "$target" == "zlib" ]]; then
 # ZLIB
 echo "********** building zlib"
-cd $SRCDIR/zlib128
+cd $SRCDIR/zlib131
 ./makelib.sh $OPTS >& $LIBDIR/zlib.out
 cp libz.a $LIBDIR/.
 fi
@@ -64,7 +64,7 @@ fi
 if [[ "$target" == "all" ]] || [[ "$target" == "png" ]]; then
 # PNG
 echo "********** building png"
-cd $SRCDIR/png-1.6.21
+cd $SRCDIR/png-1.6.48
 ./makelib.sh $OPTS >& $LIBDIR/png.out
 cp libpng.a $LIBDIR/.
 fi
