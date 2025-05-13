@@ -1081,6 +1081,9 @@ void UpdateSmokeColormap(void){
   float valmin=0.0, valmax=1.0;
   float valmin_cb=0.0, valmax_cb=1.0;
   float *rgb_colormap=NULL;
+  int is_smoke_loaded;
+
+  is_smoke_loaded = IsSmokeLoaded(&global_scase);
 
   rgb_colormap = rgb_slicesmokecolormap_01;
   if(have_fire==HRRPUV_index){
@@ -1108,7 +1111,7 @@ void UpdateSmokeColormap(void){
       for(n=0;n<MAXSMOKERGB;n++){
         int use_smoke;
 
-        use_smoke = 1;
+        use_smoke = is_smoke_loaded;
         if(have_fire==HRRPUV_index||have_fire==TEMP_index){
           float val;
 
@@ -1141,7 +1144,7 @@ void UpdateSmokeColormap(void){
         int use_smoke;
         float val;
 
-        use_smoke = 1;
+        use_smoke = is_smoke_loaded;
         if(have_fire==HRRPUV_index||have_fire==TEMP_index){
           val = valmin + (float)n*(valmax-valmin)/(float)(MAXSMOKERGB-1);
           if(val>valmin_cb){

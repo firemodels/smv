@@ -568,6 +568,7 @@ EXTERNCPP void InitAlphas(unsigned char *smokealphanew,  unsigned char *firealph
                           float base_extinct, int use_smoke_density, float maxval, float new_extinct,
                           float base_dx, float new_dx);
 EXTERNCPP int  IsSmokeComponentPresent(smoke3ddata *smoke3di);
+EXTERNCPP int  IsSmokeLoaded(smv_case *scase);
 EXTERNCPP void MakeIBlankSmoke3D(void);
 EXTERNCPP void MakeTimesMap(float *times, unsigned char **times_map_ptr, int n);
 EXTERNCPP void MergeSmoke3D(smoke3ddata *smoke3dset);
