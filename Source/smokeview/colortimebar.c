@@ -1237,7 +1237,8 @@ void DrawHorizontalColorbarRegLabels(void){
   }
 
   // -------------- slice file top labels ------------
- if(vis_colorbar==hcolorbar_vis[COLORBAR_SLICE]&&show_slice_colorbar_local==1){
+
+  if(vis_colorbar==hcolorbar_vis[COLORBAR_SLICE]&&show_slice_colorbar_local==1){
     char unitlabel[256];
     int sliceunitclass, sliceunittype;
     boundsdata *sb;
@@ -1510,24 +1511,21 @@ void DrawHorizontalColorbarRegLabels(void){
     }
     {
       for(i = 0; i < global_scase.nrgb - 1; i++){
-        float horiz_position;
+        float horiz_position, val;
         char slicecolorlabel[256];
         char *slicecolorlabel_ptr = NULL;
 
         horiz_position = MIX2(i, global_scase.nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
         if(iposition == i)continue;
         if(sliceflag == 1){
-          float val;
-
           val = tttmin + i*slicerange / (global_scase.nrgb - 2);
-          ScaleFloat2String(val, slicecolorlabel, slicefactor);
-          slicecolorlabel_ptr = slicecolorlabel;
-          Float2String(slicecolorlabel_ptr, val, ncolorlabel_digits, force_fixedpoint);
         }
         else{
-          slicecolorlabel_ptr = slicecolorlabel;
-          Float2String(slicecolorlabel_ptr, sb->colorvalues[i+1], ncolorlabel_digits, force_fixedpoint);
+          val = sb->colorvalues[i+1];
         }
+        val = ScaleFloat2Float(val, slicefactor);
+        slicecolorlabel_ptr = slicecolorlabel;
+        Float2String(slicecolorlabel_ptr, val, ncolorlabel_digits, force_fixedpoint);
         OutputBarText(horiz_position, 0.0, foreground_color, slicecolorlabel_ptr);
       }
     }
@@ -1568,6 +1566,7 @@ void DrawHorizontalColorbarRegLabels(void){
       float val;
 
       horiz_position = MIX2(i, global_scase.nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
+
 
       if(iposition == i)continue;
       if(patchflag == 1){
