@@ -1862,22 +1862,20 @@ void SetupMeshWalls(void){
     int j;
     for(j = 0; j < meshi->nbptrs; j++) {
       blockagedata *bc;
-      int *is_extface;
 
       bc = meshi->blockageinfoptrs[j];
-      is_extface = bc->is_extface;
-      is_extface[0] = 0;
-      is_extface[1] = 0;
-      is_extface[2] = 0;
-      is_extface[3] = 0;
-      is_extface[4] = 0;
-      is_extface[5] = 0;
-      if(meshi->is_extface[0] == 1 && bc->ijk[0] == 0) is_extface[0] = 1;
-      if(meshi->is_extface[1] == 1 && bc->ijk[1] == meshi->ibar)is_extface[1] = 1;
-      if(meshi->is_extface[2] == 1 && bc->ijk[2] == 0)is_extface[2] = 1;
-      if(meshi->is_extface[3] == 1 && bc->ijk[3] == meshi->jbar)is_extface[1] = 1;
-      if(meshi->is_extface[4] == 1 && bc->ijk[4] == 0) is_extface[4] = 1;
-      if(meshi->is_extface[5] == 1 && bc->ijk[5] == meshi->kbar)is_extface[1] = 1;
+      bc->is_extface[0] = 0;
+      bc->is_extface[1] = 0;
+      bc->is_extface[2] = 0;
+      bc->is_extface[3] = 0;
+      bc->is_extface[4] = 0;
+      bc->is_extface[5] = 0;
+      if(meshi->is_extface[0] == 1 && bc->ijk[0] == 0)bc->is_extface[0] = 1;
+      if(meshi->is_extface[1] == 1 && bc->ijk[1] == meshi->ibar)bc->is_extface[1] = 1;
+      if(meshi->is_extface[2] == 1 && bc->ijk[2] == 0)bc->is_extface[2] = 1;
+      if(meshi->is_extface[3] == 1 && bc->ijk[3] == meshi->jbar)bc->is_extface[1] = 1;
+      if(meshi->is_extface[4] == 1 && bc->ijk[4] == 0) bc->is_extface[4] = 1;
+      if(meshi->is_extface[5] == 1 && bc->ijk[5] == meshi->kbar)bc->is_extface[1] = 1;
     }
   }
 }

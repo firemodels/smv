@@ -1224,20 +1224,21 @@ void DrawHorizontalColorbarRegLabels(void){
     if(parttype != 0){
       int partunitclass, partunittype;
 
-      GetUnitInfo(partunitlabel2, &partunitclass, &partunittype);
+      GetUnitInfo(partunitlabel, &partunitclass, &partunittype);
       if(partunitclass >= 0 && partunitclass < nunitclasses && partunittype >= 0){
         partflag = 1;
         partfactor = unitclasses[partunitclass].units[partunittype].scale;
-        strcpy(partunitlabel, unitclasses[partunitclass].units[partunittype].unit);
+        strcpy(partunitlabel2, unitclasses[partunitclass].units[partunittype].unit);
       }
-      OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, partshortlabel);
-      OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, partunitlabel);
+      OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, partshortlabel2);
+      OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, partunitlabel2);
     }
     glPopMatrix();
   }
 
   // -------------- slice file top labels ------------
- if(vis_colorbar==hcolorbar_vis[COLORBAR_SLICE]&&show_slice_colorbar_local==1){
+
+  if(vis_colorbar==hcolorbar_vis[COLORBAR_SLICE]&&show_slice_colorbar_local==1){
     char unitlabel[256];
     int sliceunitclass, sliceunittype;
     boundsdata *sb;
@@ -1319,7 +1320,7 @@ void DrawHorizontalColorbarRegLabels(void){
     strcpy(unitlabel, up3label);
     GetUnitInfo(up3label, &plot3dunitclass, &plot3dunittype);
     if(plot3dunitclass >= 0 && plot3dunitclass < nunitclasses){
-      if(plot3dunittype > 0){
+      if(plot3dunittype >= 0){
         plot3dflag = 1;
         plot3dfactor = unitclasses[plot3dunitclass].units[plot3dunittype].scale;
         strcpy(unitlabel, unitclasses[plot3dunitclass].units[plot3dunittype].unit);
@@ -1510,24 +1511,21 @@ void DrawHorizontalColorbarRegLabels(void){
     }
     {
       for(i = 0; i < global_scase.nrgb - 1; i++){
-        float horiz_position;
+        float horiz_position, val;
         char slicecolorlabel[256];
         char *slicecolorlabel_ptr = NULL;
 
         horiz_position = MIX2(i, global_scase.nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
         if(iposition == i)continue;
         if(sliceflag == 1){
-          float val;
-
           val = tttmin + i*slicerange / (global_scase.nrgb - 2);
-          ScaleFloat2String(val, slicecolorlabel, slicefactor);
-          slicecolorlabel_ptr = slicecolorlabel;
-          Float2String(slicecolorlabel_ptr, val, ncolorlabel_digits, force_fixedpoint);
         }
         else{
-          slicecolorlabel_ptr = slicecolorlabel;
-          Float2String(slicecolorlabel_ptr, sb->colorvalues[i+1], ncolorlabel_digits, force_fixedpoint);
+          val = sb->colorvalues[i+1];
         }
+        val = ScaleFloat2Float(val, slicefactor);
+        slicecolorlabel_ptr = slicecolorlabel;
+        Float2String(slicecolorlabel_ptr, val, ncolorlabel_digits, force_fixedpoint);
         OutputBarText(horiz_position, 0.0, foreground_color, slicecolorlabel_ptr);
       }
     }
@@ -1568,6 +1566,7 @@ void DrawHorizontalColorbarRegLabels(void){
       float val;
 
       horiz_position = MIX2(i, global_scase.nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
+
 
       if(iposition == i)continue;
       if(patchflag == 1){
@@ -1671,12 +1670,12 @@ void DrawHorizontalColorbarRegLabels(void){
         if(iposition == i)continue;
         if(plot3dflag == 1){
           val = tttmin + i*plot3drange / (global_scase.nrgb - 2);
+          if(plot3dfactor != NULL)val = plot3dfactor[0]*val + plot3dfactor[1];
         }
         else{
           val = colorvaluesp3[plotn - 1][i];
         }
         plot3dcolorlabel_ptr = plot3dcolorlabel;
-        ScaleFloat2String(val, plot3dcolorlabel, plot3dfactor);
         Float2String(plot3dcolorlabel, val, ncolorlabel_digits, force_fixedpoint);
         OutputBarText(horiz_position, 0.0, foreground_color, plot3dcolorlabel_ptr);
       }
