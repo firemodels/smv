@@ -16,7 +16,7 @@ set BUILDDIR=%CD%
 ::copy libopenvr.lib %LIBDIR%\openvr.lib
 
 :: ZLIB
-cd %SRCDIR%\zlib128
+cd %SRCDIR%\zlib131
 call makelib %OPTS% 
 copy libz.lib %LIBDIR%\zlib.lib
 
@@ -26,7 +26,7 @@ call makelib %OPTS%
 copy libjpeg.lib  %LIBDIR%\jpeg.lib
 
 :: PNG
-cd %SRCDIR%\png-1.6.21
+cd %SRCDIR%\png-1.6.48
 call makelib %OPTS% 
 copy libpng.lib %LIBDIR%\png.lib
 
