@@ -795,7 +795,7 @@ extern "C" void GLUISkyCB(int var){
       }
       break;
     default:
-      assert(0);
+      assert(FFALSE);
       break;
   }
 }
@@ -1303,7 +1303,7 @@ extern "C" void GLUIShowDisplay(int menu_id){
     DisplayRolloutCB(LABELS_ROLLOUT);
     break;
   default:
-    assert(0);
+    assert(FFALSE);
     break;
   }
 }

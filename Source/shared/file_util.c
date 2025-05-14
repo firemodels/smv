@@ -115,7 +115,7 @@ void CopyFILE(char *destdir, char *file_in, char *file_out, int mode){
     streamout=fopen(full_file_out,"ab");
   }
   else{
-    assert(0);
+    assert(FFALSE);
   }
 
   if(streamout==NULL){

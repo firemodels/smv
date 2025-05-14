@@ -3215,7 +3215,7 @@ void ScriptHilightMinMaxVals(scriptdata *scripti, int flag){
     }
     break;
   default:
-    assert(0);
+    assert(FFALSE);
     break;
   }
   GLUIUpdateExtreme();
