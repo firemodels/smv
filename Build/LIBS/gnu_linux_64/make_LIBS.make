@@ -34,13 +34,13 @@ libjpeg.a:
 
 # PNG
 libpng.a:
-	cd $(SRCDIR)/png-1.6.21; \
+	cd $(SRCDIR)/png-1.6.48; \
 		./makelib.sh $(OPTS); \
 		cp libpng.a $(LIBDIR)/.
 
 # ZLIB
 libz.a:
-	cd $(SRCDIR)/zlib128; \
+	cd $(SRCDIR)/zlib131; \
 		./makelib.sh $(OPTS); \
 		cp libz.a $(LIBDIR)/.
 

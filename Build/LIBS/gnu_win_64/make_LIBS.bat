@@ -27,7 +27,7 @@ cd ..\Build
 set BUILDDIR=%CD%
 
 :: ZLIB
-cd %SRCDIR%\zlib128
+cd %SRCDIR%\zlib131
 start %WAIT% makelib %OPTS% -copy libz.a %LIBDIR%\zlib.a
 
 :: JPEG
@@ -35,7 +35,7 @@ cd %SRCDIR%\jpeg-9b
 start %WAIT% makelib %OPTS% -copy libjpeg.a  %LIBDIR%\jpeg.a
 
 :: PNG
-cd %SRCDIR%\png-1.6.21
+cd %SRCDIR%\png-1.6.48
 start %WAIT% makelib %OPTS% -copy libpng.a %LIBDIR%\png.a
 
 :: GD
@@ -57,7 +57,6 @@ if x%arg3% == xfreeglut goto skip_glui1
 if NOT x%arg3% == xfreeglut goto skip_glui2
   start %WAIT% makelib_freeglut %OPTS% -copy libglui.a %LIBDIR%\glui.a
 :skip_glui2
-
 
 :: pthreads
 cd %SRCDIR%\pthreads

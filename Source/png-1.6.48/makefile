@@ -8,11 +8,12 @@
 # and license in png.h
 
 # Location of the zlib library and include files
-ZLIBINC = ../zlib
-ZLIBLIB = ../zlib
+ZLIBINC = ../zlib131
+ZLIBLIB = ../zlib131
 
 # Compiler, linker, lib and other tools
-CC = gcc
+COMPILER=ics
+CC = $(COMPILER)
 LD = $(CC)
 AR = ar
 RANLIB = ranlib
@@ -47,12 +48,18 @@ PNGLIBCONF_H_PREBUILT = scripts/pnglibconf.h.prebuilt
 OBJS = png.o pngerror.o pngget.o pngmem.o pngpread.o \
        pngread.o pngrio.o pngrtran.o pngrutil.o pngset.o \
        pngtrans.o pngwio.o pngwrite.o pngwtran.o pngwutil.o
+OBJSWIN = $(OBJS:.o=.obj)
 
 # Targets
 all: static
 
 pnglibconf.h: $(PNGLIBCONF_H_PREBUILT)
 	$(CP) $(PNGLIBCONF_H_PREBUILT) $@
+
+.SUFFIXES:      .c .o .obj
+
+.c.obj:
+	$(CC) -c $(ALL_CPPFLAGS) $(ALL_CFLAGS) -o $@ $*.c
 
 .c.o:
 	$(CC) -c $(ALL_CPPFLAGS) $(ALL_CFLAGS) -o $@ $*.c
@@ -67,6 +74,9 @@ shared:
 libpng.a: $(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)
 	$(RANLIB) $@
+
+libpng.lib: $(OBJSWIN)
+	lib $(OBJSWIN) -OUT:$@
 
 test: pngtest$(EXEEXT)
 	./pngtest$(EXEEXT)
