@@ -812,7 +812,7 @@ int main(int argc, char **argv){
 
   smv_filename = ParseCommandline(argc, argv);
 
-  if(smv_filename == NULL && show_version == 1){
+  if(smv_filename == NULL || show_version == 1){
     InitStartupDirs();
     DisplayVersionInfo("Smokeview ");
     SMV_EXIT(0);
