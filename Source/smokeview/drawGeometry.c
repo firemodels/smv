@@ -2701,7 +2701,7 @@ void UpdateFaceListsWorker(void){
       if(j<vent_offset){
         if(visBlocks==visBLOCKHide)continue;
       }
-      if(j>=outline_offset&&j<outline_offset+6&&global_scase.visFrame==0){
+      if(j>=outline_offset&&j<outline_offset+6&&outline_mode==SCENE_OUTLINE_HIDDEN){
         continue;
       }
       if(j>=vent_offset&&j<vent_offset+meshi->nvents){
@@ -5050,7 +5050,7 @@ void DrawBlockages(int mode, int trans_flag){
         DrawObstsDebug();
         break;
       default:
-        assert(0);
+        assert(FFALSE);
         break;
       }
     }

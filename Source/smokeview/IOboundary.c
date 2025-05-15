@@ -1294,7 +1294,7 @@ void DrawFace(float *v11, float *v22, int dir){
     v21[1] = v22[1];
     break;
   default:
-    assert(0);
+    assert(FFALSE);
     break;
   }
   glVertex3fv(v11); glVertex3fv(v12); glVertex3fv(v22);
