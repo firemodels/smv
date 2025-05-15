@@ -256,7 +256,7 @@ int ConvertVolSlice(slicedata *slicei, int *thread_index){
         valmax=&vmax;
       }
       else{
-        assert(0);
+        assert(FFALSE);
       }
       CheckMemory;
       CompressVolSliceFrame(sliceframe_data, framesize, time_local, valmin, valmax,

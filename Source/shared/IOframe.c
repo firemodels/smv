@@ -315,7 +315,7 @@ int FRAMEGetNFrames(char *file, int type){
     frameinfo = FRAMEInit(file, FORTRAN_FILE, GetSliceFrameInfo);
     break;
   default:
-    assert(0);
+    assert(FFALSE);
     return 0;
   }
   if(frameinfo != NULL){

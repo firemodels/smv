@@ -90,7 +90,7 @@ void THREADcontrol(threaderdata *thi, int var){
     }
     break;
   default:
-    assert(0);
+    assert(FFALSE);
     break;
   }
 #endif

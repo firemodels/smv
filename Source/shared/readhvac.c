@@ -548,7 +548,7 @@ void SetHVACInfo(hvacdatacollection *hvaccoll) {
       }
       break;
     default:
-      assert(0);
+      assert(FFALSE);
       break;
     }
     GetCellXYZs(ducti->xyz_reg, ducti->nxyz_reg, ducti->nduct_cells,

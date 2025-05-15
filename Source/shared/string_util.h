@@ -84,6 +84,7 @@ typedef struct {
 #endif
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+EXTERNCPP char          *ConcatLabels(char *label1, char *label2, char *label3, char *label);
 EXTERNCPP char          *GetCharPtr(char *label);
 EXTERNCPP char          *GetStringPtr(char *buffer);
 EXTERNCPP char          *GetStringPtr(char *buffer);
