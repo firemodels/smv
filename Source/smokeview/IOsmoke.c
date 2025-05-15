@@ -3592,11 +3592,7 @@ void DrawSmokeFrame(void){
   if(use_tload_begin==1 && global_times[itimes]<global_scase.tload_begin)return;
   if(use_tload_end==1   && global_times[itimes]>global_scase.tload_end)return;
 
-#ifdef pp_SMOKE3D_GPU
   usegpu_local = usegpu;
-#else 
-  usegpu_local = 0;
-#endif
   triangle_count = 0;
 #ifdef pp_GPU
   if(usegpu_local == 1) {
@@ -4991,9 +4987,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     assert(firecolor_data!=NULL||smokecolor_data!=NULL||co2color_data!=NULL);
 
 #ifdef pp_GPU
-#ifdef pp_SMOKE3D_GPU
     if(usegpu==1)continue;
-#endif
 #endif
     if(mesh_smoke3d->merge_color == NULL){
       NewMemory((void **)&mesh_smoke3d->merge_color,4*smoke3di->nchars_uncompressed*sizeof(unsigned char));
@@ -5210,9 +5204,7 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
       }
     }
 #ifdef pp_GPU
-#ifdef pp_SMOKE3D_GPU
     if(usegpu==1)continue;
-#endif
 #endif
     assert(firecolor_data!=NULL||smokecolor_data!=NULL);
     meshi->smokecolor_ptr = firecolor_data;

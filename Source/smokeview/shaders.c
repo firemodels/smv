@@ -716,9 +716,7 @@ int InitShaders(void){
     PRINTF("  *** GPU not supported.\n");
     err=1;
   }
-#ifdef pp_SMOKE3D_GPU
   if(err==0)gpuactive=1;
-#endif
   return err;
 }
 
