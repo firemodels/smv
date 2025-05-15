@@ -1,5 +1,5 @@
 #!/bin/bash
-OPTS="$*"
+OPTS="-G $*"
 source ../../scripts/setopts.sh $OPTS
 
 LIBDIR=../../LIBS/gnu_osx_64
@@ -27,4 +27,4 @@ cd $CURDIR
 if [ "$BUILD_ALL" == "1" ]; then
   rm -f *.o *.mod smokeview_osx_64*
 fi
-eval make GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile gnu_osx_64_db
+eval make COMPILER=${COMPILER} COMPILER2=${COMPILER2} GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile gnu_osx_64_db

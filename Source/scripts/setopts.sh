@@ -1,40 +1,11 @@
 #!/bin/bash
-if [ "`uname`" == "Darwin" ]; then
-# The Mac doesn't have new compilers
-  if [ "$INTEL_ICC" == "" ]; then
-    INTEL_ICC="icc"
-  fi
-  if [ "$INTEL_ICPP" == "" ]; then
-    INTEL_ICPP="icpc"
-  fi
-else
-  if [ "$INTEL_ICC" == "" ]; then
-    INTEL_ICC="icx"
-  fi
-  if [ "$INTEL_ICPP" == "" ]; then
-    INTEL_ICPP="icpx"
-  fi
-fi
 
-# define gcc
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+cd "$(dirname "$0")"
+SCRIPT_DIR="$(pwd)"
 
-if [ "$GCC" == "" ]; then
-  GCC=gcc
-  if [ -e /usr/local/bin/gcc-14 ]; then
-    GCC=/usr/local/bin/gcc-14
-  fi
-  export GCC
-fi
-
-# define g++
-
-if [ "$GXX" == "" ]; then
-  GXX=g++
-  if [ -e /usr/local/bin/g++-14 ]; then
-    GXX=/usr/local/bin/g++-14
-  fi
-  export GXX
-fi
+# define INTEL_ICC, INTEL_ICPP, GCC and GXX variables
+source $SCRIPT_DIR/set_compilers.sh
 
 export COMPILER=$INTEL_ICC
 export COMPILER2=$INTEL_ICPP
@@ -117,6 +88,7 @@ else
   PLATFORM="-D pp_LINUX"
 fi
 export COMPILER
+export COMPILER2
 export PLATFORM
 export GLUT
 export LUA
