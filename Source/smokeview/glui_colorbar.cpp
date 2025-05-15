@@ -367,18 +367,20 @@ void Colorbar2File(colorbardata *cbi, char *file, char *label){
 
 /* ------------------ GetNewColorbarName ------------------------ */
 
-void GetNewColorbarName(char *base, char *label){
+void GetNewColorbarName(char *base, char *label, int labellen){
   int i;
+  char labelcopy[sizeof(GLUI_String)];
 
   for(i = 1;;i++){
     int j;
 
     if(i == 1){
-      snprintf(label, sizeof(base), "%s", base);
+      snprintf(labelcopy, sizeof(GLUI_String), "%s", base);
     }
     else{
-      snprintf(label, sizeof(base), "%s %i", base, i);
+      snprintf(labelcopy, sizeof(GLUI_String), "%s %i", base, i);
     }
+    strcpy(label, labelcopy);
 
     int dup = 0;
     for(j = 0;j < colorbars.ncolorbars;j++){
@@ -835,7 +837,7 @@ extern "C" void GLUIColorbarCB(int var){
     GLUIColorbarCB(COLORBAR_COPY);
     char newlabel[sizeof(GLUI_String)], temp_label[sizeof(GLUI_String)];
     strcpy(temp_label, "new");
-    GetNewColorbarName(temp_label, newlabel);
+    GetNewColorbarName(temp_label, newlabel, sizeof(GLUI_String));
     EDITTEXT_cb_label->set_text(newlabel);
     GLUIColorbarCB(COLORBAR_LABEL);
     GLUIUpdateColorbarType();
