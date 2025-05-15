@@ -3325,7 +3325,7 @@ extern "C" void GLUIExtremeCB(int var){
     updatemenu = 1;
     break;
   default:
-    assert(0);
+    assert(FFALSE);
     break;
   }
 }
@@ -4509,7 +4509,7 @@ void MeshBoundCB(int var){
     MeshBoundCB(USEMESH_XYZ);
     break;
   default:
-    assert(0);
+    assert(FFALSE);
     break;
   }
 }

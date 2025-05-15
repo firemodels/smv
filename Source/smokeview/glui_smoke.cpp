@@ -440,7 +440,7 @@ extern "C" void GLUISmoke3dColorbarCB(int var){
     GLUISmoke3dColorbarCB(GLOBAL_HRRPUV_MAX);
     break;
   default:
-    assert(0);
+    assert(FFALSE);
     break;
   }
   ForceIdle();

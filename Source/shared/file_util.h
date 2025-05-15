@@ -80,6 +80,10 @@ typedef struct {
 #define FTELL(a) ftello(a)
 #endif
 
+#ifndef FFALSE
+#define FFALSE 0
+#endif
+
 #define ALLDATA_OFFSET 0
 #define ALLDATA_NVALS 0
 

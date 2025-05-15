@@ -4865,9 +4865,6 @@ int ReadIni2(const char *inifile, int localfile){
     if(MatchINI(buffer, "OUTLINEMODE") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i", &outline_mode, &outline_color_flag);
-      if(global_scase.meshescoll.nmeshes<2){
-        outline_mode = CLAMP(outline_mode, 0, 1);
-      }
       continue;
     }
     if(MatchINI(buffer, "SLICEDATAOUT") == 1){
@@ -5617,14 +5614,6 @@ int ReadIni2(const char *inifile, int localfile){
     if(MatchINI(buffer, "SHOWFRAMERATE") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &visFramerate);
-      continue;
-    }
-    if(MatchINI(buffer, "SHOWFRAME") == 1 &&
-       MatchINI(buffer, "SHOWFRAMERATE") != 1 &&
-       MatchINI(buffer, "SHOWFRAMELABEL") != 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &global_scase.visFrame);
-      ONEORZERO(global_scase.visFrame);
       continue;
     }
     if(MatchINI(buffer, "FRAMERATEVALUE") == 1){
@@ -8110,8 +8099,14 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", visDummyVents);
   fprintf(fileout, "SHOWFLOOR\n");
   fprintf(fileout, " %i\n", global_scase.visFloor);
-  fprintf(fileout, "SHOWFRAME\n");
-  fprintf(fileout, " %i\n", global_scase.visFrame);
+  if(outline_mode == SCENE_OUTLINE_HIDDEN){
+    fprintf(fileout, "SHOWFRAME\n");
+    fprintf(fileout, " 0\n");
+  }
+  else{
+    fprintf(fileout, "SHOWFRAME\n");
+    fprintf(fileout, " 1\n");
+  }
   fprintf(fileout, "SHOWFRAMELABEL\n");
   fprintf(fileout, " %i\n", visFramelabel);
   fprintf(fileout, "SHOWFRAMETIMELABEL\n");

@@ -39,7 +39,9 @@ float     part_load_time;
 
 #define GEOM_Vents                   15
 #define GEOM_Compartments            16
-#define GEOM_Outline                  3
+#define GEOM_OutlineA                -1
+#define GEOM_OutlineB                -2
+#define GEOM_OutlineC                -3
 #define GEOM_TriangleCount           14
 #define GEOM_ShowAll                 11
 #define GEOM_HideAll                 13
@@ -3337,7 +3339,7 @@ void LoadPlot2DMenu(int value){
     }
     break;
   default:
-    assert(0);
+    assert(FFALSE);
     break;
   }
 }
@@ -4438,7 +4440,7 @@ void UnloadVSliceMenu(int value){
     }
   }
   else if(value==-2){
-    assert(0);
+    assert(FFALSE);
   }
 }
 
@@ -6810,7 +6812,7 @@ void TranslateTypeMenu(int value){
     printf("translate only front/back\n");
     break;
   default:
-    assert(0);
+    assert(FFALSE);
     break;
   }
 }
@@ -7101,7 +7103,7 @@ void TerrainGeomShowMenu(int value){
       GLUIUpdateGeomBoundingBox();
       break;
     default:
-      assert(0);
+      assert(FFALSE);
       break;
     }
   }
@@ -7583,23 +7585,58 @@ int HaveBoundaryArrival(void){
   return 0;
 }
 
-  /* ------------------ GeometryMenu ------------------------ */
+/* ------------------ GeometryOutlineMenu ------------------------ */
 
-void GeometryMenu(int value){
-
+void GeometryOutlineMenu(int value){
+  if(global_scase.isZoneFireModel == 1)return;
   switch(value){
   case SKY_OUTLINE:
     visSkyboxoutline = 1 - visSkyboxoutline;
     GLUIUpdateVisSkyboxOutline();
     break;
-  case GEOM_Outline:
-    if(global_scase.isZoneFireModel == 0){
-      global_scase.visFrame = 1 - global_scase.visFrame;
-      UpdateOutlineMode();
+  case GEOM_OutlineA:
+    if(outline_mode != SCENE_OUTLINE_HIDDEN){
+      outline_mode = SCENE_OUTLINE_HIDDEN;
     }
-    if(outline_mode==SCENE_OUTLINE_HIDDEN)PRINTF("outline mode: hidden\n",outline_mode);
-    if(outline_mode==SCENE_OUTLINE_MESH)PRINTF("outline mode: mesh\n",outline_mode);
-    if(outline_mode==SCENE_OUTLINE_SCENE)PRINTF("outline mode: scene\n",outline_mode);
+    else{
+      outline_mode = SCENE_OUTLINE_SCENE;
+    }
+    break;
+  case GEOM_OutlineB:
+    if(outline_mode == SCENE_OUTLINE_MESH){
+      outline_mode = SCENE_OUTLINE_HIDDEN;
+    }
+    else{
+      outline_mode = SCENE_OUTLINE_MESH;
+    }
+    break;
+  case GEOM_OutlineC:
+    if(outline_mode == SCENE_OUTLINE_SCENE){
+      outline_mode = SCENE_OUTLINE_HIDDEN;
+    }
+    else{
+      outline_mode = SCENE_OUTLINE_SCENE;
+    }
+    break;
+  default:
+    assert(FFALSE);
+    break;
+  }
+  if(outline_mode == SCENE_OUTLINE_HIDDEN)PRINTF("outline mode: hidden\n", outline_mode);
+  if(outline_mode == SCENE_OUTLINE_MESH)PRINTF("outline mode: mesh\n", outline_mode);
+  if(outline_mode == SCENE_OUTLINE_SCENE)PRINTF("outline mode: scene\n", outline_mode);
+  updatefacelists = 1;
+  updatemenu = 1;
+  GLUTPOSTREDISPLAY;
+}
+
+  /* ------------------ GeometryMenu ------------------------ */
+
+void GeometryMenu(int value){
+
+  switch(value){
+  case GEOM_OutlineC:
+    GeometryOutlineMenu(value);
     break;
   case 5:
     global_scase.visFloor=1-global_scase.visFloor;
@@ -7650,14 +7687,12 @@ void GeometryMenu(int value){
   case GEOM_ShowAll:
     show_faces_shaded=1;
     global_scase.visFloor = 1;
-    global_scase.visFrame = 1;
-    UpdateOutlineMode();
+    outline_mode = SCENE_OUTLINE_SCENE;
     BlockageMenu(visBLOCKAsInput);
     VentMenu(SHOW_ALL_VENTS);
     break;
   case GEOM_HideAll:
-    global_scase.visFrame=0;
-    UpdateOutlineMode();
+    outline_mode = SCENE_OUTLINE_HIDDEN;
     global_scase.visFloor=0;
     global_scase.visWalls=0;
     global_scase.visCeiling=0;
@@ -8977,7 +9012,7 @@ static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, griddigitsmenu=0, blockagemenu=0, immersedmenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
 static int loadisomenu=0, isosurfacetypemenu=0,showpatchextmenu=0;
-static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, fileinfomenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
+static int geometrymenu=0, geometryoutlinemenu=0, loadunloadmenu=0, reloadmenu=0, fileinfomenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
 static int scriptmenu=0;
 static int hvacmenu = 0, hvacnetworkmenu, showcomponentmenu = 0, showfiltermenu = 0, connectivitymenu = 0;
 static int hvacvaluemenu = 0, hvacnodevaluemenu = 0, hvacductvaluemenu = 0;
@@ -10192,6 +10227,31 @@ static int menu_count=0;
     glutAddMenuEntry(_("Settings..."), MENU_HVAC_DIALOG_HVAC);
   }
 
+  /* --------------------------------geometryoutlinemenu menu -------------------------- */
+
+  CREATEMENU(geometryoutlinemenu,GeometryOutlineMenu);
+  if(global_scase.isZoneFireModel==0){
+    char skylabel[32] = "", label[128];
+    char label2a[128] = "", label2b[128] = "mesh";
+    char label3a[128] = "", label3b[128] = "scene";
+
+    if(outline_mode == SCENE_OUTLINE_MESH)strcpy(label2a,   "*");
+    if(outline_mode == SCENE_OUTLINE_SCENE)strcpy(label3a,  "*");
+    if(skyboxinfo != NULL)strcpy(skylabel,"(FDS scene)");
+
+    if(global_scase.meshescoll.nmeshes > 1){
+      glutAddMenuEntry(ConcatLabels(label2a, label2b, skylabel, label), GEOM_OutlineB);
+    }
+    glutAddMenuEntry(ConcatLabels(label3a, label3b, skylabel, label), GEOM_OutlineC);
+  }
+  else{
+    outline_mode = SCENE_OUTLINE_HIDDEN;
+  }
+  if(skyboxinfo!=NULL){
+    if(visSkyboxoutline==1)glutAddMenuEntry(_("*Outline(skybox images)"), SKY_OUTLINE);
+    if(visSkyboxoutline==0)glutAddMenuEntry(_("Outline(skybox images)"),  SKY_OUTLINE);
+  }
+
   /* --------------------------------geometry menu -------------------------- */
 
   CREATEMENU(geometrymenu,GeometryMainMenu);
@@ -10217,23 +10277,17 @@ static int menu_count=0;
     }
   }
   GLUTADDSUBMENU(_("Grid"),gridslicemenu);
-  if(global_scase.isZoneFireModel==0){
-    if(skyboxinfo==NULL){
-      if(global_scase.visFrame==1)glutAddMenuEntry(_("*Outline"), GEOM_Outline);
-      if(global_scase.visFrame==0)glutAddMenuEntry(_("Outline"), GEOM_Outline);
+  if(global_scase.meshescoll.nmeshes > 1||skyboxinfo!=NULL){
+    if(outline_mode != SCENE_OUTLINE_HIDDEN || (skyboxinfo != NULL && visSkyboxoutline == 1)){
+      GLUTADDSUBMENU("*Outline",geometryoutlinemenu);
     }
     else{
-      if(global_scase.visFrame==1)glutAddMenuEntry(_("*Outline(FDS scene)"), GEOM_Outline);
-      if(global_scase.visFrame==0)glutAddMenuEntry(_("Outline(FDS scene)"), GEOM_Outline);
+      GLUTADDSUBMENU(_("Outline"),geometryoutlinemenu);
     }
   }
   else{
-    global_scase.visFrame=0;
-    UpdateOutlineMode();
-  }
-  if(skyboxinfo!=NULL){
-    if(visSkyboxoutline==1)glutAddMenuEntry(_("*Outline(skybox images)"), SKY_OUTLINE);
-    if(visSkyboxoutline==0)glutAddMenuEntry(_("Outline(skybox images)"), SKY_OUTLINE);
+    if(outline_mode==SCENE_OUTLINE_HIDDEN)glutAddMenuEntry("Outline",  GEOM_OutlineC);
+    if(outline_mode!=SCENE_OUTLINE_HIDDEN)glutAddMenuEntry("*Outline", GEOM_OutlineC);
   }
   if(hide_scene == 1)glutAddMenuEntry(_("*bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
   if(hide_scene != 1)glutAddMenuEntry(_("bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
