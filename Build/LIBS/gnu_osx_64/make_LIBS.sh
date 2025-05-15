@@ -1,6 +1,7 @@
 #!/bin/bash
 # use -G to force use of the gnu compiler
 OPTS="-G $*"
+
 source ../../../Source/scripts/setopts.sh $OPTS
 
 LIBDIR=`pwd`

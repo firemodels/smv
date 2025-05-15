@@ -22,7 +22,7 @@ COMPILER=gcc -fPIC
 #SIZE=-m32
 SIZE=-m64
 
-CC=$(COMPILER) $(SIZE) $(INCLUDEDIRS) -Wno-incompatible-function-pointer-types
+CC=$(COMPILER) $(SIZE) $(INCLUDEDIRS) -Wno-incompatible-function-pointer-types -Wno-incompatible-pointer-types
 
 .SUFFIXES:      .c .o .obj
 

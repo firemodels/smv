@@ -1,4 +1,10 @@
 #!/bin/bash
+
+CURDIR=`pwd`
+cd  ../../../Source
+SOURCE_DIR=`pwd`
+cd $CURDIR
+
 SMV_MAKE_OPTS=
 TEST=
 TESTFLAG=
@@ -12,6 +18,13 @@ if [ "`uname`" == "Darwin" ]; then
 else
   GLUT=glut
 fi
+
+# define INTEL_ICC, INTEL_ICPP, GCC and GXX variables
+source $SOURCE_DIR/scripts/set_compilers.sh
+
+export COMPILER=$INTEL_ICC
+export COMPILER2=$INTEL_ICPP
+
 inc=
 BUILD_LIBS=
 BUILD_ALL=1
@@ -20,7 +33,7 @@ if [ "$BUILD_ALL" == "1" ]; then
   FULL_BUILD="[default]"
 fi
 TESTOPT=
-while getopts 'AfhiLmprStT' OPTION
+while getopts 'AfGhiLmprStT' OPTION
 do
 case $OPTION in
   A)
@@ -28,6 +41,10 @@ case $OPTION in
   ;;
   f)
    GLUT=freeglut
+  ;;
+  G)
+   COMPILER=$GCC
+   COMPILER2=$GXX
   ;;
   h)
   echo ""
