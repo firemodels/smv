@@ -15,8 +15,29 @@ else
     INTEL_ICPP="icpx"
   fi
 fi
-COMPILER=$INTEL_ICC
-COMPILER2=$INTEL_ICPP
+
+# define gcc
+
+if [ "$GCC" == "" ]; then
+  GCC=gcc
+  if [ -e /usr/local/bin/gcc-14 ]; then
+    GCC=/usr/local/bin/gcc-14
+  fi
+  export GCC
+fi
+
+# define g++
+
+if [ "$GXX" == "" ]; then
+  GXX=g++
+  if [ -e /usr/local/bin/g++-14 ]; then
+    GXX=/usr/local/bin/g++-14
+  fi
+  export GXX
+fi
+
+export COMPILER=$INTEL_ICC
+export COMPILER2=$INTEL_ICPP
 
 PLATFORM=""
 GLUT=glut
@@ -32,13 +53,13 @@ case $OPTION in
   ;;
   g)
    if [ "$FORCE_i" == "" ]; then
-     COMPILER="gcc"
-     COMPILER2="g++"
+     COMPILER=$GCC
+     COMPILER2=$GXX
    fi
   ;;
   G)
-   COMPILER="gcc"
-   COMPILER2="g++"
+   COMPILER=$GCC
+   COMPILER2=$GXX
    FORCE_g=1
   ;;
   h)
