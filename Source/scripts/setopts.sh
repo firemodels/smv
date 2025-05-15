@@ -1,8 +1,6 @@
 #!/bin/bash
 
-SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-cd "$(dirname "$0")"
-SCRIPT_DIR="$(pwd)"
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # define INTEL_ICC, INTEL_ICPP, GCC and GXX variables
 source $SCRIPT_DIR/set_compilers.sh
