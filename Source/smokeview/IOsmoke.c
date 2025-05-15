@@ -3521,7 +3521,7 @@ void DrawSmoke3DColorMap(void){
   }
 #ifdef pp_FIRE_HIST
   if(update_fire_histogram == 1){
-    glColor3fv(foregroundcolor);
+    glColor3f(0.0,0.0,1.0);
     for(i = 0; i < 255; i++){
 
       ybot = (float)i / 255.0;
@@ -4321,18 +4321,26 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
   int error_local;
 
   mesh_smoke3d = global_scase.meshescoll.meshinfo+smoke3di->blocknumber;
+  smoke3ddata *smokefileptr;
+
+  if(load_flag == UNLOAD){
+    smokefileptr = NULL;
+  }
+  else {
+    smokefileptr = smoke3di;
+  }
   if(smoke3di->extinct>0.0){
-    mesh_smoke3d->smoke3d_soot = smoke3di;
+    mesh_smoke3d->smoke3d_soot = smokefileptr;
   }
   else{
     if(smoke3di->type==HRRPUV_index){
-      mesh_smoke3d->smoke3d_hrrpuv = smoke3di;
+      mesh_smoke3d->smoke3d_hrrpuv = smokefileptr;
     }
     else if(smoke3di->type==TEMP_index){
-      mesh_smoke3d->smoke3d_temp = smoke3di;
+      mesh_smoke3d->smoke3d_temp = smokefileptr;
     }
     else if(smoke3di->type==CO2_index){
-      mesh_smoke3d->smoke3d_co2 = smoke3di;
+      mesh_smoke3d->smoke3d_co2 = smokefileptr;
     }
   }
 
@@ -4521,6 +4529,9 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   smoke3di = global_scase.smoke3dcoll.smoke3dinfo + ifile_arg;
 #ifndef pp_SMOKEFRAME
   if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0)fortran_skip=4;
+#endif
+#ifdef pp_FIRE_HIST
+  update_fire_histogram_now = 1;
 #endif
 
   if(first_time == FIRST_TIME){

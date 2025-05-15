@@ -1952,7 +1952,7 @@ SVEXTERN int SVDECL(global_cb_min_index_default, 0),       SVDECL(global_cb_max_
 
 #ifdef pp_FIRE_HIST
 SVEXTERN float smoke3d_firevals[257];
-SVEXTERN int   smoke3d_firecounts[257], SVDECL(update_fire_histogram, 0);
+SVEXTERN int smoke3d_firecounts[257], SVDECL(update_fire_histogram, 0), SVDECL(update_fire_histogram_now, 0);
 #endif
 
 SVEXTERN int SVDECL(show_smoke3d_colorbar, 0);

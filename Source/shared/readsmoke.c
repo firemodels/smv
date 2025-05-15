@@ -27,10 +27,23 @@ void FreeSmoke3D(smv_case *scase, smoke3ddata *smoke3di){
   FRAMEFree(smoke3di->frameinfo);
   smoke3di->frameinfo = NULL;
 #endif
-  if(smoke3di->type==HRRPUV_index)mesh_smoke3d->smoke3d_hrrpuv = NULL;
-  if(smoke3di->type==TEMP_index)mesh_smoke3d->smoke3d_temp = NULL;
-  if(smoke3di->type==SOOT_index)mesh_smoke3d->smoke3d_co2 = NULL;
-  if(smoke3di->type==CO2_index)mesh_smoke3d->smoke3d_soot = NULL;
+  float ext;
+  char *label;
+
+  label = smoke3di->label.shortlabel;
+  ext = smoke3di->extinct;
+  if(ext > 0.0) {
+    meshi->smoke3d_soot = NULL;
+  }
+  if(strcmp(label, "hrrpuv") == 0){
+    meshi->smoke3d_hrrpuv = NULL;
+  }
+  if(strcmp(label, "temp") == 0){
+    meshi->smoke3d_temp = NULL;
+  }
+  if(strcmp(label, "rho_CO2") == 0 || strcmp(label, "Y_CO2") == 0){
+    meshi->smoke3d_co2 = NULL;
+  }
 
   FREEMEMORY(smoke3di->smokeframe_in);
   FREEMEMORY(smoke3di->smokeframe_out);
