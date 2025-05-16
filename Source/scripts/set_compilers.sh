@@ -20,9 +20,6 @@ fi
 
 if [ "$GCC" == "" ]; then
   GCC=gcc
-  if [ -e /usr/local/bin/gcc-14 ]; then
-    GCC=/usr/local/bin/gcc-14
-  fi
   export GCC
 fi
 
@@ -30,9 +27,6 @@ fi
 
 if [ "$GXX" == "" ]; then
   GXX=g++
-  if [ -e /usr/local/bin/g++-14 ]; then
-    GXX=/usr/local/bin/g++-14
-  fi
   export GXX
 fi
 export INTEL_ICC
