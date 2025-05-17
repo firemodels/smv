@@ -32,6 +32,7 @@ add_library(libsmv STATIC
     readtour.c
     scontour2d.c
     readsmvfile.c
+    "paths.c"
 )
 target_include_directories(libsmv PUBLIC
     .

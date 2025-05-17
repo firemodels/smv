@@ -1486,7 +1486,6 @@ void LoadDefaultObjectDefs(object_collection *objectscoll){
 void ReadDefaultObjectCollection(object_collection *objectscoll,
                                  const char *fdsprefix,
                                  int isZoneFireModel){
-  char objectfile[1024];
 
   // There are 5 places to retrieve object definitions from:
   //
@@ -1499,23 +1498,24 @@ void ReadDefaultObjectCollection(object_collection *objectscoll,
   // Last definition wins.
 
   // Read "objects.svo" from bin dir
-  char *smv_bindir = GetSmvRootDir();
-  if(smv_bindir != NULL){
-    strcpy(objectfile, smv_bindir);
-    strcat(objectfile, "objects.svo");
-    ReadObjectDefs(objectscoll, objectfile);
+  char *path = GetSmvRootFile("objects.svo");
+  if(path != NULL){
+    ReadObjectDefs(objectscoll, path);
+    FREEMEMORY(path);
   }
-  FREEMEMORY(smv_bindir);
 
   // Read "objects.svo" from the current directory.
-  strcpy(objectfile, "objects.svo");
-  ReadObjectDefs(objectscoll, objectfile);
+  ReadObjectDefs(objectscoll, "objects.svo");
 
   // Read "${fdsprefix}.svo" from the current directory
   if(fdsprefix != NULL){
+    char *objectfile;
+    char *ext = ".svo";
+    NEWMEMORY(objectfile, sizeof(char) * (strlen(fdsprefix) + strlen(ext) + 1));
     strcpy(objectfile, fdsprefix);
-    strcat(objectfile, ".svo");
+    strcat(objectfile, ext);
     ReadObjectDefs(objectscoll, objectfile);
+    FREEMEMORY(objectfile);
   }
 
 #ifdef SMOKEVIEW_OBJECT_DEFS_PATH

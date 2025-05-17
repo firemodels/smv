@@ -34,6 +34,7 @@
 #include "readcad.h"
 #include "readtour.h"
 #include "readsmvfile.h"
+#include "paths.h"
 
 #define BREAK break
 #define BREAK2 \
@@ -520,7 +521,9 @@ void ReadHRR(smv_case *scase, int flag){
   scase->qradi_col = -1;
   if(flag==UNLOAD)return;
 
-  stream = fopen_3dir(scase->paths.hrr_csv_filename, "r", scase->results_dir, ".", NULL);
+  char *hrr_csv_filename = CasePathHrrCsv(scase);
+  stream = fopen_3dir(hrr_csv_filename, "r", scase->results_dir, ".", NULL);
+  FREEMEMORY(hrr_csv_filename);
   if(stream==NULL)return;
 
   len_buffer = GetRowCols(stream, &nrows, &ncols);
@@ -2268,43 +2271,21 @@ int GetInpf(smv_case *scase, bufferstreamdata *stream_in){
       bufferptr=TrimFrontBack(buffer);
 
       len=strlen(bufferptr);
-      FREEMEMORY(scase->paths.fds_filein);
-      if(NewMemory((void **)&scase->paths.fds_filein,(unsigned int)(len+1))==0)return 2;
-      STRCPY(scase->paths.fds_filein,bufferptr);
-      if(FileExistsCaseDir(scase, scase->paths.fds_filein)==NO){
-        FreeMemory(scase->paths.fds_filein);
+      FREEMEMORY(scase->fds_filein);
+      if(NewMemory((void **)&scase->fds_filein,(unsigned int)(len+1))==0)return 2;
+      STRCPY(scase->fds_filein,bufferptr);
+      if(FileExistsCaseDir(scase, scase->fds_filein)==NO){
+        FreeMemory(scase->fds_filein);
       }
 
-      if(scase->paths.chidfilebase==NULL){
+      if(scase->chidfilebase==NULL){
         char *chidptr=NULL;
         char buffer_chid[1024];
 
-        if(scase->paths.fds_filein!=NULL)chidptr=GetChid(scase->paths.fds_filein,buffer_chid);
+        if(scase->fds_filein!=NULL)chidptr=GetChid(scase->fds_filein,buffer_chid);
         if(chidptr!=NULL){
-          NewMemory((void **)&scase->paths.chidfilebase,(unsigned int)(strlen(chidptr)+1));
-          STRCPY(scase->paths.chidfilebase,chidptr);
-        }
-      }
-      if(scase->paths.chidfilebase!=NULL){
-        NewMemory((void **)&scase->paths.hrr_csv_filename,(unsigned int)(strlen(scase->paths.chidfilebase)+8+1));
-        STRCPY(scase->paths.hrr_csv_filename,scase->paths.chidfilebase);
-        STRCAT(scase->paths.hrr_csv_filename,"_hrr.csv");
-        if(FileExistsCaseDir(scase, scase->paths.hrr_csv_filename)==NO){
-          FREEMEMORY(scase->paths.hrr_csv_filename);
-        }
-
-        NewMemory((void **)&scase->paths.devc_csv_filename,(unsigned int)(strlen(scase->paths.chidfilebase)+9+1));
-        STRCPY(scase->paths.devc_csv_filename,scase->paths.chidfilebase);
-        STRCAT(scase->paths.devc_csv_filename,"_devc.csv");
-        if(FileExistsCaseDir(scase, scase->paths.devc_csv_filename)==NO){
-          FREEMEMORY(scase->paths.devc_csv_filename);
-        }
-
-        NewMemory((void **)&scase->paths.exp_csv_filename,(unsigned int)(strlen(scase->paths.chidfilebase)+8+1));
-        STRCPY(scase->paths.exp_csv_filename,scase->paths.chidfilebase);
-        STRCAT(scase->paths.exp_csv_filename,"_exp.csv");
-        if(FileExistsCaseDir(scase, scase->paths.exp_csv_filename)==NO){
-          FREEMEMORY(scase->paths.exp_csv_filename);
+          NewMemory((void **)&scase->chidfilebase,(unsigned int)(strlen(chidptr)+1));
+          STRCPY(scase->chidfilebase,chidptr);
         }
       }
       break;
@@ -3203,18 +3184,10 @@ int ParseCHIDProcess(smv_case *scase, bufferstreamdata *stream, int option){
   }
   bufferptr = TrimFrontBack(buffer);
   len = strlen(bufferptr);
-  FREEMEMORY(scase->paths.chidfilebase);
-  NewMemory((void **)&scase->paths.chidfilebase, (unsigned int)(len+1));
-  STRCPY(scase->paths.chidfilebase, bufferptr);
+  FREEMEMORY(scase->chidfilebase);
+  NewMemory((void **)&scase->chidfilebase, (unsigned int)(len+1));
+  STRCPY(scase->chidfilebase, bufferptr);
 
-  if(scase->paths.chidfilebase!=NULL){
-    NewMemory((void **)&scase->paths.hrr_csv_filename, (unsigned int)(strlen(scase->paths.chidfilebase)+8+1));
-    STRCPY(scase->paths.hrr_csv_filename, scase->paths.chidfilebase);
-    STRCAT(scase->paths.hrr_csv_filename, "_hrr.csv");
-    if(FileExistsCaseDir(scase, scase->paths.hrr_csv_filename)==NO){
-      FREEMEMORY(scase->paths.hrr_csv_filename);
-    }
-  }
   return RETURN_CONTINUE;
 }
 
@@ -4395,9 +4368,14 @@ blockagedata *GetBlockagePtr(smv_case *scase, float *xyz){
 void ReadSMVOrig(smv_case *scase){
   FILE *stream=NULL;
 
-  stream = fopen(scase->paths.smv_orig_filename, "r");
-  if(stream == NULL)return;
-  PRINTF("reading  %s\n", scase->paths.smv_orig_filename);
+  char *smv_orig_filename = CasePathSmvOrig(scase);
+  stream = fopen(smv_orig_filename, "r");
+  if(stream == NULL) {
+    FREEMEMORY(smv_orig_filename);
+    return;
+  }
+  PRINTF("reading  %s\n", smv_orig_filename);
+  FREEMEMORY(smv_orig_filename);
 
   for(;;){
     char buffer[255];
@@ -4547,21 +4525,21 @@ void InitCSV(csvfiledata *csvi, const char *file, const char *type, int format){
 /// @param[in] type The type of the file. Typically just a label
 /// @param[in] format The format of the CSV file, either FDS or CFAST
 void AddCfastCsvfi(smv_case *scase, const char *suffix, const char *type, int format){
-  char filename[255];
   int i;
 
-  strcpy(filename, scase->fdsprefix);
-  strcat(filename, suffix);
-  strcat(filename, ".csv");
+  char *filename = GetCSVFilename(scase, suffix);
   for(i=0;i<scase->csvcoll.ncsvfileinfo;i++){
     csvfiledata *csvfi;
 
     csvfi = scase->csvcoll.csvfileinfo + i;
-    if(strcmp(csvfi->c_type,type)==0)return;
+    if(strcmp(csvfi->c_type,type)==0) goto end;
   }
-  if(FileExistsCaseDir(scase, filename) == NO)return;
+  if(FileExistsCaseDir(scase, filename) == NO) goto end;
   InitCSV(scase->csvcoll.csvfileinfo + scase->csvcoll.ncsvfileinfo, filename, type, format);
   scase->csvcoll.ncsvfileinfo++;
+end:
+  FREEMEMORY(filename);
+  return;
 }
 
   /* ------------------ AddCfastCsvf ------------------------ */
@@ -7039,15 +7017,17 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
   scase->devicecoll.ndeviceinfo=0;
   REWIND(stream);
 
-  if(FileExistsCaseDir(scase, scase->paths.expcsv_filename)==YES){
+  char *expcsv_filename = CasePathExpCsv(scase);
+  if(FileExistsCaseDir(scase, expcsv_filename)==YES){
     csvfiledata *csvi;
     char csv_type[256];
 
     csvi = scase->csvcoll.csvfileinfo + scase->csvcoll.ncsvfileinfo;
     strcpy(csv_type, "ext");
-    InitCSV(csvi, scase->paths.expcsv_filename, csv_type, CSV_FDS_FORMAT);
+    InitCSV(csvi, expcsv_filename, csv_type, CSV_FDS_FORMAT);
     scase->csvcoll.ncsvfileinfo++;
   }
+  FREEMEMORY(expcsv_filename);
 
   PRINTF("%s","  pass 3\n");
   PRINT_TIMER(timer_readsmv, "pass 2");

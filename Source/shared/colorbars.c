@@ -614,29 +614,28 @@ colorbardata *NewColorbar(colorbar_collection *colorbars){
   return cb;
 }
 
+/* ------------------ GetColorbarsSubDir ------------------------ */
+
 /**
  * @brief Get a path for a colorbar subdir. This is generally in the form
  * ${SMV_ROOT_DIR}/colorbars/${subdir}.
  *
  * @param subdir The name of the subdir
- * @return Path to directory (allocated via NEWMEMORY) or NULL if subidr is NULL
+ * @return Path to directory (allocated via NEWMEMORY) or NULL if subdir is NULL
  * or if GetSmvRootDir returns NULL.
  */
-
-/* ------------------ GetColorbarsSubDir ------------------------ */
-
-char *GetColorbarsSubDir(const char *subdir){
+char *GetColorbarsSubDir(const char *subdir) {
   char *return_path = NULL;
   char *smv_bindir = GetSmvRootDir();
   if(smv_bindir == NULL || subdir == NULL) return return_path;
-
-  NewMemory((void **)&return_path, strlen(smv_bindir) + strlen("colorbars") +
-                                       strlen(dirseparator) + strlen(subdir) +
-                                       2);
-  strcpy(return_path, smv_bindir);
-  strcat(return_path, "colorbars");
-  strcat(return_path, dirseparator);
-  if(strlen(subdir) > 0) strcat(return_path, subdir);
+  char *colorbar_dir = CombinePaths(smv_bindir, "colorbars");
+  if(strlen(subdir) > 0) {
+    return_path = CombinePaths(colorbar_dir, subdir);
+    FREEMEMORY(colorbar_dir);
+  }
+  else {
+    return_path = colorbar_dir;
+  }
   FREEMEMORY(smv_bindir);
   return return_path;
 }
@@ -653,7 +652,7 @@ void ReadColorbarDir(colorbar_collection *colorbars, const char *dir_path,
 
     if(filelist[i].file == NULL || strlen(filelist[i].file) == 0) return;
     if(dir_path == NULL || strlen(dir_path) == 0) return;
-    char *filepath = JoinPath(dir_path, filelist[i].file);
+    char *filepath = CombinePaths(dir_path, filelist[i].file);
     ReadCSVColorbar(cbi, filepath, label, type);
     colorbars->ncolorbars++;
     cbi->can_adjust = 1;

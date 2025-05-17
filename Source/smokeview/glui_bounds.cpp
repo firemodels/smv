@@ -17,6 +17,7 @@
 #include "histogram.h"
 
 #include "colorbars.h"
+#include "paths.h"
 
 void SetResearchMode(int flag);
 int GetCacheFlag(int type);
@@ -4719,13 +4720,17 @@ void ScriptCB(int var){
     id = LIST_ini_list->get_int_val();
     ini_filename = GetIniFileName(id);
     if(ini_filename == NULL)break;
-    if(strcmp(ini_filename, global_scase.paths.caseini_filename) == 0){
+    char *caseini_filename = CasePathCaseIni(&global_scase);
+    if(strcmp(ini_filename, caseini_filename) == 0){
       ReadIni(NULL);
     }
     else if(id >= 0){
       char *script_filename2;
 
-      if(strlen(ini_filename) == 0)break;
+      if(strlen(ini_filename) == 0) {
+        FREEMEMORY(caseini_filename);
+        break;
+      }
       script_filename2 = script_filename;
       strcpy(script_filename, ini_filename);
       windowresized = 0;
@@ -4735,6 +4740,7 @@ void ScriptCB(int var){
       fprintf(scriptoutstream, "LOADINIFILE\n");
       fprintf(scriptoutstream, " %s\n", ini_filename);
     }
+    FREEMEMORY(caseini_filename);
   }
   break;
   case SCRIPT_STEP:
@@ -4919,7 +4925,7 @@ void AddMeshCheckbox(int icol,int nm, GLUI_Panel *PANEL, GLUI_Checkbox **CHECKBO
     for(i=icol-1;i<nm;i+=8){
       meshdata *meshi;
       char label[340];
-      
+
       meshi = global_scase.meshescoll.meshinfo + i;
       sprintf(label, "%i", i + 1);
       if(option == 1){
@@ -4929,7 +4935,7 @@ void AddMeshCheckbox(int icol,int nm, GLUI_Panel *PANEL, GLUI_Checkbox **CHECKBO
         CHECKBOX[i] = glui_bounds->add_checkbox_to_panel(PANEL, label, &meshi->datavis);
       }
     }
-    if(icol!=MIN(8,nm)){     
+    if(icol!=MIN(8,nm)){
       glui_bounds->add_column_to_panel(PANEL, false);
     }
   }
@@ -5802,12 +5808,12 @@ extern "C" void GLUIBoundsSetup(int main_window){
   for(i = 1;i < 9;i++){
     AddMeshCheckbox(i, nn, PANEL_geom_vis2, CHECKBOX_show_mesh_geom, 1);
   }
-  
+
   PANEL_geom_vis3 = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh_blockages, "", GLUI_PANEL_NONE);
   glui_bounds->add_button_to_panel(PANEL_geom_vis3, _("Show all"),     SHOW_ALL_MESH_GEOM, GLUIShowHideGeomDataCB);
-  glui_bounds->add_column_to_panel(PANEL_geom_vis3, false);  
+  glui_bounds->add_column_to_panel(PANEL_geom_vis3, false);
   glui_bounds->add_button_to_panel(PANEL_geom_vis3, _("Hide all"),     HIDE_ALL_MESH_GEOM, GLUIShowHideGeomDataCB);
-  
+
   ROLLOUT_vismesh_data = glui_bounds->add_rollout_to_panel(ROLLOUT_view_options, "View data by mesh", false, MESHDATA_ROLLOUT, ViewRolloutCB);
   TOGGLE_ROLLOUT(viewprocinfo, nviewprocinfo, ROLLOUT_vismesh_data, MESHDATA_ROLLOUT, glui_bounds);
   PANEL_data_vis2 = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh_data, "", GLUI_PANEL_NONE);
@@ -5816,9 +5822,9 @@ extern "C" void GLUIBoundsSetup(int main_window){
   }
   PANEL_data_vis3 = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh_data, "", GLUI_PANEL_NONE);
   glui_bounds->add_button_to_panel(PANEL_data_vis3, _("Show all"),     SHOW_ALL_MESH_DATA, GLUIShowHideGeomDataCB);
-  glui_bounds->add_column_to_panel(PANEL_data_vis3, false);  
+  glui_bounds->add_column_to_panel(PANEL_data_vis3, false);
   glui_bounds->add_button_to_panel(PANEL_data_vis3, _("Hide all"),     HIDE_ALL_MESH_DATA, GLUIShowHideGeomDataCB);
-  
+
   // -------------- Data coloring -------------------
 
   ROLLOUT_coloring = glui_bounds->add_rollout("Coloring", false, COLORING_ROLLOUT, FileRolloutCB);
@@ -7038,7 +7044,7 @@ extern "C" void GLUISliceBoundCB(int var){
       slice_fileupdate--;
       break;
     }
-  last_slice = -1; 
+  last_slice = -1;
     for(ii = nslice_loaded - 1; ii >= 0; ii--){
       i = slice_loaded_list[ii];
       sd = global_scase.slicecoll.sliceinfo + i;

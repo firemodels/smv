@@ -45,6 +45,7 @@
 #include "readcad.h"
 #include "readtour.h"
 #include "readsmvfile.h"
+#include "paths.h"
 
 #define BREAK break
 #define BREAK2 \
@@ -2117,7 +2118,9 @@ void UpdateEvents(void){
   char **tokens;
   int i;
 
-  stream = fopen(global_scase.paths.event_filename, "r");
+  char *event_filename = CasePathEvent(&global_scase);
+  stream = fopen(event_filename, "r");
+  FREEMEMORY(event_filename);
   if(stream==NULL)return;
 
   buffer_len = GetRowCols(stream, &nrows, &ncols);
@@ -2572,7 +2575,9 @@ int ReadSMV_Configure(){
   NewMemory((void **)&camera_last,sizeof(cameradata));
 
   INIT_PRINT_TIMER(fdsrunning_timer);
-  last_size_for_slice = GetFileSizeSMV(global_scase.paths.stepcsv_filename); // used by IsFDSRunning
+  char *stepcsv_filename = CasePathStepCsv(&global_scase);
+  last_size_for_slice = GetFileSizeSMV(stepcsv_filename); // used by IsFDSRunning
+  FREEMEMORY(stepcsv_filename);
   last_size_for_boundary = last_size_for_slice;
   PRINT_TIMER(fdsrunning_timer, "filesize_timer");   // if file size changes then assume fds is running
 
@@ -2609,7 +2614,11 @@ int ReadSMV_Configure(){
 
   if(global_scase.meshescoll.meshinfo!=NULL&&global_scase.meshescoll.meshinfo->jbar==1)force_isometric=1;
 
-  if(global_scase.paths.hrr_csv_filename != NULL)ReadHRR(&global_scase, LOAD);
+  char *hrr_csv_filename = CasePathHrrCsv(&global_scase);
+  if(FileExistsCaseDir(&global_scase, hrr_csv_filename)==NO){
+    ReadHRR(&global_scase, LOAD);
+  }
+  FREEMEMORY(hrr_csv_filename);
   PRINT_TIMER(timer_readsmv, "ReadHRR");
 
   if(runscript == 1){
@@ -3341,7 +3350,7 @@ int ReadIni2(const char *inifile, int localfile){
 #endif
     if(MatchINI(buffer, "COLORGROUND") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i", 
+      sscanf(buffer, " %i %i %i",
         ground_color, ground_color+1, ground_color+2);
       for(i = 0;i < 3;i++){
         ground_color[i] = CLAMP(ground_color[i], 0, 255);
@@ -7030,25 +7039,30 @@ int ReadIni(char *inifile){
   FREEMEMORY(global_ini);
 
   // Read "${fdsprefix}.ini" from the current directory
-  if(global_scase.paths.caseini_filename!=NULL){
+  char *caseini_filename = CasePathCaseIni(&global_scase);
+  if(FILE_EXISTS(caseini_filename)){
     int returnval;
     char localdir[10];
 
-    returnval = ReadIni2(global_scase.paths.caseini_filename, 1);
+    returnval = ReadIni2(caseini_filename, 1);
 
     // if directory is not writable then look for another ini file in the scratch directory
     strcpy(localdir, ".");
     if(Writable(localdir)==0){
       // Read "${fdsprefix}.ini" from the scratch directory
-      char *scratch_ini_filename = GetUserConfigSubPath(global_scase.paths.caseini_filename);
+      char *scratch_ini_filename = GetUserConfigSubPath(caseini_filename);
       returnval = ReadIni2(scratch_ini_filename, 1);
       FREEMEMORY(scratch_ini_filename);
     }
-    if(returnval==2)return 2;
+    if(returnval == 2) {
+      FREEMEMORY(caseini_filename);
+      return 2;
+    }
     if(returnval == 0 && readini_output==1){
       if(verbose_output==1)PRINTF("- complete\n");
     }
   }
+  FREEMEMORY(caseini_filename);
 
   // Read file specified in the SSF script
   if(inifile!=NULL){
@@ -7637,6 +7651,7 @@ void WriteIni(int flag,char *filename){
   char *outfilename=NULL, *outfiledir=NULL;
   char *smokeviewini_filename = GetSystemIniPath();
   char *smokeview_scratchdir = GetUserConfigDir();
+  char *caseini_filename = CasePathCaseIni(&global_scase);
 
   switch(flag){
   case GLOBAL_INI:
@@ -7651,12 +7666,14 @@ void WriteIni(int flag,char *filename){
     outfilename=filename;
     break;
   case LOCAL_INI:
-    fileout=fopen(global_scase.paths.caseini_filename,"w");
+  {
+    fileout=fopen(caseini_filename,"w");
     if(fileout==NULL&&smokeview_scratchdir!=NULL){
-      fileout = fopen_indir(smokeview_scratchdir, global_scase.paths.caseini_filename, "w");
+      fileout = fopen_indir(smokeview_scratchdir, caseini_filename, "w");
       outfiledir = smokeview_scratchdir;
      }
-    outfilename=global_scase.paths.caseini_filename;
+    outfilename=caseini_filename;
+  }
     break;
   default:
     assert(FFALSE);
@@ -8251,9 +8268,9 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "SHOWSLICEVALS\n");
   fprintf(fileout, " %i\n", show_slice_values_all_regions);
-  if(global_scase.paths.fds_filein != NULL&&strlen(global_scase.paths.fds_filein) > 0){
+  if(global_scase.fds_filein != NULL&&strlen(global_scase.fds_filein) > 0){
     fprintf(fileout, "INPUT_FILE\n");
-    fprintf(fileout, " %s\n", global_scase.paths.fds_filein);
+    fprintf(fileout, " %s\n", global_scase.fds_filein);
   }
   fprintf(fileout, "LABELSTARTUPVIEW\n");
   fprintf(fileout, " %s\n", viewpoint_label_startup);
@@ -8451,7 +8468,7 @@ void WriteIni(int flag,char *filename){
 
   if(flag == LOCAL_INI)WriteIniLocal(fileout);
   if(
-    ((INI_fds_filein != NULL&&global_scase.paths.fds_filein != NULL&&strcmp(INI_fds_filein, global_scase.paths.fds_filein) == 0) ||
+    ((INI_fds_filein != NULL&&global_scase.fds_filein != NULL&&strcmp(INI_fds_filein, global_scase.fds_filein) == 0) ||
     flag == LOCAL_INI))OutputViewpoints(fileout);
 
   {
@@ -8522,6 +8539,7 @@ void WriteIni(int flag,char *filename){
     fclose(fileout);
   }
   FREEMEMORY(smokeview_scratchdir);
+  FREEMEMORY(caseini_filename);
 }
 
 /* ------------------ UpdateLoadedLists ------------------------ */

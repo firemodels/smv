@@ -14,6 +14,7 @@
 #include "IOvolsmoke.h"
 #include "glui_motion.h"
 #include "readgeom.h"
+#include "paths.h"
 
 #define ROTATE_TRANSLATE
 #ifdef pp_OSX_HIGHRES
@@ -2656,9 +2657,11 @@ void RenderCB(int var){
     case RENDER_LABEL:
     case RENDER_TYPE:
       break;
-    case RENDER_HTML:
-      Smv2Html(global_scase.paths.html_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW);
-      break;
+    case RENDER_HTML: {
+      char *html_filename = CasePathHtml(&global_scase);
+      Smv2Html(html_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW);
+      FREEMEMORY(html_filename);
+    } break;
 #ifdef pp_RENDER360_DEBUG
     case RENDER_DEBUG_360:
       if(debug_360_skip_x<2){

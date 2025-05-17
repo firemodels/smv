@@ -1138,37 +1138,6 @@ char *GetFloatFileSizeLabel(float size, char *sizelabel){
   return sizelabel;
 }
 
-// Only allows something from NEWMEMORY
-char *JoinPath(const char *path, const char *segment) {
-  // TODO: replace with platform-specific functions
-  char *new_path;
-  if (path == NULL) {
-    if (segment == NULL) return NULL;
-    NEWMEMORY(new_path, (strlen(segment) + 1) * sizeof(char));
-    STRCPY(new_path, segment);
-    return new_path;
-  };
-  if (segment == NULL) {
-    NEWMEMORY(new_path, (strlen(path) + 1) * sizeof(char));
-    STRCPY(new_path, path);
-    return new_path;
-  };
-  int path_len = strlen(path);
-  int newlen = path_len + strlen(dirseparator) + strlen(segment) + 1;
-  NEWMEMORY(new_path, (newlen + 1) * sizeof(char));
-  strcpy(new_path, path);
-  int new_path_len;
-  new_path_len = strlen(new_path);
-  if(strcmp(new_path + new_path_len - 1, dirseparator) == 0){
-    strcat(new_path, segment);
-  }
-  else{
-    strcat(new_path, dirseparator);
-    strcat(new_path, segment);
-  }
-  return new_path;
-}
-
 #ifdef _WIN32
 
 /* ------------------ GetBinPath - windows ------------------------ */
@@ -1206,6 +1175,17 @@ char *GetBinDir(){
   PathAddBackslashA(buffer);
   return buffer;
 }
+
+char *CombinePaths(const char *path_a, const char *path_b){
+  char *path_out;
+  NEWMEMORY(path_out, sizeof(char) * MAX_PATH);
+  // NB: This uses on older function in order to support "char *".
+  // PathAllocCombine would be better but requires switching to "wchar *".
+  char *result = PathCombineA(path_out, path_a, path_b);
+  if(result == NULL) FREEMEMORY(path_out);
+  return result;
+}
+
 #elif __linux__
 
 /* ------------------ GetBinPath - linux ------------------------ */
@@ -1244,6 +1224,21 @@ char *GetBinDir(){
   buffer[pathlen + 1] = '\0';
   return buffer;
 }
+
+char *CombinePaths(const char *path_a, const char *path_b) {
+  char *path_out;
+  size_t path_a_len = strlen(path_a);
+  size_t path_b_len = strlen(path_b);
+  size_t new_len = path_a_len + 1 + path_b_len;
+  NEWMEMORY(path_out, sizeof(char) * (new_len + 1));
+  STRCPY(path_out, path_a);
+  path_out[path_a_len] = '/';
+  path_out[path_a_len+1] = '\0';
+  STRCAT(path_out, path_b);
+  path_out[new_len] = '\0';
+  return path_out;
+}
+
 #else
 
 /* ------------------ GetBinPath - osx ------------------------ */
@@ -1283,6 +1278,20 @@ char *GetBinDir(){
   buffer[pathlen] = '/';
   buffer[pathlen + 1] = '\0';
   return buffer;
+}
+
+char *CombinePaths(const char *path_a, const char *path_b) {
+  char *path_out;
+  size_t path_a_len = strlen(path_a);
+  size_t path_b_len = strlen(path_b);
+  size_t new_len = path_a_len + 1 + path_b_len;
+  NEWMEMORY(path_out, sizeof(char) * (new_len + 1));
+  STRCPY(path_out, path_a);
+  path_out[path_a_len] = '/';
+  path_out[path_a_len+1] = '\0';
+  STRCAT(path_out, path_b);
+  path_out[new_len] = '\0';
+  return path_out;
 }
 #endif
 
@@ -1387,18 +1396,21 @@ char *GetSmvRootDir(){
 char *GetSmvRootSubPath(const char *subdir) {
   char *root_dir = GetSmvRootDir();
   if (root_dir == NULL || subdir == NULL) return NULL;
-  return JoinPath(root_dir,subdir);
+  return CombinePaths(root_dir,subdir);
 }
 
 /* ------------------ GetHomeDir ------------------------ */
 
 char *GetHomeDir() {
 #ifdef WIN32
-  char *homedir = getenv("userprofile");
+  char *homedir_env = getenv("userprofile");
 #else
-  char *homedir = getenv("HOME");
+  char *homedir_env = getenv("HOME");
 #endif
-  if (homedir == NULL) return ".";
+  if(homedir_env == NULL) homedir_env = ".";
+  char *homedir;
+  NEWMEMORY(homedir, sizeof(char) * (strlen(homedir_env) + 1));
+  STRCPY(homedir, ".");
   return homedir;
 }
 
@@ -1422,7 +1434,7 @@ char *GetUserConfigDir() {
 char *GetUserConfigSubPath(const char *subdir) {
   char *config_dir = GetUserConfigDir();
   if (config_dir == NULL || subdir == NULL) return NULL;
-  return JoinPath(config_dir,subdir);
+  return CombinePaths(config_dir,subdir);
 }
 
 /* ------------------ GetSystemIniPath ------------------------ */
@@ -1462,6 +1474,36 @@ char *GetSmokeviewHtmlVrPath() {
 char *GetSmvScreenIni() {
   return GetSmvRootSubPath("smv_screen.ini");
 }
+
+
+
+/* ------------------ GetSmvRootFile ----------------------- */
+
+char *GetSmvRootFile(const char *path) {
+  char *root_path = GetSmvRootDir();
+  char *result = CombinePaths(root_path, path);
+  FREEMEMORY(root_path);
+  return result;
+}
+
+/* ------------------ GetSmvUserDir ------------------------ */
+
+char *GetSmvUserDir() {
+  char *home_path = GetHomeDir();
+  char *result = CombinePaths(home_path, ".smokeview");
+  FREEMEMORY(home_path);
+  return result;
+}
+
+/* ------------------ GetSmvUserFile ----------------------- */
+
+char *GetSmvUserFile(const char *path) {
+  char *user_path = GetSmvUserDir();
+  char *result = CombinePaths(user_path, path);
+  FREEMEMORY(user_path);
+  return result;
+}
+
 
 /* ------------------ IsSootFile ------------------------ */
 

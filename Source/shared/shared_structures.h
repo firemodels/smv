@@ -1065,49 +1065,6 @@ typedef struct {
 
 } surf_collection;
 
-/* --------------------------  casepaths ------------------------------------ */
-
-typedef struct {
-  char *fds_filein;
-  char *chidfilebase;
-  char *hrr_csv_filename;
-  char *devc_csv_filename;
-  char *exp_csv_filename;
-  char *stepcsv_filename;
-
-  // The base names are properties of the GUI
-  // char *movie_name;
-  // char *render_file_base;
-  // char *html_file_base;
-  char *log_filename;
-  char *caseini_filename;
-  char *fedsmv_filename;
-#ifdef pp_FRAME
-  char *frametest_filename;
-#endif
-  char *expcsv_filename;
-  char *dEcsv_filename;
-  char *html_filename;
-  char *smv_orig_filename;
-  char *hrr_filename;
-  char *htmlvr_filename;
-  char *htmlobst_filename;
-  char *htmlslicenode_filename;
-  char *htmlslicecell_filename;
-  char *event_filename;
-  char *ffmpeg_command_filename;
-  char *fed_filename;
-  char *smvzip_filename;
-  char *sliceinfo_filename;
-  char *deviceinfo_filename;
-#ifdef pp_SMOKE3D_FORCE
-  char *smoke3d_filename;
-#endif
-  char *iso_filename;
-  char *trainer_filename;
-  char *test_filename;
-} casepaths;
-
 /* --------------------------  csvdata ------------------------------------ */
 
 typedef struct _csvdata {
@@ -1773,9 +1730,23 @@ struct color_defaults {
 /* --------------------------  smv_case ------------------------------------ */
 
 typedef struct {
+  /// @brief This is the filename passed to smokeview without the extension.
   char *fdsprefix;
+  /// @brief This can be one of the two things, the &HEAD CHID={CHID} value
+  /// found in the input file (defined by INPF) or the CHID value found in
+  /// *.smv. The value defined by CHID takes precedence and the value defined in
+  /// INPF is discarded if the CHID entry exists.
+  char *chidfilebase;
+
+  /// @brief The value of INPF in the *.smv file, represents the input file for
+  /// the simulation.
+  char *fds_filein;
+  /// @brief The value of the TITLE in the *.smv file.
   char *fds_title;
+  /// @brief The value of FDSVERSION in the *.smv file.
   char *fds_version;
+  /// @brief The value of FDSVERSION in the *.smv file. Currently this is simply
+  /// a copy of fds_version.
   char *fds_githash;
   char *results_dir;
 
@@ -1799,8 +1770,6 @@ typedef struct {
   terrain_texture_collection     terrain_texture_coll;
   texture_collection             texture_coll;
   tour_collection                tourcoll;
-
-  casepaths paths;
 
   int nplot3dinfo;
   plot3ddata *plot3dinfo;

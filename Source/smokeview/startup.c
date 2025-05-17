@@ -21,6 +21,7 @@
 #include "glui_bounds.h"
 #include "glui_motion.h"
 #include "glui_smoke.h"
+#include "paths.h"
 
 /* ------------------ InitDefaultCameras ------------------------ */
 
@@ -236,33 +237,40 @@ int SetupCase(char *filename){
 
   // setup input files names
 
-  input_file = filename;
+  NewMemory((void **)&input_file, sizeof(char) * (strlen(filename) + 1));
+  STRCPY(input_file, filename);
   if(strcmp(input_filename_ext,".svd")==0||demo_option==1){
     trainer_mode=1;
     trainer_active=1;
     if(strcmp(input_filename_ext,".svd")==0){
-      input_file=global_scase.paths.trainer_filename;
+      input_file=CasePathTrainer(&global_scase);
     }
     else if(strcmp(input_filename_ext,".smt")==0){
-      input_file=global_scase.paths.test_filename;
+      input_file=CasePathTest(&global_scase);
     }
   }
   {
     bufferstreamdata *smv_streaminfo = NULL;
 
     PRINTF("reading  %s\n", input_file);
-    if(FileExistsOrig(global_scase.paths.smvzip_filename) == 1){
+    char *smvzip_filename = CasePathSmvZip(&global_scase);
+    if(FileExistsOrig(smvzip_filename) == 1){
       parse_opts.lookfor_compressed_files = 1;
     }
+    FREEMEMORY(smvzip_filename);
+    char *iso_filename = CasePathIso(&global_scase);
+    char *fedsmv_filename = CasePathFed(&global_scase);
     smv_streaminfo = GetSMVBuffer(input_file);
-    smv_streaminfo = AppendFileBuffer(smv_streaminfo, global_scase.paths.iso_filename);
-    smv_streaminfo = AppendFileBuffer(smv_streaminfo, global_scase.paths.fedsmv_filename);
+    smv_streaminfo = AppendFileBuffer(smv_streaminfo, iso_filename);
+    smv_streaminfo = AppendFileBuffer(smv_streaminfo, fedsmv_filename);
+    FREEMEMORY(iso_filename);
+    FREEMEMORY(fedsmv_filename);
 
 #ifdef pp_SMOKE3D_FORCE
     if(HaveSmoke3D(smv_streaminfo) == 0){
       FILE *stream_smoke3d = NULL;
-
-      stream_smoke3d = fopen(global_scase.paths.smoke3d_filename, "w");
+      char *smoke3d_filename = CasePathSmoke3d(&global_scase);
+      stream_smoke3d = fopen(smoke3d_filename, "w");
       if(stream_smoke3d != NULL){
         fprintf(stream_smoke3d, "SMOKF3D 1 8700.0                                    \n");
         fprintf(stream_smoke3d, " dummy.xyz                                          \n");
@@ -270,8 +278,9 @@ int SetupCase(char *filename){
         fprintf(stream_smoke3d, " rho_C                                              \n");
         fprintf(stream_smoke3d, " kg / m3                                            \n");
         fclose(stream_smoke3d);
-        smv_streaminfo = AppendFileBuffer(smv_streaminfo, global_scase.paths.smoke3d_filename);
+        smv_streaminfo = AppendFileBuffer(smv_streaminfo, smoke3d_filename);
       }
+      FREEMEMORY(smoke3d_filename);
     }
 #endif
     return_code = ReadSMV(smv_streaminfo);
@@ -289,12 +298,15 @@ int SetupCase(char *filename){
   switch(return_code){
     case 1:
       fprintf(stderr,"*** Error: Smokeview file, %s, not found\n",input_file);
+      FREEMEMORY(input_file);
       return 1;
     case 2:
       fprintf(stderr,"*** Error: problem reading Smokeview file, %s\n",input_file);
+      FREEMEMORY(input_file);
       return 2;
     case 0:
       UpdateSMVDynamic(input_file);
+      FREEMEMORY(input_file);
       break;
     case 3:
       return 3;
@@ -369,7 +381,7 @@ int SetupCase(char *filename){
     GLUIShowAlert();
   }
   // initialize info header
-  initialiseInfoHeader(&titleinfo, release_title, smv_githash, global_scase.fds_githash, global_scase.paths.chidfilebase, global_scase.fds_title);
+  initialiseInfoHeader(&titleinfo, release_title, smv_githash, global_scase.fds_githash, global_scase.chidfilebase, global_scase.fds_title);
   PRINT_TIMER(timer_start, "glut routines");
   return 0;
 }
@@ -1250,9 +1262,10 @@ void AutoLoadSmoke3D(int smoke3d_type){
     update_load_files=0;
     GLUIHideAlert();
    // TrainerViewMenu(trainerview); // this breaks auto slice loading
-  }
+}
 
-  /* ------------------ InitTextureDir ------------------------ */
+
+/* ------------------ InitTextureDir ------------------------ */
 
 void InitTextureDir(void){
   char *texture_buffer;

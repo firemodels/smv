@@ -23,5 +23,23 @@ int main(int argc, char **argv) {
     assert(root_len > 0);
     assert(root[root_len - 1] == dirseparator[0]);
   }
+  {
+    char *path = CombinePaths("1234/abc/efg", "hij/klm");
+#ifdef _WIN32
+    assert(strcmp(path, "1234/abc/efg\\hij/klm") == 0);
+#else
+    assert(strcmp(path, "1234/abc/efg/hij/klm") == 0);
+#endif
+  }
+  {
+    char *filename = "objects.svo";
+    char *path = GetSmvRootFile(filename);
+    assert(strcmp(LastName(path), filename) == 0);
+  }
+  {
+    char *filename = "smokeview.ini";
+    char *path = GetSmvRootFile(filename);
+    assert(strcmp(LastName(path), filename) == 0);
+  }
   return 0;
 }

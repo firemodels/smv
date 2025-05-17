@@ -23,6 +23,7 @@
 #include "IOscript.h"
 #include "viewports.h"
 #include "colorbars.h"
+#include "paths.h"
 
 void LoadHVACMenu(int value);
 void LoadPlot2DMenu(int value);
@@ -1594,9 +1595,9 @@ void DialogMenu(int value){
   case DIALOG_GEOMETRY:
     showedit_dialog=1-showedit_dialog;
     if(showedit_dialog==1){
-      if(global_scase.paths.fds_filein!=NULL&&updategetobstlabels==1){
+      if(global_scase.fds_filein!=NULL&&updategetobstlabels==1){
         CheckMemoryOff;
-        GetObstLabels(global_scase.paths.fds_filein);
+        GetObstLabels(global_scase.fds_filein);
         CheckMemoryOn;
         updategetobstlabels=0;
       }
@@ -2071,37 +2072,51 @@ void RenderMenu(int value){
   case RenderJSON:
   case RenderJSONALL:
     {
+
+      char *htmlobst_filename = CasePathHtmlObst(&global_scase);
+      char *htmlslicenode_filename = CasePathHtmlSliceNode(&global_scase);
+      char *htmlslicecell_filename = CasePathHtmlSliceCell(&global_scase);
       int json_option;
 
       json_option = HTML_CURRENT_TIME;
       if(value==RenderJSONALL)json_option = HTML_ALL_TIMES;
-      if(Obst2Data(global_scase.paths.htmlobst_filename)!=0){
-        printf("blockage data output to %s\n", global_scase.paths.htmlobst_filename);
+      if(Obst2Data(htmlobst_filename)!=0){
+        printf("blockage data output to %s\n",htmlobst_filename);
       }
       else{
         printf("no blockage data to output\n");
       }
-      if(SliceNode2Data(global_scase.paths.htmlslicenode_filename, json_option)!=0){
-        printf("node centered slice file data output to %s\n", global_scase.paths.htmlslicenode_filename);
+      if(SliceNode2Data(htmlslicenode_filename, json_option)!=0){
+        printf("node centered slice file data output to %s\n", htmlslicenode_filename);
       }
       else{
         printf("no node centered slice file data to output\n");
       }
-      if(SliceCell2Data(global_scase.paths.htmlslicecell_filename, json_option)!=0){
-        printf("cell centered slice file data output to %s\n", global_scase.paths.htmlslicecell_filename);
+      if(SliceCell2Data(htmlslicecell_filename, json_option)!=0){
+        printf("cell centered slice file data output to %s\n", htmlslicecell_filename);
       }
       else{
         printf("no cell centered slice file data to output\n");
       }
+      FREEMEMORY(htmlobst_filename);
+      FREEMEMORY(htmlslicenode_filename);
+      FREEMEMORY(htmlslicecell_filename);
       break;
     }
     break;
-  case RenderHTML:
-    Smv2Html(global_scase.paths.html_filename,   HTML_CURRENT_TIME, FROM_SMOKEVIEW);
+    case RenderHTML: {
+      char *html_filename = CasePathHtml(&global_scase);
+      Smv2Html(html_filename, HTML_CURRENT_TIME,
+               FROM_SMOKEVIEW);
+      FREEMEMORY(html_filename);
+    }
     break;
-  case RenderHTMLALL:
-    Smv2Html(global_scase.paths.html_filename,   HTML_ALL_TIMES, FROM_SMOKEVIEW);
-    break;
+    case RenderHTMLALL: {
+      char *html_filename = CasePathHtml(&global_scase);
+      Smv2Html(html_filename, HTML_ALL_TIMES, FROM_SMOKEVIEW);
+      FREEMEMORY(html_filename);
+
+    } break;
   case RenderCancel:
     RenderState(RENDER_OFF);
     break;
@@ -3490,9 +3505,11 @@ void LoadUnloadMenu(int value){
     load_flag = LOAD;
 #endif
     THREADcontrol(compress_threads, THREAD_LOCK);
-    if(global_scase.paths.hrr_csv_filename!=NULL){
+    char *hrr_csv_filename = CasePathHrrCsv(&global_scase);
+    if(FileExistsCaseDir(&global_scase, hrr_csv_filename) == YES) {
       ReadHRR(&global_scase, LOAD);
     }
+    FREEMEMORY(hrr_csv_filename);
 
     //*** reload hvac file
       if(global_scase.hvaccoll.hvacductvalsinfo!=NULL&&global_scase.hvaccoll.hvacductvalsinfo->loaded==1){
@@ -3676,7 +3693,9 @@ void LoadUnloadMenu(int value){
       LOG_FILENAME=NULL;
     }
     if(redirect==1){
-      LOG_FILENAME=fopen(global_scase.paths.log_filename,"w");
+      char *log_filename = CasePathLogFile(&global_scase);
+      LOG_FILENAME=fopen(log_filename,"w");
+      FREEMEMORY(log_filename);
       if(LOG_FILENAME==NULL)redirect=0;
     }
     if(redirect==1){
@@ -12091,15 +12110,17 @@ static int menu_count=0;
     glutAddMenuEntry(_("  x/y/z: toggle lower x/y/z clip planes"), MENU_DUMMY);
     glutAddMenuEntry(_("  X/Y/Z: toggle upper x/y/z clip planes"), MENU_DUMMY);
   }
-  if(global_scase.paths.caseini_filename!=NULL&&strlen(global_scase.paths.caseini_filename)>0){
+  char *caseini_filename = CasePathCaseIni(&global_scase);
+  if(caseini_filename!=NULL&&strlen(caseini_filename)>0){
     char inilabel[512];
 
-    sprintf(inilabel,"  #: save settings to %s",global_scase.paths.caseini_filename);
+    sprintf(inilabel,"  #: save settings to %s",caseini_filename);
     glutAddMenuEntry(inilabel,MENU_DUMMY);
   }
   else{
     glutAddMenuEntry(_("  #: save settings (create casename.ini file)"), MENU_DUMMY);
   }
+  FREEMEMORY(caseini_filename);
   if(global_scase.ngeominfo){
     glutAddMenuEntry(_("  =: toggle vertex selected in examine geometry dialog"), MENU_DUMMY);
     glutAddMenuEntry(_("  Z: toggle rotation center between FDS and FDS+GEOM center"), MENU_DUMMY);
@@ -12857,9 +12878,11 @@ static int menu_count=0;
     }
     if(n_inifiles>0){
       CREATEMENU(inisubmenu,IniSubMenu);
-      if(global_scase.paths.caseini_filename!=NULL&&FILE_EXISTS(global_scase.paths.caseini_filename)==YES){
-        glutAddMenuEntry(global_scase.paths.caseini_filename,MENU_READCASEINI);
+      char *caseini_filename = CasePathCaseIni(&global_scase);
+      if(FILE_EXISTS(caseini_filename)==YES){
+        glutAddMenuEntry(caseini_filename,MENU_READCASEINI);
       }
+      FREEMEMORY(caseini_filename);
       for(inifile=first_inifile.next;inifile->next!=NULL;inifile=inifile->next){
         if(inifile->file!=NULL&&FILE_EXISTS(inifile->file)==YES){
           glutAddMenuEntry(inifile->file,inifile->id);
@@ -12883,7 +12906,8 @@ static int menu_count=0;
     }
     char *global_ini_path = GetSystemIniPath();
     char *user_ini_path = GetUserIniPath();
-    if( n_inifiles>0||FILE_EXISTS(user_ini_path)==YES||FILE_EXISTS(global_scase.paths.caseini_filename)==YES||FILE_EXISTS(global_ini_path)==YES){
+    char *caseini_filename = CasePathCaseIni(&global_scase);
+    if( n_inifiles>0||FILE_EXISTS(user_ini_path)==YES||FILE_EXISTS(caseini_filename)==YES||FILE_EXISTS(global_ini_path)==YES){
       if(n_inifiles==0){
         glutAddMenuEntry(_("Read ini files"),MENU_READINI);
       }
@@ -12891,6 +12915,7 @@ static int menu_count=0;
         GLUTADDSUBMENU(_("Read ini files"),inisubmenu);
       }
     }
+    FREEMEMORY(caseini_filename);
     FREEMEMORY(global_ini_path);
     FREEMEMORY(user_ini_path);
    }
@@ -12899,9 +12924,11 @@ static int menu_count=0;
     {
       char caselabel[255];
 
-      STRCPY(caselabel,_("Save settings (this case - "));
-      STRCAT(caselabel,global_scase.paths.caseini_filename);
+      char *caseini_filename = CasePathCaseIni(&global_scase);
+      STRCPY(caselabel, _("Save settings (this case - "));
+      STRCAT(caselabel, caseini_filename);
       STRCAT(caselabel, ")");
+      FREEMEMORY(caseini_filename);
 
       glutAddMenuEntry(caselabel,MENU_WRITECASEINI);
     }
@@ -13161,7 +13188,9 @@ static int menu_count=0;
         strcpy(menulabel,"");
         if(redirect==1)strcat(menulabel,"*");
         strcat(menulabel,"Redirect messages to ");
-        strcat(menulabel,global_scase.paths.log_filename);
+        char *log_filename = CasePathLogFile(&global_scase);
+        strcat(menulabel,log_filename);
+        FREEMEMORY(log_filename);
         glutAddMenuEntry(menulabel,REDIRECT);
       }
 

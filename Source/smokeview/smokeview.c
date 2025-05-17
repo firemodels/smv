@@ -10,6 +10,7 @@
 #include "smokeviewvars.h"
 #include "glui_motion.h"
 #include "IOscript.h"
+#include "paths.h"
 
 #ifdef WIN32
 #include <direct.h>
@@ -253,20 +254,22 @@ void DisplayVersionInfo(char *progname){
   char fullini_filename[256];
   strcpy(fullini_filename, "");
   char *smokeview_scratchdir = GetUserConfigDir();
-  if(global_scase.paths.caseini_filename != NULL){
-    if(FileExistsOrig(global_scase.paths.caseini_filename) == 1){
+  char *caseini_filename = CasePathCaseIni(&global_scase);
+  if(caseini_filename != NULL){
+    if(FileExistsOrig(caseini_filename) == 1){
       char cwdpath[1000];
       GETCWD(cwdpath, 1000);
       strcpy(fullini_filename, cwdpath);
       strcat(fullini_filename, dirseparator);
-      strcat(fullini_filename, global_scase.paths.caseini_filename);
+      strcat(fullini_filename, caseini_filename);
     }
     else if(smokeview_scratchdir!=NULL){
       strcpy(fullini_filename, smokeview_scratchdir);
-      strcat(fullini_filename, global_scase.paths.caseini_filename);
+      strcat(fullini_filename, caseini_filename);
       if(FileExistsOrig(fullini_filename)==0)strcpy(fullini_filename, "");
     }
   }
+  FREEMEMORY(caseini_filename);
   FREEMEMORY(smokeview_scratchdir);
   if(smv_filename != NULL || show_version == 0){
     if(strlen(fullini_filename) > 0){
@@ -285,7 +288,9 @@ void DisplayVersionInfo(char *progname){
 int IsFDSRunning(FILE_SIZE *last_size){
   FILE_SIZE file_size;
 
-  file_size = GetFileSizeSMV(global_scase.paths.stepcsv_filename);
+  char *stepcsv_filename = CasePathStepCsv(&global_scase);
+  file_size = GetFileSizeSMV(stepcsv_filename);
+  FREEMEMORY(stepcsv_filename);
   if(file_size != *last_size){
     *last_size = file_size;
     return 1;
@@ -296,23 +301,25 @@ int IsFDSRunning(FILE_SIZE *last_size){
 /* ------------------ BuildGbndFile ------------------------ */
 
 int BuildGbndFile(int file_type){
+  char *stepcsv_filename = CasePathStepCsv(&global_scase);
   switch(file_type){
     case BOUND_SLICE:
       if(FileExistsOrig(slice_gbnd_filename)==0)return 1;
-      if(IsFileNewer(global_scase.paths.stepcsv_filename, slice_gbnd_filename)==1)return 1;
+      if(IsFileNewer(stepcsv_filename, slice_gbnd_filename)==1)return 1;
       break;
     case BOUND_PATCH:
       if(FileExistsOrig(patch_gbnd_filename)==0)return 1;
-      if(IsFileNewer(global_scase.paths.stepcsv_filename, patch_gbnd_filename)==1)return 1;
+      if(IsFileNewer(stepcsv_filename, patch_gbnd_filename)==1)return 1;
       break;
     case BOUND_PLOT3D:
       if(FileExistsOrig(plot3d_gbnd_filename)==0)return 1;
-      if(IsFileNewer(global_scase.paths.stepcsv_filename, plot3d_gbnd_filename)==1)return 1;
+      if(IsFileNewer(stepcsv_filename, plot3d_gbnd_filename)==1)return 1;
       break;
     default:
       assert(FFALSE);
       break;
   }
+  FREEMEMORY(stepcsv_filename);
   return 0;
 }
 
