@@ -1139,43 +1139,6 @@ char *GetFloatFileSizeLabel(float size, char *sizelabel){
 }
 
 #ifdef _WIN32
-
-/* ------------------ GetBinPath - windows ------------------------ */
-
-char *GetBinPath(){
-  size_t MAX_BUFFER_SIZE = MAX_PATH * 20;
-  char *buffer;
-  size_t buffer_size = MAX_PATH * sizeof(char);
-  NEWMEMORY(buffer, buffer_size);
-  for(;;){
-    GetModuleFileNameA(NULL, buffer, buffer_size);
-    DWORD dw = GetLastError();
-    if(dw == ERROR_SUCCESS){
-      return buffer;
-    }
-    else if(dw == ERROR_INSUFFICIENT_BUFFER && buffer_size < MAX_BUFFER_SIZE){
-      // increase buffer size by a factor of 2
-      buffer_size *= 2;
-      RESIZEMEMORY(buffer, buffer_size);
-    }
-    else{
-      FREEMEMORY(buffer);
-      return NULL;
-    }
-  }
-}
-
-/* ------------------ GetBinDir - windows ------------------------ */
-
-char *GetBinDir(){
-  char *buffer = GetBinPath();
-  // NB: This uses on older function in order to support "char *".
-  // PathCchRemoveFileSpec would be better but requires switching to "wchar *".
-  PathRemoveFileSpecA(buffer);
-  PathAddBackslashA(buffer);
-  return buffer;
-}
-
 char *CombinePaths(const char *path_a, const char *path_b){
   char *path_out;
   NEWMEMORY(path_out, sizeof(char) * MAX_PATH);
@@ -1185,46 +1148,7 @@ char *CombinePaths(const char *path_a, const char *path_b){
   if(result == NULL) FREEMEMORY(path_out);
   return result;
 }
-
-#elif __linux__
-
-/* ------------------ GetBinPath - linux ------------------------ */
-
-char *GetBinPath(){
-  size_t MAX_BUFFER_SIZE = 2048 * 20;
-  char *buffer;
-  size_t buffer_size = 256 * sizeof(char);
-  NEWMEMORY(buffer, buffer_size);
-  for(;;){
-    int ret = readlink("/proc/self/exe", buffer, buffer_size);
-    if(ret < buffer_size){
-      buffer[ret] = '\0';
-      return buffer;
-    }
-    else if(ret == buffer_size && buffer_size < MAX_BUFFER_SIZE){
-      // increase buffer size by a factor of 2
-      buffer_size *= 2;
-      RESIZEMEMORY(buffer, buffer_size);
-    }
-    else{
-      FREEMEMORY(buffer);
-      return NULL;
-    }
-  }
-}
-
-/* ------------------ GetBinDir - linux ------------------------ */
-
-char *GetBinDir(){
-  char *buffer = GetBinPath();
-  dirname(buffer);
-  int pathlen = strlen(buffer);
-  RESIZEMEMORY(buffer, pathlen + 2);
-  buffer[pathlen] = '/';
-  buffer[pathlen + 1] = '\0';
-  return buffer;
-}
-
+#else
 char *CombinePaths(const char *path_a, const char *path_b) {
   char *path_out;
   size_t path_a_len = strlen(path_a);
@@ -1238,13 +1162,58 @@ char *CombinePaths(const char *path_a, const char *path_b) {
   path_out[new_len] = '\0';
   return path_out;
 }
+#endif
 
-#else
-
-/* ------------------ GetBinPath - osx ------------------------ */
-
+/* ------------------ GetBinPath ------------------------ */
+#ifdef _WIN32
 char *GetBinPath(){
-  uint32_t  MAX_BUFFER_SIZE = 2048 * 20;
+  size_t max_buffer_size = MAX_PATH * 20;
+  char *buffer;
+  size_t buffer_size = MAX_PATH * sizeof(char);
+  NEWMEMORY(buffer, buffer_size);
+  for(;;){
+    GetModuleFileNameA(NULL, buffer, buffer_size);
+    DWORD dw = GetLastError();
+    if(dw == ERROR_SUCCESS){
+      return buffer;
+    }
+    else if(dw == ERROR_INSUFFICIENT_BUFFER && buffer_size < max_buffer_size){
+      // increase buffer size by a factor of 2
+      buffer_size *= 2;
+      RESIZEMEMORY(buffer, buffer_size);
+    }
+    else{
+      FREEMEMORY(buffer);
+      return NULL;
+    }
+  }
+}
+#elif __linux__
+char *GetBinPath(){
+  size_t max_buffer_size = 2048 * 20;
+  char *buffer;
+  size_t buffer_size = 256 * sizeof(char);
+  NEWMEMORY(buffer, buffer_size);
+  for(;;){
+    int ret = readlink("/proc/self/exe", buffer, buffer_size);
+    if(ret < buffer_size){
+      buffer[ret] = '\0';
+      return buffer;
+    }
+    else if(ret == buffer_size && buffer_size < max_buffer_size) {
+      // increase buffer size by a factor of 2
+      buffer_size *= 2;
+      RESIZEMEMORY(buffer, buffer_size);
+    }
+    else{
+      FREEMEMORY(buffer);
+      return NULL;
+    }
+  }
+}
+#else
+char *GetBinPath(){
+  uint32_t  max_buffer_size = 2048 * 20;
   char *buffer;
   uint32_t buffer_size = 256 * sizeof(char);
   NEWMEMORY(buffer, buffer_size);
@@ -1253,7 +1222,7 @@ char *GetBinPath(){
     if(ret == 0){
       return buffer;
     }
-    else if(ret == -1 && buffer_size < MAX_BUFFER_SIZE){
+    else if(ret == -1 && buffer_size < max_buffer_size){
       // buffer_size has been set to the required buffer size by
       // _NSGetExecutablePath
       RESIZEMEMORY(buffer, buffer_size);
@@ -1264,9 +1233,29 @@ char *GetBinPath(){
     }
   }
 }
+#endif
 
-/* ------------------ GetBinDir - osx ------------------------ */
-
+/* ------------------ GetBinDir ------------------------ */
+#ifdef _WIN32
+char *GetBinDir(){
+  char *buffer = GetBinPath();
+  // NB: This uses on older function in order to support "char *".
+  // PathCchRemoveFileSpec would be better but requires switching to "wchar *".
+  PathRemoveFileSpecA(buffer);
+  PathAddBackslashA(buffer);
+  return buffer;
+}
+#elif __linux__
+char *GetBinDir(){
+  char *buffer = GetBinPath();
+  dirname(buffer);
+  int pathlen = strlen(buffer);
+  RESIZEMEMORY(buffer, pathlen + 2);
+  buffer[pathlen] = '/';
+  buffer[pathlen + 1] = '\0';
+  return buffer;
+}
+#else
 char *GetBinDir(){
   char *buffer = GetBinPath();
   // The BSD and OSX version of dirname uses an internal buffer, therefore we
@@ -1278,20 +1267,6 @@ char *GetBinDir(){
   buffer[pathlen] = '/';
   buffer[pathlen + 1] = '\0';
   return buffer;
-}
-
-char *CombinePaths(const char *path_a, const char *path_b) {
-  char *path_out;
-  size_t path_a_len = strlen(path_a);
-  size_t path_b_len = strlen(path_b);
-  size_t new_len = path_a_len + 1 + path_b_len;
-  NEWMEMORY(path_out, sizeof(char) * (new_len + 1));
-  STRCPY(path_out, path_a);
-  path_out[path_a_len] = '/';
-  path_out[path_a_len+1] = '\0';
-  STRCAT(path_out, path_b);
-  path_out[new_len] = '\0';
-  return path_out;
 }
 #endif
 
