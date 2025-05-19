@@ -457,7 +457,7 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int option){
   char *c_type;
 
   csvi = GetCsvCurve(index, &csvfi);
-  if(csvfi == NULL)return;
+  if(csvfi == NULL || csvi == NULL)return;
   c_type = csvfi->c_type;
 
   have_plot = 0;

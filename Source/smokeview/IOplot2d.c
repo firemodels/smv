@@ -750,7 +750,10 @@ void GetPlot2DBounds(plot2ddata *plot2di, float *valmin, float *valmax){
 /* ------------------ InitPlot2D ------------------------ */
 
 void InitPlot2D(plot2ddata *plot2di, int plot_index){
+#ifdef pp_PLOT2D_FIX
+#else
   if(global_scase.devicecoll.ndeviceinfo == 0 && global_scase.hrr_coll.nhrrinfo == 0)return;
+#endif
   plot2di->ncurves = 0;
   plot2di->ncurves_ini = 0;
   plot2di->show = 1;
