@@ -1504,9 +1504,7 @@ typedef struct _smoke3ddata {
   flowlabels label;
   char menulabel[128];
   float *times;
-#ifdef pp_FIRE_HIST
   int *histtimes;
-#endif
   unsigned char *times_map;
   int *use_smokeframe;
   int *smokeframe_loaded;

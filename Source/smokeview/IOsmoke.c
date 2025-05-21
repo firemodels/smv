@@ -3521,7 +3521,6 @@ void DrawSmoke3DColorMap(void){
     glVertex3f(yright2, 0.0, ytop);
     glVertex3f(yleft2,  0.0, ytop);
   }
-#ifdef pp_FIRE_HIST
   if(update_fire_histogram == 1){
     glColor3f(0.0,0.0,1.0);
     for(i = 0; i < 255; i++){
@@ -3535,7 +3534,6 @@ void DrawSmoke3DColorMap(void){
       glVertex3f(yright2, 0.0, ytop);
     }
   }
-#endif
   glEnd();
 
   float firemin_cb, firemax_cb;
@@ -4532,9 +4530,7 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
 #ifndef pp_SMOKEFRAME
   if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0)fortran_skip=4;
 #endif
-#ifdef pp_FIRE_HIST
   update_fire_histogram_now = 1;
-#endif
 
   if(first_time == FIRST_TIME){
     if(SetupSmoke3D(smoke3di, load_flag,time_frame, errorcode_arg)==READSMOKE3D_RETURN){
@@ -4779,7 +4775,6 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
   case COMPRESSED_RLE:
     buffer_in = smoke3di->smokeframe_comp_list[iframe_local];
     countout = UnCompressRLE(buffer_in,countin,smoke3di->smokeframe_in);
-#ifdef pp_FIRE_HIST
     if(update_fire_histogram == 1 && smoke3di->is_fire==1 && smoke3di->histtimes != NULL && smoke3di->histtimes[iframe_local] == 0){
       int i;
       unsigned char *vals;
@@ -4802,7 +4797,6 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
         smoke3d_firevals[i] /= denom;
       }
     }
-#endif
     CheckMemory;
     break;
   case COMPRESSED_ZLIB:

@@ -576,9 +576,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   SPINNER_cb_max_index = glui_3dsmoke->add_spinner_to_panel(PANEL_cb_index, "max", GLUI_SPINNER_INT, &global_cb_max_index, COLORBAR_INDEX_MAX, GLUISmoke3dColorbarCB);
 
   glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_cutoff, "Show fire colorbar", &show_smoke3d_colorbar, USE_FIRE_COLORMAP, GLUISmoke3dCB);
-#ifdef pp_FIRE_HIST
   glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_cutoff, "Show fire histogram", &update_fire_histogram, UPDATE_FIRE_HISTOGRAM, GLUISmoke3dCB);
-#endif
   glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff,   "Refresh", REFRESH_FIRE, GLUISmoke3dCB);
   BUTTON_cutoff_defaults = glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Reset", CUTOFF_RESET, GLUISmoke3dCB);
 
@@ -1199,7 +1197,6 @@ extern "C" void GLUISmoke3dCB(int var){
       if(PANEL_fire_colormap != NULL)PANEL_fire_colormap->disable();
     }
     break;
-#ifdef pp_FIRE_HIST
   case UPDATE_FIRE_HISTOGRAM:
     if(update_fire_histogram == 1){
       for(i = 0; i < 257; i++){
@@ -1225,7 +1222,6 @@ extern "C" void GLUISmoke3dCB(int var){
       }
     }
     break;
-#endif
   case USE_FIRE_COLORMAP:
     SetRGBColorMapVars(1 - use_fire_colormap);
     GLUISmoke3dCB(ENABLE_DISABLE_FIRE);
