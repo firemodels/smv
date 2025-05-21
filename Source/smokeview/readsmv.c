@@ -3007,7 +3007,9 @@ int ReadSMV(bufferstreamdata *stream) {
     use_meshnabors_threads  = 0;
   }
   ReadSMV_Init(&global_scase);
-  ReadSMV_Parse(&global_scase, stream);
+  int abort_vent = 0;
+  ReadSMV_Parse(&global_scase, stream, &abort_vent);
+  if(abort_vent == 1)SMV_EXIT(1);
   ReadSMV_Configure();
   return 0;
 }

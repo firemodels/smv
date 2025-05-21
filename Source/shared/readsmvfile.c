@@ -4885,7 +4885,7 @@ int HaveSmoke3D(bufferstreamdata *stream){
 /// after ReadSMV_Init to ensure that the appropriate variables are set.
 /// @param stream the smv file stream
 /// @return zero on success, non-zero on failure
-int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
+int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream, int *abort_vent){
   int i;
   int have_zonevents,nzventsnew=0;
   int do_pass4=0, do_pass5=0;
@@ -8457,6 +8457,22 @@ typedef struct {
                &iv1,&iv2,&jv1,&jv2,&kv1,&kv2,
                &ventindex,&venttype,
                s2_color,s2_color+1,s2_color+2,s2_color+3);
+          int imesh;
+
+          imesh = meshi - scase->meshescoll.meshinfo + 1;
+          if(iv1<0 || iv1>meshi->ibar || iv2<0 || iv2>meshi->ibar){
+            printf("***error: the x coordinates, (%i,%i), for vent %i in mesh %i are out of bounds\n",iv1,iv2,nn+1,imesh);
+            *abort_vent = 1;
+          }
+          if(jv1<0 || jv1>meshi->jbar || jv2<0 || jv2>meshi->jbar){
+            printf("***error: the y coordinates, (%i,%i), for vent %i in mesh %i are out of bounds\n",jv1,jv2,nn+1,imesh);
+            *abort_vent = 1;
+          }
+          if(kv1<0 || kv1>meshi->kbar || kv2<0 || kv2>meshi->kbar){
+            printf("***error: the z coordinates, (%i,%i), for vent %i in mesh %i are out of bounds\n",kv1,kv2,nn+1,imesh);
+            *abort_vent = 1;
+          }
+          if(*abort_vent == 1)continue;
 
           // get vent direction
           if(ventdir == 0){
