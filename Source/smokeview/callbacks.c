@@ -1922,16 +1922,12 @@ void Keyboard(unsigned char key, int flag){
       break;
 #ifdef pp_GPU
     case 'G':
-#ifdef pp_SMOKE3D_GPU
       if(gpuactive==1){
         usegpu=1-usegpu;
       }
       else{
         usegpu=0;
       }
-#else
-      usegpu = 0;
-#endif
       if(global_scase.smoke3dcoll.nsmoke3dinfo>0){
         GLUIUpdateSmoke3dFlags();
       }
