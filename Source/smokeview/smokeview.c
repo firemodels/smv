@@ -239,17 +239,14 @@ void DisplayVersionInfo(char *progname){
   }
   FREEMEMORY(user_ini_path);
 
-  char objectfile[1024];
-  if(smv_bindir != NULL){
-    strcpy(objectfile, smv_bindir);
-    strcat(objectfile, "objects.svo");
-  }
-  if(smv_bindir != NULL && FileExistsOrig(objectfile) == 1){
+  char *objectfile = GetSmvRootFile("objects.svo");
+  if(objectfile != NULL && FileExistsOrig(objectfile) == 1){
     PRINTF("objects.svo      : %s\n", objectfile);
   }
   else{
     PRINTF("objects.svo      : not found\n");
   }
+  FREEMEMORY(objectfile);
 
   char fullini_filename[256];
   strcpy(fullini_filename, "");

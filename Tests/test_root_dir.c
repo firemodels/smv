@@ -41,5 +41,15 @@ int main(int argc, char **argv) {
     char *path = GetSmvRootFile(filename);
     assert(strcmp(LastName(path), filename) == 0);
   }
+  {
+    char *path = GetHomeDir();
+    assert(path != NULL);
+    assert(strlen(path) > 1);
+  }
+  {
+    char *path = GetSmvRootFile("objects.svo");
+    assert(path != NULL);
+    assert(strlen(path) > 0);
+  }
   return 0;
 }

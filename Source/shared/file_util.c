@@ -1383,9 +1383,10 @@ char *GetHomeDir() {
   char *homedir_env = getenv("HOME");
 #endif
   if(homedir_env == NULL) homedir_env = ".";
+  // For consistency allocate path using NEWMEMORY
   char *homedir;
   NEWMEMORY(homedir, sizeof(char) * (strlen(homedir_env) + 1));
-  STRCPY(homedir, ".");
+  STRCPY(homedir, homedir_env);
   return homedir;
 }
 
@@ -1393,14 +1394,9 @@ char *GetHomeDir() {
 
 char *GetUserConfigDir() {
   char *homedir = GetHomeDir();
-  if (homedir == NULL) return NULL;
-
-  char *config_path;
-  NEWMEMORY(config_path,
-            strlen(homedir) + strlen(dirseparator) + strlen(".smokeview") + 1);
-  strcpy(config_path, homedir);
-  strcat(config_path, dirseparator);
-  strcat(config_path, ".smokeview");
+  if(homedir == NULL) return NULL;
+  char *config_path = CombinePaths(homedir, ".smokeview");
+  FREEMEMORY(homedir);
   return config_path;
 }
 
