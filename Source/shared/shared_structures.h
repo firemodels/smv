@@ -190,10 +190,6 @@ typedef struct _meshdata {
   int nbptrs;
   int is_bottom;
 
-#ifdef pp_SMOKE3D
-  int have_smoke3d_temp;
-#endif
-
   int *cutcells, ncutcells;
   int update_smoke3dcolors;
   struct _terraindata *terrain;

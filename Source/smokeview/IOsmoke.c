@@ -1839,12 +1839,6 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
         koffset = k2 - k;
 
         kterm = (k-ks1)*nxy;
-#ifdef pp_SMOKE3D
-        if(smoke3d_temperature_fix == 1 && smoke3di->type == TEMP_index){
-          if(k == ks1)kterm += smoke3d_skipz*nxy;
-          if(k + smoke3d_skipz >= ks2)kterm -= smoke3d_skipz*nxy;
-        }
-#endif
         z1 = zplt[k];
         z3 = zplt[k2];
         znode[0] = z1;
@@ -1867,12 +1861,6 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
           joffset = j2 - j;
 
           jterm = (j-js1)*nx;
-#ifdef pp_SMOKE3D
-          if(smoke3d_temperature_fix == 1 && smoke3di->type == TEMP_index) {
-            if(j == js1) jterm += smoke3d_skipy * nx;
-            if(j + smoke3d_skipy*nx >=js2)jterm -= smoke3d_skipy*nx;
-          }
-#endif
           yy1 = yplt[j];
           y3 = yplt[j2];
           ynode[0] = yy1;
@@ -2001,12 +1989,6 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
         k2 = MIN(k+smoke3d_skipz,ks2);
         koffset = k2 - k;
         kterm = (k-ks1)*nxy;
-#ifdef pp_SMOKE3D
-        if(smoke3d_temperature_fix == 1 && meshi->have_smoke3d_temp==1){
-          if(k == ks1)kterm += smoke3d_skipz*nxy;
-          if(k +smoke3d_skipz >= ks2)kterm -= smoke3d_skipz * nxy;
-        }
-#endif
         z1 = zplt[k];
         z3 = zplt[k2];
 
@@ -2029,12 +2011,6 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
           i2 = MIN(i+smoke3d_skipx,is2);
           ioffset = i2 - i;
           iterm = (i-is1);
-#ifdef pp_SMOKE3D
-          if(smoke3d_temperature_fix == 1 && smoke3d_temperature_fix == 1 && meshi->have_smoke3d_temp==1){
-            if(i == is1)iterm += smoke3d_skipx;
-            if(i + smoke3d_skipx >=is2)iterm -= smoke3d_skipx;
-          }
-#endif
           x1 = xplt[i];
           x3 = xplt[i2];
 
@@ -2161,12 +2137,6 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
         j2 = MIN(j+smoke3d_skipy,js2);
         joffset = j2 - j;
         jterm = (j-js1)*nx;
-#ifdef pp_SMOKE3D
-        if(smoke3d_temperature_fix == 1 && meshi->have_smoke3d_temp==1){
-          if(j == js1)jterm += smoke3d_skipy*nx;
-          if(j + smoke3d_skipy*nx >=js2)jterm -= smoke3d_skipy*nx;
-        }
-#endif
 
         yy1 = yplt[j];
         y3 = yplt[j2];
@@ -2190,12 +2160,6 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
           i2 = MIN(i+smoke3d_skipx,is2);
           ioffset = i2 - i;
           iterm = (i-is1);
-#ifdef pp_SMOKE3D
-          if(smoke3d_temperature_fix == 1 && meshi->have_smoke3d_temp==1){
-            if(i == is1)iterm += smoke3d_skipx;
-            if(i + smoke3d_skipx >=is2)iterm -= smoke3d_skipx;
-          }
-#endif
           x1 = xplt[i];
           x3 = xplt[i2];
 
@@ -2348,12 +2312,6 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
 
       for(k = ks1; k<ks2; k++){
         kterm = (k-ks1)*nxy;
-#ifdef pp_SMOKE3D
-        if(smoke3d_temperature_fix == 1 && meshi->have_smoke3d_temp==1){
-          if(k == ks1)kterm += nxy;
-          if(k == ks2-1)kterm -= nxy;
-        }
-#endif
         z1 = zplt[k];
         z3 = zplt[k+1];
         znode[0] = z1;
@@ -2373,11 +2331,6 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
         for(ii = ibeg;ii<iend;ii++){
           i = is1+ii;
           iterm = (i-is1);
-#ifdef pp_SMOKE3D
-          if(smoke3d_temperature_fix == 1 && meshi->have_smoke3d_temp==1){
-            if(i == is1)iterm++;
-          }
-#endif
           x1 = xplt[i];
           x3 = xplt[i+1];
 
@@ -2389,11 +2342,6 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
           jj = ipj-ii;
           j = js1+jj;
           jterm = (j-js1)*nx;
-#ifdef pp_SMOKE3D
-          if(smoke3d_temperature_fix == 1 && meshi->have_smoke3d_temp==1){
-            if(j == js1)jterm += nx;
-          }
-#endif
 
           yy1 = yplt[j];
           y3 = yplt[j-1];
@@ -2572,20 +2520,10 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
         for(ii = ibeg;ii<iend;ii++){
           i = is1+ii;
           iterm = (i-is1);
-#ifdef pp_SMOKE3D
-          if(smoke3d_temperature_fix == 1 && meshi->have_smoke3d_temp==1){
-            if(i == is1)iterm++;
-          }
-#endif
 
           jj = ii+jmi+1-nx;
           j = js1+jj;
           jterm = (j-js1)*nx;
-#ifdef pp_SMOKE3D
-          if(smoke3d_temperature_fix == 1 && meshi->have_smoke3d_temp==1){
-            if(j == js1)jterm += nx;
-          }
-#endif
 
           yy1 = yplt[j];
           y3 = yplt[j+1];
@@ -2770,13 +2708,6 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
         for(jj = jbeg;jj<jend;jj++){
           j = js1+jj;
           jterm = (j-js1)*nx;
-#ifdef pp_SMOKE3D
-          if(smoke3d_temperature_fix == 1) {
-            if(smoke3di->type == TEMP_index || smoke3di->type == SOOT_index) {
-              if(j == js1) jterm += nx;
-            }
-          }
-#endif
           yy1 = yplt[j];
           y3 = yplt[j+1];
 
@@ -2788,11 +2719,6 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
           kk = jpk-jj;
           k = ks1+kk;
           kterm = (k-ks1)*nxy;
-#ifdef pp_SMOKE3D
-          if(smoke3d_temperature_fix == 1 && meshi->have_smoke3d_temp==1){
-            if(k == ks1)kterm+=nxy;
-          }
-#endif
 
           z1 = zplt[k];
           z3 = zplt[k-1];
@@ -2971,20 +2897,10 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
         for(jj = jbeg;jj<jend;jj++){
           j = js1+jj;
           jterm = (j-js1)*nx;
-#ifdef pp_SMOKE3D
-          if(smoke3d_temperature_fix == 1 && smoke3di->type == TEMP_index){
-            if(j == js1)jterm+=nx;
-          }
-#endif
 
           kk = jj+kmj+1-ny;
           k = ks1+kk;
           kterm = (k-ks1)*nxy;
-#ifdef pp_SMOKE3D
-          if(smoke3d_temperature_fix == 1 && meshi->have_smoke3d_temp==1){
-            if(k == ks1)kterm+=nxy;
-          }
-#endif
 
           z1 = zplt[k];
           z3 = zplt[k+1];
@@ -3167,11 +3083,6 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
         for(ii = ibeg;ii<iend;ii++){
           i = is1+ii;
           iterm = (i-is1);
-#ifdef pp_SMOKE3D
-          if(smoke3d_temperature_fix == 1 && meshi->have_smoke3d_temp==1){
-            if(i == is1)iterm++;
-          }
-#endif
           x1 = xplt[i];
           x3 = xplt[i+1];
 
@@ -3183,11 +3094,6 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
           kk = ipk-ii;
           k = ks1+kk;
           kterm = (k-ks1)*nxy;
-#ifdef pp_SMOKE3D
-          if(smoke3d_temperature_fix == 1 && meshi->have_smoke3d_temp==1){
-            if(k == ks1)kterm+=nxy;
-          }
-#endif
 
           z1 = zplt[k];
           z3 = zplt[k-1];
@@ -3366,20 +3272,10 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
         for(ii = ibeg;ii<iend;ii++){
           i = is1+ii;
           iterm = (i-is1);
-#ifdef pp_SMOKE3D
-          if(smoke3d_temperature_fix == 1 && meshi->have_smoke3d_temp == 1) {
-            if(i == is1)iterm++;
-          }
-#endif
 
           kk = ii+kmi+1-nx;
           k = ks1+kk;
           kterm = (k-ks1)*nxy;
-#ifdef pp_SMOKE3D
-          if(smoke3d_temperature_fix == 1 && meshi->have_smoke3d_temp == 1) {
-            if(k == ks1)kterm+=nxy;
-          }
-#endif
 
           z1 = zplt[k];
           z3 = zplt[k+1];
@@ -4858,19 +4754,6 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     rgb_sliceco2colormap_0255[i]   = 255*rgb_sliceco2colormap_01[i];
   }
 
-#ifdef pp_SMOKE3D
-  if(smoke3d_temperature_fix == 1){
-    for(i = first; i <= last; i++){
-      smoke3ddata *smoke3di;
-      meshdata *mesh_smoke3d;
-
-      smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
-      if(smoke3di->loaded == 0 || smoke3di->display == 0) continue;
-      mesh_smoke3d = global_scase.meshescoll.meshinfo + smoke3di->blocknumber;
-      mesh_smoke3d->have_smoke3d_temp = 0;
-    }
-  }
-#endif
   for(i=first;i<=last;i++){
     smoke3ddata *smoke3di, *smoke3d_soot;
     meshdata *mesh_smoke3d;
@@ -4882,9 +4765,6 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     if(smoke3di->is_fire == 1  && smoke3di->skip_fire == 1)continue;
     if(smoke3di->is_smoke == 1 && smoke3di->skip_smoke == 1)continue;
     mesh_smoke3d = global_scase.meshescoll.meshinfo+smoke3di->blocknumber;
-#ifdef pp_SMOKE3D
-    if(smoke3d_temperature_fix == 1 && smoke3di->type == TEMP_index)mesh_smoke3d->have_smoke3d_temp = 1;
-#endif
     smoke3d_soot = mesh_smoke3d->smoke3d_soot;
     if(smoke3di->type==SOOT_index){
       smoke3di->primary_file = 1;

@@ -481,7 +481,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("max blending"), &hrrpuv_max_blending);
   CHECKBOX_smoke_flip    = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("flip background"), &background_flip,BACKGROUND_FLIP, GLUISmoke3dCB);
   CHECKBOX_triangle_display_rate = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("triangle display rate"), &show_trirates);
-  glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("temperature fix"), &smoke3d_temperature_fix, UPDATE_TEMPERATURE_FIX, GLUISmoke3dCB);
 
   //---------------------------------------------Slice render settings--------------------------------------------------------------
 
@@ -952,9 +951,6 @@ extern "C" void GLUISmoke3dCB(int var){
     background_flip = 1-background_flip;
     ShowHideMenu(MENU_SHOWHIDE_FLIP);
     updatemenu = 1;
-    break;
-  case UPDATE_TEMPERATURE_FIX:
-    glutPostRedisplay();
     break;
   case SMOKE_BLACK:
     break;

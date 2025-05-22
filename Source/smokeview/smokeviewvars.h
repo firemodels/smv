@@ -1954,11 +1954,6 @@ SVEXTERN float smoke3d_firevals[257];
 SVEXTERN int smoke3d_firecounts[257], SVDECL(update_fire_histogram, 0), SVDECL(update_fire_histogram_now, 0);
 
 SVEXTERN int SVDECL(show_smoke3d_colorbar, 0);
-#ifdef pp_SMOKE3D
-SVEXTERN int SVDECL(smoke3d_temperature_fix, 1);
-#else
-SVEXTERN int SVDECL(smoke3d_temperature_fix, 0);
-#endif
 
 SVEXTERN int SVDECL(volbw,0);
 SVEXTERN float SVDECL(tourrad_avatar,0.1);

@@ -64,7 +64,6 @@
 #define SMOKEBOX_BUFFER 79
 #define SMOKE_NUM 80
 #define BACKGROUND_FLIP 81
-#define UPDATE_TEMPERATURE_FIX 117
 #define USE_FIRE_ALPHA 84
 #define USE_OPACITY_DEPTH 93
 // #define USE_OPACITY_MULTIPLIER 94 // defined now in smokeviewdefs.h
