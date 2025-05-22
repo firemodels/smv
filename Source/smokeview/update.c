@@ -2313,6 +2313,10 @@ void UpdateShowScene(void){
     END_SHOW_UPDATE(update_frame);
   }
 #endif
+  if(update_fire_histogram_now == 1){
+    update_fire_histogram_now = 0;
+    if(update_fire_histogram==1)GLUISmoke3dCB(UPDATE_FIRE_HISTOGRAM);
+  }
 #define SHOW_EXTERIOR_PATCH_DATA     32
 void BoundBoundCB(int var);
   if(update_patch_vis == 1){

@@ -962,9 +962,7 @@ SVEXTERN int SVDECL(usevolrender,1);
 SVEXTERN int SVDECL(usegpu,0),SVDECL(gpuactive,0);
 SVEXTERN int GPU_skip, GPU_hrrcutoff, GPU_hrr, GPU_global_hrrpuv_max, GPU_global_hrrpuv_cb_min;
 SVEXTERN int GPU_fire_alpha, GPU_firecolor, GPU_force_alpha_opaque, GPU_have_smoke, GPU_smokecolormap;
-#ifdef pp_SMOKE3D_FRAGMENT
 SVEXTERN int GPU_have_fire;
-#endif
 SVEXTERN int GPU_smokeshade,GPU_smokealpha;
 SVEXTERN int GPU_use_fire_alpha, GPU_emission_factor;
 
@@ -1952,10 +1950,8 @@ SVEXTERN float SVDECL(global_hrrpuv_cb_min_default,200.0), SVDECL(global_hrrpuv_
 SVEXTERN int SVDECL(global_cb_min_index, 0),               SVDECL(global_cb_max_index, 255);
 SVEXTERN int SVDECL(global_cb_min_index_default, 0),       SVDECL(global_cb_max_index_default, 255);
 
-#ifdef pp_FIRE_HIST
 SVEXTERN float smoke3d_firevals[257];
-SVEXTERN int   smoke3d_firecounts[257], SVDECL(update_fire_histogram, 0);
-#endif
+SVEXTERN int smoke3d_firecounts[257], SVDECL(update_fire_histogram, 0), SVDECL(update_fire_histogram_now, 0);
 
 SVEXTERN int SVDECL(show_smoke3d_colorbar, 0);
 
