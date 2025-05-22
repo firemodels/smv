@@ -104,11 +104,7 @@ int ReadSMV(char *smvfile){
     ++++++++++++++++++++++ SMOKE3D ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-#ifdef pp_SMOKE3D_FORT
     if(Match(buffer,"SMOKE3D") == 1||Match(buffer, "SMOKF3D") == 1||Match(buffer, "SMOKG3D") == 1){
-#else
-    if(Match(buffer,"SMOKE3D") == 1){
-#endif
       nsmoke3dinfo++;
       continue;
     }
@@ -349,11 +345,7 @@ int ReadSMV(char *smvfile){
     ++++++++++++++++++++++ SMOKE3D ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-#ifdef pp_SMOKE3D_FORT
     if(Match(buffer,"SMOKE3D") == 1||Match(buffer, "SMOKF3D") == 1||Match(buffer, "SMOKG3D") == 1){
-#else
-    if(Match(buffer,"SMOKE3D") == 1){
-#endif
       smoke3d *smoke3di;
       FILE_SIZE filesize;
       int filelen;
@@ -364,12 +356,10 @@ int ReadSMV(char *smvfile){
       smoke3di->inuse=0;
       smoke3di->compressed=0;
       smoke3di->smokemesh=meshinfo + ioffset - 1;
-#ifdef pp_SMOKE3D_FORT
       smoke3di->file_type = C_FILE;
       if(Match(buffer, "SMOKF3D") == 1||Match(buffer, "SMOKG3D") == 1){
         smoke3di->file_type = FORTRAN_FILE;
       }
-#endif
 
       if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
       TrimBack(buffer);
