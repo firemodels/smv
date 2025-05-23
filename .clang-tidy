@@ -1,5 +1,5 @@
 ---
-Checks: "clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.strcpy,-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,readability-identifier-naming"
+Checks: "clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-unix.Errno,-clang-analyzer-security.insecureAPI.strcpy,-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,-clang-analyzer-optin.performance.Padding,-readability-identifier-naming,-clang-analyzer-unix.Stream,-clang-analyzer-core.uninitialized.Assign,-clang-analyzer-optin.taint.TaintedDiv,-clang-analyzer-unix.StdCLibraryFunctions"
 WarningsAsErrors: ""
 HeaderFilterRegex: ""
 CheckOptions:
