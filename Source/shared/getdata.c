@@ -875,7 +875,11 @@ void outboundaryheader(const char *boundaryfilename, FILE **file, int npatches,
 
   *error = 0;
   *file = FOPEN(boundaryfilename, "wb");
-
+  if(*file == NULL) {
+    fprintf(stderr, " Could not open %s\n", boundaryfilename);
+    *error = 1;
+    return;
+  }
   strncpy(blank, "                              ", 31);
   *error = fortwrite(blank, 30, 1, *file);
   *error = fortwrite(blank, 30, 1, *file);
