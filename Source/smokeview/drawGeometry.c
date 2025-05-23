@@ -3422,6 +3422,11 @@ void DrawFaces(){
   float down_color[4]={0.1,0.1,0.1,1.0};
   float highlight_color[4]={1.0,0.0,0.0,1.0};
 
+  if(projection_type==PROJECTION_ORTHOGRAPHIC){
+    DrawFacesOLD(DRAW_OBSTS_AND_VENTS);
+    return;
+  }
+
   if(nface_normals_single>0){
     int j;
 

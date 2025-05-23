@@ -2681,9 +2681,23 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
   if(global_scase.nterraininfo > 0||is_time_arrival == 1){
     float delta_z=0.0;
+    float *xplt, *yplt, *zplt;
+    float dx, dy, dz;
 
-    delta_z = (global_scase.meshescoll.meshinfo->zplt[1] - global_scase.meshescoll.meshinfo->zplt[0])/10.0;
-    if(global_scase.nterraininfo > 0)delta_z=boundaryoffset;
+    xplt = global_scase.meshescoll.meshinfo->zplt;
+    yplt = global_scase.meshescoll.meshinfo->yplt;
+    zplt = global_scase.meshescoll.meshinfo->zplt;
+    dx = xplt[1] - xplt[0];
+    dy = yplt[1] - yplt[0];
+    dz = zplt[1] - zplt[0];
+    delta_z = MIN(dx, dy);
+    delta_z = MIN(delta_z, dz);
+    if(global_scase.nterraininfo > 0){
+      delta_z *= boundaryoffset;
+    }
+    else{
+      delta_z /= 10.0;
+    }
     glPushMatrix();
     glTranslatef(0.0, 0.0, delta_z);
   }
