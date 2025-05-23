@@ -5846,7 +5846,7 @@ void SetupDeviceData(void){
         fprintf(stderr," %s,",devi->deviceID);
       }
     }
-    fprintf(stderr," found in %s\n",global_scase.paths.fds_filein);
+    fprintf(stderr," found in %s\n",global_scase.fds_filein);
   }
   for(i=0;i<global_scase.devicecoll.nvdeviceinfo;i++){
     vdevicedata *vdevi;
