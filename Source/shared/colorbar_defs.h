@@ -2,6 +2,8 @@
 #ifndef COLORBAR_DEFS_H_DEFINED
 #define COLORBAR_DEFS_H_DEFINED
 
+#include "colorbars.h"
+
 void CreateColorbarRainbow(colorbardata *cbi);
 void CreateColorbarOriginalRainbow(colorbardata *cbi);
 void CreateColorbarRainbow2(colorbardata *cbi);

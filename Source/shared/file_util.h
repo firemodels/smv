@@ -8,7 +8,9 @@ extern int show_timings;
 #endif
 
 // vvvvvvvvvvvvvvvvvvvvvvvv header files vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-
+#include <stddef.h>
+#include <stdio.h>
+#include "options_common.h"
 #include <time.h>
 #ifdef __MINGW32__
 #include "options.h"

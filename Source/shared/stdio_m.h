@@ -1,6 +1,10 @@
 #ifndef STDIO_M_H_DEFINED
 #define STDIO_M_H_DEFINED
 
+#include <stddef.h>
+#include <stdio.h>
+#include "options_common.h"
+
 typedef struct {
   char *file;
   FILE *stream;

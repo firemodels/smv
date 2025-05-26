@@ -1,6 +1,8 @@
 #ifndef TRANSLATE_H_DEFINED
 #define TRANSLATE_H_DEFINED
 
+#include "options_common.h"
+
 #ifdef IN_TRANSLATE
 #define TREXTERN
 #define TRDECL(var,val)  var=val
@@ -35,4 +37,3 @@ TREXTERN char TRDECL(*smokeview_lang,NULL);
 TREXTERN trdata TRDECL(*trinfo,NULL);
 TREXTERN int TRDECL(ntrinfo,0);
 #endif
-

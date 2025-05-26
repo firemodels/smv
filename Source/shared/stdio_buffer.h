@@ -2,6 +2,8 @@
 #define STDIO_BUFFER_H_DEFINED
 
 #include <stdio.h>
+#include "options_common.h"
+
 /* --------------------------  _filedata ------------------------------------ */
 
 #define FILEBUFFER               FILE
