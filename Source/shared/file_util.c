@@ -892,7 +892,7 @@ FILE *fopen_2dir_scratch(char *file, char *mode) {
 /* ------------------ fopen_3dir ------------------------ */
 
 FILE *fopen_3dir(char *file, char *mode, char *dir1, char *dir2, char *dir3){
-  FILE *stream;
+  FILE *stream = NULL;
   char buffer[4096];
   // try opening file in the current directory, dir1 then in dir2 then in dir3
   // (currently results direcrory defined by fds, current directory, scratch directory)
