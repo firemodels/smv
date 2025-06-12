@@ -12,8 +12,10 @@
 
 #include "readhvac.h"
 
-#define HVACVAL(itime, iduct, icell) \
-  (itime)*hvac_maxcells*hvac_n_ducts + (iduct)*hvac_maxcells + (icell)
+#define HVAC_MAXCELLS global_scase.hvaccoll.hvac_maxcells
+#define HVAC_N_DUCTS  global_scase.hvaccoll.hvac_n_ducts
+
+#define HVACVALINDEX(itime, iduct, icell) (itime)*HVAC_MAXCELLS*HVAC_N_DUCTS +  (iduct)*HVAC_MAXCELLS + (icell)
 
 unsigned char hvac_off_color[3] = {0, 255, 0}, hvac_on_color[3] = {255, 0, 0};
 unsigned char *hvac_color_states[2] = {hvac_off_color, hvac_on_color};
@@ -407,13 +409,13 @@ void DrawHVAC(hvacdata *hvaci){
     if(global_times != NULL && global_scase.hvaccoll.hvacductvar_index >= 0){
       for(j = 0;j < nxyzs;j++){
         float *xyz, *this_color;
-        int cell;
+        int cell, index;
         unsigned char ival;
 
         xyz = xyzs + 3 * j;
         cell = cell_index[j];
 
-        int index = HVACVAL(frame_index, i, cell);
+        index = HVACVALINDEX(frame_index, i, cell);
 
         ival = HVACCOLORCONV(ductvar->vals[index], valmin, valmax);
         this_color = rgb_full[ival];
