@@ -2057,7 +2057,6 @@ SVEXTERN boundsdata SVDECL(*slicebounds,NULL), SVDECL(*isobounds,NULL), SVDECL(*
 SVEXTERN boundsdata SVDECL(*slicebounds_temp, NULL);
 SVEXTERN boundsdata SVDECL(*hvacductbounds, NULL), SVDECL(*hvacnodebounds, NULL);
 SVEXTERN int SVDECL(nhvacductbounds, 0), SVDECL(nhvacnodebounds, 0);
-SVEXTERN int SVDECL(hvac_maxcells, 0), SVDECL(hvac_n_ducts, 0);
 
 SVEXTERN int force_redisplay;
 SVEXTERN int glui_setp3min, glui_setp3max;
