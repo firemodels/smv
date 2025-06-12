@@ -646,11 +646,15 @@ void UpdateBoundInfo(void){
   if(global_scase.hvaccoll.hvacnodevalsinfo != NULL)nhvacboundsmax += global_scase.hvaccoll.hvacnodevalsinfo->n_node_vars;
   if(nhvacboundsmax>0 && global_scase.hvaccoll.hvacductvalsinfo!=NULL){
     FREEMEMORY(hvacductbounds);
-    NewMemory((void*)&hvacductbounds,global_scase.hvaccoll.hvacductvalsinfo->n_duct_vars*sizeof(boundsdata));
+    if(global_scase.hvaccoll.hvacductvalsinfo->n_duct_vars>0){
+      NewMemory((void*)&hvacductbounds,global_scase.hvaccoll.hvacductvalsinfo->n_duct_vars*sizeof(boundsdata));
+    }
     nhvacductbounds=0;
 
     FREEMEMORY(hvacnodebounds);
-    NewMemory((void*)&hvacnodebounds,global_scase.hvaccoll.hvacnodevalsinfo->n_node_vars*sizeof(boundsdata));
+    if(global_scase.hvaccoll.hvacnodevalsinfo->n_node_vars > 0){
+      NewMemory((void *)&hvacnodebounds, global_scase.hvaccoll.hvacnodevalsinfo->n_node_vars * sizeof(boundsdata));
+    }
     nhvacnodebounds=0;
 
     for(i=0;i<nhvacboundsmax;i++){
