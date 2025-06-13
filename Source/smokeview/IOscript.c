@@ -284,6 +284,7 @@ void InitKeywords(void){
   InitKeyword("HIDEHVACVALS",        SCRIPT_HIDEHVACVALS, 0);        // documented
   InitKeyword("SHOWHVACDUCTVAL",     SCRIPT_SHOWHVACDUCTVAL, 1);     // documented
   InitKeyword("SHOWHVACNODEVAL",     SCRIPT_SHOWHVACNODEVAL, 1);     // documented
+  InitKeyword("LOADHVAC",            SCRIPT_LOADHVAC, 0);
 
 // slice and vector slice files
   InitKeyword("LOADSLCF",            SCRIPT_LOADSLCF, 1);            // documented
@@ -1377,7 +1378,7 @@ int CompileScript(char *scriptfile){
                 scripti->cell_centered = itokens[i];
                 break;
 	      default:
-		assert(FFALSE);
+		       assert(FFALSE);
 		break;
             }
           }
@@ -1445,6 +1446,10 @@ int CompileScript(char *scriptfile){
         SETbuffer;
         sscanf(param_buffer," %i %f",&scripti->ival,&scripti->fval);
         scripti->need_graphics = 0;
+        break;
+
+// LOADHVAC
+      case SCRIPT_LOADHVAC:
         break;
 
 // SETTIMEVAL
@@ -4212,6 +4217,9 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_LOADSLCF:
       ScriptLoadSLCF(scripti);
+      break;
+    case SCRIPT_LOADHVAC:
+      LoadHVACMenu(MENU_HVAC_LOAD);
       break;
     case SCRIPT_UNLOADPLOT2D:
       ScriptUnLoadPlot2D(scripti);
