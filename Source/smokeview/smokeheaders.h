@@ -653,6 +653,7 @@ EXTERNCPP void LoadAllPartFilesMT(int val);
 EXTERNCPP void LoadAllPartFiles(int partnum);
 EXTERNCPP int  LoadAllPlot3D(float time);
 EXTERNCPP void LoadBoundaryMenu(int value);
+EXTERNCPP void LoadHVACMenu(int value);
 EXTERNCPP void LoadParticleMenu(int value);
 EXTERNCPP void LoadPlot3dMenu(int value);
 EXTERNCPP void LoadSliceMenu(int value);
