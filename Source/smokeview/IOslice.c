@@ -109,7 +109,7 @@ slicedata *gslice;
          }
 
 #define SCENE_FRACTION 0.05
-#define SCENE_FACTOR   SCENE_FRACTION*vecfactor*zmaxdiff/(xyzmaxdiff*vel_max)
+#define SCENE_FACTOR   SCENE_FRACTION*vecfactor*vector_scalelength/(xyzmaxdiff*vel_max)
 
 #define ADJUST_VEC_DX(dx)                       \
          if(vec_uniform_length==1){                              \
