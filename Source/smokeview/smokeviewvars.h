@@ -1839,7 +1839,8 @@ SVEXTERN int SVDECL(nopaque_triangles,0),SVDECL(ntransparent_triangles,0),SVDECL
 SVEXTERN   char openfilebuffer[1024];
 SVEXTERN   int openfileflag;
 #endif
-SVEXTERN float xyzmaxdiff, zmaxdiff;
+SVEXTERN float xyzmaxdiff;
+SVEXTERN float vector_scalelength;
 SVEXTERN char ext_png[5];
 SVEXTERN char ext_jpg[5];
 
