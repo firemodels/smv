@@ -1345,7 +1345,13 @@ void UpdateMeshCoords(void){
 
   // compute scaling factor used in NORMALIXE_X, NORMALIZE_Y, NORMALIZE_Z macros
 
-  xyzmaxdiff=MAX(MAX(global_scase.xbar-global_scase.xbar0,global_scase.ybar-global_scase.ybar0),global_scase.zbar-global_scase.zbar0);
+  float dx_scene, dy_scene, dz_scene;
+
+  dx_scene   = global_scase.xbar - global_scase.xbar0;
+  dy_scene   = global_scase.ybar - global_scase.ybar0;
+  dz_scene   = global_scase.zbar - global_scase.zbar0;
+  zmaxdiff   = dz_scene;
+  xyzmaxdiff = MAX(MAX(dx_scene,dy_scene),dz_scene);
 
   // normalize various coordinates.
 

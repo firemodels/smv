@@ -108,15 +108,18 @@ slicedata *gslice;
            }                                       \
          }
 
+#define SCENE_FRACTION 0.05
+#define SCENE_FACTOR   SCENE_FRACTION*vecfactor*zmaxdiff/(xyzmaxdiff*vel_max)
+
 #define ADJUST_VEC_DX(dx)                       \
          if(vec_uniform_length==1){                              \
            float vecnorm; \
            vecnorm = ABS(dx);\
            if(vecnorm==0.0)vecnorm=1.0;\
-           dx *= vecfactor*0.05/(vel_max*vecnorm);\
+           dx *= scene_factor/vecnorm;\
          }                                         \
          else{                                     \
-           dx *= 0.05*vecfactor/vel_max;\
+           dx *= scene_factor;\
          }                                         \
 
 #define ADJUST_VEC_DXYZ(dx,dy,dz)                       \
@@ -124,14 +127,14 @@ slicedata *gslice;
            float vecnorm; \
            vecnorm = sqrt(dx*dx+dy*dy+dz*dz);\
            if(vecnorm==0.0)vecnorm=1.0;\
-           dx *= vecfactor*0.05/(vel_max*vecnorm);\
-           dy *= vecfactor*0.05/(vel_max*vecnorm);\
-           dz *= vecfactor*0.05/(vel_max*vecnorm);\
+           dx *= scene_factor/vecnorm;\
+           dy *= scene_factor/vecnorm;\
+           dz *= scene_factor/vecnorm;\
          }                                         \
          else{                                     \
-           dx *= 0.05*vecfactor/vel_max;\
-           dy *= 0.05*vecfactor/vel_max;\
-           dz *= 0.05*vecfactor/vel_max;\
+           dx *= scene_factor;\
+           dy *= scene_factor;\
+           dz *= scene_factor;\
          }                                         \
 
 #define GET_VEC_DXYZ_TERRAIN(U,DU,n)                                                 \
@@ -7614,6 +7617,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   iblank_cell = meshi->c_iblank_cell;
   vel_max = max_velocity;
   if(vel_max<= 0.0)vel_max = 1.0;
+  float scene_factor = SCENE_FACTOR;
+
   u = vd->u;
   v = vd->v;
   w = vd->w;
@@ -8045,6 +8050,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   u = vd->u;
   v = vd->v;
   w = vd->w;
+  float scene_factor = SCENE_FACTOR;
 
   float valmin, valmax;
 
@@ -8292,6 +8298,8 @@ void DrawVVolSlice(const vslicedata *vd){
 
   vel_max = max_velocity;
   if(vel_max<= 0.0)vel_max = 1.0;
+  float scene_factor = SCENE_FACTOR;
+
   u = vd->u;
   v = vd->v;
   w = vd->w;
