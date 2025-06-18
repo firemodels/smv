@@ -284,7 +284,7 @@ void InitKeywords(void){
   InitKeyword("HIDEHVACVALS",        SCRIPT_HIDEHVACVALS, 0);        // documented
   InitKeyword("SHOWHVACDUCTVAL",     SCRIPT_SHOWHVACDUCTVAL, 1);     // documented
   InitKeyword("SHOWHVACNODEVAL",     SCRIPT_SHOWHVACNODEVAL, 1);     // documented
-  InitKeyword("LOADHVAC",            SCRIPT_LOADHVAC, 0);
+  InitKeyword("LOADHVAC",            SCRIPT_LOADHVAC, 0);            // documented
 
 // slice and vector slice files
   InitKeyword("LOADSLCF",            SCRIPT_LOADSLCF, 1);            // documented
@@ -325,8 +325,8 @@ void InitKeywords(void){
   InitKeyword("HIDECBAREDIT",        SCRIPT_HIDECBAREDIT, 0);        // documented
   InitKeyword("SHOWCBAREDIT",        SCRIPT_SHOWCBAREDIT, 0);        // documented
   InitKeyword("SETCBAR",             SCRIPT_SETCBAR, 1);             // documented
-  InitKeyword("SETCBARLAB",          SCRIPT_SETCBARLAB, 0);
-  InitKeyword("SETCBARRGB",          SCRIPT_SETCBARRGB, 0);
+  InitKeyword("SETCBARLAB",          SCRIPT_SETCBARLAB, 0);          // documented
+  InitKeyword("SETCBARRGB",          SCRIPT_SETCBARRGB, 0);          // documented
   InitKeyword("HILIGHTMINVALS",      SCRIPT_HILIGHTMINVALS, 4);      // documented
   InitKeyword("HILIGHTMAXVALS",      SCRIPT_HILIGHTMAXVALS, 4);      // documented
 
@@ -338,7 +338,7 @@ void InitKeywords(void){
 
 // controlling the scene
   InitKeyword("EXIT",                SCRIPT_EXIT, 0);                // documented
-  InitKeyword("NOEXIT",              SCRIPT_NOEXIT, 0);
+  InitKeyword("NOEXIT",              SCRIPT_NOEXIT, 0);              // documented
   InitKeyword("GSLICEORIEN",         SCRIPT_GSLICEORIEN, 1);         // documented
   InitKeyword("GSLICEPOS",           SCRIPT_GSLICEPOS, 1);           // documented
   InitKeyword("GSLICEVIEW",          SCRIPT_GSLICEVIEW, 1);          // documented
@@ -389,7 +389,7 @@ void InitKeywords(void){
 
 // miscellaneous
 
-  InitKeyword("GPUOFF",              SCRIPT_GPUOFF, 0);
+  InitKeyword("GPUOFF",              SCRIPT_GPUOFF, 0);              // documented
   InitKeyword("LABEL",               SCRIPT_LABEL, 1);               // documented
   InitKeyword("RGBTEST",             SCRIPT_RGBTEST, 1);             // documented
   InitKeyword("UNLOADPLOT2D",        SCRIPT_UNLOADPLOT2D, 0);
