@@ -2616,8 +2616,10 @@ int ReadSMV_Configure(){
   UpdateSmoke3dFileParms();
   PRINT_TIMER(timer_readsmv, "UpdateSmoke3dFileParms");
 
-  AddCfastCsvf(&global_scase);
-  PRINT_TIMER(timer_readsmv, "AddCfastCsvf");
+  if(global_scase.nzoneinfo > 0){
+    AddCfastCsvf(&global_scase);
+    PRINT_TIMER(timer_readsmv, "AddCfastCsvf");
+  }
 
   //RemoveDupBlockages();
   UpdateINIList();
