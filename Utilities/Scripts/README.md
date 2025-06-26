@@ -1,10 +1,10 @@
 # Utilities/Scripts
 
-This directory contains scripts for generating images and animations of FDS cases.  It also contains utility scripts used by other scripts in this repo, scripts for setting up the graphics environment for the image generating scripts and for identifying Git and compiler versions when building smoke iew. These notes are preliminary, a work in progress.
+This directory contains scripts for generating images and animations of FDS cases.  It also contains utility scripts used by other scripts in this repo, scripts for setting up the graphics environment for the image generating scripts and for identifying Git and compiler versions when building smoke iew. 
 
 ## slice2html.sh
 
-This script is used to generate an HTML page from a smv file. To use, add an alias to your startup file, typically .bashrc (change the ... in the first part of the path to match your repo location):
+This script is used to generate an HTML page from an smv file. To use it, add an alias to your startup file, typically .bashrc (change the ... in the first part of the path to match your repo location):
 
 ```alias slice2html.sh=".../smv/Utilities/Scripts/slice2html.sh"```
 
