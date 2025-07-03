@@ -1,7 +1,5 @@
 # stars makefile
 
-#To use this Makefile cd to a sub-directory and type make_smv.sh or make_smv.bat
-
 SOURCE_DIR = ../../../Source/
 BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
@@ -40,7 +38,6 @@ ifeq ($(GLUT),freeglut)
 else
   WININC = -I $(SOURCE_DIR)/glut_gl
 endif
-WININC += -I $(SOURCE_DIR)/pthreads
 
 #*** General Purpose Rules ***
 
@@ -68,13 +65,13 @@ no_target:
 
 #--- Intel
 
-SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+STARS_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
 ifeq ($(GLUT),freeglut)
-  GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\freeglut_staticd.lib $(SMV_WIN_LIBDIR)\glut32.lib
+  GLUT_WIN_LIB = $(STARS_WIN_LIBDIR)\freeglut_staticd.lib $(STARS_WIN_LIBDIR)\glut32.lib
 else
-  GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\glut32.lib
+  GLUT_WIN_LIB = $(STARS_WIN_LIBDIR)\glut32.lib
 endif
-SMV_LIBS_WIN = $(GLUT_WIN_LIB)
+STARS_LIBS_WIN = $(GLUT_WIN_LIB)
 
 WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 
@@ -93,14 +90,11 @@ intel_win_64 : CPP       = icx
 intel_win_64 : exe       = stars_win_64
 
 intel_win_64 : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(SMV_LIBS_WIN)
+	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(STARS_LIBS_WIN)
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV  Linux VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-
-SMV_LIBS_LINUX=-lglut
-SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm -lrt
 
 # ------------- intel_linux_64 ----------------
 
@@ -115,23 +109,17 @@ intel_linux_64 : CPP       = icpx
 intel_linux_64 : exe       = stars_linux_64
 
 intel_linux_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(SMV_LIBS_LINUX) $(INTEL_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) -lglut -lX11 -lXmu -lGLU -lGL -lm -lrt
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   OSX   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
-ifeq ($(GLUT),freeglut)
-  SMV_LIBS_OSX =  -lglut
-else
-  SMV_LIBS_OSX =
-endif
-
 # ------------- gnu_osx_64 ----------------
 
 gnu_osx_64 : CFLAGS    = -O0 -m64              -D pp_OSX -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings
 gnu_osx_64 : C_STANDARD    = -std=gnu99
-gnu_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) $(GLIBDIROPT)
+gnu_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/gnu_osx_64
 ifeq ($(GLUT),freeglut)
 gnu_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 gnu_osx_64 : CFLAGS   += -D FREEGLUT_STATIC
