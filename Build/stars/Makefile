@@ -138,16 +138,3 @@ gnu_osx_64 : $(obj)
 .PHONY : clean
 clean:
 	rm -f *.o *.mod *.dll *.so
-
-#-------------- force compilation of string_util.c -----------
-
-string_util.o:	.FORCE
-string_util.obj:	.FORCE
-
-.FORCE:
-
-# *** do a full rebuild if any header file has changed
-#
-$(obj) : $(incs)
-
-$(objwin) : $(incs)
