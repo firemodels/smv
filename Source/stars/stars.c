@@ -194,6 +194,7 @@ ShowStar(GLint n)
       glLineWidth(MAXPOS / 100.0 / stars[n].z[0] + 1.0);
       glColor3f(1.0, (MAXWARP - speed) / MAXWARP, (MAXWARP - speed) / MAXWARP);
       if (fabs(x0 - x1) < 1.0 && fabs(y0 - y1) < 1.0) {
+        glPointSize(2.0);
         glBegin(GL_POINTS);
         glVertex2f(x0, y0);
         glEnd();
