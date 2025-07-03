@@ -1,0 +1,37 @@
+&HEAD CHID='test_iso',TITLE='Plume whirl case' /
+
+  same as plume5a except there is a blockage in the middle of the scene to block the flow
+  The purpose of this case is to demonstrate the curved flow (via streak lines) that results.
+
+&MESH IJK=8,8,16, XB=0.0,0.8,0.0,0.8,0.0,1.6, MULT_ID='mesh'/
+&MULT ID='mesh', DX=0.8, DY=0.8, DZ=1.6, I_UPPER=1, J_UPPER=1, K_UPPER=1 /
+
+
+&DUMP NFRAMES=20 DT_PL3D=8.0, DT_SL3D=0.1 /
+
+INIT XB=0.2,1.4,0.2,1.4,0.5,2.2  TEMPERATURE=600.0 /
+
+&TIME T_END=2. /  Total simulation time
+
+&REAC SOOT_YIELD=0.01,FUEL='PROPANE'/
+&SURF ID='BURNER',HRRPUA=600.0,PART_ID='tracers' /  Ignition source
+
+&VENT XB=0.5,1.1,0.5,1.1,0.1,0.1,SURF_ID='BURNER' /  fire source on kitchen stove
+
+&OBST XB=0.5,1.1,0.5,1.1,0.0,0.1 /
+
+&VENT MB='XMIN', SURF_ID='OPEN' /
+&VENT MB='XMAX', SURF_ID='OPEN' /
+&VENT MB='YMIN', SURF_ID='OPEN' /
+&VENT MB='YMAX', SURF_ID='OPEN' /
+&VENT MB='ZMAX', SURF_ID='OPEN' /
+
+&ISOF QUANTITY='TEMPERATURE',VALUE(1)=100.0 /  Show 3D contours of temperature at 100 C
+&SLCF XB=0.0,1.6,0.0,1.6,0.0,3.2, QUANTITY='TEMPERATURE' /
+
+&PART ID='tracers',MASSLESS=.TRUE.,
+   QUANTITIES(1:3)='PARTICLE U','PARTICLE V','PARTICLE W'
+   SAMPLING_FACTOR=10 /  Description of massless tracer particles. Apply at a
+                                                             solid surface with the PART_ID='tracers'
+
+&TAIL /
