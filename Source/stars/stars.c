@@ -43,7 +43,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#ifdef pp_OSX
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
 
 extern void *__glutCurrentWindow;
 
