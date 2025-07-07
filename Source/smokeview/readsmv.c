@@ -2628,7 +2628,7 @@ int ReadSMV_Configure(){
   if(global_scase.meshescoll.meshinfo!=NULL&&global_scase.meshescoll.meshinfo->jbar==1)force_isometric=1;
 
   char *hrr_csv_filename = CasePathHrrCsv(&global_scase);
-  if(FileExistsCaseDir(&global_scase, hrr_csv_filename)==NO){
+  if(FileExistsCaseDir(&global_scase, hrr_csv_filename)==YES){
     ReadHRR(&global_scase, LOAD);
   }
   FREEMEMORY(hrr_csv_filename);
