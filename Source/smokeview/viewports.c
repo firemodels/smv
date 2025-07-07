@@ -235,7 +235,6 @@ void GetViewportInfo(void){
   VP_hrr_plot.right = VP_hrr_plot.left + plot_width + GetStringWidth("XXXXXX");
   VP_hrr_plot.down  = v_space;
   VP_hrr_plot.top   = VP_hrr_plot.down + v_space + plot_width  + 4*GetFontHeight();
-;
   VP_hrr_plot.doit  = vis_hrr_plot;
   VP_hrr_plot.text_height = text_height;
   VP_hrr_plot.text_width  = text_width;
