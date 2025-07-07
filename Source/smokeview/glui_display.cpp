@@ -846,7 +846,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
   SPINNER_refresh_rate->set_int_limits(0,10);
 #endif
 
-  CHECKBOX_hide_scene = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("hide scene when mouse is pressed"), &hide_scene, LABELS_BOUNDING_BOX, GLUILabelsCB);
+  CHECKBOX_hide_scene = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Hide scene when mouse is pressed"), &hide_scene, LABELS_BOUNDING_BOX, GLUILabelsCB);
 
   PANEL_titles=glui_labels->add_panel_to_panel(PANEL_gen1,"Titles");
   CHECKBOX_labels_title = glui_labels->add_checkbox_to_panel(PANEL_titles,     _("Smokeview build date"), &vis_title_smv_version, LABELS_label,   GLUILabelsCB);
