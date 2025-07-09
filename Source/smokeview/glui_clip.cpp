@@ -209,6 +209,7 @@ void ClipCB(int var){
     camera_current->zmin = clipinfo.zmin;
     camera_current->zmax = clipinfo.zmax;
     break;
+  case CLIP_CLOSE:
   case CLIP_ROTATE:
   case CLIP_SHOW_ROTATE2:
     break;
@@ -360,7 +361,9 @@ extern "C" void GLUIHideClip(void){
 /* ------------------ GLUIShowClip ------------------------ */
 
 extern "C" void GLUIShowClip(void){
-  if(glui_clip!=NULL)glui_clip->show();
+  if(glui_clip != NULL){
+    glui_clip->show();
+  }
 }
 
 /* ------------------ GLUIUpdateClip ------------------------ */

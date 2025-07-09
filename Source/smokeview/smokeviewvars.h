@@ -1028,7 +1028,6 @@ SVEXTERN char input_filename_ext[5];
 
 SVEXTERN float SVDECL(fire_line_min,150.0), SVDECL(fire_line_max,200.0);
 SVEXTERN int SVDECL(fire_line_index,-1);
-SVEXTERN int SVDECL(slice_bounds_dialog,1);
 
 SVEXTERN float xtemp;
 
@@ -1393,9 +1392,6 @@ SVEXTERN int SVDECL(p3dsurfacetype,SURFACE_SOLID);
 
 SVEXTERN int SVDECL(parttype,0);
 SVEXTERN int SVDECL(showedit_dialog,0);
-SVEXTERN int SVDECL(showterrain_dialog, 0);
-SVEXTERN int SVDECL(showhvac_dialog, 0);
-SVEXTERN int SVDECL(showcolorbar_dialog,0);
 SVEXTERN int SVDECL(showtour_dialog,0),SVDECL(showtrainer_dialog,0);
 SVEXTERN int SVDECL(showtours,0);
 SVEXTERN int SVDECL(large_case, 0);
