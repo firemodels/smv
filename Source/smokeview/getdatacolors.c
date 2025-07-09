@@ -1145,11 +1145,9 @@ void UpdateSmokeColormap(void){
         float val;
 
         use_smoke = is_smoke_loaded;
+        val = valmin + (float)n*(valmax-valmin)/(float)(MAXSMOKERGB-1);
         if(have_fire==HRRPUV_index||have_fire==TEMP_index){
-          val = valmin + (float)n*(valmax-valmin)/(float)(MAXSMOKERGB-1);
-          if(val>valmin_cb){
-            use_smoke = 0;
-          }
+          if(val>valmin_cb)use_smoke = 0;
         }
         if(use_smoke==1){
           rgb_colormap[4*n+0] = (float)smoke_color_int255[0]/255.0;
