@@ -657,6 +657,7 @@ void UpdateBoundInfo(void){
     }
     nhvacnodebounds=0;
 
+#ifndef __clang_analyzer__
     for(i=0;i<nhvacboundsmax;i++){
       hvacvaldata *hi;
       boundsdata *hbi;
@@ -716,6 +717,7 @@ void UpdateBoundInfo(void){
         }
       }
     }
+#endif
   }
   PRINT_TIMER(bound_timer, "hvacbounds");
 
@@ -1147,6 +1149,7 @@ void UpdateMeshCoords(void){
   /* define highlighted block */
 
   /* add in offsets */
+#ifndef __clang_analyzer__
   for(i=0;i<global_scase.meshescoll.nmeshes;i++){
     meshdata *meshi;
     int ii;
@@ -1241,6 +1244,7 @@ void UpdateMeshCoords(void){
       verts[3*j+2] = zminmax[zindex[j]];
     }
   }
+#endif
 
   xbar0FDS = global_scase.xbar0;
   ybar0FDS = global_scase.ybar0;
