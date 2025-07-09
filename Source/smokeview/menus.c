@@ -6801,6 +6801,8 @@ void BlockageMenu(int value){
 void TranslateTypeMenu(int value){
   assert(value>=0&&value<=2);
   translation_type = CLAMP(value,0,2);
+  updatemenu = 1;
+  GLUTPOSTREDISPLAY;
   switch(translation_type){
   case TRANSLATE_XY_option:
     printf("translate left/right and front/back\n");
