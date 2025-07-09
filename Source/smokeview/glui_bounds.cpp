@@ -7118,7 +7118,15 @@ extern "C" void GLUIShowBounds(int menu_id){
     }
     break;
   case DIALOG_CONFIG:
-    FileRolloutCB(CONFIG_ROLLOUT);
+    if(ROLLOUT_config->is_open==0){
+      if(ROLLOUT_files->is_open == 0){
+        FileDataColRolloutCB(FILE_ROLLOUT);
+      }
+      FileRolloutCB(CONFIG_ROLLOUT);
+    }
+    else{
+      ROLLOUT_config->close();
+    }
     break;
   case DIALOG_AUTOLOAD:
     if(ROLLOUT_autoload->is_open==0){
