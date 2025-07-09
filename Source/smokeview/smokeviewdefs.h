@@ -1006,8 +1006,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define DIALOG_MOTION    29
 #define DIALOG_VIEW      30
 #define DIALOG_RENDER    31
-#define DIALOG_GEOMETRY  16
-#define DIALOG_SHOOTER   27
+#define DIALOG_GEOMETRY_OPEN  16
+#define DIALOG_GEOMETRY_CLOSE 50
+#define DIALOG_SHOOTER 27
 #define DIALOG_SMOKEZIP  24
 #define DIALOG_STEREO    19
 #define DIALOG_TOUR_SHOW 21

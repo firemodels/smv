@@ -2503,7 +2503,7 @@ extern "C" void GLUIShowMotion(int menu_id){
       MotionRolloutCB(VIEWPOINTS_ROLLOUT);
       break;
     case DIALOG_MOTION:
-      MVRRolloutCB(RENDER_ROLLOUT);
+      MVRRolloutCB(MOTION_ROLLOUT);
 #ifdef ROTATE_TRANSLATE
       MotionRolloutCB(TRANSLATEROTATE_ROLLOUT);
 #endif

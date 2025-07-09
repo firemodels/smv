@@ -330,7 +330,7 @@ void BlockeditDlgCB(int var){
     WriteIni(LOCAL_INI, NULL);
     break;
   case CLOSE_WINDOW:
-    DialogMenu(DIALOG_GEOMETRY);
+    DialogMenu(DIALOG_GEOMETRY_CLOSE);
     break;
   default:
     assert(FFALSE);
@@ -606,7 +606,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
     glui_geometry->close();
     glui_geometry=NULL;
   }
-  glui_geometry = GLUI_Master.create_glui("Geometry",0,dialogX0,dialogY0);
+  glui_geometry = GLUI_Master.create_glui("Examine geometry",0,dialogX0,dialogY0);
   if(showedit_dialog==0)glui_geometry->hide();
 
   if(global_scase.hvaccoll.nhvacinfo > 0){
@@ -1336,7 +1336,6 @@ void VolumeCB(int var){
 /* ------------------ GLUIHideHVAC ------------------------ */
 
 extern "C" void GLUIHideHVAC(void){
-  showhvac_dialog = 0;
   GLUICloseRollouts(glui_geometry);
 }
 
@@ -1344,7 +1343,6 @@ extern "C" void GLUIHideHVAC(void){
 
 extern "C" void GLUIShowHVAC(void){
   if(glui_geometry!=NULL && ROLLOUT_hvac!=NULL){
-    showhvac_dialog=1;
     glui_geometry->show();
     ROLLOUT_hvac->open();
   }

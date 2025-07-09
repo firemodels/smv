@@ -1569,52 +1569,30 @@ void DialogMenu(int value){
     GLUIHideTour();
     break;
   case DIALOG_CLIP:
-    if(showclip_dialog == 0){
-      GLUIShowClip();
-    }
-    else{
-      GLUIHideClip();
-    }
+    GLUIShowClip();
     break;
   case DIALOG_STEREO:
-    if(showstereo_dialog == 0){
-      GLUIShowStereo();
-    }
-    else{
-      GLUIHideStereo();
-    }
+    GLUIShowStereo();
     break;
   case DIALOG_COLORBAR:
-    if(showcolorbar_dialog==0){
-      GLUIShowColorbar();
-    }
-    else{
-      GLUIHideColorbar();
-    }
+    GLUIShowColorbar();
     break;
   case DIALOG_HVAC:
-    showhvac_dialog = 1 - showhvac_dialog;
-    if(showhvac_dialog == 1){
-      GLUIShowHVAC();
-    }
-    if(showhvac_dialog == 0){
-      GLUIHideHVAC();
-    }
+    GLUIShowHVAC();
     break;
-  case DIALOG_GEOMETRY:
-    if(showedit_dialog==0){
-      if(global_scase.fds_filein!=NULL&&updategetobstlabels==1){
-        CheckMemoryOff;
-        GetObstLabels(global_scase.fds_filein);
-        CheckMemoryOn;
-        updategetobstlabels=0;
-      }
-      GLUIShowGeometry();
-      visBlocks=visBLOCKNormal;
+  case DIALOG_GEOMETRY_CLOSE:
+    GLUIHideGeometry();
+    GLUIUpdateTrainerOutline();
+    break;
+  case DIALOG_GEOMETRY_OPEN:
+    if(global_scase.fds_filein!=NULL&&updategetobstlabels==1){
+      CheckMemoryOff;
+      GetObstLabels(global_scase.fds_filein);
+      CheckMemoryOn;
+      updategetobstlabels=0;
     }
-    else{
-      GLUIHideGeometry();
-    }
+    GLUIShowGeometry();
+    visBlocks=visBLOCKNormal;
     GLUIUpdateTrainerOutline();
     break;
   case DIALOG_TERRAIN:
@@ -1639,7 +1617,7 @@ void DialogMenu(int value){
     GLUIHideClip();
     GLUIHideStereo();
     GLUIHideColorbar();
-    if(showedit_dialog==1)DialogMenu(DIALOG_GEOMETRY);
+    if(showedit_dialog==1)DialogMenu(DIALOG_GEOMETRY_CLOSE);
     GLUIHideTrainer();
     GLUIHideDevice();
     GLUIHidePlot2D();
@@ -11753,25 +11731,18 @@ static int menu_count=0;
 
   CREATEMENU(viewdialogmenu, DialogMenu);
 #ifdef pp_DIALOG_SHORTCUTS
-  if(showclip_dialog==1)glutAddMenuEntry("*Clip scene...  ALT c", DIALOG_CLIP);
-  if(showclip_dialog==0)glutAddMenuEntry("Clip scene...  ALT c", DIALOG_CLIP);
-  if(showtour_dialog==1)glutAddMenuEntry(_("*Create/modify tours...  ALT t"), DIALOG_TOUR_HIDE);
-  if(showtour_dialog==0)glutAddMenuEntry(_("Create/modify tours...  ALT t"), DIALOG_TOUR_SHOW);
-  if(showcolorbar_dialog==1)glutAddMenuEntry("*Edit colorbar...  ALT C", DIALOG_COLORBAR);
-  if(showcolorbar_dialog==0)glutAddMenuEntry("Edit colorbar...  ALT C", DIALOG_COLORBAR);
+  glutAddMenuEntry("Clipping...  ALT c", DIALOG_CLIP);
+  glutAddMenuEntry(_("Tours...  ALT t"), DIALOG_TOUR_SHOW);
+  glutAddMenuEntry("Edit Colorbar...  ALT C", DIALOG_COLORBAR);
   if(global_scase.isZoneFireModel==0 && have_geometry_dialog==1){
-    if(showedit_dialog==1)glutAddMenuEntry(_("*Examine geometry...  ALT e"), DIALOG_GEOMETRY);
-    if(showedit_dialog == 0)glutAddMenuEntry(_("Examine geometry...  ALT e"), DIALOG_GEOMETRY);
+    glutAddMenuEntry(_("Examine geometry...  ALT e"), DIALOG_GEOMETRY_OPEN);
   }
 #else
-  if(showclip_dialog==1)glutAddMenuEntry("*Clip scene...", DIALOG_CLIP);
-  if(showclip_dialog == 0)glutAddMenuEntry("Clip scene...", DIALOG_CLIP);
-  if(showtour_dialog==1)glutAddMenuEntry(_("*Create/edit tours..."), DIALOG_TOUR_HIDE);
-  if(showtour_dialog==0)glutAddMenuEntry(_("Create/edit tours..."), DIALOG_TOUR_SHOW);
-  if(showcolorbar_dialog == 1)glutAddMenuEntry("*Edit colorbar...  ", DIALOG_COLORBAR);
-  if(showcolorbar_dialog == 0)glutAddMenuEntry("Edit colorbar...  ", DIALOG_COLORBAR);
+  glutAddMenuEntry("Clip scene...", DIALOG_CLIP);
+  glutAddMenuEntry(_("Tours..."), DIALOG_TOUR_SHOW);
+  glutAddMenuEntry("Edit Colorbar...  ", DIALOG_COLORBAR);
   if(global_scase.isZoneFireModel == 0 && have_geometry_dialog == 1){
-    glutAddMenuEntry(_("Examine geometry...  "), DIALOG_GEOMETRY);
+    glutAddMenuEntry(_("Examine geometry...  "), DIALOG_GEOMETRY_OPEN);
   }
 #endif
   if(global_scase.nterraininfo>0&&global_scase.ngeominfo==0){
@@ -11781,13 +11752,11 @@ static int menu_count=0;
     glutAddMenuEntry(_("HVAC settings..."), DIALOG_HVAC);
   }
   char stereo_label[32];
-  strcpy(stereo_label, "");
-  if(showstereo_dialog==1)strcat(stereo_label, "*");
   if(have_vr == 1){
-    strcat(stereo_label, "Stereo/VR settings...");
+    strcpy(stereo_label, "Stereo/VR settings...");
   }
   else{
-    strcat(stereo_label, "Stereo settings...");
+    strcpy(stereo_label, "Stereo settings...");
   }
   glutAddMenuEntry(stereo_label, DIALOG_STEREO);
   if(trainer_active==1){
@@ -11803,7 +11772,7 @@ static int menu_count=0;
   if((global_scase.csvcoll.ncsvfileinfo>0&&have_ext==0)||(global_scase.csvcoll.ncsvfileinfo>1&&have_ext==1)){
     glutAddMenuEntry(_("2D plots"), DIALOG_2DPLOTS);
   }
-  glutAddMenuEntry(_("Show/Hide..."), DIALOG_SHOWFILES);
+  glutAddMenuEntry(_("Show/Hide data files..."), DIALOG_SHOWFILES);
   glutAddMenuEntry(_("Particle tracking..."), DIALOG_SHOOTER);
 
   /* --------------------------------window menu -------------------------- */
@@ -11811,8 +11780,8 @@ static int menu_count=0;
   CREATEMENU(windowdialogmenu, DialogMenu);
   glutAddMenuEntry(_("Fonts..."), DIALOG_FONTS);
   glutAddMenuEntry(_("User ticks..."), DIALOG_TICKS);
-  glutAddMenuEntry(_("Labels..."), DIALOG_LABELS);
-  glutAddMenuEntry(_("Properties..."), DIALOG_WINDOW);
+  glutAddMenuEntry(_("Labels + Ticks..."), DIALOG_LABELS);
+  glutAddMenuEntry(_("Window properties..."), DIALOG_WINDOW);
   glutAddMenuEntry(_("Scaling..."), DIALOG_SCALING);
 
   /* --------------------------------dialog menu -------------------------- */
@@ -11821,7 +11790,7 @@ static int menu_count=0;
 
   glutAddMenuEntry(_("Display...  ALT D"), DIALOG_DISPLAY);
   glutAddMenuEntry(_("Files/Data/Coloring... ALT b"), DIALOG_BOUNDS);
-  glutAddMenuEntry(_("Motion/View/Render...  ALT m"),DIALOG_MOTION);
+  glutAddMenuEntry(_("Motion/View/Render...  ALT m"), DIALOG_MOTION);
   glutAddMenuEntry(_("Viewpoints... ALT g"),DIALOG_VIEW);
 
   glutAddMenuEntry("-",MENU_DUMMY2);

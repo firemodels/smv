@@ -1394,7 +1394,6 @@ SVEXTERN int SVDECL(p3dsurfacetype,SURFACE_SOLID);
 SVEXTERN int SVDECL(parttype,0);
 SVEXTERN int SVDECL(showedit_dialog,0);
 SVEXTERN int SVDECL(showterrain_dialog, 0);
-SVEXTERN int SVDECL(showhvac_dialog, 0);
 SVEXTERN int SVDECL(showcolorbar_dialog,0);
 SVEXTERN int SVDECL(showtour_dialog,0),SVDECL(showtrainer_dialog,0);
 SVEXTERN int SVDECL(showtours,0);

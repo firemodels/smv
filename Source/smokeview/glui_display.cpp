@@ -288,18 +288,17 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define UPDATEPLOT 10
 
 
-#define GENERAL_ROLLOUT1  0
-#define GENERAL_ROLLOUT2  1
-#define COLORING_ROLLOUT  2
-#define FONTS_ROLLOUT     3
-#define TICKS_ROLLOUT     4
-#define LABELS_ROLLOUT    5
-#define LIGHT_ROLLOUT     6
-#define SKY_ROLLOUT       7
+#define LABELS_TITLES_ROLLOUT  0
+#define LABELS_OFFSETS_ROLLOUT 1
+#define LIGHT_ROLLOUT          2
+#define FONTS_ROLLOUT          3
+#define USER_TICKS_ROLLOUT     4
+#define LABELS_TICKS_ROLLOUT   5
+#define SKY_ROLLOUT            6
 
 #define UPDATEMENU 1
 
-procdata displayprocinfo[8];
+procdata displayprocinfo[7];
 int ndisplayprocinfo = 0;
 
 /* ------------------ GLUIUpdateVisSkyboxOutline ------------------------ */
@@ -814,8 +813,8 @@ extern "C" void GLUIDisplaySetup(int main_window){
 
   // -------------- Labels/Titles/Bounding box -------------------
 
-  ROLLOUT_general1 = glui_labels->add_rollout(_("Labels/Titles/Bounding box"), true, GENERAL_ROLLOUT1, DisplayRolloutCB);
-  TOGGLE_ROLLOUT(displayprocinfo, ndisplayprocinfo, ROLLOUT_general1, GENERAL_ROLLOUT1, glui_labels);
+  ROLLOUT_general1 = glui_labels->add_rollout(_("Labels/Titles"), true, LABELS_TITLES_ROLLOUT, DisplayRolloutCB);
+  TOGGLE_ROLLOUT(displayprocinfo, ndisplayprocinfo, ROLLOUT_general1, LABELS_TITLES_ROLLOUT, glui_labels);
 
   PANEL_gen1 = glui_labels->add_panel_to_panel(ROLLOUT_general1, "", GLUI_PANEL_NONE);
 
@@ -871,8 +870,8 @@ extern "C" void GLUIDisplaySetup(int main_window){
 
   // -------------- Lines/Offsets/Surfaces/Other -------------------
 
-  ROLLOUT_general2 = glui_labels->add_rollout(_("Lines/Offsets/Surfaces/Other"), false, GENERAL_ROLLOUT2, DisplayRolloutCB);
-  TOGGLE_ROLLOUT(displayprocinfo, ndisplayprocinfo, ROLLOUT_general2, GENERAL_ROLLOUT2, glui_labels);
+  ROLLOUT_general2 = glui_labels->add_rollout(_("Lines/Offsets/Surfaces/Other"), false, LABELS_OFFSETS_ROLLOUT, DisplayRolloutCB);
+  TOGGLE_ROLLOUT(displayprocinfo, ndisplayprocinfo, ROLLOUT_general2, LABELS_OFFSETS_ROLLOUT, glui_labels);
 
   PANEL_linewidth=glui_labels->add_panel_to_panel(ROLLOUT_general2,"line width");
   SPINNER_linewidth=glui_labels->add_spinner_to_panel(PANEL_linewidth,_("blockage"),GLUI_SPINNER_FLOAT,&global_scase.linewidth);
@@ -1071,8 +1070,8 @@ extern "C" void GLUIDisplaySetup(int main_window){
 
   // -------------- User tick settings -------------------
 
-  ROLLOUT_user_tick = glui_labels->add_rollout("User ticks",false,TICKS_ROLLOUT,DisplayRolloutCB);
-  TOGGLE_ROLLOUT(displayprocinfo, ndisplayprocinfo, ROLLOUT_user_tick, TICKS_ROLLOUT, glui_labels);
+  ROLLOUT_user_tick = glui_labels->add_rollout("User ticks",false,USER_TICKS_ROLLOUT,DisplayRolloutCB);
+  TOGGLE_ROLLOUT(displayprocinfo, ndisplayprocinfo, ROLLOUT_user_tick, USER_TICKS_ROLLOUT, glui_labels);
 
   PANEL_tick1 = glui_labels->add_panel_to_panel(ROLLOUT_user_tick,_("Display"),true);
   PANEL_tick1a = glui_labels->add_panel_to_panel(PANEL_tick1,"",false);
@@ -1136,8 +1135,8 @@ extern "C" void GLUIDisplaySetup(int main_window){
   // -------------- User labels -------------------
 
   gl=&LABEL_local;
-  ROLLOUT_user_labels = glui_labels->add_rollout("Labels + Ticks",false,LABELS_ROLLOUT,DisplayRolloutCB);
-  TOGGLE_ROLLOUT(displayprocinfo, ndisplayprocinfo, ROLLOUT_user_labels, LABELS_ROLLOUT, glui_labels);
+  ROLLOUT_user_labels = glui_labels->add_rollout("Labels + Ticks",false,LABELS_TICKS_ROLLOUT,DisplayRolloutCB);
+  TOGGLE_ROLLOUT(displayprocinfo, ndisplayprocinfo, ROLLOUT_user_labels, LABELS_TICKS_ROLLOUT, glui_labels);
 
   PANEL_LB_panel1 = glui_labels->add_panel_to_panel(ROLLOUT_user_labels,"",GLUI_PANEL_NONE);
 
@@ -1291,16 +1290,16 @@ extern "C" void GLUIShowDisplay(int menu_id){
   if(glui_labels!=NULL)glui_labels->show();
   switch(menu_id){
   case DIALOG_DISPLAY:
-    DisplayRolloutCB(GENERAL_ROLLOUT1);
+    DisplayRolloutCB(LABELS_TITLES_ROLLOUT);
     break;
   case DIALOG_FONTS:
     DisplayRolloutCB(FONTS_ROLLOUT);
     break;
   case DIALOG_TICKS:
-    DisplayRolloutCB(TICKS_ROLLOUT);
+    DisplayRolloutCB(USER_TICKS_ROLLOUT);
     break;
   case DIALOG_LABELS:
-    DisplayRolloutCB(LABELS_ROLLOUT);
+    DisplayRolloutCB(LABELS_TICKS_ROLLOUT);
     break;
   default:
     assert(FFALSE);

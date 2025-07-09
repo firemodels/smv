@@ -105,10 +105,10 @@ void StereoCB(int var){
 
 extern "C" void GLUIStereoSetup(int main_window){
   if(have_vr==1){
-    glui_stereo = GLUI_Master.create_glui("Stereo/VR", 0, dialogX0, dialogY0);
+    glui_stereo = GLUI_Master.create_glui("Stereo/VR settings", 0, dialogX0, dialogY0);
   }
   else{
-    glui_stereo = GLUI_Master.create_glui("Stereo", 0, dialogX0, dialogY0);
+    glui_stereo = GLUI_Master.create_glui("Stereo settings", 0, dialogX0, dialogY0);
   }
   glui_stereo->hide();
 

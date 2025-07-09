@@ -1847,7 +1847,7 @@ void Keyboard(unsigned char key, int flag){
       switch(keystate){
       case GLUT_ACTIVE_ALT:
 #ifdef pp_DIALOG_SHORTCUTS
-        DialogMenu(DIALOG_GEOMETRY); // edit geometry
+        DialogMenu(DIALOG_GEOMETRY_OPEN); // edit geometry
         break;
 #endif
       case GLUT_ACTIVE_CTRL:
