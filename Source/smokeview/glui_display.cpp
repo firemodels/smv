@@ -1295,10 +1295,10 @@ extern "C" void GLUIShowDisplay(int menu_id){
   case DIALOG_FONTS:
     DisplayRolloutCB(FONTS_ROLLOUT);
     break;
-  case DIALOG_TICKS:
+  case DIALOG_USER_TICKS:
     DisplayRolloutCB(USER_TICKS_ROLLOUT);
     break;
-  case DIALOG_LABELS:
+  case DIALOG_LABELS_TICKS:
     DisplayRolloutCB(LABELS_TICKS_ROLLOUT);
     break;
   default:

@@ -1018,12 +1018,12 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define DIALOG_SCRIPT    32
 #define DIALOG_CONFIG    34
 #define DIALOG_FONTS     35
-#define DIALOG_TICKS     36
-#define DIALOG_LABELS    37
+#define DIALOG_USER_TICKS   36
+#define DIALOG_LABELS_TICKS 37
 #define DIALOG_AUTOLOAD  38
 #define DIALOG_TIME      39
 #define DIALOG_SCALING   41
-#define DIALOG_WINDOW    42
+#define DIALOG_WINDOW_PROPERTIES 42
 #define DIALOG_MOVIE     43
 #define DIALOG_MOVIE_BATCH 45
 #define DIALOG_SHRINKALL -3
