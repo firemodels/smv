@@ -12127,17 +12127,19 @@ static int menu_count=0;
     glutAddMenuEntry(_("  x/y/z: toggle lower x/y/z clip planes"), MENU_DUMMY);
     glutAddMenuEntry(_("  X/Y/Z: toggle upper x/y/z clip planes"), MENU_DUMMY);
   }
-  char *caseini_filename = CasePathCaseIni(&global_scase);
-  if(caseini_filename!=NULL&&strlen(caseini_filename)>0){
-    char inilabel[512];
+  {
+    char *caseini_filename = CasePathCaseIni(&global_scase);
+    if(caseini_filename != NULL && strlen(caseini_filename) > 0){
+      char inilabel[512];
 
-    sprintf(inilabel,"  #: save settings to %s",caseini_filename);
-    glutAddMenuEntry(inilabel,MENU_DUMMY);
+      sprintf(inilabel, "  #: save settings to %s", caseini_filename);
+      glutAddMenuEntry(inilabel, MENU_DUMMY);
+    }
+    else{
+      glutAddMenuEntry(_("  #: save settings (create casename.ini file)"), MENU_DUMMY);
+    }
+    FREEMEMORY(caseini_filename);
   }
-  else{
-    glutAddMenuEntry(_("  #: save settings (create casename.ini file)"), MENU_DUMMY);
-  }
-  FREEMEMORY(caseini_filename);
   if(global_scase.ngeominfo){
     glutAddMenuEntry(_("  =: toggle vertex selected in examine geometry dialog"), MENU_DUMMY);
     glutAddMenuEntry(_("  Z: toggle rotation center between FDS and FDS+GEOM center"), MENU_DUMMY);
