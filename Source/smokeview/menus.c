@@ -1553,12 +1553,12 @@ void DialogMenu(int value){
   case DIALOG_MOVIE_BATCH:
   case DIALOG_SCALING:
   case DIALOG_VIEW:
-  case DIALOG_WINDOW:
+  case DIALOG_WINDOW_PROPERTIES:
     GLUIShowMotion(value);
     break;
-  case DIALOG_TICKS:
+  case DIALOG_USER_TICKS:
   case DIALOG_FONTS:
-  case DIALOG_LABELS:
+  case DIALOG_LABELS_TICKS:
   case DIALOG_DISPLAY:
     GLUIShowDisplay(value);
     break;
@@ -6801,6 +6801,8 @@ void BlockageMenu(int value){
 void TranslateTypeMenu(int value){
   assert(value>=0&&value<=2);
   translation_type = CLAMP(value,0,2);
+  updatemenu = 1;
+  GLUTPOSTREDISPLAY;
   switch(translation_type){
   case TRANSLATE_XY_option:
     printf("translate left/right and front/back\n");
@@ -11767,31 +11769,31 @@ static int menu_count=0;
     glutAddMenuEntry(_("2D plots"), DIALOG_2DPLOTS);
   }
   glutAddMenuEntry(_("Show/Hide data files..."), DIALOG_SHOWFILES);
-  glutAddMenuEntry(_("Particle tracking..."), DIALOG_SHOOTER);
+  glutAddMenuEntry(_("Particle tracking..."),    DIALOG_SHOOTER);
 
   /* --------------------------------window menu -------------------------- */
 
   CREATEMENU(windowdialogmenu, DialogMenu);
-  glutAddMenuEntry(_("Fonts..."), DIALOG_FONTS);
-  glutAddMenuEntry(_("User ticks..."), DIALOG_TICKS);
-  glutAddMenuEntry(_("Labels + Ticks..."), DIALOG_LABELS);
-  glutAddMenuEntry(_("Window properties..."), DIALOG_WINDOW);
-  glutAddMenuEntry(_("Scaling..."), DIALOG_SCALING);
+  glutAddMenuEntry(_("Fonts..."),             DIALOG_FONTS);
+  glutAddMenuEntry(_("User ticks..."),        DIALOG_USER_TICKS);
+  glutAddMenuEntry(_("Labels + Ticks..."),    DIALOG_LABELS_TICKS);
+  glutAddMenuEntry(_("Window properties..."), DIALOG_WINDOW_PROPERTIES);
+  glutAddMenuEntry(_("Scaling..."),           DIALOG_SCALING);
 
   /* --------------------------------dialog menu -------------------------- */
 
   CREATEMENU(dialogmenu,DialogMenu);
 
-  glutAddMenuEntry(_("Display...  ALT D"), DIALOG_DISPLAY);
+  glutAddMenuEntry(_("Display...  ALT D"),            DIALOG_DISPLAY);
   glutAddMenuEntry(_("Files/Data/Coloring... ALT b"), DIALOG_BOUNDS);
   glutAddMenuEntry(_("Motion/View/Render...  ALT m"), DIALOG_MOTION);
-  glutAddMenuEntry(_("Viewpoints... ALT g"),DIALOG_VIEW);
+  glutAddMenuEntry(_("Viewpoints... ALT g"),          DIALOG_VIEW);
 
   glutAddMenuEntry("-",MENU_DUMMY2);
 
-  GLUTADDSUBMENU(_("Data"), datadialogmenu);
-  GLUTADDSUBMENU(_("Files"), filesdialogmenu);
-  GLUTADDSUBMENU(_("View"), viewdialogmenu);
+  GLUTADDSUBMENU(_("Data"),   datadialogmenu);
+  GLUTADDSUBMENU(_("Files"),  filesdialogmenu);
+  GLUTADDSUBMENU(_("View"),   viewdialogmenu);
   GLUTADDSUBMENU(_("Window"), windowdialogmenu);
 
   glutAddMenuEntry("-",MENU_DUMMY2);

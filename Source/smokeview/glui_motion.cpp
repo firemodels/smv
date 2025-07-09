@@ -2517,7 +2517,7 @@ extern "C" void GLUIShowMotion(int menu_id){
     case DIALOG_MOVIE_BATCH:
       MVRRolloutCB(MOVIE_ROLLOUT_BATCH);
       break;
-    case DIALOG_WINDOW:
+    case DIALOG_WINDOW_PROPERTIES:
       MVRRolloutCB(VIEW_ROLLOUT);
       MotionRolloutCB(WINDOW_ROLLOUT);
       break;
