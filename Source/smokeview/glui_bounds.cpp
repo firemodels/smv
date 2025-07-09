@@ -3115,23 +3115,30 @@ procdata  plot3dprocinfo[4];
 int      nplot3dprocinfo=0;
 
 
-//*** fileprocinfo entries
-#define LOAD_ROLLOUT       0
-#define SHOWHIDE_ROLLOUT   1
-#define COMPRESS_ROLLOUT   2
-#define SCRIPT_ROLLOUT     3
-#define CONFIG_ROLLOUT     4
-#define FILEBOUNDS_ROLLOUT 5
-#define COLORING_ROLLOUT   6
-#define MEMCHECK_ROLLOUT   7
 
-procdata  fileprocinfo[8];
+//*** filedatacolprocinfo entries
+#define FILE_ROLLOUT     0
+#define DATA_ROLLOUT     1
+#define COLORING_ROLLOUT 2
+#define MEMCHECK_ROLLOUT 3
+
+procdata  filedatacolprocinfo[4];
+int      nfiledatacolprocinfo = 0;
+
+//*** fileprocinfo entries
+#define SHOWHIDE_ROLLOUT   0
+#define COMPRESS_ROLLOUT   1
+#define SCRIPT_ROLLOUT     2
+#define CONFIG_ROLLOUT     3
+
+procdata  fileprocinfo[4];
 int      nfileprocinfo = 0;
 
 //*** particleprocinfo entries
 #define PARTICLE_BOUND             0
 #define PARTICLE_CHOP              1
 #define PARTICLE_SETTINGS          2
+
 procdata particleprocinfo[3];
 int      nparticleprocinfo=0;
 
@@ -3596,6 +3603,12 @@ void ViewRolloutCB(int var){
 
 void SubBoundRolloutCB(int var){
   GLUIToggleRollout(subboundprocinfo, nsubboundprocinfo, var);
+}
+
+/* ------------------ FileDataColRolloutCB ------------------------ */
+
+void FileDataColRolloutCB(int var){
+  GLUIToggleRollout(filedatacolprocinfo, nfiledatacolprocinfo, var);
 }
 
 /* ------------------ FileRolloutCB ------------------------ */
@@ -4955,7 +4968,8 @@ extern "C" void GLUIBoundsSetup(int main_window){
   glui_bounds = GLUI_Master.create_glui( "Files/Data/Coloring",0,dialogX0,dialogY0);
   glui_bounds->hide();
 
-  ROLLOUT_files = glui_bounds->add_rollout("Files", false);
+  ROLLOUT_files = glui_bounds->add_rollout("Files", false, FILE_ROLLOUT, FileDataColRolloutCB);
+  TOGGLE_ROLLOUT(filedatacolprocinfo, nfiledatacolprocinfo, ROLLOUT_files, FILE_ROLLOUT, glui_bounds);
 
   // -------------- Show/Hide Loaded files -------------------
 
@@ -5083,8 +5097,8 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
   // ----------------------------------- Bounds ----------------------------------------
 
-  ROLLOUT_filebounds = glui_bounds->add_rollout(_("Data"), false, FILEBOUNDS_ROLLOUT, FileRolloutCB);
-  TOGGLE_ROLLOUT(fileprocinfo, nfileprocinfo, ROLLOUT_filebounds, FILEBOUNDS_ROLLOUT, glui_bounds);
+  ROLLOUT_filebounds = glui_bounds->add_rollout(_("Data"), false, DATA_ROLLOUT, FileDataColRolloutCB);
+  TOGGLE_ROLLOUT(filedatacolprocinfo, nfiledatacolprocinfo, ROLLOUT_filebounds, DATA_ROLLOUT, glui_bounds);
 
   /*  zone (cfast) */
 
@@ -5827,8 +5841,8 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
   // -------------- Data coloring -------------------
 
-  ROLLOUT_coloring = glui_bounds->add_rollout("Coloring", false, COLORING_ROLLOUT, FileRolloutCB);
-  TOGGLE_ROLLOUT(fileprocinfo, nfileprocinfo, ROLLOUT_coloring, COLORING_ROLLOUT, glui_bounds);
+  ROLLOUT_coloring = glui_bounds->add_rollout("Coloring", false, COLORING_ROLLOUT, FileDataColRolloutCB);
+  TOGGLE_ROLLOUT(filedatacolprocinfo, nfiledatacolprocinfo, ROLLOUT_coloring, COLORING_ROLLOUT, glui_bounds);
 
   PANEL_cb11 = glui_bounds->add_panel_to_panel(ROLLOUT_coloring, "", GLUI_PANEL_NONE);
 
@@ -5974,8 +5988,8 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
   // ----------------------------------- Memory check ----------------------------------------
 
-  ROLLOUT_memcheck = glui_bounds->add_rollout(_("Memory check"),false,MEMCHECK_ROLLOUT,FileRolloutCB);
-  TOGGLE_ROLLOUT(fileprocinfo, nfileprocinfo, ROLLOUT_memcheck, MEMCHECK_ROLLOUT, glui_bounds);
+  ROLLOUT_memcheck = glui_bounds->add_rollout(_("Memory check"),false,MEMCHECK_ROLLOUT,FileDataColRolloutCB);
+  TOGGLE_ROLLOUT(filedatacolprocinfo, nfiledatacolprocinfo, ROLLOUT_memcheck, MEMCHECK_ROLLOUT, glui_bounds);
 
   SPINNER_max_mem_GB = glui_bounds->add_spinner_to_panel(ROLLOUT_memcheck, "max memory (0 unlimited) GB", GLUI_SPINNER_FLOAT, &max_mem_GB, MEMCHECK, MemcheckCB);
   MemcheckCB(MEMCHECK);
@@ -7089,10 +7103,19 @@ extern "C" void GLUIShowBounds(int menu_id){
   switch(menu_id){
   case DIALOG_BOUNDS:
     GLUIUpdateChar();
-    FileRolloutCB(FILEBOUNDS_ROLLOUT);
+    FileDataColRolloutCB(DATA_ROLLOUT);
     break;
   case DIALOG_SHOWFILES:
-    FileRolloutCB(SHOWHIDE_ROLLOUT);
+    if(ROLLOUT_showhide == NULL)break;
+    if(ROLLOUT_showhide->is_open==1){
+      ROLLOUT_showhide->close();
+    }
+    else{
+      if(ROLLOUT_files->is_open == 0){
+        FileDataColRolloutCB(FILE_ROLLOUT);
+      }
+      FileRolloutCB(SHOWHIDE_ROLLOUT);
+    }
     break;
   case DIALOG_CONFIG:
     FileRolloutCB(CONFIG_ROLLOUT);
@@ -7100,7 +7123,7 @@ extern "C" void GLUIShowBounds(int menu_id){
   case DIALOG_AUTOLOAD:
     if(ROLLOUT_autoload->is_open==0){
       if(ROLLOUT_filebounds->is_open == 0) {
-        FileRolloutCB(FILEBOUNDS_ROLLOUT);
+        FileDataColRolloutCB(DATA_ROLLOUT);
       }
       if(ROLLOUT_time->is_open == 0){
         BoundRolloutCB(TIME_ROLLOUT);
@@ -7112,7 +7135,7 @@ extern "C" void GLUIShowBounds(int menu_id){
     }
     break;
   case DIALOG_TIME:
-    FileRolloutCB(TIME_ROLLOUT);
+    BoundRolloutCB(TIME_ROLLOUT);
     break;
   case DIALOG_SCRIPT:
     FileRolloutCB(SCRIPT_ROLLOUT);
@@ -7121,7 +7144,7 @@ extern "C" void GLUIShowBounds(int menu_id){
     FileRolloutCB(COMPRESS_ROLLOUT);
     break;
   case DIALOG_3DSMOKE:
-    FileRolloutCB(FILEBOUNDS_ROLLOUT);
+    FileDataColRolloutCB(DATA_ROLLOUT);
     BoundRolloutCB(SMOKE3D_ROLLOUT);
     break;
   case DIALOG_COLORING:
