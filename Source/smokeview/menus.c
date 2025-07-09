@@ -1596,19 +1596,13 @@ void DialogMenu(int value){
     GLUIUpdateTrainerOutline();
     break;
   case DIALOG_TERRAIN:
-    showterrain_dialog = 1 - showterrain_dialog;
-    if(showterrain_dialog == 1){
-      GLUIShowTerrain();
-    }
-    else{
-      GLUIHideTerrain();
-    }
+    GLUIShowTerrain();
     break;
   case DIALOG_SHRINKALL:
     GLUIShrinkDialogs();
     break;
   case DIALOG_HIDEALL:
-    showcolorbar_dialog = 0;
+    GLUIHideTerrain();
     GLUIHideShooter();
     GLUIHideDisplay();
     GLUIHideBounds();

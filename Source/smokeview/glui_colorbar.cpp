@@ -286,7 +286,6 @@ extern "C" void GLUIUpdateColorbarType(void){
 extern "C" void GLUIHideColorbar(void){
   GLUICloseRollouts(glui_colorbar);
   viscolorbarpath=0;
-  showcolorbar_dialog=0;
   if(show_extreme_mindata_save==1){
     show_extreme_mindata=1;
     GLUIUpdateExtreme();
@@ -310,7 +309,6 @@ extern "C" void GLUIHideColorbar(void){
 
 extern "C" void GLUIShowColorbar(void){
 // show colorbar dialog box and redefine initial view point
-  showcolorbar_dialog=1;
   viscolorbarpath=1;
   show_extreme_mindata_save = show_extreme_mindata;
   if(show_extreme_mindata==1){
@@ -995,7 +993,7 @@ extern "C" void GLUIColorbarSetup(int main_window){
     glui_colorbar=NULL;
   }
   glui_colorbar = GLUI_Master.create_glui(_("Edit Colorbar"),0,dialogX0,dialogY0);
-  if(showcolorbar_dialog==0)glui_colorbar->hide();
+  glui_colorbar->hide();
 
   PANEL_cb_select = glui_colorbar->add_panel(_("Colorbar"));
   PANEL_cb_select1 = glui_colorbar->add_panel_to_panel(PANEL_cb_select,"",GLUI_PANEL_NONE);

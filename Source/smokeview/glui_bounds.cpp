@@ -7022,12 +7022,6 @@ extern "C" void GLUISliceBoundCB(int var){
   case VALMAX:
     break;
   case FILETYPE_INDEX:
-    if(slice_bounds_dialog==1&&list_slice_index==fire_line_index){
-      slice_bounds_dialog=0;
-    }
-    if(slice_bounds_dialog==0&&list_slice_index!=fire_line_index){
-      slice_bounds_dialog=1;
-    }
     SliceBounds2Glui(list_slice_index);
     SPINNER_line_contour_min->set_float_val(slice_line_contour_min);
     SPINNER_line_contour_max->set_float_val(slice_line_contour_max);

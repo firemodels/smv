@@ -153,7 +153,6 @@ extern "C" void GLUIStereoSetup(int main_window){
 
 extern "C" void GLUIHideStereo(void){
   GLUICloseRollouts(glui_stereo);
-  showstereo_dialog = 0;
 }
 
 /* ------------------ GLUIShowStereo ------------------------ */
@@ -161,6 +160,5 @@ extern "C" void GLUIHideStereo(void){
 extern "C" void GLUIShowStereo(void){
   if(glui_stereo!=NULL){
     glui_stereo->show();
-    showstereo_dialog = 1;
   }
 }

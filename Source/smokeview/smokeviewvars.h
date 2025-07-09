@@ -1028,7 +1028,6 @@ SVEXTERN char input_filename_ext[5];
 
 SVEXTERN float SVDECL(fire_line_min,150.0), SVDECL(fire_line_max,200.0);
 SVEXTERN int SVDECL(fire_line_index,-1);
-SVEXTERN int SVDECL(slice_bounds_dialog,1);
 
 SVEXTERN float xtemp;
 
@@ -1393,8 +1392,6 @@ SVEXTERN int SVDECL(p3dsurfacetype,SURFACE_SOLID);
 
 SVEXTERN int SVDECL(parttype,0);
 SVEXTERN int SVDECL(showedit_dialog,0);
-SVEXTERN int SVDECL(showterrain_dialog, 0);
-SVEXTERN int SVDECL(showcolorbar_dialog,0);
 SVEXTERN int SVDECL(showtour_dialog,0),SVDECL(showtrainer_dialog,0);
 SVEXTERN int SVDECL(showtours,0);
 SVEXTERN int SVDECL(large_case, 0);
@@ -1751,7 +1748,6 @@ SVEXTERN float xtimeleft, xtimeright;
 SVEXTERN int SVDECL(stereoactive,0);
 SVEXTERN int SVDECL(stereotype,STEREO_NONE), SVDECL(stereotypeOLD, STEREO_NONE);
 SVEXTERN int SVDECL(show_parallax,0), SVDECL(stereotype_frame, BOTH_EYES);
-SVEXTERN int SVDECL(showstereo_dialog, 0);
 
 SVEXTERN int SVDECL(hrrpuv_loaded,0);
 SVEXTERN int SVDECL(temp_loaded,0);
@@ -2018,7 +2014,6 @@ SVEXTERN float xclip_min, yclip_min, zclip_min;
 SVEXTERN float xclip_max, yclip_max, zclip_max;
 SVEXTERN float SVDECL(nearclip, 0.001), SVDECL(farclip, 3.0), SVDECL(farclip_save, 3.0);
 SVEXTERN int SVDECL(updateclipvals, 0);
-SVEXTERN int SVDECL(showclip_dialog, 0);
 SVEXTERN int SVDECL(updateUpdateFrameRateMenu,0);
 SVEXTERN int ntextures_loaded_used, SVDECL(iterrain_textures,0);
 SVEXTERN int SVDECL(nskyboxinfo,0);

@@ -2948,14 +2948,12 @@ void ScriptPlot3dProps(scriptdata *scripti){
 /* ------------------ ScriptShowCbarEdit ------------------------ */
 
 void ScriptShowCbarEdit(scriptdata *scripti){
-  showcolorbar_dialog=0;
   DialogMenu(DIALOG_COLORBAR);
 }
 
 /* ------------------ ScriptHideCbarEdit ------------------------ */
 
 void ScriptHideCbarEdit(scriptdata *scripti){
-  showcolorbar_dialog=1;
   DialogMenu(DIALOG_COLORBAR);
 }
 

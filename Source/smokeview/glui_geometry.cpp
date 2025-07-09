@@ -1377,7 +1377,6 @@ extern "C" void GLUIShowGeometry(void){
 /* ------------------ GLUIShowTerrain ------------------------ */
 
 extern "C" void GLUIShowTerrain(void){
-  showterrain_dialog = 1;
   if(glui_geometry != NULL){
     glui_geometry->show();
     if(ROLLOUT_terrain != NULL){
@@ -1389,7 +1388,6 @@ extern "C" void GLUIShowTerrain(void){
 /* ------------------ GLUIHideTerrain ------------------------ */
 
 extern "C" void GLUIHideTerrain(void){
-  showterrain_dialog = 0;
   GLUICloseRollouts(glui_geometry);
   editwindow_status = CLOSE_WINDOW;
 }

@@ -356,7 +356,6 @@ extern "C" void GLUIClipSetup(int main_window){
 
 extern "C" void GLUIHideClip(void){
   GLUICloseRollouts(glui_clip);
-  showclip_dialog = 0;
 }
 
 /* ------------------ GLUIShowClip ------------------------ */
@@ -364,7 +363,6 @@ extern "C" void GLUIHideClip(void){
 extern "C" void GLUIShowClip(void){
   if(glui_clip != NULL){
     glui_clip->show();
-    showclip_dialog = 1;
   }
 }
 
