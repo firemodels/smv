@@ -1642,6 +1642,7 @@ void DialogMenu(int value){
     if(showedit_dialog==1)DialogMenu(DIALOG_GEOMETRY);
     GLUIHideTrainer();
     GLUIHideDevice();
+    GLUIHidePlot2D();
     break;
   default:
     assert(FFALSE);
