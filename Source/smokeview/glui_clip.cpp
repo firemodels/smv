@@ -209,6 +209,7 @@ void ClipCB(int var){
     camera_current->zmin = clipinfo.zmin;
     camera_current->zmax = clipinfo.zmax;
     break;
+  case CLIP_CLOSE:
   case CLIP_ROTATE:
   case CLIP_SHOW_ROTATE2:
     break;
