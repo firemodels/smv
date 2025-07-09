@@ -104,11 +104,6 @@ void StereoCB(int var){
 /* ------------------ GLUIStereoSetup ------------------------ */
 
 extern "C" void GLUIStereoSetup(int main_window){
-  if(glui_stereo!=NULL){
-    glui_stereo->close();
-    glui_stereo = NULL;
-  }
-  if(glui_stereo!=NULL)glui_stereo->close();
   if(have_vr==1){
     glui_stereo = GLUI_Master.create_glui("Stereo/VR", 0, dialogX0, dialogY0);
   }
@@ -158,10 +153,14 @@ extern "C" void GLUIStereoSetup(int main_window){
 
 extern "C" void GLUIHideStereo(void){
   GLUICloseRollouts(glui_stereo);
+  showstereo_dialog = 0;
 }
 
 /* ------------------ GLUIShowStereo ------------------------ */
 
 extern "C" void GLUIShowStereo(void){
-  if(glui_stereo!=NULL)glui_stereo->show();
+  if(glui_stereo!=NULL){
+    glui_stereo->show();
+    showstereo_dialog = 1;
+  }
 }

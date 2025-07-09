@@ -1569,17 +1569,26 @@ void DialogMenu(int value){
     GLUIHideTour();
     break;
   case DIALOG_CLIP:
-    GLUIShowClip();
+    if(showclip_dialog == 0){
+      GLUIShowClip();
+    }
+    else{
+      GLUIHideClip();
+    }
     break;
   case DIALOG_STEREO:
-    GLUIShowStereo();
+    if(showstereo_dialog == 0){
+      GLUIShowStereo();
+    }
+    else{
+      GLUIHideStereo();
+    }
     break;
   case DIALOG_COLORBAR:
-    showcolorbar_dialog=1-showcolorbar_dialog;
-    if(showcolorbar_dialog==1){
+    if(showcolorbar_dialog==0){
       GLUIShowColorbar();
     }
-    if(showcolorbar_dialog==0){
+    else{
       GLUIHideColorbar();
     }
     break;
@@ -1593,8 +1602,7 @@ void DialogMenu(int value){
     }
     break;
   case DIALOG_GEOMETRY:
-    showedit_dialog=1-showedit_dialog;
-    if(showedit_dialog==1){
+    if(showedit_dialog==0){
       if(global_scase.fds_filein!=NULL&&updategetobstlabels==1){
         CheckMemoryOff;
         GetObstLabels(global_scase.fds_filein);
@@ -1604,7 +1612,7 @@ void DialogMenu(int value){
       GLUIShowGeometry();
       visBlocks=visBLOCKNormal;
     }
-    if(showedit_dialog==0){
+    else{
       GLUIHideGeometry();
     }
     GLUIUpdateTrainerOutline();
@@ -11744,18 +11752,23 @@ static int menu_count=0;
 
   CREATEMENU(viewdialogmenu, DialogMenu);
 #ifdef pp_DIALOG_SHORTCUTS
-  glutAddMenuEntry(_("Clip scene...  ALT c"), DIALOG_CLIP);
+  if(showclip_dialog==1)glutAddMenuEntry("*Clip scene...  ALT c", DIALOG_CLIP);
+  if(showclip_dialog==0)glutAddMenuEntry("Clip scene...  ALT c", DIALOG_CLIP);
   if(showtour_dialog==1)glutAddMenuEntry(_("*Create/modify tours...  ALT t"), DIALOG_TOUR_HIDE);
   if(showtour_dialog==0)glutAddMenuEntry(_("Create/modify tours...  ALT t"), DIALOG_TOUR_SHOW);
-  glutAddMenuEntry(_("Edit colorbar...  ALT C"), DIALOG_COLORBAR);
+  if(showcolorbar_dialog==1)glutAddMenuEntry("*Edit colorbar...  ALT C", DIALOG_COLORBAR);
+  if(showcolorbar_dialog==0)glutAddMenuEntry("Edit colorbar...  ALT C", DIALOG_COLORBAR);
   if(global_scase.isZoneFireModel==0 && have_geometry_dialog==1){
-    glutAddMenuEntry(_("Examine geometry...  ALT e"), DIALOG_GEOMETRY);
+    if(showedit_dialog==1)glutAddMenuEntry(_("*Examine geometry...  ALT e"), DIALOG_GEOMETRY);
+    if(showedit_dialog == 0)glutAddMenuEntry(_("Examine geometry...  ALT e"), DIALOG_GEOMETRY);
   }
 #else
-  glutAddMenuEntry(_("Clip scene..."), DIALOG_CLIP);
+  if(showclip_dialog==1)glutAddMenuEntry("*Clip scene...", DIALOG_CLIP);
+  if(showclip_dialog == 0)glutAddMenuEntry("Clip scene...", DIALOG_CLIP);
   if(showtour_dialog==1)glutAddMenuEntry(_("*Create/edit tours..."), DIALOG_TOUR_HIDE);
   if(showtour_dialog==0)glutAddMenuEntry(_("Create/edit tours..."), DIALOG_TOUR_SHOW);
-  glutAddMenuEntry(_("Edit colorbar...  "), DIALOG_COLORBAR);
+  if(showcolorbar_dialog == 1)glutAddMenuEntry("*Edit colorbar...  ", DIALOG_COLORBAR);
+  if(showcolorbar_dialog == 0)glutAddMenuEntry("Edit colorbar...  ", DIALOG_COLORBAR);
   if(global_scase.isZoneFireModel == 0 && have_geometry_dialog == 1){
     glutAddMenuEntry(_("Examine geometry...  "), DIALOG_GEOMETRY);
   }
@@ -11766,12 +11779,16 @@ static int menu_count=0;
   if(global_scase.hvaccoll.nhvacinfo > 0){
     glutAddMenuEntry(_("HVAC settings..."), DIALOG_HVAC);
   }
-  if(have_vr==1){
-    glutAddMenuEntry(_("Stereo/VR settings..."), DIALOG_STEREO);
+  char stereo_label[32];
+  strcpy(stereo_label, "");
+  if(showstereo_dialog==1)strcat(stereo_label, "*");
+  if(have_vr == 1){
+    strcat(stereo_label, "Stereo/VR settings...");
   }
   else{
-    glutAddMenuEntry(_("Stereo settings..."), DIALOG_STEREO);
+    strcat(stereo_label, "Stereo settings...");
   }
+  glutAddMenuEntry(stereo_label, DIALOG_STEREO);
   if(trainer_active==1){
     glutAddMenuEntry(_("Trainer..."), DIALOG_TRAINER);
   }

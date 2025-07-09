@@ -1752,6 +1752,7 @@ SVEXTERN float xtimeleft, xtimeright;
 SVEXTERN int SVDECL(stereoactive,0);
 SVEXTERN int SVDECL(stereotype,STEREO_NONE), SVDECL(stereotypeOLD, STEREO_NONE);
 SVEXTERN int SVDECL(show_parallax,0), SVDECL(stereotype_frame, BOTH_EYES);
+SVEXTERN int SVDECL(showstereo_dialog, 0);
 
 SVEXTERN int SVDECL(hrrpuv_loaded,0);
 SVEXTERN int SVDECL(temp_loaded,0);
@@ -2018,6 +2019,7 @@ SVEXTERN float xclip_min, yclip_min, zclip_min;
 SVEXTERN float xclip_max, yclip_max, zclip_max;
 SVEXTERN float SVDECL(nearclip, 0.001), SVDECL(farclip, 3.0), SVDECL(farclip_save, 3.0);
 SVEXTERN int SVDECL(updateclipvals, 0);
+SVEXTERN int SVDECL(showclip_dialog, 0);
 SVEXTERN int SVDECL(updateUpdateFrameRateMenu,0);
 SVEXTERN int ntextures_loaded_used, SVDECL(iterrain_textures,0);
 SVEXTERN int SVDECL(nskyboxinfo,0);
