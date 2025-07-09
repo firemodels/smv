@@ -10,7 +10,7 @@ if exist %userprofile%\.bundle\smv_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="7-July-2025"
+set smvlogdate="9-July-2025"
 
 :: ---- repo locations ----
 
