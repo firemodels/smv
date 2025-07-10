@@ -2499,7 +2499,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 
     glMultMatrixf(modelview_identity);
 
-    glTranslatef(xcen,ycen,zcen);
+    glTranslatef(xcen*mscale[0],ycen*mscale[1],zcen*mscale[2]);
 
     // rotate scene
     if(rotation_type==ROTATION_3AXIS){
