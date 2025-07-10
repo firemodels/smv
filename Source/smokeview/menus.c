@@ -443,12 +443,9 @@ void GetFileSizes(void){
     PrintFileSizes("hrrpuv",hrrpuv,hrrpuv2);
     PrintFileSizes("temp",temp,temp2);
     PrintFileSizes("co2",co2,co22);
-  }
-  else{
-    printf("3d smoke file sizes: no files found\n");
+    printf("\n");
   }
 
-  printf("\n");
   if(global_scase.npartinfo>0){
     float part = 0.0;
     char label[100];
@@ -462,12 +459,9 @@ void GetFileSizes(void){
       part += file_size;
     }
     printf("particle files: %s\n", GetFloatFileSizeLabel(part, label));
-  }
-  else{
-    printf("particle files: no files found\n");
+    printf("\n");
   }
 
-  printf("\n");
   if(global_scase.npatchinfo>0){
     patchdata **patchlist;
     float sum = 0.0, compressed_sum=0;
@@ -500,9 +494,7 @@ void GetFileSizes(void){
         PrintFileSizes(patchi->label.longlabel,sum,compressed_sum);
       }
     }
-  }
-  else{
-    printf("boundary files sizes: no files found\n");
+    printf("\n");
   }
 }
 
