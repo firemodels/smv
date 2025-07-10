@@ -10283,14 +10283,14 @@ static int menu_count=0;
     if(outline_mode==SCENE_OUTLINE_HIDDEN)glutAddMenuEntry("Outline",  GEOM_OutlineC);
     if(outline_mode!=SCENE_OUTLINE_HIDDEN)glutAddMenuEntry("*Outline", GEOM_OutlineC);
   }
-  if(hide_scene == 1)glutAddMenuEntry(_("*bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
-  if(hide_scene != 1)glutAddMenuEntry(_("bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
+  if(hide_scene == 1)glutAddMenuEntry(_("*Show only bounding box when mouse is down"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
+  if(hide_scene != 1)glutAddMenuEntry(_("Show only bounding box when mouse is down"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
   if(NCADGeom(&global_scase.cadgeomcoll) == 0){
     if(blocklocation == BLOCKlocation_grid){
-      glutAddMenuEntry("Locations(*actual,requested)", BLOCKlocation_grid);
+      glutAddMenuEntry("Geometry positions(*as computed,as input)", BLOCKlocation_grid);
     }
     if(blocklocation == BLOCKlocation_exact){
-      glutAddMenuEntry("Locations(actual,*requested)", BLOCKlocation_exact);
+      glutAddMenuEntry("Geometry positions(as computed,*as input)", BLOCKlocation_exact);
     }
   }
   else{
@@ -11873,8 +11873,8 @@ static int menu_count=0;
 
   CREATEMENU(optionmenu,OptionMenu);
   if(nunitclasses>0)GLUTADDSUBMENU(_("Display Units"),unitsmenu);
-  GLUTADDSUBMENU(_("Rotation parameters"),rotatetypemenu);
-  GLUTADDSUBMENU(_("Translation parameters"), translatetypemenu);
+  GLUTADDSUBMENU(_("Rotation options"),rotatetypemenu);
+  GLUTADDSUBMENU(_("Translation options"), translatetypemenu);
   GLUTADDSUBMENU(_("Max frame rate"),frameratemenu);
   GLUTADDSUBMENU(_("Render"),rendermenu);
   GLUTADDSUBMENU(_("Tours"),tourmenu);
