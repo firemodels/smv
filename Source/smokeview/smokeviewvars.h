@@ -1710,6 +1710,7 @@ SVEXTERN smv_case global_scase;
 #endif
 SVEXTERN meshdata SVDECL(*current_mesh,NULL), SVDECL(*mesh_save,NULL);
 SVEXTERN meshdata SVDECL(*mesh_last,NULL), SVDECL(*loaded_isomesh,NULL);
+SVEXTERN int SVDECL(mesh_center_index, 1);
 SVEXTERN float SVDECL(devicenorm_length,0.1);
 SVEXTERN float max_dev_vel;
 SVEXTERN int SVDECL(last_prop_display,-1);

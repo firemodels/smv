@@ -88,6 +88,7 @@ GLUI_Rollout *ROLLOUT_middle = NULL;
 GLUI_Rollout *ROLLOUT_upper = NULL;
 #endif
 
+GLUI_Spinner *SPINNER_mesh_center_index = NULL;
 GLUI_Spinner *SPINNER_movie_nprocs=NULL;
 GLUI_Spinner *SPINNER_360_skip_x=NULL;
 GLUI_Spinner *SPINNER_360_skip_y=NULL;
@@ -1249,7 +1250,10 @@ extern "C" void GLUIMotionSetup(int main_window){
   else{
     LIST_rotate_about->add_item(ROTATE_ABOUT_WORLD_CENTER, _("FDS domain center"));
   }
+  LIST_rotate_about->add_item(ROTATE_ABOUT_MESH_CENTER,_("specified mesh center"));
   LIST_rotate_about->set_int_val(ROTATE_ABOUT_WORLD_CENTER);
+  SPINNER_mesh_center_index = glui_motion->add_spinner_to_panel(ROLLOUT_rotation_type, "mesh index:", GLUI_SPINNER_INT,&mesh_center_index);
+  SPINNER_mesh_center_index->set_int_limits(1, global_scase.meshescoll.nmeshes);
 
   PANEL_user_center = glui_motion->add_panel_to_panel(ROLLOUT_rotation_type, "rotation center");
   CHECKBOX_show_rotation_center=glui_motion->add_checkbox_to_panel(PANEL_user_center,_("Show"),&show_rotation_center, CLIP_SHOW_ROTATE, GLUISceneMotionCB);

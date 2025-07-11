@@ -234,6 +234,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define ROTATE_ABOUT_CLIPPING_CENTER -2
 #define ROTATE_ABOUT_FDS_CENTER      -3
 #define ROTATE_ABOUT_WORLD_CENTER    -4
+#define ROTATE_ABOUT_MESH_CENTER     -5
 
 #define ONLY_IN_GAS           0
 #define GAS_AND_SOLID         1
