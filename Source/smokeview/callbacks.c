@@ -2494,7 +2494,7 @@ void Keyboard(unsigned char key, int flag){
         break;
 #endif
       case GLUT_ACTIVE_CTRL:
-        SnapScene();
+        SnapScene(45);
         break;
       default:
         if(rotation_type==EYE_CENTERED){
@@ -2794,7 +2794,7 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case '!':
-      SnapScene();
+      SnapScene(45);
       break;
     case '"':
       GLUIShowPlot2D();

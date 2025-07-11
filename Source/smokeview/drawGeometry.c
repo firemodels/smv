@@ -5116,44 +5116,55 @@ void LevelScene(int level_x, int level_y, float *quat){
 
 /* ------------------ SnapScene ------------------------ */
 
-void SnapScene(void){
+void SnapScene(int delta){
   float *az, *elev;
   int iaz, ielev;
 
-#define DELTA 45.0
-
-  az = camera_current->az_elev;
+  az   = camera_current->az_elev;
   elev = camera_current->az_elev+1;
+  float DELTA;
 
-  if(*az>0.0){
-    iaz = (*az+DELTA/2.0)/DELTA;
+  DELTA = (float)delta;
+  if(delta == 0){
+    *az   = 0.0;
+    *elev = 0.0;
   }
   else{
-    iaz = (*az-DELTA/2.0)/DELTA;
-  }
-  *az = (int)(DELTA*iaz);
+    if(*az > 0.0) {
+      iaz = (*az+DELTA/2.0)/DELTA;
+    }
+    else{
+      iaz = (*az-DELTA/2.0)/DELTA;
+    }
+    *az = (int)(DELTA*iaz);
 
-  if(*elev>0.0){
-    ielev = (*elev+DELTA/2.0)/DELTA;
+    if(*elev>0.0){
+      ielev = (*elev+DELTA/2.0)/DELTA;
+    }
+    else{
+      ielev = (*elev-DELTA/2.0)/DELTA;
+    }
+    *elev = (int)(DELTA*ielev);
   }
-  else{
-    ielev = (*elev-DELTA/2.0)/DELTA;
-  }
-  *elev = (int)(DELTA*ielev);
   GLUIUpdateTrainerMoves();
   camera_current->dirty=1;
 
   if(rotation_type==ROTATION_3AXIS&&key_state == KEY_NONE){
     float angle;
 
-    angle = 2.0*RAD2DEG*acos(quat_general[0]);
-    if(angle>0.0){
-      iaz = (angle+DELTA/2.0)/DELTA;
+    if(delta == 0) {
+      angle = 0.0;
     }
-    else{
-      iaz = (angle-DELTA/2.0)/DELTA;
+    else {
+      angle = 2.0 * RAD2DEG * acos(quat_general[0]);
+      if(angle > 0.0) {
+        iaz = (angle + DELTA / 2.0) / DELTA;
+      }
+      else {
+        iaz = (angle - DELTA / 2.0) / DELTA;
+      }
+      angle = (int)(DELTA * iaz);
     }
-    angle = (int)(DELTA*iaz);
 
     quat_general[0]=cos(DEG2RAD*angle/2.0);
     quat_general[1]=0.0;

@@ -270,7 +270,7 @@ EXTERNCPP void RemoveDupBlockages(void);
 EXTERNCPP void SetCVentDirs(void);
 EXTERNCPP void SetInteriorBlockages(void);
 EXTERNCPP void SetVentDirs(void);
-EXTERNCPP void SnapScene(void);
+EXTERNCPP void SnapScene(int delta);
 EXTERNCPP void SortTransparentFaces(float *mm);
 EXTERNCPP void UpdateCADTextCoords(cadquad *quadi);
 EXTERNCPP void UpdateFaces(void);

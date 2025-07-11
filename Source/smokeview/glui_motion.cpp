@@ -2176,7 +2176,7 @@ extern "C" void GLUISceneMotionCB(int var){
       }
       break;
     case SNAPSCENE:
-      SnapScene();
+      SnapScene(45);
       break;
     case WINDOW_PRESERVE:
       if(fix_window_aspect==1){
@@ -2226,6 +2226,7 @@ extern "C" void GLUISceneMotionCB(int var){
       desired_view_height=0.6;
       break;
     case CUSTOM_ROTATION_XYZ:
+      SnapScene(0);
       xcenCUSTOM = FDS2SMV_X(xcenCUSTOMsmv);
       ycenCUSTOM = FDS2SMV_Y(ycenCUSTOMsmv);
       zcenCUSTOM = FDS2SMV_Z(zcenCUSTOMsmv);
