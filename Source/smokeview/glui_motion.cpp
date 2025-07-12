@@ -1252,7 +1252,7 @@ extern "C" void GLUIMotionSetup(int main_window){
   }
   LIST_rotate_about->add_item(ROTATE_ABOUT_MESH_CENTER,_("specified mesh center"));
   LIST_rotate_about->set_int_val(ROTATE_ABOUT_WORLD_CENTER);
-  SPINNER_mesh_center_index = glui_motion->add_spinner_to_panel(ROLLOUT_rotation_type, "mesh index:", GLUI_SPINNER_INT,&mesh_center_index);
+  SPINNER_mesh_center_index = glui_motion->add_spinner_to_panel(ROLLOUT_rotation_type, "mesh index:", GLUI_SPINNER_INT,&mesh_center_index, MESH_INDEX, GLUISceneMotionCB);
   SPINNER_mesh_center_index->set_int_limits(1, global_scase.meshescoll.nmeshes);
 
   PANEL_user_center = glui_motion->add_panel_to_panel(ROLLOUT_rotation_type, "rotation center");
@@ -2236,6 +2236,11 @@ extern "C" void GLUISceneMotionCB(int var){
       zcenCUSTOM = FDS2SMV_Z(zcenCUSTOMsmv);
       GLUIUpdateRotationIndex(ROTATE_ABOUT_USER_CENTER);
       break;
+    case MESH_INDEX:
+      *rotation_index = ROTATE_ABOUT_MESH_CENTER;
+      LIST_rotate_about->set_int_val(ROTATE_ABOUT_MESH_CENTER);
+      GLUISceneMotionCB(ROTATE_ABOUT);
+      break;
     case ROTATE_ABOUT:
       glui_rotation_index = *rotation_index;
       if(*rotation_index==ROTATE_ABOUT_USER_CENTER){
@@ -2261,6 +2266,11 @@ extern "C" void GLUISceneMotionCB(int var){
         SPINNER_ycenCUSTOM->disable();
         SPINNER_zcenCUSTOM->disable();
       }
+      else if(*rotation_index==ROTATE_ABOUT_MESH_CENTER){
+        SPINNER_xcenCUSTOM->disable();
+        SPINNER_ycenCUSTOM->disable();
+        SPINNER_zcenCUSTOM->disable();
+      }
       else{
         custom_worldcenter=0;
         SPINNER_xcenCUSTOM->disable();
@@ -2270,6 +2280,9 @@ extern "C" void GLUISceneMotionCB(int var){
       if(*rotation_index>=0&&*rotation_index<global_scase.meshescoll.nmeshes){
         UpdateCurrentMesh(global_scase.meshescoll.meshinfo + (*rotation_index));
         GLUIUpdateRotationIndex(*rotation_index);
+      }
+      else if(*rotation_index==ROTATE_ABOUT_MESH_CENTER){
+        GLUIUpdateRotationIndex(mesh_center_index-1);
       }
       else if(*rotation_index==ROTATE_ABOUT_USER_CENTER){
         GLUIUpdateRotationIndex(ROTATE_ABOUT_USER_CENTER);
