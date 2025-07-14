@@ -3514,6 +3514,8 @@ extern "C" void GLUISliceInObstMenu2Dialog(int var){
   }
   show_slice_shaded[IN_GAS_GLUI]   = show_slice_in_gas;
   show_slice_shaded[IN_SOLID_GLUI] = show_slice_in_solid;
+  show_vector_slice[IN_GAS_GLUI]   = show_slice_in_gas;
+  show_vector_slice[IN_SOLID_GLUI] = show_slice_in_solid;
   GLUIImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
 }
 
