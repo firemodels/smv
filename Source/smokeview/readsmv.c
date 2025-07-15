@@ -5903,8 +5903,6 @@ int ReadIni2(const char *inifile, int localfile){
       float xyzmaxdiff_local = -1.0;
       float xmin_local = 0.0, ymin_local = 0.0, zmin_local = 0.0;
       char name_ini[32];
-      float zoom_in;
-      int zoomindex_in;
       cameradata camera_local, *ci;
       char *bufferptr;
 
@@ -5923,32 +5921,13 @@ int ReadIni2(const char *inifile, int localfile){
         &ci->rotation_type, &ci->rotation_index, &ci->view_id,
         &xyzmaxdiff_local, &xmin_local, &ymin_local, &zmin_local);
 
-      zoom_in = zoom;
-      zoomindex_in = zoomindex;
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%f %f %f %f %i", eye, eye + 1, eye + 2, &zoom_in, &zoomindex_in);
+      sscanf(buffer, "%f %f %f %f", eye, eye + 1, eye + 2, &ci->zoom);
+      ci->zoom = CLAMP(ci->zoom, zooms[0], zooms[MAX_ZOOMS - 1]);
       if(xyzmaxdiff_local>0.0){
         eye[0] = xmin_local + eye[0] * xyzmaxdiff_local;
         eye[1] = ymin_local + eye[1] * xyzmaxdiff_local;
         eye[2] = zmin_local + eye[2] * xyzmaxdiff_local;
-      }
-      zoom = zoom_in;
-      zoomindex = zoomindex_in;
-      if(zoomindex != -1){
-        if(zoomindex<0)zoomindex = ZOOMINDEX_ONE;
-        if(zooms[MAX_ZOOMS]>0.0&&zoomindex>MAX_ZOOMS)zoomindex = ZOOMINDEX_ONE;
-        if(zooms[MAX_ZOOMS]<=0.0&&zoomindex>MAX_ZOOMS-1)zoomindex = ZOOMINDEX_ONE;
-        zoom = zooms[zoomindex];
-      }
-      else{
-        if(zoom<zooms[0]){
-          zoom = zooms[0];
-          zoomindex = 0;
-        }
-        if(zoomindex!=MAX_ZOOMS&&zoom>zooms[MAX_ZOOMS-1]){
-          zoom = zooms[MAX_ZOOMS-1];
-          zoomindex = MAX_ZOOMS-1;
-        }
       }
       updatezoommenu = 1;
       p_type = 0;
@@ -7139,7 +7118,7 @@ void OutputViewpoints(FILE *fileout){
     mat = modelview_identity;
 
     fprintf(fileout, " %i %i %i\n", ca->rotation_type, ca->rotation_index, ca->view_id);
-    fprintf(fileout, " %f %f %f %f %i\n", eye[0], eye[1], eye[2], zoom, zoomindex);
+    fprintf(fileout, " %f %f %f %f %i\n", eye[0], eye[1], eye[2], ca->zoom, zoomindex);
     fprintf(fileout, " %f %f %f %i\n", ca->view_angle, ca->azimuth, ca->elevation, ca->projection_type);
     fprintf(fileout, " %f %f %f\n", ca->xcen, ca->ycen, ca->zcen);
 
