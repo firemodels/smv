@@ -5032,8 +5032,8 @@ void DrawVolSliceValues(slicedata *sd){
         in_solid = 1 - in_gas;
 
         if(iblank!=NULL){
-          if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
-          if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
+          if(show_slice_values[IN_SOLID_GLUI] == 0 && in_solid == 1) continue;
+          if(show_slice_values[IN_GAS_GLUI] == 0   && in_gas == 1) continue;
         }
         if(rgb_ptr[3]<0.5)continue;
 
@@ -5077,8 +5077,8 @@ void DrawVolSliceValues(slicedata *sd){
         in_solid = 1 - in_gas;
 
         if(iblank!=NULL){
-          if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
-          if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
+          if(show_slice_values[IN_SOLID_GLUI] == 0 && in_solid == 1) continue;
+          if(show_slice_values[IN_GAS_GLUI] == 0   && in_gas == 1) continue;
         }
         if(rgb_ptr[3]<0.5)continue;
 
@@ -8683,6 +8683,10 @@ void DrawVSliceFrame(void){
     }
     else{
       DrawVVolSlice(vd);
+      if(show_slice_values[IN_SOLID_GLUI] == 1 || show_slice_values[IN_GAS_GLUI] == 1) {
+        DrawVolSliceValues(val);
+        SNIFF_ERRORS("after DrawVolSliceValues SLICE_NODE_CENTER(vector)");
+      }
     }
     if(vd->volslice==1&&vis_gslice_data==1){
       DrawVGSliceData(vd);
