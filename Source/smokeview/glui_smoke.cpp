@@ -74,6 +74,7 @@ GLUI_Spinner *SPINNER_smoke3d_skipz = NULL;
 GLUI_Spinner *SPINNER_smoke3d_kmax = NULL;
 GLUI_Spinner *SPINNER_smoke3d_extinct = NULL;
 GLUI_Spinner *SPINNER_smoke3d_extinct2 = NULL;
+GLUI_Spinner *SPINNER_smoke3d_demo_mode;
 GLUI_Spinner *SPINNER_smoke3d_frame_inc = NULL;
 
 GLUI_Spinner *SPINNER_smoke3d_fire_red=NULL;
@@ -505,8 +506,8 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     SPINNER_smoke3d_frame_inc = glui_3dsmoke->add_spinner_to_panel(PANEL_display, _("frame display increment"),
       GLUI_SPINNER_INT, &smoke3d_frame_inc, SMOKE_FRAME_INC, GLUISmoke3dCB);
 
-    SPINNER_smoke3d_extinct = glui_3dsmoke->add_spinner_to_panel(PANEL_display, _("Extinction (m2/kg)"),
-                                                                 GLUI_SPINNER_FLOAT, &glui_smoke3d_extinct, SMOKE_EXTINCT, GLUISmoke3dCB);
+    SPINNER_smoke3d_extinct   = glui_3dsmoke->add_spinner_to_panel(PANEL_display, _("Extinction (m2/kg)"), GLUI_SPINNER_FLOAT, &glui_smoke3d_extinct, SMOKE_EXTINCT,   GLUISmoke3dCB);
+    SPINNER_smoke3d_demo_mode = glui_3dsmoke->add_spinner_to_panel(PANEL_display, _("Demo mode"),          GLUI_SPINNER_INT,   &demo_mode,            SMOKE_DEMO_MODE, GLUISmoke3dCB);
   }
 
   //---------------------------------------------Smoke/fire color--------------------------------------------------------------
@@ -1336,6 +1337,12 @@ extern "C" void GLUISmoke3dCB(int var){
       if(smoke3d_frame_inc<1){
         smoke3d_frame_inc=1;
         SPINNER_smoke3d_frame_inc->set_int_val(1);
+      }
+      break;
+    case SMOKE_DEMO_MODE:
+      if(demo_mode > 5){
+        demo_mode = 0;
+        SPINNER_smoke3d_demo_mode->set_int_val(demo_mode);
       }
       break;
    case SMOKE_EXTINCT:
