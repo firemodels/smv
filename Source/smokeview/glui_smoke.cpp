@@ -71,6 +71,8 @@ GLUI_Spinner *SPINNER_smoke3d_skipxy = NULL;
 GLUI_Spinner *SPINNER_smoke3d_skipx = NULL;
 GLUI_Spinner *SPINNER_smoke3d_skipy = NULL;
 GLUI_Spinner *SPINNER_smoke3d_skipz = NULL;
+GLUI_Spinner *SPINNER_smoke3d_imax = NULL;
+GLUI_Spinner *SPINNER_smoke3d_jmax = NULL;
 GLUI_Spinner *SPINNER_smoke3d_kmax = NULL;
 GLUI_Spinner *SPINNER_smoke3d_extinct = NULL;
 GLUI_Spinner *SPINNER_smoke3d_extinct2 = NULL;
@@ -697,6 +699,8 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   strcpy(label, "");
   STATIC_pixels_per_triangle = glui_3dsmoke->add_statictext_to_panel(PANEL_skip_planes, label);
 
+  SPINNER_smoke3d_imax = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max i", GLUI_SPINNER_INT, &smoke3d_imax);
+  SPINNER_smoke3d_jmax = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max j", GLUI_SPINNER_INT, &smoke3d_jmax);
   SPINNER_smoke3d_kmax = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max k", GLUI_SPINNER_INT, &smoke3d_kmax);
   CHECKBOX_smokecullflag = glui_3dsmoke->add_checkbox_to_panel(PANEL_skip_planes, "Cull hidden planes", &smokecullflag);
   GLUISmoke3dCB(SMOKE_SKIP_X);
