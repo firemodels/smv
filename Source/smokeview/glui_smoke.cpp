@@ -1348,6 +1348,10 @@ extern "C" void GLUISmoke3dCB(int var){
         demo_mode = 0;
         SPINNER_smoke3d_demo_mode->set_int_val(demo_mode);
       }
+      if(demo_mode < 0) {
+        demo_mode = 5;
+        SPINNER_smoke3d_demo_mode->set_int_val(demo_mode);
+      }
       break;
    case SMOKE_EXTINCT:
      global_scase.update_smoke_alphas = 1;
