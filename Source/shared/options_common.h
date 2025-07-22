@@ -90,21 +90,6 @@
 #define PRINTVERSION(a) PRINTversion(a)
 #endif
 
-// debugging macros
-
-#ifdef pp_TRACE
-#define BTRACE \
-  fprintf(stderr, "entering, file: %s, line: %d\n",__FILE__,__LINE__)
-#define TTRACE \
-  fprintf(stderr, "in, file: %s, line: %d\n",__FILE__,__LINE__)
-#define ETRACE \
-  fprintf(stderr, "leaving, file: %s, line: %d\n",__FILE__,__LINE__)
-#else
-#define BTRACE
-#define TTRACE
-#define ETRACE
-#endif
-
 #define FILE_SIZE unsigned long long
 
 #ifdef X64
