@@ -1160,28 +1160,6 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
   FREEMEMORY(times_map);
 }
 
-  /* ------------------ UpdateSliceNtimes ------------------------ */
-
-#ifdef pp_SLICEFRAME
-void UpdateSliceNtimes(void){
-  int minslice_index = 1000000000, i;
-  for(i = 0;i < global_scase.slicecoll.nsliceinfo;i++){
-    slicedata *sd;
-
-    sd = global_scase.slicecoll.sliceinfo + i;
-    if(sd->loaded == 0 || sd->display == 0)continue;
-    minslice_index = MIN(minslice_index, sd->ntimes);
-  }
-  for(i = 0;i < global_scase.slicecoll.nsliceinfo;i++){
-    slicedata *sd;
-
-    sd = global_scase.slicecoll.sliceinfo + i;
-    if(sd->loaded == 0 || sd->display == 0)continue;
-    sd->ntimes = minslice_index;
-  }
-}
-#endif
-
   /* ------------------ UpdateTimes ------------------------ */
 
 void UpdateTimes(void){

@@ -201,11 +201,6 @@ void UnloadIso(meshdata *meshi){
 
   if(meshi->isofilenum == -1)return;
   ib = global_scase.isoinfo + meshi->isofilenum;
-#ifdef pp_SLICEFRAME
-  FRAMEFree(ib->frameinfo);
-  ib->frameinfo = NULL;
-  ib->geominfo->frameinfo = NULL;
-#endif
 
   FreeAllMemory(ib->memory_id);
   meshi->iso_times = NULL;

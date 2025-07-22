@@ -517,23 +517,10 @@ void BoundsUpdateDoit(int file_type){
         }
       }
       else{
-#ifdef pp_SLICEFRAME
-        int itime;
-        for(itime = 0; itime < slicei->ntimes; itime++){
-          vals = ( float * )FRAMEGetFramePtr(slicei->frameinfo, slicei->itime);
-          if(vals != NULL){
-            for(j = 0; j < slicei->ntimes * slicei->nsliceijk; j++){
-              valmin = MIN(valmin, vals[j]);
-              valmax = MAX(valmax, vals[j]);
-            }
-          }
-        }
-#else
         for(j = 0; j < slicei->ntimes * slicei->nsliceijk; j++){
           valmin = MIN(valmin, vals[j]);
           valmax = MAX(valmax, vals[j]);
         }
-#endif
       }
       fi->defined = 1;
     }

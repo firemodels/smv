@@ -3962,9 +3962,6 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
 
   sd = scase->slicecoll.sliceinfo+nn_slice-1;
 
-#ifdef pp_SLICEFRAME
-  sd->frameinfo        = NULL;
-#endif
   sd->fds_dir          = fds_dir;
   sd->slice_mask       = NULL;
   sd->vals2d.vals      = NULL;
