@@ -3227,9 +3227,6 @@ int ParsePRT5Process(smv_case *scase, bufferstreamdata *stream, char *buffer, in
     blocknumber--;
   }
 
-#ifdef pp_PARTFRAME
-  parti->frameinfo = NULL;
-#endif
   parti->blocknumber = blocknumber;
   parti->seq_id = nn_part;
   parti->autoload = 0;
@@ -3293,9 +3290,7 @@ int ParsePRT5Process(smv_case *scase, bufferstreamdata *stream, char *buffer, in
   parti->timeslist = NULL;
   parti->histograms = NULL;
   parti->bounds_set = 0;
-#ifndef pp_PARTFRAME
   parti->filepos = NULL;
-#endif
   parti->sort_tags = NULL;
   parti->vis_part = NULL;
   parti->irvals = NULL;

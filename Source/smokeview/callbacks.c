@@ -2852,7 +2852,6 @@ void Keyboard(unsigned char key, int flag){
     case '/':
       updatemenu=1;
       partfast = 1 - partfast;
-#ifndef pp_PARTFRAME
       if(current_script_command==NULL){
         if(global_scase.npartinfo>1){
           use_partload_threads = partfast;
@@ -2861,7 +2860,6 @@ void Keyboard(unsigned char key, int flag){
           use_partload_threads = 0;
         }
       }
-#endif
       if(use_partload_threads==1){
         if(n_partload_threads > 1)printf("parallel particle loading: on(%i threads)\n", n_partload_threads);
         if(n_partload_threads == 1)printf("parallel particle loading: on(1 thread)\n");

@@ -3540,14 +3540,6 @@ void LoadUnloadMenu(int value){
 
     //*** reload particle files
 
-#ifdef pp_PARTFRAME
-    if(value == RELOADALL){
-      LoadAllPartFilesMT(LOAD_ALL_PART_FILES);
-    }
-    else{
-      LoadAllPartFilesMT(RELOAD_LOADED_PART_FILES);
-    }
-#else
     int npartloaded_local = 0;
     for(i=0;i<global_scase.npartinfo;i++){
       partdata *parti;
@@ -3559,7 +3551,6 @@ void LoadUnloadMenu(int value){
       }
     }
     if(npartloaded_local>0)LoadParticleMenu(MENU_PARTICLE_ALLMESHES);
-#endif
 
     //*** reload isosurface files
 
@@ -4046,34 +4037,16 @@ void LoadAllPartFiles(int partnum){
 
     parti = global_scase.partinfo+i;
     if(parti->file == NULL)continue;
-#ifdef pp_PARTFRAME
-    if(partnum != RELOAD_LOADED_PART_FILES && partnum != LOAD_ALL_PART_FILES){
-      IF_NOT_USEMESH_CONTINUE(parti->loaded, parti->blocknumber);
-    }
-#else
     IF_NOT_USEMESH_CONTINUE(parti->loaded,parti->blocknumber);
-#endif
     if(parti->skipload==1)continue;
     if(partnum>=0&&i!=partnum)continue;  //  load only particle file with file index partnum
     THREADcontrol(partload_threads, THREAD_LOCK);                      //  or load all particle files
     if(parti->loadstatus==FILE_UNLOADED
-#ifdef pp_PARTFRAME
-      || partnum==RELOAD_LOADED_PART_FILES || partnum == LOAD_ALL_PART_FILES
-#endif
      ){
       if(partnum==LOAD_ALL_PART_FILES||(partnum==RELOAD_LOADED_PART_FILES&&parti->loaded==1)||partnum==i){
         parti->loadstatus = FILE_LOADING;
         THREADcontrol(partload_threads, THREAD_UNLOCK);
-#ifdef pp_PARTFRAME
-        if(partnum == RELOAD_LOADED_PART_FILES){
-          file_size = ReadPart(parti->file, i, RELOAD, &errorcode);
-        }
-        else{
-          file_size = ReadPart(parti->file, i, LOAD, &errorcode);
-        }
-#else
         file_size = ReadPart(parti->file, i, LOAD, &errorcode);
-#endif
         THREADcontrol(partload_threads, THREAD_LOCK);
         parti->loadstatus = FILE_LOADED;
         part_load_size += file_size;
@@ -4151,11 +4124,7 @@ void *MtLoadAllPartFiles(void *arg){
 
   valptr = (int *)(arg);
   LoadAllPartFiles(*valptr);
-#ifdef pp_PARTFRAME
-  return NULL;
-#else
   THREAD_EXIT(partload_threads);
-#endif
 }
 
 /* ------------------ LoadAllPartFilesMT ------------------------ */
@@ -4164,9 +4133,6 @@ void LoadAllPartFilesMT(int partnum){
   int i;
 
   INIT_PRINT_TIMER(part_load_timer);
-#ifdef pp_PARTFRAME
-  LoadAllPartFiles(partnum);
-#else
   if(partload_threads == NULL){
     partload_threads = THREADinit(&n_partload_threads, &use_partload_threads, MtLoadAllPartFiles);
   }
@@ -4174,7 +4140,6 @@ void LoadAllPartFilesMT(int partnum){
   partnuminfo[0] = partnum;
   THREADruni(partload_threads, (unsigned char *)partnuminfo, 0);
   THREADcontrol(partload_threads, THREAD_JOIN);
-#endif
   PRINT_TIMER(part_load_timer, "LoadAllPartFilesMT");
 
   INIT_PRINT_TIMER(part_timer);
@@ -4324,9 +4289,7 @@ void LoadParticleMenu(int value){
             }
           }
           STOP_TIMER(part_load_time);
-#ifndef pp_PARTFRAME
           PrintFileLoadTimes(part_file_count,part_load_size,part_load_time);
-#endif
           if(have_particles==0)printf("***warning: particle files have no particles\n");
         }
 

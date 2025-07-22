@@ -9,7 +9,6 @@
 #define pp_THREAD           // turn on multi-threading
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
-#define pp_PARTFRAME     // turn on frame code for particles
 //#define pp_FRAME_DEBUG   // frame timing test
 //#define pp_FRAME_DEBUG2  // output frame times
 #endif

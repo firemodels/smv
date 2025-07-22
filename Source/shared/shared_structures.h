@@ -473,9 +473,7 @@ typedef struct _partdata {
   float zoffset, *times;
   unsigned char *times_map;
   FILE_SIZE reg_file_size, file_size;
-#ifndef pp_PARTFRAME
   LINT *filepos;
-#endif
 
   char menulabel[128];
 
@@ -490,9 +488,6 @@ typedef struct _partdata {
   unsigned char *vis_part;
   int *sort_tags;
   unsigned char *irvals;
-#ifdef pp_PARTFRAME
-  framedata *frameinfo;
-#endif
 } partdata;
 
 /* --------------------------  device --------------------------------------- */

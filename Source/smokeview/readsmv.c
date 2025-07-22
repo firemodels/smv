@@ -2730,9 +2730,7 @@ int ReadSMV_Configure(){
     }
   }
   if(global_scase.npartinfo>=64){
-#ifndef pp_PARTFRAME
     use_partload_threads = 1;
-#endif
     partfast = 1;
   }
 
@@ -5823,9 +5821,6 @@ int ReadIni2(const char *inifile, int localfile){
       if(current_script_command==NULL){
         sscanf(buffer, "%i %i %i", &partfast, &use_partload_threads, &n_partload_threads);
       }
-#ifdef pp_PARTFRAME
-      use_partload_threads = 0;
-#endif
       continue;
     }
     if(MatchINI(buffer, "WINDOWOFFSET") == 1){
