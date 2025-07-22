@@ -9,7 +9,6 @@
 #define pp_THREAD           // turn on multi-threading
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
-#define pp_SMOKEFRAME    // turn on frame code for 3d smoke
 #define pp_ISOFRAME      // turn on frame code for isosurfaces
 #define pp_SLICEFRAME    // turn on frame code for slices
 #define pp_PARTFRAME     // turn on frame code for particles

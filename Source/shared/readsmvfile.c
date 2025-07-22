@@ -3703,9 +3703,6 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     smoke3di->is_zlib = 0;
     smoke3di->is_smoke_density    = 0;
     smoke3di->soot_density_loaded = 0;
-#ifdef pp_SMOKEFRAME
-    smoke3di->frameinfo = NULL;
-#endif
     smoke3di->seq_id = nn_smoke3d;
     smoke3di->autoload = 0;
     smoke3di->compression_type = COMPRESSED_UNKNOWN;
@@ -3714,9 +3711,7 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     smoke3di->smokeframe_comp_list = NULL;
     smoke3di->smokeframe_out = NULL;
     smoke3di->timeslist = NULL;
-#ifndef pp_SMOKEFRAME
     smoke3di->smoke_comp_all = NULL;
-#endif
     smoke3di->smokeview_tmp = NULL;
     smoke3di->times = NULL;
     smoke3di->histtimes = NULL;

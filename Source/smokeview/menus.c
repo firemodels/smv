@@ -3550,11 +3550,7 @@ void LoadUnloadMenu(int value){
 
       smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
       if(smoke3di->request_load==1){
-#ifdef pp_SMOKEFRAME
-        ReadSmoke3D(ALL_SMOKE_FRAMES, i, load_flag, FIRST_TIME, &errorcode);
-#else
         ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
-#endif
       }
     }
 
@@ -4842,9 +4838,7 @@ void LoadSmoke3DMenu(int value){
   int i,errorcode;
   int file_count;
   float load_time;
-#ifndef pp_SMOKEFRAME
   float load_size;
-#endif
 
 #define MENU_DUMMY_SMOKE           -9
 #define MENU_SMOKE_SETTINGS        -4
@@ -4852,9 +4846,7 @@ void LoadSmoke3DMenu(int value){
 
   if(value == MENU_DUMMY_SMOKE)return;
   START_TIMER(load_time);
-#ifndef pp_SMOKEFRAME
   load_size = 0.0;
-#endif
   file_count=0;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
@@ -4967,17 +4959,11 @@ void LoadSmoke3DMenu(int value){
       if(smoke3di->type == HRRPUV_index)type = 2;
       if(smoke3di->type == TEMP_index)type = 4;
       if(smoke3di->type == CO2_index)type = 8;
-#ifdef pp_SMOKEFRAME
-      LoadSmoke3D(type, ALL_SMOKE_FRAMES, &file_count, NULL);
-#else
       load_size=LoadSmoke3D(type, ALL_SMOKE_FRAMES, &file_count, NULL);
-#endif
     }
   }
   STOP_TIMER(load_time);
-#ifndef pp_SMOKEFRAME
   PrintFileLoadTimes(file_count, load_size, load_time);
-#endif
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
