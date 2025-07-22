@@ -201,9 +201,7 @@ void UpdateFrameNumber(int changetime){
         meshi->patch_itime=meshi->patch_timeslist[itimes];
         if(patchi->compression_type==UNCOMPRESSED){
 
-#ifndef pp_BOUNDFRAME
           meshi->patchval_iframe  = meshi->patchval  + meshi->patch_itime*meshi->npatchsize;
-#endif
           meshi->cpatchval_iframe = meshi->cpatchval + meshi->patch_itime * meshi->npatchsize;
         }
         else{

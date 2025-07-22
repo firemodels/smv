@@ -2308,34 +2308,13 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int load_flag, int ntim
   FILE_m *stream;
   int count_read;
 
-#ifdef pp_BOUNDFRAME
-  if(patchi != NULL&&load_flag!=UNLOAD){
-    patchi->frameinfo = FRAMELoadData(patchi->frameinfo, patchi->file, patchi->size_file, NULL, load_flag, time_frame, FORTRAN_FILE, GetGeomDataFrameInfo);
-    update_frame = 1;
-  }
-#endif
-
   cvals = (unsigned char *)vals;
   *error = 1;
   if(filename==NULL)return 0;
   ext = strrchr(filename, '.');
   if(ext != NULL && strcmp(ext, ".svz") == 0)is_compressed = 1;
-#ifdef pp_BOUNDFRAME
-  if(patchi!=NULL && patchi->frameinfo!=NULL && patchi->frameinfo->bufferinfo!=NULL){
-    bufferdata *bufferinfo;
-
-    bufferinfo = patchi->frameinfo->bufferinfo;
-    stream     = fopen_b(patchi->reg_file, bufferinfo->buffer, bufferinfo->nbuffer, "rb");
-    file_size  = patchi->frameinfo->filesize;
-  }
-  else{
-    stream    = fopen_b(filename, NULL, 0, "rb");
-    file_size = GetFileSizeSMV(filename);
-  }
-#else
   stream = fopen_b(filename, NULL, 0, "rb");
   file_size = GetFileSizeSMV(filename);
-#endif
   if(stream == NULL){
     if(is_compressed == 1){
       printf(" The compressed boundary file %s failed to open\n", filename);
@@ -2453,9 +2432,7 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int load_flag, int ntim
     }
     if(time_frame==ALL_FRAMES)count++;
   }
-#ifndef pp_BOUNDFRAME
   fclose_m(stream);
-#endif
   return file_size;
 }
 
@@ -2500,12 +2477,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   FREEMEMORY(patchi->geom_ivals);
   FREEMEMORY(patchi->geom_times);
   FREEMEMORY(patchi->geom_times_map);
-#ifdef pp_BOUNDFRAME
-  if(load_flag != RELOAD){
-    FRAMEFree(patchi->frameinfo);
-    patchi->frameinfo = NULL;
-  }
-#endif
 
   if(load_flag==UNLOAD){
     plotstate = GetPlotState(DYNAMIC_PLOTS);

@@ -1058,9 +1058,7 @@ void InitMesh(meshdata *meshi){
   meshi->patch_times = NULL;
   meshi->patch_times_map = NULL;
   meshi->patchval = NULL;
-#ifndef pp_BOUNDFRAME
   meshi->patchval_iframe = NULL;
-#endif
   meshi->thresholdtime = NULL;
   meshi->patchblank = NULL;
   meshi->patch_timeslist = NULL;
@@ -3415,9 +3413,6 @@ int ParseBNDFProcess(smv_case *scase, bufferstreamdata *stream, char *buffer, in
   for(i = 0; i<6; i++){
     patchi->ijk[i] = -1;
   }
-#ifdef pp_BOUNDFRAME
-  patchi->frameinfo         = NULL;
-#endif
   patchi->finalize          = 1;
   patchi->valmin_patch      = 1.0;
   patchi->valmax_patch      = 0.0;

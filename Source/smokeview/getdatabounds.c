@@ -1112,19 +1112,7 @@ void GetGlobalPatchBounds(int flag, int set_flag, char *label){
     if(force_bound_update == 1)doit = 1;
     if(label != NULL && strcmp(patchi->label.shortlabel, label) != 0)doit = 0;
     if(doit==1){
-#ifdef pp_BOUNDFRAME
-      if(patchi->frameinfo != NULL){
-//*** comment these lines for now
-//        valmin = patchi->frameinfo->valmin;
-//        valmax = patchi->frameinfo->valmax;
-        BoundsGet(patchi->reg_file, patchglobalboundsinfo, sorted_patch_filenames, global_scase.npatchinfo, 1, &valmin, &valmax);
-      }
-      else{
-        BoundsGet(patchi->reg_file, patchglobalboundsinfo, sorted_patch_filenames, global_scase.npatchinfo, 1, &valmin, &valmax);
-      }
-#else
       BoundsGet(patchi->reg_file, patchglobalboundsinfo, sorted_patch_filenames, global_scase.npatchinfo, 1, &valmin, &valmax);
-#endif
       if(valmin > valmax)continue;
       patchi->valmin_patch = valmin;
       patchi->valmax_patch = valmax;

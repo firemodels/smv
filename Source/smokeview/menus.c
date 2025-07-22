@@ -3539,14 +3539,7 @@ void LoadUnloadMenu(int value){
       patchi = global_scase.patchinfo + i;
       assert(patchi->loaded==0||patchi->loaded==1);
       if(patchi->loaded == 1){
-#ifdef pp_BOUNDFRAME
-        if(patchi->structured == YES){
-          PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
-        }
-        ReadBoundary(i, load_flag, &errorcode);
-#else
         ReadBoundary(i, LOAD,&errorcode);
-#endif
       }
     }
 
@@ -6087,10 +6080,8 @@ void LoadBoundaryMenu(int value){
       fprintf(scriptoutstream," %s\n",patchj->label.longlabel);
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
-#ifndef pp_BOUNDFRAME
       int file_count=0;
       float load_size=0.0;
-#endif
       float load_time=0.0;
 
       START_TIMER(load_time);
@@ -6144,24 +6135,16 @@ void LoadBoundaryMenu(int value){
           if(patchi->structured == YES){
             PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
           }
-#ifdef pp_BOUNDFRAME
-          ReadBoundary(i, LOAD, &errorcode);
-#else
           load_size+=ReadBoundary(i, LOAD, &errorcode);
-#endif
           if(patchi->structured!=NO&&patchi->finalize==1){
             UpdateTriangles(GEOM_STATIC, GEOM_UPDATE_ALL);
           }
-#ifndef pp_BOUNDFRAME
           file_count++;
-#endif
           THREADcontrol(compress_threads, THREAD_UNLOCK);
         }
       }
       STOP_TIMER(load_time);
-#ifndef pp_BOUNDFRAME
       PrintFileLoadTimes(file_count,load_size,load_time);
-#endif
     }
     force_redisplay=1;
     UpdateFrameNumber(0);
