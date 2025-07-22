@@ -3979,7 +3979,7 @@ extern "C" void GLUIImmersedBoundCB(int var){
     show_slice_shaded[slice_celltype]   = glui_show_slice_shaded;
     show_slice_outlines[slice_celltype] = glui_show_slice_outlines;
     show_slice_points[slice_celltype]   = glui_show_slice_points;
-    show_slice_values[slice_celltype] = glui_show_slice_values;
+    show_slice_values[slice_celltype]   = glui_show_slice_values;
     if(RADIO_slice_edgetype!=NULL)RADIO_slice_edgetype->set_int_val(glui_slice_edgetype);
     SliceInObstDialog2Menu();
     break;
@@ -5588,11 +5588,11 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
     glui_bounds->add_column_to_panel(PANEL_immersed, false);
     PANEL_immersed_drawas = glui_bounds->add_panel_to_panel(PANEL_immersed, "draw slices using", true);
-    CHECKBOX_show_slice_shaded = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "solid colors", &glui_show_slice_shaded, IMMERSED_SET_DRAWTYPE, GLUIImmersedBoundCB);
-    CHECKBOX_show_slice_outlines = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "outlines", &glui_show_slice_outlines, IMMERSED_SET_DRAWTYPE, GLUIImmersedBoundCB);
-    CHECKBOX_show_slice_points = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "points", &glui_show_slice_points, IMMERSED_SET_DRAWTYPE, GLUIImmersedBoundCB);
-    CHECKBOX_show_slice_values = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "values", &glui_show_slice_values, IMMERSED_SET_DRAWTYPE, GLUIImmersedBoundCB);
-    CHECKBOX_show_vector_slice = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "vectors", &glui_show_vector_slice, IMMERSED_SET_DRAWTYPE, GLUIImmersedBoundCB);
+    CHECKBOX_show_slice_shaded   = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "solid colors", &glui_show_slice_shaded,   IMMERSED_SET_DRAWTYPE, GLUIImmersedBoundCB);
+    CHECKBOX_show_slice_outlines = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "outlines",     &glui_show_slice_outlines, IMMERSED_SET_DRAWTYPE, GLUIImmersedBoundCB);
+    CHECKBOX_show_slice_points   = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "points",       &glui_show_slice_points,   IMMERSED_SET_DRAWTYPE, GLUIImmersedBoundCB);
+    CHECKBOX_show_slice_values   = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "values",       &glui_show_slice_values,   IMMERSED_SET_DRAWTYPE, GLUIImmersedBoundCB);
+    CHECKBOX_show_vector_slice   = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "vectors",      &glui_show_vector_slice,   IMMERSED_SET_DRAWTYPE, GLUIImmersedBoundCB);
 
     GLUIImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
     GLUIImmersedBoundCB(IMMERSED_SWITCH_EDGETYPE);

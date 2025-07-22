@@ -71,9 +71,12 @@ GLUI_Spinner *SPINNER_smoke3d_skipxy = NULL;
 GLUI_Spinner *SPINNER_smoke3d_skipx = NULL;
 GLUI_Spinner *SPINNER_smoke3d_skipy = NULL;
 GLUI_Spinner *SPINNER_smoke3d_skipz = NULL;
+GLUI_Spinner *SPINNER_smoke3d_imax = NULL;
+GLUI_Spinner *SPINNER_smoke3d_jmax = NULL;
 GLUI_Spinner *SPINNER_smoke3d_kmax = NULL;
 GLUI_Spinner *SPINNER_smoke3d_extinct = NULL;
 GLUI_Spinner *SPINNER_smoke3d_extinct2 = NULL;
+GLUI_Spinner *SPINNER_smoke3d_demo_mode;
 GLUI_Spinner *SPINNER_smoke3d_frame_inc = NULL;
 
 GLUI_Spinner *SPINNER_smoke3d_fire_red=NULL;
@@ -505,8 +508,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     SPINNER_smoke3d_frame_inc = glui_3dsmoke->add_spinner_to_panel(PANEL_display, _("frame display increment"),
       GLUI_SPINNER_INT, &smoke3d_frame_inc, SMOKE_FRAME_INC, GLUISmoke3dCB);
 
-    SPINNER_smoke3d_extinct = glui_3dsmoke->add_spinner_to_panel(PANEL_display, _("Extinction (m2/kg)"),
-                                                                 GLUI_SPINNER_FLOAT, &glui_smoke3d_extinct, SMOKE_EXTINCT, GLUISmoke3dCB);
+    SPINNER_smoke3d_extinct   = glui_3dsmoke->add_spinner_to_panel(PANEL_display, _("Extinction (m2/kg)"), GLUI_SPINNER_FLOAT, &glui_smoke3d_extinct, SMOKE_EXTINCT,   GLUISmoke3dCB);
   }
 
   //---------------------------------------------Smoke/fire color--------------------------------------------------------------
@@ -696,8 +698,11 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   strcpy(label, "");
   STATIC_pixels_per_triangle = glui_3dsmoke->add_statictext_to_panel(PANEL_skip_planes, label);
 
+  SPINNER_smoke3d_imax = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max i", GLUI_SPINNER_INT, &smoke3d_imax);
+  SPINNER_smoke3d_jmax = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max j", GLUI_SPINNER_INT, &smoke3d_jmax);
   SPINNER_smoke3d_kmax = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max k", GLUI_SPINNER_INT, &smoke3d_kmax);
   CHECKBOX_smokecullflag = glui_3dsmoke->add_checkbox_to_panel(PANEL_skip_planes, "Cull hidden planes", &smokecullflag);
+  SPINNER_smoke3d_demo_mode = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, _("Demo mode"), GLUI_SPINNER_INT, &demo_mode, SMOKE_DEMO_MODE, GLUISmoke3dCB);
   GLUISmoke3dCB(SMOKE_SKIP_X);
 
   //---------------------------------------------Volume render settings--------------------------------------------------------------
@@ -1336,6 +1341,16 @@ extern "C" void GLUISmoke3dCB(int var){
       if(smoke3d_frame_inc<1){
         smoke3d_frame_inc=1;
         SPINNER_smoke3d_frame_inc->set_int_val(1);
+      }
+      break;
+    case SMOKE_DEMO_MODE:
+      if(demo_mode > 5){
+        demo_mode = 0;
+        SPINNER_smoke3d_demo_mode->set_int_val(demo_mode);
+      }
+      if(demo_mode < 0) {
+        demo_mode = 5;
+        SPINNER_smoke3d_demo_mode->set_int_val(demo_mode);
       }
       break;
    case SMOKE_EXTINCT:

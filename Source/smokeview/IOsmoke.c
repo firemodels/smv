@@ -1716,10 +1716,9 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
   js2 = smoke3di->js2;
   ks1 = smoke3di->ks1;
   ks2 = smoke3di->ks2;
-  if(smoke3d_kmax>0){
-    ks2 = CLAMP(ks2, 1, smoke3d_kmax);
-    ks2 = CLAMP(ks2, 1, smoke3di->ks2);
-  }
+  if(smoke3d_imax > 0 && is2 > smoke3d_imax)is2 = smoke3d_imax;
+  if(smoke3d_jmax > 0 && js2 > smoke3d_jmax)js2 = smoke3d_jmax;
+  if(smoke3d_kmax > 0 && ks2 > smoke3d_kmax)ks2 = smoke3d_kmax;
 
   nx = smoke3di->is2+1-smoke3di->is1;
   ny = js2+1-js1;
