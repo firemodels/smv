@@ -1219,9 +1219,6 @@ typedef struct _geomdata {
   geomobjdata *geomobjinfo;
   int *geomobj_offsets;
   int ngeomobj_offsets;
-#ifdef pp_ISOFRAME
-  framedata *frameinfo;
-#endif
 } geomdata;
 
 /* --------------------------  isodata ------------------------------------ */
@@ -1254,9 +1251,6 @@ typedef struct _isodata {
   unsigned char *geom_times_map;
   float globalmin_iso, globalmax_iso;
   int geom_nvals;
-#ifdef pp_ISOFRAME
-  framedata *frameinfo;
-#endif
 } isodata;
 
 /* --------------------------  boundsdata ----------------------------------- */

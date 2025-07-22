@@ -368,9 +368,7 @@ void GetFaceInfo(void){
     geomlistdata *geomlisti;
     vertdata **verts;
     int j;
-#ifndef pp_ISOFRAME
     int ndups=0,nused=0,nskinny=0;
-#endif
 
     geomi = geominfoptrs[i];
     geomlisti = geomi->geomlistinfo;
@@ -390,11 +388,9 @@ void GetFaceInfo(void){
         trii->verts[2]->nused=0;
       }
       qsort(verts,geomlisti->nverts,sizeof(vertdata *),CompareVerts);
-#ifndef pp_ISOFRAME
       for(j=1;j<geomlisti->nverts;j++){
         if(CompareVerts(verts[j-1],verts[j])==0)ndups++;
       }
-#endif
       for(j=0;j<geomlisti->ntriangles;j++){
         tridata *trii;
 
@@ -404,15 +400,12 @@ void GetFaceInfo(void){
         trii->verts[2]->nused++;
         if(GetMinAngle(trii)<=10.0){
           trii->skinny=1;
-#ifndef pp_ISOFRAME
           nskinny++;
-#endif
         }
         else{
           trii->skinny=0;
         }
       }
-#ifndef pp_ISOFRAME
       for(j=0;j<geomlisti->nverts;j++){
         if(verts[j]->nused>0)nused++;
       }
@@ -424,7 +417,6 @@ void GetFaceInfo(void){
         PRINTF("     unused: %i\n", geomlisti->nverts-nused);
         PRINTF(" duplicates: %i\n\n", ndups);
       }
-#endif
       FREEMEMORY(verts);
     }
   }
@@ -3021,12 +3013,6 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
 
   filebuffer  = NULL;
   nfilebuffer = 0;
-#ifdef pp_ISOFRAME
-  if(geomi->frameinfo != NULL && geomi->frameinfo->bufferinfo != NULL){
-    filebuffer  = geomi->frameinfo->bufferinfo->buffer;
-    nfilebuffer = geomi->frameinfo->bufferinfo->nbuffer;
-  }
-#endif
   // header
   // one
   // version
@@ -3118,20 +3104,14 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       float *xyz=NULL;
       float *zORIG;
 
-#ifndef pp_ISOFRAME
       NewMemoryMemID((void **)&xyz,3*nverts*sizeof(float),    geomi->memory_id);
-#endif
       NewMemoryMemID((void **)&verts,nverts*sizeof(vertdata), geomi->memory_id);
       NewMemoryMemID((void **)&zORIG, nverts*sizeof(float),   geomi->memory_id);
       geomlisti->zORIG = zORIG;
       geomlisti->verts = verts;
       geomlisti->nverts=nverts;
 
-#ifdef pp_ISOFRAME
-      FORTREAD_mv((void **)&xyz, 4, 3*nverts, stream);
-#else
       FORTREAD_m(xyz, 4, 3*nverts, stream);
-#endif
       if(count_read != 3 * nverts)break;
       return_filesize += 4+3*nverts*4+4;
 
@@ -3139,9 +3119,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
         memcpy(verts[ii].xyz, xyz + 3*ii, 3*sizeof(float));
         zORIG[ii] = xyz[3 * ii+2];
       }
-#ifndef pp_ISOFRAME
       FREEMEMORY(xyz);
-#endif
     }
     if(skipframe==0&&ntris>0){
       int *surf_ind=NULL,*ijk=NULL;
@@ -3150,26 +3128,16 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       tridata *triangles;
 
       NewMemoryMemID((void **)&triangles,ntris*sizeof(tridata), geomi->memory_id);
-#ifndef pp_ISOFRAME
       NewMemoryMemID((void **)&ijk,3*ntris*sizeof(int),         geomi->memory_id);
       NewMemoryMemID((void **)&surf_ind,ntris*sizeof(int),      geomi->memory_id);
-#endif
       geomlisti->triangles=triangles;
       geomlisti->ntriangles=ntris;
 
-#ifdef pp_ISOFRAME
-      FORTREAD_mv((void **)&ijk, 4, 3*ntris, stream);
-#else
       FORTREAD_m(ijk, 4, 3*ntris, stream);
-#endif
       if(count_read != 3 * ntris)break;
       return_filesize += 4+3*ntris*4+4;
 
-#ifdef pp_ISOFRAME
-      FORTREAD_mv((void **)&surf_ind, 4, ntris, stream);
-#else
       FORTREAD_m(surf_ind, 4, ntris, stream);
-#endif
       if(count_read != ntris)break;
       return_filesize += 4+ntris*4+4;
 
@@ -3194,10 +3162,8 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
           triangles[ii].textureinfo = NULL;
         }
       }
-#ifndef pp_ISOFRAME
       FREEMEMORY(ijk);
       FREEMEMORY(surf_ind);
-#endif
     }
 
     if(skipframe==0||geom_frame_index!=NULL){

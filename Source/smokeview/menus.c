@@ -3586,13 +3586,8 @@ void LoadUnloadMenu(int value){
 
       isoi = global_scase.isoinfo + i;
       if(isoi->loaded==0)continue;
-#ifdef pp_ISOFRAME
-      ReadIso(isoi->file, i, load_flag, NULL, &errorcode);
-      if(isoi->frameinfo==NULL||isoi->frameinfo->frames_read>0)printf("\n");
-#else
       ReadIso(isoi->file,i,LOAD,NULL,&errorcode);
       printf("\n");
-#endif
     }
     if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(BACKGROUND);
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
@@ -5883,10 +5878,8 @@ FILE_SIZE LoadIsoI(int value){
 
 void LoadAllIsos(int iso_type){
   int i;
-#ifndef pp_ISOFRAME
   int file_count=0;
   float load_size=0.0;
-#endif
   float load_time=0.0;
 
   if(load_only_when_unloaded == 0){
@@ -5926,18 +5919,12 @@ void LoadAllIsos(int iso_type){
     isoi = global_scase.isoinfo + i;
     IF_NOT_USEMESH_CONTINUE(isoi->loaded,isoi->blocknumber);
     if(iso_type==isoi->type){
-#ifdef pp_ISOFRAME
-      LoadIsoI(i);
-#else
       load_size+=LoadIsoI(i);
       file_count++;
-#endif
     }
   }
   STOP_TIMER(load_time);
-#ifndef pp_ISOFRAME
   PrintFileLoadTimes(file_count,load_size,load_time);
-#endif
 }
 
 /* ------------------ LoadIsoMenu ------------------------ */
