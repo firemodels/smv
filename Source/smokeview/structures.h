@@ -8,7 +8,6 @@
 
 #include "stdio_m.h"
 #include "string_util.h" // necessary for flowlabels
-#include "smokestream.h"
 #ifdef pp_FRAME
 #include "IOframe.h"
 #endif
