@@ -2876,12 +2876,6 @@ GLUI_Spinner *SPINNER_line_contour_width=NULL;
 GLUI_Spinner *SPINNER_line_contour_min=NULL;
 GLUI_Spinner *SPINNER_line_contour_max=NULL;
 GLUI_Spinner *SPINNER_timebounds=NULL;
-#ifdef pp_FRAME
-GLUI_Spinner *SPINNER_nframe_threads = NULL;
-#endif
-#ifdef pp_FRAME_DEBUG
-GLUI_Spinner *SPINNER_read_buffer_size = NULL;
-#endif
 GLUI_Spinner *SPINNER_tload_begin=NULL;
 GLUI_Spinner *SPINNER_tload_end=NULL;
 GLUI_Spinner *SPINNER_tload_skip=NULL;
@@ -4003,29 +3997,9 @@ extern "C" void GLUIImmersedBoundCB(int var){
 
 extern "C" void BoundBoundCB(int var){
   int i;
-#ifdef pp_FRAME
-  char ctime[1024];
-  bufferdata *bufferinfo=NULL;
-  FILE_SIZE nread;
-  float read_time;
-#endif
 
   SNIFF_ERRORS("BoundBoundCB: start");
   switch(var){
-#ifdef pp_FRAME
-  case READ_TEST:
-    if(MakeFile(frametest_filename, read_buffer_size) == 1){
-      START_TIMER(read_time);
-      bufferinfo = File2Buffer(frametest_filename, NULL, NULL, bufferinfo, &nread);
-      STOP_TIMER(read_time);
-      sprintf(ctime, "%f", read_time);
-      TrimZeros(ctime);
-      printf("threads: %i time (s): %s\n", nframe_threads, ctime);
-      FreeBufferInfo(bufferinfo);
-      FileErase(frametest_filename);
-    }
-    break;
-#endif
   case SHOW_BOUNDARY_OUTLINE:
     if(global_scase.ngeom_data==0)break;
     if(show_boundary_outline==1&&boundary_edgetype==GEOM_OUTLINE_HIDDEN)boundary_edgetype = GEOM_OUTLINE_POLYGON;
@@ -5689,19 +5663,6 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
   ROLLOUT_time = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "Load options", false, TIME_ROLLOUT, BoundRolloutCB);
   TOGGLE_ROLLOUT(boundprocinfo, nboundprocinfo, ROLLOUT_time, TIME_ROLLOUT, glui_bounds);
-
-#ifdef pp_FRAME
-  SPINNER_nframe_threads = glui_bounds->add_spinner_to_panel(ROLLOUT_time, _("read threads:"), GLUI_SPINNER_INT, &nframe_threads);
-  SPINNER_nframe_threads->set_int_limits(1, MAX_THREADS);
-
-#ifdef pp_FRAME_DEBUG
-  PANEL_read_test = glui_bounds->add_panel_to_panel(ROLLOUT_time, "Timing test", true);
-  SPINNER_read_buffer_size = glui_bounds->add_spinner_to_panel(PANEL_read_test, _("Buffer size (MB):"), GLUI_SPINNER_INT, &read_buffer_size);
-  SPINNER_read_buffer_size->set_int_limits(1, 1000);
-  glui_bounds->add_button_to_panel(PANEL_read_test, _("Test"), READ_TEST, BoundBoundCB);
-#endif
-
-#endif
 
   PANEL_loadbounds = glui_bounds->add_panel_to_panel(ROLLOUT_time, "", GLUI_PANEL_NONE);
 

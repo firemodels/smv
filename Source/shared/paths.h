@@ -25,10 +25,6 @@ EXTERNCPP char *CasePathLogFile(smv_case *scase);
 EXTERNCPP char *CasePathCaseIni(smv_case *scase);
 // char *fedsmv_filename;
 EXTERNCPP char *CasePathFed(smv_case *scase);
-#ifdef pp_FRAME
-// char *frametest_filename;
-EXTERNCPP char *CasePathFrameTest(smv_case *scase);
-#endif
 // char *dEcsv_filename;
 EXTERNCPP char *CasePathDeCsv(smv_case *scase);
 // char *html_filename;

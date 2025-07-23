@@ -3,15 +3,9 @@
 
 #include "options_common.h"
 
-//#define pp_FRAME            // turn on frame code
 //#define pp_SHOW_UPDATE      // show what is being updated in the UpdateShowScene routine
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading
-
-#ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
-//#define pp_FRAME_DEBUG   // frame timing test
-//#define pp_FRAME_DEBUG2  // output frame times
-#endif
 
 //*** options: windows
 

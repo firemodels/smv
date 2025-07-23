@@ -3451,16 +3451,7 @@ void LoadUnloadMenu(int value){
     break;
   case RELOADALL:
   case RELOAD_INCREMENTAL_ALL:
-#ifdef pp_FRAME
-    if(value == RELOADALL){
-      load_flag = LOAD;
-    }
-    else{
-      load_flag = RELOAD;
-    }
-#else
     load_flag = LOAD;
-#endif
     THREADcontrol(compress_threads, THREAD_LOCK);
     char *hrr_csv_filename = CasePathHrrCsv(&global_scase);
     if(FileExistsCaseDir(&global_scase, hrr_csv_filename) == YES) {

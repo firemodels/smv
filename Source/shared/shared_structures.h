@@ -3,9 +3,6 @@
 #include "isobox.h"
 #include "options.h"
 #include <stdio.h>
-#ifdef pp_FRAME
-#include "IOframe.h"
-#endif
 
 #if defined(WIN32)
 #include <windows.h>
