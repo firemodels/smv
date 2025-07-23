@@ -1058,9 +1058,7 @@ void InitMesh(meshdata *meshi){
   meshi->patch_times = NULL;
   meshi->patch_times_map = NULL;
   meshi->patchval = NULL;
-#ifndef pp_BOUNDFRAME
   meshi->patchval_iframe = NULL;
-#endif
   meshi->thresholdtime = NULL;
   meshi->patchblank = NULL;
   meshi->patch_timeslist = NULL;
@@ -3064,9 +3062,6 @@ int ParseISOFProcess(smv_case *scase, bufferstreamdata *stream, char *buffer, in
     return RETURN_BREAK;
   }
 
-#ifdef pp_ISOFRAME
-  isoi->frameinfo = NULL;
-#endif
   isoi->fds_skip = fds_skip;
   isoi->fds_delta = fds_delta;
   isoi->tfile = NULL;
@@ -3232,9 +3227,6 @@ int ParsePRT5Process(smv_case *scase, bufferstreamdata *stream, char *buffer, in
     blocknumber--;
   }
 
-#ifdef pp_PARTFRAME
-  parti->frameinfo = NULL;
-#endif
   parti->blocknumber = blocknumber;
   parti->seq_id = nn_part;
   parti->autoload = 0;
@@ -3298,9 +3290,7 @@ int ParsePRT5Process(smv_case *scase, bufferstreamdata *stream, char *buffer, in
   parti->timeslist = NULL;
   parti->histograms = NULL;
   parti->bounds_set = 0;
-#ifndef pp_PARTFRAME
   parti->filepos = NULL;
-#endif
   parti->sort_tags = NULL;
   parti->vis_part = NULL;
   parti->irvals = NULL;
@@ -3415,9 +3405,6 @@ int ParseBNDFProcess(smv_case *scase, bufferstreamdata *stream, char *buffer, in
   for(i = 0; i<6; i++){
     patchi->ijk[i] = -1;
   }
-#ifdef pp_BOUNDFRAME
-  patchi->frameinfo         = NULL;
-#endif
   patchi->finalize          = 1;
   patchi->valmin_patch      = 1.0;
   patchi->valmax_patch      = 0.0;
@@ -3708,9 +3695,6 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     smoke3di->is_zlib = 0;
     smoke3di->is_smoke_density    = 0;
     smoke3di->soot_density_loaded = 0;
-#ifdef pp_SMOKEFRAME
-    smoke3di->frameinfo = NULL;
-#endif
     smoke3di->seq_id = nn_smoke3d;
     smoke3di->autoload = 0;
     smoke3di->compression_type = COMPRESSED_UNKNOWN;
@@ -3719,9 +3703,7 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     smoke3di->smokeframe_comp_list = NULL;
     smoke3di->smokeframe_out = NULL;
     smoke3di->timeslist = NULL;
-#ifndef pp_SMOKEFRAME
     smoke3di->smoke_comp_all = NULL;
-#endif
     smoke3di->smokeview_tmp = NULL;
     smoke3di->times = NULL;
     smoke3di->histtimes = NULL;
@@ -3975,9 +3957,6 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
 
   sd = scase->slicecoll.sliceinfo+nn_slice-1;
 
-#ifdef pp_SLICEFRAME
-  sd->frameinfo        = NULL;
-#endif
   sd->fds_dir          = fds_dir;
   sd->slice_mask       = NULL;
   sd->vals2d.vals      = NULL;
@@ -4568,10 +4547,6 @@ int ReadSMV_Init(smv_case *scase){
   START_TIMER(timer_setup);
   START_TIMER(timer_readsmv);
   START_TIMER(scase->processing_time);
-
-#ifdef pp_ISOFRAME
-  use_isosurface_threads = 0;
-#endif
 
   START_TIMER(scase->getfilelist_time);
   MakeFileLists(scase);

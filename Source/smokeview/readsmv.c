@@ -2730,9 +2730,7 @@ int ReadSMV_Configure(){
     }
   }
   if(global_scase.npartinfo>=64){
-#ifndef pp_PARTFRAME
     use_partload_threads = 1;
-#endif
     partfast = 1;
   }
 
@@ -3359,12 +3357,6 @@ int ReadIni2(const char *inifile, int localfile){
       update_research_mode=1;
       continue;
     }
-#ifdef pp_FRAME
-    if(MatchINI(buffer, "FRAMETHREADS") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, " %i", &nframe_threads);
-    }
-#endif
     if(MatchINI(buffer, "COLORGROUND") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i",
@@ -5823,9 +5815,6 @@ int ReadIni2(const char *inifile, int localfile){
       if(current_script_command==NULL){
         sscanf(buffer, "%i %i %i", &partfast, &use_partload_threads, &n_partload_threads);
       }
-#ifdef pp_PARTFRAME
-      use_partload_threads = 0;
-#endif
       continue;
     }
     if(MatchINI(buffer, "WINDOWOFFSET") == 1){
@@ -7941,10 +7930,6 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "CSV\n");
   fprintf(fileout, " %i\n", csv_loaded);
-#ifdef pp_FRAME
-  fprintf(fileout, "FRAMETHREADS\n");
-  fprintf(fileout, " %i\n", nframe_threads);
-#endif
   fprintf(fileout, "LOADINC\n");
   fprintf(fileout, " %i\n", load_incremental);
   fprintf(fileout, "NOPART\n");

@@ -60,11 +60,7 @@ SVEXTERN int SVDECL(n_iso_threads, 1), SVDECL(use_iso_threads, 0), SVDECL(use_is
 
 //*** part
 SVEXTERN int SVDECL(n_partload_threads, 2);
-#ifdef pp_PARTFRAME
-SVEXTERN int SVDECL(use_partload_threads, 0);
-#else
 SVEXTERN int SVDECL(use_partload_threads, 1);
-#endif
 SVEXTERN threaderdata SVDECL(*partload_threads,         NULL);
 
 //*** sorttags
@@ -109,9 +105,6 @@ SVEXTERN int SVDECL(update_device_timeaverage, 0);
 SVEXTERN int SVDECL(update_colorbar_list, 0);
 SVEXTERN int SVDECL(force_bound_update, 0);
 SVEXTERN int SVDECL(update_colorbar_dialog, 1);
-#ifdef pp_FRAME
-SVEXTERN int SVDECL(update_frame, 0);
-#endif
 
 // hvac data
 SVEXTERN int SVDECL(hvac_show_connections, 0), SVDECL(hvac_show_networks, 1);
@@ -538,9 +531,6 @@ SVEXTERN char SVDECL(*file_smokesensors, NULL);
 SVEXTERN int SVDECL(light_faces, 1);
 SVEXTERN int SVDECL(nwindrosez_checkboxes, 0);
 SVEXTERN float startup_time;
-#ifdef pp_FRAME
-SVEXTERN int SVDECL(nframe_threads, 4), SVDECL(read_buffer_size, 10);
-#endif
 SVEXTERN int SVDECL(alt_ctrl_key_state, KEY_NONE);
 SVEXTERN devicedata SVDECL(**vel_devices, NULL);
 SVEXTERN int SVDECL(nvel_devices, 0);
@@ -1821,9 +1811,6 @@ SVEXTERN char SVDECL(*flushfile,NULL);
 SVEXTERN int SVDECL(csv_loaded, 0), SVDECL(devices_setup,0),SVDECL(update_csv_load,0);
 SVEXTERN char SVDECL(*smokezippath,NULL), SVDECL(*smokeviewpath,NULL), SVDECL(*fdsprog, NULL);
 SVEXTERN char SVDECL(*INI_fds_filein,NULL);
-#ifdef pp_FRAME
-SVEXTERN char SVDECL(*frametest_filename, NULL);
-#endif
 SVEXTERN int SVDECL(event_file_exists,0);
 SVEXTERN char SVDECL(*zonelonglabels,NULL), SVDECL(*zoneshortlabels,NULL), SVDECL(*zoneunits,NULL);
 SVEXTERN int SVDECL(overwrite_all,0),SVDECL(erase_all,0);

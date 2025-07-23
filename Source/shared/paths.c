@@ -119,15 +119,6 @@ char *CasePathCaseIni(smv_case *scase){
 char *CasePathFed(smv_case *scase){
   return SetupPath(NULL, scase->fdsprefix, ".fedsmv");
 }
-#ifdef pp_FRAME
-
-/* ------------------ CasePathFrameTest ------------------------ */
-
-// char *frametest_filename;
-char *CasePathFrameTest(smv_case *scase){
-  return SetupPath(NULL, scase->fdsprefix, ".tst");
-}
-#endif
 
 /* ------------------ CasePathDeCsv ------------------------ */
 

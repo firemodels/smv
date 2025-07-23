@@ -3,9 +3,6 @@
 #include "isobox.h"
 #include "options.h"
 #include <stdio.h>
-#ifdef pp_FRAME
-#include "IOframe.h"
-#endif
 
 #if defined(WIN32)
 #include <windows.h>
@@ -312,9 +309,7 @@ typedef struct _meshdata {
   unsigned char *cpatchval_zlib, *cpatchval_iframe_zlib;
   unsigned char *cpatchval, *cpatchval_iframe;
   float *patch_times, *patch_timesi, *patchval;
-#ifndef pp_BOUNDFRAME
   float *patchval_iframe;
-#endif
   unsigned char *patch_times_map;
   float **patchventcolors;
   int patch_itime;
@@ -475,9 +470,7 @@ typedef struct _partdata {
   float zoffset, *times;
   unsigned char *times_map;
   FILE_SIZE reg_file_size, file_size;
-#ifndef pp_PARTFRAME
   LINT *filepos;
-#endif
 
   char menulabel[128];
 
@@ -492,9 +485,6 @@ typedef struct _partdata {
   unsigned char *vis_part;
   int *sort_tags;
   unsigned char *irvals;
-#ifdef pp_PARTFRAME
-  framedata *frameinfo;
-#endif
 } partdata;
 
 /* --------------------------  device --------------------------------------- */
@@ -665,9 +655,6 @@ typedef struct _slicedata {
   FILE_SIZE file_size;
   int *geom_offsets;
   devicedata vals2d;
-#ifdef pp_SLICEFRAME
-  framedata *frameinfo;
-#endif
 } slicedata;
 
 /* --------------------------  multislicedata ------------------------------------ */
@@ -1221,9 +1208,6 @@ typedef struct _geomdata {
   geomobjdata *geomobjinfo;
   int *geomobj_offsets;
   int ngeomobj_offsets;
-#ifdef pp_ISOFRAME
-  framedata *frameinfo;
-#endif
 } geomdata;
 
 /* --------------------------  isodata ------------------------------------ */
@@ -1256,9 +1240,6 @@ typedef struct _isodata {
   unsigned char *geom_times_map;
   float globalmin_iso, globalmax_iso;
   int geom_nvals;
-#ifdef pp_ISOFRAME
-  framedata *frameinfo;
-#endif
 } isodata;
 
 /* --------------------------  boundsdata ----------------------------------- */
@@ -1367,9 +1348,6 @@ typedef struct _patchdata {
   int npatches;
   patchfacedata *patchfaceinfo;
   patchfacedata *meshfaceinfo[6];
-#ifdef pp_BOUNDFRAME
-  framedata *frameinfo;
-#endif
 } patchdata;
 
 /* --------------------------  std_objects ------------------------------------ */
@@ -1436,9 +1414,6 @@ typedef struct _smoke3ddata {
   char *file;
   char *comp_file, *reg_file;
   char *smoke_density_file;
-#ifdef pp_SMOKEFRAME
-  char *size_file;
-#endif
 #ifdef pp_SMOKE3D_FORCE
   int dummy;
 #endif
@@ -1483,17 +1458,12 @@ typedef struct _smoke3ddata {
   float maxval;
   unsigned char *smokeframe_in, *smokeframe_out, **smokeframe_comp_list;
   unsigned char *smokeview_tmp;
-#ifndef pp_SMOKEFRAME
   unsigned char *smoke_comp_all;
-#endif
   unsigned char *frame_all_zeros;
   FILE_SIZE file_size;
   float *smoke_boxmin, *smoke_boxmax;
   smokedata smoke;
   int dir;
-#ifdef pp_SMOKEFRAME
-  framedata *frameinfo;
-#endif
 } smoke3ddata;
 
 /* --------------------------  smoke3dtypedata ------------------------------ */
