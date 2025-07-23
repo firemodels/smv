@@ -4967,6 +4967,8 @@ extern "C" void GLUIBoundsSetup(int main_window){
     GLUIUpdateShowHideButtons();
   }
 
+
+#ifdef pp_COMPRESS
   if(smokezippath != NULL && (global_scase.npatchinfo > 0 || global_scase.smoke3dcoll.nsmoke3dinfo > 0 || global_scase.slicecoll.nsliceinfo > 0)){
     ROLLOUT_compress = glui_bounds->add_rollout_to_panel(ROLLOUT_files, _("Compress"), false, COMPRESS_ROLLOUT, FileRolloutCB);
     TOGGLE_ROLLOUT(fileprocinfo, nfileprocinfo, ROLLOUT_compress, COMPRESS_ROLLOUT, glui_bounds);
@@ -4982,6 +4984,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
     SPINNER_zipstep->set_int_limits(0, 100);
     BUTTON_compress = glui_bounds->add_button_to_panel(ROLLOUT_compress, _("Run smokezip"), COMPRESS_FILES, BoundBoundCB);
   }
+#endif
 
   ROLLOUT_script = glui_bounds->add_rollout_to_panel(ROLLOUT_files, _("Scripts"), false, SCRIPT_ROLLOUT, FileRolloutCB);
   TOGGLE_ROLLOUT(fileprocinfo, nfileprocinfo, ROLLOUT_script, SCRIPT_ROLLOUT, glui_bounds);
