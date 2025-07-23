@@ -11,7 +11,6 @@
 
 #ifdef WIN32
 #define pp_memstatus
-#define pp_COMPRESS         // support for smokezip
 #define pp_DIALOG_SHORTCUTS // dialog shortcuts
 #ifdef pp_GPU
 #define pp_WINGPU           // only draw 3d slices with the GPU on windows

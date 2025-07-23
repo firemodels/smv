@@ -2694,8 +2694,6 @@ void GridSliceMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-#ifdef pp_COMPRESS
-
 /* ------------------ CompressMenu ------------------------ */
 
 void CompressMenu(int value){
@@ -2735,7 +2733,6 @@ void CompressMenu(int value){
   }
   updatemenu=1;
 }
-#endif
 
 /* ------------------ IniSubMenu ------------------------ */
 
@@ -8836,9 +8833,7 @@ static int resetmenu=0, defaultviewmenu=0, frameratemenu=0, rendermenu=0, smokev
 static int terrain_geom_showmenu = 0;
 static int render_resolutionmenu=0, render_filetypemenu=0, render_filesuffixmenu=0, render_skipmenu=0;
 static int render_startmenu = 0;
-#ifdef pp_COMPRESS
 static int compressmenu=0;
-#endif
 static int showhideslicemenu=0, sliceskipmenu=0, showvslicemenu=0;
 static int loadsubslicexmenu=0, loadsubsliceymenu=0, loadsubslicezmenu=0, loadsubslicexyzmenu=0;
 static int loadsubvectorslicexmenu=0, loadsubvectorsliceymenu=0, loadsubvectorslicezmenu=0, loadsubvectorslicexyzmenu=0;
@@ -11536,7 +11531,6 @@ static int menu_count=0;
 
   CREATEMENU(filesdialogmenu, DialogMenu);
   glutAddMenuEntry(_("Auto load data files..."), DIALOG_AUTOLOAD);
-#ifdef pp_COMPRESS
   if(smokezippath!=NULL&&(global_scase.npatchinfo>0||global_scase.smoke3dcoll.nsmoke3dinfo>0||global_scase.slicecoll.nsliceinfo>0)){
 #ifdef pp_DIALOG_SHORTCUTS
     glutAddMenuEntry(_("Compress data files...  ALT z"), DIALOG_SMOKEZIP);
@@ -11544,7 +11538,6 @@ static int menu_count=0;
     glutAddMenuEntry(_("Compress data files..."), DIALOG_SMOKEZIP);
 #endif
   }
-#endif
   glutAddMenuEntry(_("Save/load configuration files..."), DIALOG_CONFIG);
   glutAddMenuEntry(_("Render images..."), DIALOG_RENDER);
   THREADcontrol(ffmpeg_threads, THREAD_LOCK);
@@ -12661,7 +12654,6 @@ static int menu_count=0;
 
 /* -------------------------------- compress menu -------------------------- */
 
-#ifdef pp_COMPRESS
     if(smokezippath != NULL && (global_scase.npatchinfo > 0 || global_scase.smoke3dcoll.nsmoke3dinfo > 0 || global_scase.slicecoll.nsliceinfo > 0)){
     CREATEMENU(compressmenu,CompressMenu);
     glutAddMenuEntry(_("Compression options"),MENU_DUMMY);  // -c
@@ -12682,8 +12674,6 @@ static int menu_count=0;
     glutAddMenuEntry(_("Erase compressed files"),MENU_ERASECOMPRESS);  // -c
     glutAddMenuEntry(_("Settings..."), MENU_COMPRESS_SETTINGS);
   }
-#endif
-
 
 /* --------------------------------inisub menu -------------------------- */
   {
@@ -12996,11 +12986,9 @@ static int menu_count=0;
       }
       GLUTADDSUBMENU(_("Configuration files"),smokeviewinimenu);
       GLUTADDSUBMENU(_("Scripts"),scriptmenu);
-#ifdef pp_COMPRESS
       if(smokezippath!=NULL&&(global_scase.npatchinfo>0||global_scase.smoke3dcoll.nsmoke3dinfo>0||global_scase.slicecoll.nsliceinfo>0)){
         GLUTADDSUBMENU(_("Compression"),compressmenu);
       }
-#endif
       GLUTADDSUBMENU(_("Misc"),fileinfomenu);
       {
         char menulabel[1024];
