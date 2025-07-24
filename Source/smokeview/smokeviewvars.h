@@ -1476,7 +1476,7 @@ SVEXTERN int SVDECL(visFullTitle, 1), SVDECL(visFramerate, 0);
 SVEXTERN int SVDECL(visFramelabel,1), SVDECL(visTimelabel,1);
 SVEXTERN int SVDECL(vis_hrr_label,0);
 #ifdef pp_memstatus
-SVEXTERN int SVDECL(visAvailmemory, 0);
+SVEXTERN int SVDECL(vismemload, 0);
 #endif
 SVEXTERN int SVDECL(block_volsmoke,1),SVDECL(smoke3dVoldebug,0);
 SVEXTERN slicedata SVDECL(*sd_shown,NULL);
@@ -1576,7 +1576,7 @@ SVEXTERN int SVDECL(ntargets,0);
 SVEXTERN int SVDECL(mainwindow_id,0);
 
 SVEXTERN float SVDECL(max_mem_GB,0.0);
-SVEXTERN int SVDECL(visUsagememory,0);
+SVEXTERN int SVDECL(vismemusage,0);
 SVEXTERN float gslice_norm[3];
 #ifdef INMAIN
 SVEXTERN float glui_tour_view[3] = {0.0,0.0,0.0};

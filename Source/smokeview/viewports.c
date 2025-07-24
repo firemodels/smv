@@ -282,7 +282,7 @@ void GetViewportInfo(void){
   }
   if(show_horizontal_colorbar == 1
 #ifdef pp_memstatus
-    ||visAvailmemory==1
+    ||vismemload==1
 #endif
     )doit=1;
 
@@ -308,7 +308,7 @@ void GetViewportInfo(void){
     temp_height = text_height + v_space;
     if(visFramelabel==1||vis_hrr_label==1
 #ifdef  pp_memstatus
-      ||visAvailmemory==1
+      ||vismemload==1
 #endif
       )temp_height += (text_height+v_space);
     VP_timebar.height = MAX(timebar_height + 2*v_space, temp_height);
@@ -1199,9 +1199,9 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
 
   timebar_right_width = 0;
   if(visFramerate==1&&showtime==1)framerate_width = GetStringWidth("Frame rate: 99.99");
-  if(visUsagememory == 1)memavail_width = GetStringWidth("9999 MBx");
+  if(vismemusage == 1)memavail_width = GetStringWidth("9999 MBx");
 #ifdef pp_memstatus
-  if(visAvailmemory == 1)memusage_width = GetStringWidth("Mem Load: 100%x");
+  if(vismemload == 1)memusage_width = GetStringWidth("Mem Load: 100%x");
 #endif
   timebar_right_width = MAX(MAX(framerate_width, memavail_width), memusage_width);
   timebar_right_width = MAX(timebar_right_width, delta);
@@ -1263,8 +1263,8 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
   }
 
 #ifdef pp_memstatus
-  if(visAvailmemory==1){
-    MEMSTATUS(0,&availmemory,NULL,NULL);
+  if(vismemload==1){
+    MEMSTATUS(0,&availmemory);
     sprintf(frameratelabel," Mem Load:%u%s",availmemory,percen);
     if(visFramerate==1&&showtime==1){
       OutputText(right_label_pos,2*v_space+VP_timebar.text_height,frameratelabel);
@@ -1275,9 +1275,9 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
   }
 #endif
 #ifdef pp_MEMDEBUG
-  if(visUsagememory==1
+  if(vismemusage==1
 #ifdef pp_memstatus
-     &&visAvailmemory==0
+     &&vismemload==0
 #endif
     ){
       char MEMlabel[128];

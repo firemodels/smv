@@ -85,10 +85,10 @@ MMEXTERN pthread_mutex_t mutexMEM;
 
 #ifdef pp_memstatus
 #ifdef WIN32
-void _memorystatus(unsigned int size,unsigned int *availmem, unsigned int *memused, unsigned int *totalmem);
-#define MEMSTATUS(f,g,h,i) _memorystatus(f,g,h,i)
+void _memorystatus(unsigned int size,unsigned int *availmem);
+#define MEMSTATUS(f,g) _memorystatus(f,g)
 #else
-#define MEMSTATUS(f,g,h,i)
+#define MEMSTATUS(f,g)
 #endif
 #endif
 
