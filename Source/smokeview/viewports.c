@@ -284,7 +284,11 @@ void GetViewportInfo(void){
 #ifdef pp_memload
     ||vismemload==1
 #endif
-    )doit=1;
+#ifdef pp_memusage
+     || vismemusage == 1
+#endif
+  )
+    doit = 1;
 
   VP_timebar.left = titlesafe_offset;
   if(vis_hrr_plot==1 || vis_slice_plot==1||vis_colorbar_dists_plot==1)VP_timebar.left = VP_hrr_plot.right;
@@ -310,7 +314,11 @@ void GetViewportInfo(void){
 #ifdef  pp_memload
       ||vismemload==1
 #endif
-      )temp_height += (text_height+v_space);
+#ifdef pp_memusage
+       || vismemusage == 1
+#endif
+    )
+      temp_height += (text_height + v_space);
     VP_timebar.height = MAX(timebar_height + 2*v_space, temp_height);
     if(show_horizontal_colorbar==1)VP_timebar.height += hbar_height;
   }
@@ -1205,14 +1213,19 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
 
   timebar_right_width = 0;
   if(visFramerate==1&&showtime==1)framerate_width = GetStringWidth("Frame rate: 99.99");
+  timebar_right_width = framerate_width;
 #ifdef pp_memusage
-  if(vismemusage == 1)memusage_width = GetStringWidth("9999 MBx");
+  if(vismemusage == 1) {
+    memusage_width = GetStringWidth("Mem Usage: 9999 MBx");
+    timebar_right_width = MAX(timebar_right_width, memusage_width);
+  }
 #endif
 #ifdef pp_memload
-  if(vismemload == 1)memload_width = GetStringWidth("Mem Load: 100%x");
+  if(vismemload == 1){
+    memload_width = GetStringWidth("Mem Load: 100%x");
+    timebar_right_width = MAX(timebar_right_width, memload_width);
+  }
 #endif
-  timebar_right_width = MAX(MAX(framerate_width, memusage_width), memload_width);
-  timebar_right_width = MAX(timebar_right_width, delta);
 
   if(vis_hrr_label==1)hrr_width = GetStringWidth("HRR: 1000.0kW");
   if(visFrameTimelabel==1){

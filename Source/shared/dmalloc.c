@@ -677,11 +677,11 @@ void getMemusage(MMsize totalmemory,char *MEMlabel){
 
   if(totalmemory<1000000000){
     size = totalmemory/1000000;
-    sprintf(MEMlabel,"%i MB",size);
+    sprintf(MEMlabel,"Mem Usage: %i MB",size);
   }
   else{
     rsize = totalmemory/1000000000.0;
-    sprintf(MEMlabel,"%4.2f GB",rsize);
+    sprintf(MEMlabel,"Mem Usage: %4.2f GB",rsize);
   }
 }
 #endif
