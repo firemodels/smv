@@ -214,9 +214,7 @@ void DisplayVersionInfo(char *progname){
   PRINTF("Smokeview path   : %s\n",smv_progname);
   FREEMEMORY(smv_progname);
   if(verbose_output == 1){
-#ifdef pp_COMPRESS
     if(smokezippath!=NULL)PRINTF("Smokezip path    : %s\n",smokezippath);
-#endif
     if(global_scase.texturedir!=NULL)PRINTF("Texture directory: %s\n",global_scase.texturedir);
   }
   char *smv_bindir = GetSmvRootDir();
