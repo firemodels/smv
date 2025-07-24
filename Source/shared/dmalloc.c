@@ -39,11 +39,11 @@ int memusage(void){
 }
 #endif
 
-/* ------------------ _memorystatus ------------------------ */
+/* ------------------ _memoryload ------------------------ */
 
-#ifdef pp_memstatus
+#ifdef pp_memload
 #ifdef WIN32
-void _memorystatus(unsigned int size,unsigned int *availmem){
+void _memoryload(unsigned int size,unsigned int *availmem){
   MEMORYSTATUS stat;
 
     GlobalMemoryStatus(&stat);

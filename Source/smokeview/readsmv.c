@@ -5650,7 +5650,7 @@ int ReadIni2(const char *inifile, int localfile){
       sscanf(buffer, "%i", &visaxislabels);
       continue;
     }
-#ifdef pp_memstatus
+#ifdef pp_memload
     if(MatchINI(buffer, "SHOWMEMLOAD") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &vismemload);
@@ -8125,7 +8125,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", show_iso_normal);
   fprintf(fileout, "SHOWLABELS\n");
   fprintf(fileout, " %i\n", visLabels);
-#ifdef pp_memstatus
+#ifdef pp_memload
   fprintf(fileout, "SHOWMEMLOAD\n");
   fprintf(fileout, " %i\n", vismemload);
 #endif
