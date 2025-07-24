@@ -39,17 +39,15 @@ int memusage(void){
 }
 #endif
 
-/* ------------------ _memorystatus ------------------------ */
+/* ------------------ _memoryload ------------------------ */
 
-#ifdef pp_memstatus
+#ifdef pp_memload
 #ifdef WIN32
-void _memorystatus(unsigned int size,unsigned int *availmem,unsigned int *physmemused, unsigned int *totalmem){
+void _memoryload(unsigned int size,unsigned int *availmem){
   MEMORYSTATUS stat;
 
     GlobalMemoryStatus(&stat);
     if(availmem!=NULL)*availmem=stat.dwMemoryLoad;
-    if(totalmem!=NULL)*totalmem=stat.dwTotalPhys/(1024*1024);
-    if(physmemused!=NULL)*physmemused=(stat.dwTotalPhys-stat.dwAvailPhys)/(1024*1024);
     if(size!=0&&size>stat.dwAvailPhys-0.1*stat.dwTotalPhys){
       fprintf(stderr,"*** Warning: Low Memory. Only %i M available for viewing data.\n",
            (int)stat.dwAvailPhys/(1024*1024));
@@ -679,11 +677,11 @@ void getMemusage(MMsize totalmemory,char *MEMlabel){
 
   if(totalmemory<1000000000){
     size = totalmemory/1000000;
-    sprintf(MEMlabel,"%i MB",size);
+    sprintf(MEMlabel,"Mem Usage: %i MB",size);
   }
   else{
     rsize = totalmemory/1000000000.0;
-    sprintf(MEMlabel,"%4.2f GB",rsize);
+    sprintf(MEMlabel,"Mem Usage: %4.2f GB",rsize);
   }
 }
 #endif
