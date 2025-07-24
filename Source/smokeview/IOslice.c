@@ -3797,9 +3797,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   meshdata *meshi;
 
   FILE_SIZE file_size=0;
-#ifdef pp_memstatus
-  unsigned int availmemory;
-#endif
 
   updatemenu = 1;
   update_plot_label = 1;
@@ -3979,7 +3976,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     if(time_frame==ALL_FRAMES){
       PRINTF("Loading %s(%s)", file, sd->label.shortlabel);
     }
-    MEMSTATUS(1, &availmemory);
     START_TIMER(read_time);
     if(sd->compression_type != UNCOMPRESSED){
       int return_code;
