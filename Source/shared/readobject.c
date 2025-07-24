@@ -1179,7 +1179,6 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file){
 
   stream = fopen(file, "r");
   if(stream == NULL) return 0;
-  // if(verbose_output==1)PRINTF("reading %s ", file);
 
   firstdef = -1;
   buffer_ptr = NULL;
@@ -1342,10 +1341,6 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file){
       objecti = objecti->next;
     }
   }
-  // if(verbose_output==1){
-  //   PRINTF("- complete");
-  //   PRINTF("\n\n");
-  // }
   PRINTF("%d object definitions read from %s\n", ndevices, file);
   return ndevices;
 }
