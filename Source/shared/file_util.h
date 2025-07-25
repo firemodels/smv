@@ -294,6 +294,7 @@ EXTERNCPP void PrintTime(const char *tag, int line, float *timer,
 EXTERNCPP int IsSootFile(char *shortlabel, char *longlabel);
 
 EXTERNCPP char *LastName(char *argi);
+EXTERNCPP void program_exit(int code);
 
 // vvvvvvvvvvvvvvvvvvvvvvvv variables vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 

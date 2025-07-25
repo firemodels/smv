@@ -316,18 +316,6 @@ int BuildGbndFile(int file_type){
   return 0;
 }
 
-/* ------------------ SMV_EXIT ------------------------ */
-
-void SMV_EXIT(int code){
-#ifdef _DEBUG_VS
-  char buffer[255];
-
-  printf("smokeview exiting\n");
-  fgets(buffer, 255, stdin);
-#endif
-  exit(code);
-}
-
 /* ------------------ StartTimer ------------------------ */
 
 void StartTimer(float *timerptr){

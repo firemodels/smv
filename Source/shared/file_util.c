@@ -1623,3 +1623,9 @@ char *Which(char *progname, char **fullprognameptr){
   FREEMEMORY(prognamecopy);
   return NULL;
 }
+
+/* ------------------ program_exit ------------------------ */
+
+void program_exit(int code){
+  exit(code); 
+}
