@@ -1,3 +1,4 @@
+#define IN_MAIN
 #include "options.h"
 
 #include "getdata.h"
