@@ -723,7 +723,10 @@ int GetColorbarIndex(int x, int y){
 }
 
 #define GLUTGETMODIFIERS GlutGetModifiersNew
-int GlutGetModifiersNew(void){
+
+/* ------------------ GlutGetModifiersNew ------------------------ */
+
+int GlutGetModifiersNew(void) {
   int modifier=0;
 
   switch(alt_ctrl_key_state){

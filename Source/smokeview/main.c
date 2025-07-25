@@ -22,8 +22,6 @@
 
 #include <assert.h>
 
-
-
 /* ------------------ Usage ------------------------ */
 
 void Usage(int option){
@@ -96,7 +94,9 @@ void Usage(int option){
 
 char *ProcessCommandLine(CommandlineArgs *args);
 
-char *ParseCommandline(int argc, char **argv){
+/* ------------------ ParseCommandline ------------------------ */
+
+char *ParseCommandline(int argc, char **argv) {
   enum CommandLineError error;
   char message[256];
 
