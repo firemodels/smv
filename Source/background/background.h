@@ -1,4 +1,4 @@
-#ifdef INMAIN
+#ifdef IN_MAIN
 #define EXTERN
 #else
 #define EXTERN extern
