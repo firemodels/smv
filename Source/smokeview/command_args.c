@@ -313,8 +313,8 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
         args.checkscript = true;
       } else {
         *error = CLE_ARGUMENT_EXPECTED;
-        void program_exit(int error);
-        program_exit(1);
+        void SMV_EXIT(int error);
+        SMV_EXIT(1);
         return args;
       }
     }

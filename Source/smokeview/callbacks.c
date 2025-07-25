@@ -3998,7 +3998,7 @@ void DoScript(void){
       }
       script_render_flag= RunScriptCommand(current_script_command);
       if(runscript==2&&noexit==0&&current_script_command==NULL){
-        program_exit(0);
+        SMV_EXIT(0);
       }
       if(current_script_command==NULL){
         GLUIScriptEnable();

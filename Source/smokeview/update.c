@@ -2317,13 +2317,13 @@ void BoundBoundCB(int var);
   if(convert_ini == 1){
     SHOW_UPDATE(convert_ini);
     WriteIni(SCRIPT_INI, ini_to);
-    program_exit(0);
+    SMV_EXIT(0);
     END_SHOW_UPDATE(convert_ini);
   }
   if(convert_ssf==1||update_ssf==1){
     SHOW_UPDATE(update_ssf);
     ConvertSsf();
-    program_exit(0);
+    SMV_EXIT(0);
     END_SHOW_UPDATE(update_ssf);
   }
   INIT_PRINT_TIMER(timer_updateshow);

@@ -949,7 +949,7 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq, float 
     FILE *file = FOPEN(qfilename, "rb");
     if(file == NULL){
       fprintf(stderr, " The file name, %s does not exist\n", qfilename);
-      program_exit(1);
+      exit(1);
     }
     *error = fortread(npts, sizeof(*npts), 3, file);
     if(*error) goto end;
@@ -967,7 +967,7 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq, float 
       fprintf(stderr, " *** Fatal error in getplot3dq ***\n");
       fprintf(stderr, " Grid size found in plot3d file was: %d,%d,%d\n", (int)nxpts, (int)nypts, (int)nzpts);
       fprintf(stderr, " Was expecting: %d,%d,%d\n", nx, ny, nz);
-      program_exit(1);
+      exit(1);
     }
   end:
     fclose(file);
