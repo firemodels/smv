@@ -1,4 +1,3 @@
-#define IN_MAIN
 #include "options.h"
 
 #include "dmalloc.h"

@@ -1,4 +1,4 @@
-#define IN_MAIN
+#define INMAIN
 #include "options.h"
 #include "dmalloc.h"
 #include "shared_structures.h"
