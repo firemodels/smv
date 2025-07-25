@@ -24,7 +24,7 @@ typedef char bbyte;
 #define MMCCC
 #endif
 
-#ifdef IN_DMALLOC
+#ifdef INDMALLOC
 #define MMEXTERN
 #else
 #define MMEXTERN extern MMCCC

@@ -1,5 +1,5 @@
 #include "options.h"
-#define IN_DMALLOC
+#define INDMALLOC
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
