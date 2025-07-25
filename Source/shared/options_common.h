@@ -119,7 +119,7 @@
 #define EXTERNCPP
 #endif
 
-#ifdef INMAIN
+#ifdef IN_MAIN
 #define SVEXTERN
 #define SVDECL(var,val)  var=val
 #else

@@ -1,4 +1,4 @@
-#define INMAIN
+#define IN_MAIN
 #include "options.h"
 #include <stdio.h>
 #include <string.h>
