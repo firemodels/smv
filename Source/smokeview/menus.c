@@ -827,8 +827,15 @@ void LabelMenu(int value){
     vis_title_CHID = 1;
     vis_title_gversion =1;
     visFramerate=1;
-#ifdef pp_memstatus
-    visAvailmemory=1;
+#ifdef pp_memload
+    vismemload = 1;
+#ifdef pp_memusage
+    vismemusage = 0;
+#endif
+#else
+#ifdef pp_memusage
+    vismemusage = 1;
+#endif
 #endif
     visaxislabels=1;
     visTimelabel=1;
@@ -839,7 +846,7 @@ void LabelMenu(int value){
     if(global_scase.ntickinfo>0)visFDSticks=1;
     visgridloc=1;
     vis_hrr_label=1;
-    visFramelabel=1;
+    visFrameTimelabel=1;
     break;
    case MENU_LABEL_HideAll:
     visUSERticks=0;
@@ -855,13 +862,17 @@ void LabelMenu(int value){
     visLabels=0;
     visTimelabel=0;
     visFramelabel=0;
+    visFrameTimelabel=0;
     visMeshlabel=0;
     vis_hrr_label=0;
     if(global_scase.ntickinfo>0)visFDSticks=0;
     visgridloc=0;
     vis_slice_average=0;
-#ifdef pp_memstatus
-    visAvailmemory=0;
+#ifdef pp_memload
+    vismemload=0;
+#endif
+#ifdef pp_memusage
+    vismemusage = 0;
 #endif
     break;
    case MENU_LABEL_northangle:
@@ -893,16 +904,19 @@ void LabelMenu(int value){
    case MENU_LABEL_meshlabel:
      visMeshlabel=1-visMeshlabel;
      break;
-#ifdef pp_memstatus
+#ifdef pp_memload
    case MENU_LABEL_memload:
-     visAvailmemory = 1 - visAvailmemory;
+     vismemload = 1 - vismemload;
+#ifdef pp_memusage
+     if(vismemload==1)vismemusage=0;
+#endif
      break;
 #endif
-#ifdef pp_MEMDEBUG
+#ifdef pp_memusage
    case MENU_LABEL_memusage:
-     visUsagememory = 1 - visUsagememory;
-#ifdef pp_memstatus
-     if(visUsagememory==1)visAvailmemory=0;
+     vismemusage = 1 - vismemusage;
+#ifdef pp_memload
+     if(vismemusage==1)vismemload=0;
 #endif
      break;
 #endif
@@ -10233,13 +10247,13 @@ static int menu_count=0;
     if(vis_hrr_label == 1)glutAddMenuEntry(_("*HRR"), MENU_LABEL_hrr);
     if(vis_hrr_label == 0)glutAddMenuEntry(_("HRR"), MENU_LABEL_hrr);
   }
-#ifdef pp_memstatus
-  if(visAvailmemory == 1)glutAddMenuEntry(_("*Memory load"), MENU_LABEL_memload);
-  if(visAvailmemory == 0)glutAddMenuEntry(_("Memory load"), MENU_LABEL_memload);
+#ifdef pp_memload
+  if(vismemload == 1)glutAddMenuEntry(_("*Memory load"), MENU_LABEL_memload);
+  if(vismemload == 0)glutAddMenuEntry(_("Memory load"), MENU_LABEL_memload);
 #endif
-#ifdef pp_MEMDEBUG
-  if(visUsagememory == 1)glutAddMenuEntry(_("*Memory usage"), MENU_LABEL_memusage);
-  if(visUsagememory == 0)glutAddMenuEntry(_("Memory usage"), MENU_LABEL_memusage);
+#ifdef pp_memusage
+  if(vismemusage == 1)glutAddMenuEntry(_("*Memory usage"), MENU_LABEL_memusage);
+  if(vismemusage == 0)glutAddMenuEntry(_("Memory usage"), MENU_LABEL_memusage);
 #endif
   if(visMeshlabel == 1)glutAddMenuEntry(_("*Mesh"), MENU_LABEL_meshlabel);
   if(visMeshlabel == 0)glutAddMenuEntry(_("Mesh"), MENU_LABEL_meshlabel);

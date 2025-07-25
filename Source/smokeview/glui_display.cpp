@@ -123,8 +123,13 @@ GLUI_Checkbox *CHECKBOX_labels_timelabel=NULL;
 GLUI_Checkbox *CHECKBOX_labels_framelabel=NULL;
 GLUI_Checkbox *CHECKBOX_labels_frametimelabel = NULL;
 GLUI_Checkbox *CHECKBOX_labels_hrrlabel=NULL;
-GLUI_Checkbox *CHECKBOX_labels_availmemory=NULL;
-GLUI_Checkbox *CHECKBOX_labels_labels=NULL;
+#ifdef pp_memload
+GLUI_Checkbox *CHECKBOX_labels_memload=NULL;
+#endif
+#ifdef pp_memusage
+GLUI_Checkbox *CHECKBOX_labels_memusage = NULL;
+#endif
+GLUI_Checkbox *CHECKBOX_labels_labels = NULL;
 GLUI_Checkbox *CHECKBOX_labels_gridloc=NULL;
 GLUI_Checkbox *CHECKBOX_labels_average=NULL;
 GLUI_Checkbox *CHECKBOX_user_ticks_show_x=NULL;
@@ -267,6 +272,8 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LABELS_REFRESH_RATE   37
 #endif
 #define LABELS_BOUNDING_BOX   38
+#define LABELS_memload        39
+#define LABELS_memusage       40
 
 #define LABELS_HMS 18
 #define SAVE_SETTINGS_DISPLAY 99
@@ -829,8 +836,11 @@ extern "C" void GLUIDisplaySetup(int main_window){
   CHECKBOX_labels_framerate = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame rate"), &visFramerate, LABELS_label, GLUILabelsCB);
   CHECKBOX_labels_gridloc = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Grid location"), &visgridloc, LABELS_label, GLUILabelsCB);
   CHECKBOX_labels_hrrlabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("HRR"), &vis_hrr_label, HRR_label, GLUILabelsCB);
-#ifdef pp_memstatus
-  CHECKBOX_labels_availmemory = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Memory load"), &visAvailmemory, LABELS_label, GLUILabelsCB);
+#ifdef pp_memload
+  CHECKBOX_labels_memload = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Memory load"), &vismemload, LABELS_memload, GLUILabelsCB);
+#endif
+#ifdef pp_memusage
+  CHECKBOX_labels_memusage = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Memory usage"), &vismemusage, LABELS_memusage, GLUILabelsCB);
 #endif
 
   glui_labels->add_column_to_panel(PANEL_gen1, false);
@@ -1412,6 +1422,26 @@ extern "C" void GLUILabelsCB(int var){
   case LABELS_transparent:
   case FIRECUTOFF_label:
     break;
+#ifdef pp_memload
+  case LABELS_memload:
+#ifdef pp_memusage
+    if(vismemload == 1 && vismemusage == 1){
+      vismemusage = 0;
+      CHECKBOX_labels_memusage->set_int_val(vismemusage);
+    }
+#endif
+    break;
+#endif
+#ifdef pp_memusage
+  case LABELS_memusage:
+#ifdef pp_memload
+    if(vismemload == 1 && vismemusage == 1){
+      vismemload = 0;
+      CHECKBOX_labels_memload->set_int_val(vismemload);
+    }
+#endif
+    break;
+#endif
   case LABELS_usertick:
     CHECKBOX_visUSERticks2->set_int_val(visUSERticks);
     break;
@@ -1488,15 +1518,19 @@ extern "C" void GLUISetLabelControls(){
   if(CHECKBOX_visColorbarVertical!=NULL)CHECKBOX_visColorbarVertical->set_int_val(visColorbarVertical);
   if(CHECKBOX_labels_timebar!=NULL)CHECKBOX_labels_timebar->set_int_val(visTimebar);
   if(CHECKBOX_labels_timelabel!=NULL)CHECKBOX_labels_timelabel->set_int_val(visTimelabel);
-  if(CHECKBOX_labels_framelabel!=NULL)CHECKBOX_labels_framelabel->set_int_val(visFramelabel);
+  if(CHECKBOX_labels_frametimelabel != NULL)CHECKBOX_labels_frametimelabel->set_int_val(visFrameTimelabel);
+  if(CHECKBOX_labels_framelabel != NULL)CHECKBOX_labels_framelabel->set_int_val(visFramelabel);
   if(CHECKBOX_labels_ticks!=NULL)CHECKBOX_labels_ticks->set_int_val(visFDSticks);
   if(CHECKBOX_labels_axis!=NULL)CHECKBOX_labels_axis->set_int_val(visaxislabels);
   if(CHECKBOX_labels_framerate!=NULL)CHECKBOX_labels_framerate->set_int_val(visFramerate);
   if(CHECKBOX_labels_average!=NULL)CHECKBOX_labels_average->set_int_val(vis_slice_average);
-#ifdef pp_memstatus
-  if(CHECKBOX_labels_availmemory!=NULL)CHECKBOX_labels_availmemory->set_int_val(visAvailmemory);
+#ifdef pp_memload
+  if(CHECKBOX_labels_memload!=NULL)CHECKBOX_labels_memload->set_int_val(vismemload);
 #endif
-  if(CHECKBOX_labels_labels!=NULL)CHECKBOX_labels_labels->set_int_val(visLabels);
+#ifdef pp_memusage
+  if(CHECKBOX_labels_memusage != NULL)CHECKBOX_labels_memusage->set_int_val(vismemusage);
+#endif
+  if(CHECKBOX_labels_labels != NULL)CHECKBOX_labels_labels->set_int_val(visLabels);
 
   if(CHECKBOX_labels_flip!=NULL)CHECKBOX_labels_flip->set_int_val(background_flip);
   if(RADIO_fontsize != NULL)RADIO_fontsize->set_int_val(fontindex);
