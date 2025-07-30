@@ -1696,6 +1696,7 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
 
   switch(demo_mode){
   case 0:
+  case 5:
     is1 = smoke3di->is1;
     is2 = smoke3di->is2;
     break;
@@ -1760,7 +1761,11 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
     smokealpha_map = smoke3di->alphas_smokedir[ALPHA_X];
     firealpha_map  = smoke3di->alphas_firedir[ALPHA_X];
     for(i = is1;i<=is2;i++){
-      iterm = (i-smoke3di->is1);
+      if(demo_mode == 5 && ssmokedir == 1) {
+        i+=2;
+        if(i > is2) continue;
+      }
+      iterm = (i - smoke3di->is1);
 
       if(smokecullflag==1){
         x11[0] = xplt[i];
@@ -1807,6 +1812,10 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
     slice_beg = is1;
     slice_end = is2;
     for(iii = slice_beg;iii<slice_end;iii += skip_local){
+      if(demo_mode == 5 && ssmokedir == 1){
+        iii+=2;
+        if(iii>=slice_end)continue;
+      }
       i = iii;
       if(ssmokedir<0)i = is1+is2-iii-1;
       iterm = (i-smoke3di->is1);
