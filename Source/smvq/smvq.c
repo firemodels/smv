@@ -1,4 +1,4 @@
-#define INMAIN
+#define IN_MAIN
 #include "options.h"
 #include <ctype.h>
 #include <getopt.h>

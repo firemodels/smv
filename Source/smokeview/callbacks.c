@@ -723,7 +723,10 @@ int GetColorbarIndex(int x, int y){
 }
 
 #define GLUTGETMODIFIERS GlutGetModifiersNew
-int GlutGetModifiersNew(void){
+
+/* ------------------ GlutGetModifiersNew ------------------------ */
+
+int GlutGetModifiersNew(void) {
   int modifier=0;
 
   switch(alt_ctrl_key_state){
@@ -3998,7 +4001,7 @@ void DoScript(void){
       }
       script_render_flag= RunScriptCommand(current_script_command);
       if(runscript==2&&noexit==0&&current_script_command==NULL){
-        SMV_EXIT(0);
+        program_exit(0);
       }
       if(current_script_command==NULL){
         GLUIScriptEnable();

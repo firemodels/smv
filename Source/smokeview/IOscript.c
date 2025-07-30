@@ -4191,7 +4191,7 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_EXIT:
 #ifndef _DEBUG
-      SMV_EXIT(0);
+      program_exit(0);
 #endif
       break;
     case SCRIPT_LOADISO:

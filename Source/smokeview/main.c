@@ -1,4 +1,4 @@
-#define INMAIN
+#define IN_MAIN
 #include "options.h"
 #include <stdio.h>
 #include <string.h>
@@ -21,8 +21,6 @@
 #endif
 
 #include <assert.h>
-
-
 
 /* ------------------ Usage ------------------------ */
 
@@ -96,7 +94,9 @@ void Usage(int option){
 
 char *ProcessCommandLine(CommandlineArgs *args);
 
-char *ParseCommandline(int argc, char **argv){
+/* ------------------ ParseCommandline ------------------------ */
+
+char *ParseCommandline(int argc, char **argv) {
   enum CommandLineError error;
   char message[256];
 
@@ -106,7 +106,7 @@ char *ParseCommandline(int argc, char **argv){
     if(msg != NULL){
       fprintf(stderr, "%s\n", msg);
     }
-    SMV_EXIT(0);
+    program_exit(0);
   }
   return ProcessCommandLine(&args);
 }
@@ -143,8 +143,8 @@ char *ProcessCommandLine(CommandlineArgs *args){
       assert(FFALSE);
       break;
     }
-    void SMV_EXIT(int error);
-    SMV_EXIT(0);
+    void program_exit(int error);
+    program_exit(0);
   }
   if(args->have_x0){
     use_commandline_origin = 1;
@@ -174,7 +174,7 @@ char *ProcessCommandLine(CommandlineArgs *args){
     UpdateRGBColors(colorbar_select_index);
     InitStartupDirs();
     WriteIni(GLOBAL_INI, NULL);
-    SMV_EXIT(0);
+    program_exit(0);
   }
   if(args->ng_ini){
     InitCameraList();
@@ -182,7 +182,7 @@ char *ProcessCommandLine(CommandlineArgs *args){
     UpdateRGBColors(colorbar_select_index);
     InitStartupDirs();
     WriteIni(GLOBAL_INI, NULL);
-    SMV_EXIT(0);
+    program_exit(0);
   }
   if(args->print_version){
     if(args->bindir != NULL){
@@ -194,7 +194,7 @@ char *ProcessCommandLine(CommandlineArgs *args){
   if(args->input_file != NULL){
     if(strlen(args->input_file) > MAX_SMV_FILENAME_BUFFER-1){
       fprintf(stderr, "*** Error: input filename exceeds maximum length of %d\n", MAX_SMV_FILENAME_BUFFER-1);
-      SMV_EXIT(1);
+      program_exit(1);
     }
     strcat(SMVFILENAME, args->input_file);
   }
@@ -402,11 +402,11 @@ char *ProcessCommandLine(CommandlineArgs *args){
     }
     if(args->show_help_summary){
       Usage(HELP_SUMMARY);
-      SMV_EXIT(0);
+      program_exit(0);
     }
     if(args->show_help_all){
       Usage(HELP_ALL);
-      SMV_EXIT(0);
+      program_exit(0);
     }
     if(args->noblank){
       global_scase.iblank_set_on_commandline = 1;
@@ -516,7 +516,7 @@ char *ProcessCommandLine(CommandlineArgs *args){
         }
         else{
           fprintf(stderr, "*** Error: script filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
-          SMV_EXIT(1);
+          program_exit(1);
         }
       } else{
         if(strlen(args->htmlscript) < MAX_SCRIPT_FILENAME_BUFFER){
@@ -524,7 +524,7 @@ char *ProcessCommandLine(CommandlineArgs *args){
         }
         else{
           fprintf(stderr, "*** Error: htmlscript filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
-          SMV_EXIT(1);
+          program_exit(1);
         }
       }
       sfd = InsertScriptFile(scriptbuffer);
@@ -609,13 +609,6 @@ int CheckSMVFile(char *file, char *subdir){
 int main(int argc, char **argv){
   int return_code;
 
-#ifdef TEST
-  int nnn;
-
-  nnn = global_scase.smoke3dcoll.nsmoke3dinfo;
-  printf("nsmoke3dinfo=%i\n", nnn);
-#endif
-
   START_TIMER(timer_startup);
   // uncomment following block of code to test crash detection
 /*
@@ -654,10 +647,10 @@ int main(int argc, char **argv){
   if(smv_filename == NULL || show_version == 1){
     InitStartupDirs();
     DisplayVersionInfo("Smokeview ");
-    SMV_EXIT(0);
+    program_exit(0);
   }
   if(CheckSMVFile(smv_filename, smokeview_casedir)==0){
-    SMV_EXIT(1);
+    program_exit(1);
   }
   MakeFireColors(fire_temp_min, fire_temp_max, nfire_colors);
 

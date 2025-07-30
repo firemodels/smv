@@ -1,4 +1,4 @@
-#define INMAIN
+#define IN_MAIN
 // convert the Linux/OSX script containing a list FDS cases
 // to an equivalent Windows bat version
 #include "options.h"

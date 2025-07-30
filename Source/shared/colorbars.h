@@ -22,7 +22,7 @@
 #define INTERP_LAB 1
 
 // Define a number of readonly color defaults.
-#ifdef INMAIN
+#ifdef IN_MAIN
 SVEXTERN float mat_ambient_orig[4] = {0.5f, 0.5f, 0.2f, 1.0f};
 SVEXTERN float mat_specular_orig[4] = {0.5f, 0.5f, 0.2f, 1.0f};
 SVEXTERN float ventcolor_orig[4] = {1.0, 0.0, 1.0, 1.0};

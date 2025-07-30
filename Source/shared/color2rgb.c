@@ -1,8 +1,10 @@
 #include <string.h>
 #include "getdata.h"
 
-// Translate character string of a color name to RGB value
-void color2rgb(int rgb[3], const char *color){
+/* ------------------ color2rgb ------------------------ */
+
+void color2rgb(int rgb[3], const char *color) {
+  // Translate character string of a color name to RGB value
 
   if(strcmp(color, "ALICE BLUE") == 0){
     rgb[0] = 240;

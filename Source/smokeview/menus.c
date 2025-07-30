@@ -711,7 +711,7 @@ void MainMenu(int value){
     if(scriptoutstream!=NULL){
       ScriptMenu(SCRIPT_STOP_RECORDING);
     }
-    SMV_EXIT(0);
+    program_exit(0);
   }
   if(value==MENU_MAIN_TRAINERTOGGLE){
     trainer_mode=1-trainer_mode;
@@ -2943,7 +2943,7 @@ void ScriptMenu(int value){
         }
         if(error_code != 0){
           fprintf(stderr, "          script aborted\n");
-          if(from_commandline == 1)SMV_EXIT(1);
+          if(from_commandline == 1)program_exit(1);
         }
         break;
       }
