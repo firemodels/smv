@@ -44,6 +44,7 @@ $QFDS -d Visualization -p 6 sphere_propaneu.fds
 $QFDS -d Visualization -p 6 sphere_propanec.fds
 $QFDS -d Visualization testsort.fds
 $QFDS -d Visualization -p 4 thouse5.fds
+$QFDS -d Visualization -p 4 tdemo.fds
 $QFDS -d Visualization -p 4 thouse5delta.fds
 $QFDS -d Visualization tour.fds
 $QFDS -d Visualization transparency.fds
