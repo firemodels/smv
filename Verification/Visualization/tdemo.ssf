@@ -1,0 +1,22 @@
+
+// put rendered files in specified directory
+
+LABEL
+  put rendered files in specified directory
+
+RENDERDIR
+ ..\..\Manuals\SMV_User_Guide\SCRIPT_FIGURES
+
+
+// render 3D smoke
+
+LABEL
+  render 3D smoke
+
+UNLOADALL
+LOAD3DSMOKE
+ SOOT DENSITY
+LOAD3DSMOKE
+ HRRPUV
+SETTIMEVAL
+ 5.000000
