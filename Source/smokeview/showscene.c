@@ -104,6 +104,18 @@ void ShowScene2(int mode){
       }
     }
 
+#ifdef pp_SPHERE
+    /* ++++++++++++++++++++++++ draw sphere array +++++++++++++++++++++++++ */
+
+    if(sphere_show == 1){
+      CLIP_GEOMETRY;
+      if(mouse_down == 0 || hide_scene == 0){
+        void DrawSphereArray(void);
+        DrawSphereArray();
+      }
+    }
+#endif
+
     /* ++++++++++++++++++++++++ draw sensors/sprinklers/heat detectors +++++++++++++++++++++++++ */
 
     CLIP_GEOMETRY;
