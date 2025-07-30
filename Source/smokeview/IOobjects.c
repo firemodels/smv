@@ -39,6 +39,46 @@ int rgbsize = 0;
     return devicei->val;\
   }
 
+
+#ifdef pp_SPHERE
+/* ----------------------- DrawSphereArray ----------------------------- */
+
+void DrawSphereArray(void){
+  int i;
+  unsigned char sphere_rgb[3];
+
+  sphere_rgb[0] = (unsigned char)sphere_red;
+  sphere_rgb[1] = (unsigned char)sphere_green;
+  sphere_rgb[2] = (unsigned char)sphere_blue;
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
+  glTranslatef(-global_scase.xbar0,-global_scase.ybar0,-global_scase.zbar0);
+  for(i = 0;i < sphere_nx;i++){
+    int j;
+    float x;
+
+    x = sphere_x0 + i * sphere_dx;
+    for(j = 0;j < sphere_ny;j++){
+      int k;
+      float y;
+
+      y = sphere_y0 + j * sphere_dy;
+      for(k = 0;k < sphere_nz;k++){
+        float z;
+
+        z = sphere_z0 + k * sphere_dz;
+        glPushMatrix();
+        glTranslatef(x,y,z);
+        DrawSphere(sphere_diameter, sphere_rgb);
+        glPopMatrix();
+      }
+    }
+  }
+  glPopMatrix();
+}
+#endif
+
 /* ----------------------- GetSmokeSensors ----------------------------- */
 
 void GetSmokeSensors(void){

@@ -1,4 +1,4 @@
-&HEAD CHID='thouse5',TITLE='Town House Kitchen Fire' /
+&HEAD CHID='tdemo',TITLE='Town House Kitchen Fire' /
 
 &MESH IJK=48,40,24, XB=0.0,6.4,0.0,4.0,0.0,2.4 /
 &MESH IJK=24,20,12, XB=0.0,6.4,4.0,8.0,0.0,2.4 /
