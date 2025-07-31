@@ -100,17 +100,10 @@ GLUI_Spinner *SPINNER_horizon_color[3];
 GLUI_Spinner *SPINNER_zenith_color[3];
 GLUI_Spinner *SPINNER_ground_color[3];
 #ifdef pp_SPHERE
-GLUI_Spinner *SPINNER_sphere_x0=NULL;
-GLUI_Spinner *SPINNER_sphere_y0=NULL;
-GLUI_Spinner *SPINNER_sphere_z0=NULL;
-GLUI_Spinner *SPINNER_sphere_dx=NULL;
-GLUI_Spinner *SPINNER_sphere_dy=NULL;
-GLUI_Spinner *SPINNER_sphere_dz=NULL;
-GLUI_Spinner *SPINNER_sphere_nx=NULL;
-GLUI_Spinner *SPINNER_sphere_ny=NULL;
-GLUI_Spinner *SPINNER_sphere_nz=NULL;
-GLUI_Spinner *SPINNER_sphere_red=NULL;
-GLUI_Spinner *SPINNER_sphere_green=NULL;
+GLUI_Spinner *SPINNER_sphere_xyz0[3];
+GLUI_Spinner *SPINNER_sphere_dxyz[3];
+GLUI_Spinner *SPINNER_sphere_nxyz[3];
+GLUI_Spinner *SPINNER_sphere_rgb[3];
 GLUI_Spinner *SPINNER_sphere_blue=NULL;
 GLUI_Spinner *SPINNER_sphere_diameter=NULL;
 #endif
@@ -183,6 +176,12 @@ GLUI_Rollout *ROLLOUT_north = NULL;
 GLUI_Rollout *ROLLOUT_light2 = NULL;
 GLUI_Rollout *ROLLOUT_sky = NULL;
 
+#ifdef pp_SPHERE
+GLUI_Panel *PANEL_sphere1 = NULL;
+GLUI_Panel *PANEL_sphere2 = NULL;
+GLUI_Panel *PANEL_sphere3 = NULL;
+GLUI_Panel *PANEL_sphere4 = NULL;
+#endif
 GLUI_Panel *PANEL_blockage_drawing = NULL;
 GLUI_Panel *PANEL_titles=NULL;
 GLUI_Panel *PANEL_screen = NULL;
@@ -1175,23 +1174,35 @@ extern "C" void GLUIDisplaySetup(int main_window){
 
   ROLLOUT_user_spheres = glui_labels->add_rollout("User spheres", false, USER_SPHERES_ROLLOUT, DisplayRolloutCB);
   TOGGLE_ROLLOUT(displayprocinfo, ndisplayprocinfo, ROLLOUT_user_spheres, USER_SPHERES_ROLLOUT, glui_labels);
-  SPINNER_sphere_x0=glui_labels->add_spinner_to_panel(ROLLOUT_user_spheres,"x0",GLUI_SPINNER_FLOAT,&sphere_x0);
-  SPINNER_sphere_y0=glui_labels->add_spinner_to_panel(ROLLOUT_user_spheres,"y0",GLUI_SPINNER_FLOAT,&sphere_y0);
-  SPINNER_sphere_z0=glui_labels->add_spinner_to_panel(ROLLOUT_user_spheres,"z0",GLUI_SPINNER_FLOAT,&sphere_z0);
-  SPINNER_sphere_dx=glui_labels->add_spinner_to_panel(ROLLOUT_user_spheres,"dx",GLUI_SPINNER_FLOAT,&sphere_dx);
-  SPINNER_sphere_dy=glui_labels->add_spinner_to_panel(ROLLOUT_user_spheres,"dy",GLUI_SPINNER_FLOAT,&sphere_dy);
-  SPINNER_sphere_dz=glui_labels->add_spinner_to_panel(ROLLOUT_user_spheres,"dz",GLUI_SPINNER_FLOAT,&sphere_dz);
-  SPINNER_sphere_nx=glui_labels->add_spinner_to_panel(ROLLOUT_user_spheres,"nx",GLUI_SPINNER_INT,&sphere_nx);
-  SPINNER_sphere_ny=glui_labels->add_spinner_to_panel(ROLLOUT_user_spheres,"ny",GLUI_SPINNER_INT,&sphere_ny);
-  SPINNER_sphere_nz=glui_labels->add_spinner_to_panel(ROLLOUT_user_spheres,"nz",GLUI_SPINNER_INT,&sphere_nz);
-  SPINNER_sphere_red=glui_labels->add_spinner_to_panel(ROLLOUT_user_spheres,"red",GLUI_SPINNER_INT,&sphere_red);
-  SPINNER_sphere_green=glui_labels->add_spinner_to_panel(ROLLOUT_user_spheres,"green",GLUI_SPINNER_INT,&sphere_green);
-  SPINNER_sphere_blue=glui_labels->add_spinner_to_panel(ROLLOUT_user_spheres,"blue",GLUI_SPINNER_INT,&sphere_blue);
-  SPINNER_sphere_red->set_int_limits(0,255);
-  SPINNER_sphere_green->set_int_limits(0,255);
-  SPINNER_sphere_blue->set_int_limits(0,255);
-  SPINNER_sphere_diameter=glui_labels->add_spinner_to_panel(ROLLOUT_user_spheres,"diameter",GLUI_SPINNER_FLOAT,&sphere_diameter);
-  CHECKBOX_sphere_show=glui_labels->add_checkbox_to_panel(ROLLOUT_user_spheres,_("Show"),&sphere_show);
+  PANEL_sphere1 = glui_labels->add_panel_to_panel(ROLLOUT_user_spheres,"",false);
+  glui_labels->add_column_to_panel(ROLLOUT_user_spheres,false);
+  PANEL_sphere2 = glui_labels->add_panel_to_panel(ROLLOUT_user_spheres,"",false);
+  glui_labels->add_column_to_panel(ROLLOUT_user_spheres,false);
+  PANEL_sphere3 = glui_labels->add_panel_to_panel(ROLLOUT_user_spheres,"",false);
+  glui_labels->add_column_to_panel(ROLLOUT_user_spheres,false);
+  PANEL_sphere4 = glui_labels->add_panel_to_panel(ROLLOUT_user_spheres,"",false);
+
+  SPINNER_sphere_xyz0[0] = glui_labels->add_spinner_to_panel(PANEL_sphere1, "x0", GLUI_SPINNER_FLOAT, sphere_xyz0);
+  SPINNER_sphere_xyz0[1] = glui_labels->add_spinner_to_panel(PANEL_sphere1, "y0", GLUI_SPINNER_FLOAT, sphere_xyz0+1);
+  SPINNER_sphere_xyz0[2] = glui_labels->add_spinner_to_panel(PANEL_sphere1, "z0", GLUI_SPINNER_FLOAT, sphere_xyz0+2);
+
+  SPINNER_sphere_dxyz[0] = glui_labels->add_spinner_to_panel(PANEL_sphere2,"dx",GLUI_SPINNER_FLOAT, sphere_dxyz);
+  SPINNER_sphere_dxyz[1] = glui_labels->add_spinner_to_panel(PANEL_sphere2,"dy",GLUI_SPINNER_FLOAT, sphere_dxyz+1);
+  SPINNER_sphere_dxyz[2] = glui_labels->add_spinner_to_panel(PANEL_sphere2,"dz",GLUI_SPINNER_FLOAT, sphere_dxyz+2);
+
+  SPINNER_sphere_nxyz[0] = glui_labels->add_spinner_to_panel(PANEL_sphere3,"nx",GLUI_SPINNER_INT, sphere_nxyz);
+  SPINNER_sphere_nxyz[1] = glui_labels->add_spinner_to_panel(PANEL_sphere3,"ny",GLUI_SPINNER_INT, sphere_nxyz+1);
+  SPINNER_sphere_nxyz[2] = glui_labels->add_spinner_to_panel(PANEL_sphere3,"nz",GLUI_SPINNER_INT, sphere_nxyz+2);
+
+  SPINNER_sphere_rgb[0]  = glui_labels->add_spinner_to_panel(PANEL_sphere4, "red",   GLUI_SPINNER_INT, sphere_rgb);
+  SPINNER_sphere_rgb[1]  = glui_labels->add_spinner_to_panel(PANEL_sphere4, "green", GLUI_SPINNER_INT, sphere_rgb+1);
+  SPINNER_sphere_rgb[2]  = glui_labels->add_spinner_to_panel(PANEL_sphere4, "blue",  GLUI_SPINNER_INT, sphere_rgb+2);
+
+  SPINNER_sphere_rgb[0]->set_int_limits(0, 255);
+  SPINNER_sphere_rgb[1]->set_int_limits(0, 255);
+  SPINNER_sphere_rgb[2]->set_int_limits(0, 255);
+  SPINNER_sphere_diameter=glui_labels->add_spinner_to_panel(PANEL_sphere1,"diameter",GLUI_SPINNER_FLOAT,&sphere_diameter);
+  CHECKBOX_sphere_show=glui_labels->add_checkbox_to_panel(PANEL_sphere1,_("Show"),&sphere_show);
 #endif
 
   // -------------- User labels -------------------

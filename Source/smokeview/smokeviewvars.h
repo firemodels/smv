@@ -1828,11 +1828,14 @@ SVEXTERN float vector_scalelength;
 SVEXTERN char ext_png[5];
 SVEXTERN char ext_jpg[5];
 #ifdef pp_SPHERE
-SVEXTERN float SVDECL(sphere_x0, 0.0), SVDECL(sphere_y0, 0.0), SVDECL(sphere_z0, 0.0);
-SVEXTERN float SVDECL(sphere_dx, 0.3), SVDECL(sphere_dy, 0.3), SVDECL(sphere_dz, 0.3);
+#ifdef INMAIN
+SVEXTERN float sphere_xyz0[3] = {0.0, 0.0, 0.0}, sphere_dxyz[3] = {0.3, 0.3, 0.3};
+SVEXTERN int sphere_nxyz[3] = {5,5,1}, sphere_rgb[3] = {0,0,255};
+#else
+SVEXTERN float sphere_xyz0[3], sphere_dxyz[3];
+SVEXTERN int sphere_nxyz[3], sphere_rgb[3];
+#endif
 SVEXTERN float SVDECL(sphere_diameter, 0.1);
-SVEXTERN int   SVDECL(sphere_nx, 5),    SVDECL(sphere_ny, 5),      SVDECL(sphere_nz, 1);
-SVEXTERN int   SVDECL(sphere_red, 0),   SVDECL(sphere_green, 0),   SVDECL(sphere_blue, 255);
 SVEXTERN int   SVDECL(sphere_show,0);
 #endif
 

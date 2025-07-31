@@ -44,32 +44,32 @@ int rgbsize = 0;
 
 void DrawSphereArray(void){
   int i;
-  unsigned char sphere_rgb[3];
+  unsigned char sphere_rgb_local[3];
 
-  sphere_rgb[0] = (unsigned char)sphere_red;
-  sphere_rgb[1] = (unsigned char)sphere_green;
-  sphere_rgb[2] = (unsigned char)sphere_blue;
+  sphere_rgb_local[0] = (unsigned char)sphere_rgb[0];
+  sphere_rgb_local[1] = (unsigned char)sphere_rgb[1];
+  sphere_rgb_local[2] = (unsigned char)sphere_rgb[2];
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
   glTranslatef(-global_scase.xbar0,-global_scase.ybar0,-global_scase.zbar0);
-  for(i = 0;i < sphere_nx;i++){
+  for(i = 0;i < sphere_nxyz[0];i++){
     int j;
     float x;
 
-    x = sphere_x0 + i * sphere_dx;
-    for(j = 0;j < sphere_ny;j++){
+    x = sphere_xyz0[0] + i * sphere_dxyz[0];
+    for(j = 0;j < sphere_nxyz[1];j++){
       int k;
       float y;
 
-      y = sphere_y0 + j * sphere_dy;
-      for(k = 0;k < sphere_nz;k++){
+      y = sphere_xyz0[1] + j * sphere_dxyz[1];
+      for(k = 0;k < sphere_nxyz[2];k++){
         float z;
 
-        z = sphere_z0 + k * sphere_dz;
+        z = sphere_xyz0[2] + k * sphere_dxyz[2];
         glPushMatrix();
         glTranslatef(x,y,z);
-        DrawSphere(sphere_diameter, sphere_rgb);
+        DrawSphere(sphere_diameter, sphere_rgb_local);
         glPopMatrix();
       }
     }
