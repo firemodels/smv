@@ -349,6 +349,7 @@ void InitKeywords(void){
   InitKeyword("SETCLIPX",            SCRIPT_SETCLIPX, 1);            // documented
   InitKeyword("SETCLIPY",            SCRIPT_SETCLIPY, 1);            // documented
   InitKeyword("SETCLIPZ",            SCRIPT_SETCLIPZ, 1);            // documented
+  InitKeyword("SETDEMOMODE",         SCRIPT_SETDEMOMODE, 1);
   InitKeyword("SETTIMEVAL",          SCRIPT_SETTIMEVAL, 1);          // documented
   InitKeyword("SETVIEWPOINT",        SCRIPT_SETVIEWPOINT, 1);        // documented
   InitKeyword("VIEWXMIN",            SCRIPT_VIEWXMIN, 0);            // documented
@@ -836,7 +837,13 @@ int CompileScript(char *scriptfile){
         SETcval;
         break;
 
-// SHOWALLDEVS
+// SETDEMOMODE
+      case SCRIPT_SETDEMOMODE:
+        SETival;
+        scripti->ival = CLAMP(scripti->ival, 0, 5);
+        break;
+        
+        // SHOWALLDEVS
       case SCRIPT_SHOWALLDEVS:
         break;
 
@@ -2984,6 +2991,12 @@ void ScriptSetCbar(scriptdata *scripti){
   }
 }
 
+/* ------------------ ScriptSetDemoMode ------------------------ */
+
+void ScriptSetDemoMode(scriptdata *scripti){
+  demo_mode = scripti->ival;
+}
+
 /* ------------------ ScriptShowHVACDuctVAL ------------------------ */
 
 void ScriptShowHVACDuctVal(scriptdata *scripti){
@@ -4127,6 +4140,9 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_SHOWHVACNODEVAL:
       ScriptShowHVACNodeVal(scripti);
+      break;
+    case SCRIPT_SETDEMOMODE:
+      ScriptSetDemoMode(scripti);
       break;
     case SCRIPT_HIDEHVACVALS:
       ScriptHideHVACVals();
