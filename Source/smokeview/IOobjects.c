@@ -44,11 +44,11 @@ int rgbsize = 0;
 
 void DrawSphereArray(void){
   int i;
-  unsigned char sphere_rgb[3];
+  unsigned char sphere_rgb_local[3];
 
-  sphere_rgb[0] = (unsigned char)sphere_rgb[0];
-  sphere_rgb[1] = (unsigned char)sphere_rgb[1];
-  sphere_rgb[2] = (unsigned char)sphere_rgb[2];
+  sphere_rgb_local[0] = (unsigned char)sphere_rgb[0];
+  sphere_rgb_local[1] = (unsigned char)sphere_rgb[1];
+  sphere_rgb_local[2] = (unsigned char)sphere_rgb[2];
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
@@ -69,7 +69,7 @@ void DrawSphereArray(void){
         z = sphere_xyz0[2] + k * sphere_dxyz[2];
         glPushMatrix();
         glTranslatef(x,y,z);
-        DrawSphere(sphere_diameter, sphere_rgb);
+        DrawSphere(sphere_diameter, sphere_rgb_local);
         glPopMatrix();
       }
     }
