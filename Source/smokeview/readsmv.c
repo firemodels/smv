@@ -3911,6 +3911,20 @@ int ReadIni2(const char *inifile, int localfile){
       InitCircle(2 * device_sphere_segments, &object_circ);
       continue;
     }
+    if(MatchINI(buffer, "SPHEREARRAY") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%f %f %f %f %f %f", 
+        sphere_xyz0, sphere_xyz0+1, sphere_xyz0+2,
+        sphere_dxyz, sphere_dxyz+1, sphere_dxyz+2);
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %i %i %i %i %i", 
+        sphere_nxyz, sphere_nxyz + 1, sphere_nxyz + 2,
+        sphere_rgb,  sphere_rgb + 1,  sphere_rgb + 2
+        );
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%f %i", &sphere_diameter, &sphere_show);
+      continue;
+    }
     if(MatchINI(buffer, "DIRECTIONCOLOR") == 1){
       float *dc;
 
@@ -7869,10 +7883,19 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %f %f %i\n", sliceoffset_factor,slice_dz, agl_offset_actual);
   fprintf(fileout, "SMOOTHLINES\n");
   fprintf(fileout, " %i\n", antialiasflag);
-  fprintf(fileout, "SPHERESEGS\n");
-  fprintf(fileout, " %i\n", device_sphere_segments);
   fprintf(fileout, "SORTSLICES\n");
   fprintf(fileout, " %i\n", sortslices);
+  fprintf(fileout, "SPHEREARRAY\n");
+  fprintf(fileout, "%f %f %f %f %f %f\n",
+    sphere_xyz0[0], sphere_xyz0[1], sphere_xyz0[2],
+    sphere_dxyz[0], sphere_dxyz[1], sphere_dxyz[2]);
+  fprintf(fileout, "%i %i %i %i %i %i\n",
+    sphere_nxyz[0], sphere_nxyz[1], sphere_nxyz[2],
+    sphere_rgb[0], sphere_rgb[1], sphere_rgb[2]
+  );
+  fprintf(fileout, "%f %i\n", sphere_diameter, sphere_show);
+  fprintf(fileout, "SPHERESEGS\n");
+  fprintf(fileout, " %i\n", device_sphere_segments);
   fprintf(fileout, "SPRINKLERABSSIZE\n");
   fprintf(fileout, " %f\n", sprinklerabssize);
   fprintf(fileout, "STREAKLINEWIDTH\n");
