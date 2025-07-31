@@ -350,6 +350,7 @@ void InitKeywords(void){
   InitKeyword("SETCLIPY",            SCRIPT_SETCLIPY, 1);            // documented
   InitKeyword("SETCLIPZ",            SCRIPT_SETCLIPZ, 1);            // documented
   InitKeyword("SETDEMOMODE",         SCRIPT_SETDEMOMODE, 1);
+  InitKeyword("SMOKEPROP",           SCRIPT_SMOKEPROP, 1);
   InitKeyword("SETTIMEVAL",          SCRIPT_SETTIMEVAL, 1);          // documented
   InitKeyword("SETVIEWPOINT",        SCRIPT_SETVIEWPOINT, 1);        // documented
   InitKeyword("VIEWXMIN",            SCRIPT_VIEWXMIN, 0);            // documented
@@ -843,6 +844,11 @@ int CompileScript(char *scriptfile){
         scripti->ival = CLAMP(scripti->ival, 0, 5);
         break;
         
+// SMOKEPROP
+      case SCRIPT_SMOKEPROP:
+        SETfval;
+        break;
+
         // SHOWALLDEVS
       case SCRIPT_SHOWALLDEVS:
         break;
@@ -2991,6 +2997,13 @@ void ScriptSetCbar(scriptdata *scripti){
   }
 }
 
+/* ------------------ ScriptSmokeprop ------------------------ */
+
+void ScriptSmokeprop(scriptdata *scripti) {
+  glui_smoke3d_extinct = scripti->fval;
+  GLUISmoke3dCB(SMOKE_EXTINCT);
+}
+
 /* ------------------ ScriptSetDemoMode ------------------------ */
 
 void ScriptSetDemoMode(scriptdata *scripti){
@@ -4143,6 +4156,9 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_SETDEMOMODE:
       ScriptSetDemoMode(scripti);
+      break;
+    case SCRIPT_SMOKEPROP:
+      ScriptSmokeprop(scripti);
       break;
     case SCRIPT_HIDEHVACVALS:
       ScriptHideHVACVals();
