@@ -39,7 +39,6 @@ int rgbsize = 0;
     return devicei->val;\
   }
 
-#ifdef pp_SPHERE
 /* ----------------------- DrawSphereArray ----------------------------- */
 
 void DrawSphereArray(void){
@@ -76,7 +75,6 @@ void DrawSphereArray(void){
   }
   glPopMatrix();
 }
-#endif
 
 /* ----------------------- GetSmokeSensors ----------------------------- */
 

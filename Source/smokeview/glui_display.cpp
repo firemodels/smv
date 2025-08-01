@@ -99,18 +99,14 @@ GLUI_Spinner *SPINNER_blockage_n_debug = NULL;
 GLUI_Spinner *SPINNER_horizon_color[3];
 GLUI_Spinner *SPINNER_zenith_color[3];
 GLUI_Spinner *SPINNER_ground_color[3];
-#ifdef pp_SPHERE
 GLUI_Spinner *SPINNER_sphere_xyz0[3];
 GLUI_Spinner *SPINNER_sphere_dxyz[3];
 GLUI_Spinner *SPINNER_sphere_nxyz[3];
 GLUI_Spinner *SPINNER_sphere_rgb[3];
 GLUI_Spinner *SPINNER_sphere_blue=NULL;
 GLUI_Spinner *SPINNER_sphere_diameter=NULL;
-#endif
 
-#ifdef pp_SPHERE
 GLUI_Checkbox *CHECKBOX_sphere_show=NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_visaxislabels = NULL;
 GLUI_Checkbox *CHECKBOX_labels_showtick = NULL;
 GLUI_Checkbox *CHECKBOX_labels_meshlabel = NULL;
@@ -167,21 +163,17 @@ GLUI_Rollout *ROLLOUT_LB_tick0 = NULL;
 GLUI_Rollout *ROLLOUT_font=NULL;
 GLUI_Rollout *ROLLOUT_user_labels=NULL;
 GLUI_Rollout *ROLLOUT_user_tick=NULL;
-#ifdef pp_SPHERE
 GLUI_Rollout *ROLLOUT_user_spheres = NULL;
-#endif
 GLUI_Rollout *ROLLOUT_general1 = NULL;
 GLUI_Rollout *ROLLOUT_general2 = NULL;
 GLUI_Rollout *ROLLOUT_north = NULL;
 GLUI_Rollout *ROLLOUT_light2 = NULL;
 GLUI_Rollout *ROLLOUT_sky = NULL;
 
-#ifdef pp_SPHERE
 GLUI_Panel *PANEL_sphere1 = NULL;
 GLUI_Panel *PANEL_sphere2 = NULL;
 GLUI_Panel *PANEL_sphere3 = NULL;
 GLUI_Panel *PANEL_sphere4 = NULL;
-#endif
 GLUI_Panel *PANEL_blockage_drawing = NULL;
 GLUI_Panel *PANEL_titles=NULL;
 GLUI_Panel *PANEL_screen = NULL;
@@ -322,17 +314,11 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define USER_TICKS_ROLLOUT     4
 #define LABELS_TICKS_ROLLOUT   5
 #define SKY_ROLLOUT            6
-#ifdef pp_SPHERE
 #define USER_SPHERES_ROLLOUT   7
-#endif
 
 #define UPDATEMENU 1
 
-#ifdef pp_SPHERE
 procdata displayprocinfo[8];
-#else
-procdata displayprocinfo[7];
-#endif
 int ndisplayprocinfo = 0;
 
 /* ------------------ GLUIUpdateVisSkyboxOutline ------------------------ */
@@ -1169,7 +1155,6 @@ extern "C" void GLUIDisplaySetup(int main_window){
   SPINNER_tick_zmax=glui_labels->add_spinner_to_panel(PANEL_tick2,"",GLUI_SPINNER_FLOAT,user_tick_max+2);
   SPINNER_tick_dz0=glui_labels->add_spinner_to_panel(PANEL_tick2,"",GLUI_SPINNER_FLOAT,user_tick_step+2);
 
-#ifdef pp_SPHERE
   // -------------- User sphere settings -------------------
 
   ROLLOUT_user_spheres = glui_labels->add_rollout("User spheres", false, USER_SPHERES_ROLLOUT, DisplayRolloutCB);
@@ -1203,7 +1188,6 @@ extern "C" void GLUIDisplaySetup(int main_window){
   SPINNER_sphere_rgb[2]->set_int_limits(0, 255);
   SPINNER_sphere_diameter=glui_labels->add_spinner_to_panel(PANEL_sphere1,"diameter",GLUI_SPINNER_FLOAT,&sphere_diameter);
   CHECKBOX_sphere_show=glui_labels->add_checkbox_to_panel(PANEL_sphere1,_("Show"),&sphere_show);
-#endif
 
   // -------------- User labels -------------------
 
