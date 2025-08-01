@@ -22,11 +22,11 @@ LOADINIFILE
 SETTIMEVAL
  10.000000
 RENDERONCE
- tdemo_fullv1_010
+ tdemo_fullv1_010s
 SETVIEWPOINT
  view 2
 RENDERONCE
- tdemo_fullv2_010
+ tdemo_fullv2_010s
 SETVIEWPOINT
  view 1
 SETDEMOMODE
@@ -36,6 +36,6 @@ SMOKEPROP
 SETTIMEVAL
  10.000000
 RENDERONCE
- tdemo_sidev1_010
+ tdemo_sidev1_010s
  
 
