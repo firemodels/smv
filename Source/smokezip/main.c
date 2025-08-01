@@ -285,7 +285,6 @@ int main(int argc, char **argv){
     ext=filebase+filelen-4;
     if(strcmp(ext,".smv")==0){
       ext[0]=0;
-      filelen=strlen(filebase);
     }
   }
   NewMemory((void **)&smvzip_filename, (unsigned int)(strlen(filebase) + strlen(".smvzip") + 1));

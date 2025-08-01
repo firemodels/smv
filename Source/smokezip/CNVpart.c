@@ -154,7 +154,7 @@ void Part2Iso(part *parti, int *thread_index){
   FILE *SMVISOFILE=NULL;
   int nx2, ny2, nz2;
   float xmin, ymin, zmin;
-  partpropdata *part5propinfo_copy;
+  partpropdata *part5propinfo_copy=NULL;
   int percent_done;
   float file_size;
   int percent_next = PERCENT_SKIP;
@@ -223,6 +223,7 @@ void Part2Iso(part *parti, int *thread_index){
   levels[0]=0.5;
 
   if(npart5propinfo>0)NewMemory((void **)&part5propinfo_copy,npart5propinfo*sizeof(partpropdata));
+  if(part5propinfo_copy == NULL)return;
 
   for(i=0;i<npart5propinfo;i++){
     partpropdata *propi;
@@ -507,7 +508,7 @@ void Part2Object(part *parti, int *thread_index){
   FILE *SMVISOFILE=NULL;
   int nx2, ny2, nz2;
   float xmin, ymin, zmin;
-  partpropdata *part5propinfo_copy;
+  partpropdata *part5propinfo_copy=NULL;
   int percent_done;
   float file_size;
   int percent_next = PERCENT_SKIP;
@@ -576,6 +577,7 @@ void Part2Object(part *parti, int *thread_index){
   levels[0]=0.5;
 
   if(npart5propinfo>0)NewMemory((void **)&part5propinfo_copy,npart5propinfo*sizeof(partpropdata));
+  if(part5propinfo_copy==NULL)return;
 
   for(i=0;i<npart5propinfo;i++){
     partpropdata *propi;

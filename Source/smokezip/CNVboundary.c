@@ -301,7 +301,7 @@ int ConvertBoundaryGEOM(patchdata *patchi, int *thread_index){
           cvals[i] = CLAMP((unsigned char)(255.0 * val), 0, 255);
         }
         ncompressed_vals = MAXCOMPRESSEDVALS;
-        returncode = CompressZLIB(compressed_vals, &ncompressed_vals, cvals, ntotal);
+        CompressZLIB(compressed_vals, &ncompressed_vals, cvals, ntotal);
       }
       fprintf(boundarysizestream, "%f %i %i\n", time_local, ( int )ntotal, ( int )ncompressed_vals);
       fwrite(&time_local,       4, 1,                boundarystream); // write out time_local

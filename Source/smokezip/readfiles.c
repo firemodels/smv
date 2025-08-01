@@ -83,7 +83,6 @@ int ReadSMV(char *smvfile){
 #define BUFFERSIZE 255
   char buffer[BUFFERSIZE];
 
-  igrid=0;
   ipdim=0;
   stream=fopen(smvfile,"r");
   if(stream==NULL){
