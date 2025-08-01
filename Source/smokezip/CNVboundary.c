@@ -97,7 +97,7 @@ int ConvertBoundaryGEOM(patchdata *patchi, int *thread_index){
   int returncode;
   LINT data_loc;
 #ifndef pp_THREAD
-  int count;
+  int count=0;
 #endif
 
   boundary_file = patchi->file;

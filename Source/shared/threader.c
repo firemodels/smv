@@ -124,7 +124,7 @@ void THREADruni(threaderdata *thi, unsigned char *datainfo, int sizedatai){
   int i;
 
   for(i = 0; i < thi->n_threads; i++){
-    unsigned char *data;
+    unsigned char *datai;
 
     datai = datainfo + i*sizedatai;
     thi->run(datai);
