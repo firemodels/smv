@@ -56,7 +56,7 @@ int main(int argc, char **argv){
   bufferstreamdata *smv_buffer1, *smv_buffer2;
   char smv1_out[1024];
   char svdlogfile[1024];
-  char *smoke1, *smoke2, smv_out[1024];
+  char *smoke1=NULL, *smoke2=NULL, smv_out[1024];
   char smoke1a[1024], smoke2a[1024];
   char smoke1b[1024], smoke2b[1024];
   char fed_smoke1[1024], fed_smoke2[1024];
@@ -230,7 +230,7 @@ int main(int argc, char **argv){
   if(redirect==1){
     strcpy(svdlogfile,"");
     if(destdir!=NULL)strcat(svdlogfile,destdir);
-    strcat(svdlogfile,smv1);
+    if(smv1!=NULL)strcat(svdlogfile,smv1);
     strcat(svdlogfile,"_diff.svdlog");
     LOG_FILENAME=fopen(svdlogfile,"w");
     if(LOG_FILENAME!=NULL){

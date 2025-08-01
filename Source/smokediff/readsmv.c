@@ -21,7 +21,6 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
   int nmeshes, nsliceinfo, nplot3dinfo, nboundary_files;
   int itrnx, itrny, itrnz;
 
-  igrid=0;
   ipdim=0;
   nmeshes=0;
   nsliceinfo=0;
@@ -133,7 +132,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
     ++++++++++++++++++++++ GRID ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"GRID") == 1){
+    if(Match(buffer,"GRID") == 1 && meshinfo != NULL){
       meshdata *meshi;
       float *xp, *yp, *zp;
       int ibar, jbar, kbar;
@@ -182,7 +181,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
     ++++++++++++++++++++++ TRNX ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"TRNX")==1){
+    if(meshinfo != NULL && Match(buffer,"TRNX")==1){
       float *xpltcopy, *xplt;
       int ibar, idummy, nn;
       meshdata *meshi;
@@ -228,7 +227,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
     ++++++++++++++++++++++ TRNY ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"TRNY")==1){
+    if(meshinfo != NULL && Match(buffer,"TRNY")==1){
       float *ypltcopy, *yplt;
       int jbar, idummy, nn;
       meshdata *meshi;
@@ -272,7 +271,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
     ++++++++++++++++++++++ TRNZ ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"TRNZ")==1){
+    if(meshinfo != NULL && Match(buffer,"TRNZ")==1){
       float *zpltcopy,*zplt;
       int kbar, idummy, nn;
       meshdata *meshi;
@@ -317,7 +316,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
     ++++++++++++++++++++++ PL3D ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"PL3D") == 1){
+    if(plot3dinfo != NULL && Match(buffer,"PL3D") == 1){
       meshdata *plot3dmesh;
       plot3d *plot3di;
       float time_local;
@@ -381,10 +380,12 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
     ++++++++++++++++++++++ SLCF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(
+    if(sliceinfo != NULL && smvcase->meshinfo != NULL &&
+     (
       Match(buffer,"SLCF") == 1||
       Match(buffer,"SLCC") == 1||
       Match(buffer,"SLCT") == 1)
+      )
     {
       int version_local=0;
       int len;
@@ -471,9 +472,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
     ++++++++++++++++++++++ BNDF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"BNDF") == 1||
-       Match(buffer,"BNDC") == 1
-       ){
+    if(boundaryinfo != NULL && (Match(buffer,"BNDF") == 1||Match(buffer,"BNDC") == 1)){
       int version_local=0;
       int len;
       FILE_SIZE filesize;
