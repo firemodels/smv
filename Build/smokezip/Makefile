@@ -37,7 +37,7 @@ obj = $(csrc:.c=.o)
 
 objwin = $(obj:.o=.obj)
 
-# setup for analyzing smokeview source code using clang
+# setup for analyzing source code using clang
 
 linux_osx_c_chk    = $(csrc:.c=.chk)
 linux_osx_chk      = $(linux_osx_c_chk)
@@ -86,7 +86,7 @@ no_target:
 
 linux_osx_check : CFLAGS    = $(SMV_TESTFLAG)
 linux_osx_check : $(linux_osx_chk)
-	$(CLANGSUMMARY) smokeview.summary
+	$(CLANGSUMMARY) smokezip.summary
 
 # ------------- win_check ----------------
 
