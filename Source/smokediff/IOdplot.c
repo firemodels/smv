@@ -149,8 +149,6 @@ void DiffPlot3Ds(FILE *stream_out){
     PRINTF(" differencing data,");
     FFLUSH();
 
-    valmin=1000000000.0;
-    valmax=-valmin;
     for(i=0;i<nq;i++){
       qout[i]=qframe1[i]-qframe2[i];
     }
@@ -170,7 +168,6 @@ void DiffPlot3Ds(FILE *stream_out){
         nn++;
       }
 
-      nvals=0;
       ResetHistogram(plot3d1->histogram[n],NULL,NULL);
       nvals=nq/5;
       UpdateHistogram(qframe1+n*nvals, NULL,nvals, plot3d1->histogram[n]);

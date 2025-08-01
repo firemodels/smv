@@ -200,7 +200,7 @@ int ConvertVolSlice(slicedata *slicei, int *thread_index){
     int skip;
 
     skip = 3*(4+30+4);  // skip over 3 records each containing a 30 byte FORTRAN character string
-    returncode=FSEEK(SLICEFILE,skip,SEEK_CUR);
+    FSEEK(SLICEFILE,skip,SEEK_CUR);
     sizebefore=skip;
   }
 
@@ -586,7 +586,7 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
     int skip;
 
     skip = 3*(4+30+4);  // skip over 3 records each containing a 30 byte FORTRAN character string
-    returncode=FSEEK(SLICEFILE,skip,SEEK_CUR);
+    FSEEK(SLICEFILE,skip,SEEK_CUR);
     sizebefore=skip;
   }
 
@@ -629,7 +629,6 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
     nrow = ijkbar[3] + 1 - ijkbar[2];
   }
   if(idir==0){
-    idir=1;
     ncol = ijkbar[3] + 1 - ijkbar[2];
     nrow = ijkbar[5] + 1 - ijkbar[4];
   }
@@ -725,7 +724,7 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
 
       //int compress (Bytef *dest,   uLongf *destLen, const Bytef *source, uLong sourceLen);
       ncompressed_zlib=ncompressed_save;
-      returncode=CompressZLIB(sliceframe_compressed,&ncompressed_zlib,sliceframe_uncompressed,framesize);
+      CompressZLIB(sliceframe_compressed,&ncompressed_zlib,sliceframe_uncompressed,framesize);
 
       file_loc=FTELL(slicestream);
       fwrite(&time_local,4,1,slicestream);
