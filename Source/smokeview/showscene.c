@@ -104,7 +104,6 @@ void ShowScene2(int mode){
       }
     }
 
-#ifdef pp_SPHERE
     /* ++++++++++++++++++++++++ draw sphere array +++++++++++++++++++++++++ */
 
     if(sphere_show == 1){
@@ -114,7 +113,6 @@ void ShowScene2(int mode){
         DrawSphereArray();
       }
     }
-#endif
 
     /* ++++++++++++++++++++++++ draw sensors/sprinklers/heat detectors +++++++++++++++++++++++++ */
 
