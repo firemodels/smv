@@ -31,7 +31,7 @@ csrc = color2rgb.c dmalloc.c file_util.c getdata.c histogram.c IOdboundary.c IOd
 obj = $(csrc:.c=.o)
 objwin = $(obj:.o=.obj)
 
-# setup for analyzing smokeview source code using clang
+# setup for analyzing source code using clang
 
 linux_osx_c_chk    = $(csrc:.c=.chk)
 linux_osx_chk      = $(linux_osx_c_chk)
