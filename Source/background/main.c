@@ -26,12 +26,12 @@ unsigned char cpuusage(void);
 int get_ncores(void);
 float get_load(void);
 float get_host_load(char *host);
-unsigned char cpuusage_host(char *host,int ncores);
+int cpuusage_host(char *host,int ncores);
 #endif
 int get_host_ncores(char *host);
 
 #ifdef pp_OSX
-unsigned char cpuusage_host(char *host,int ncores);
+int cpuusage_host(char *host,int ncores);
 #endif
 
 #ifndef WIN32
@@ -282,8 +282,6 @@ int main(int argc, char **argv){
     }
   }
   else{
-    cpu_usage=cpuusage();
-    mem_usage=memusage();
     Sleep(200);
     cpu_usage=cpuusage();
     mem_usage=memusage();
@@ -297,8 +295,6 @@ int main(int argc, char **argv){
 #else
   strcpy(command_buffer,"");
   if(hostinfo==NULL){
-    cpu_usage=cpuusage();
-    mem_usage=memusage();
     Sleep(200);
     cpu_usage=cpuusage();
     mem_usage=memusage();
@@ -428,9 +424,8 @@ unsigned char cpuusage(){
 
 // we cannot directly use GetSystemTimes on C language
 /* add this line :: pfnGetSystemTimes */
-  s_pfnGetSystemTimes(&ft_sys_idle,    /* System idle time */
-  &ft_sys_kernel,  /* system kernel time */
-  &ft_sys_user);   /* System user time */
+  if(s_pfnGetSystemTimes==NULL)return usage_local;
+  s_pfnGetSystemTimes(&ft_sys_idle,&ft_sys_kernel,&ft_sys_user);
 
   CopyMemory(&ul_sys_idle  , &ft_sys_idle  , sizeof(FILETIME)); // Could been optimized away...
   CopyMemory(&ul_sys_kernel, &ft_sys_kernel, sizeof(FILETIME)); // Could been optimized away...
@@ -668,13 +663,13 @@ float get_load(void){
 
 /* ------------------ cpuusage_host ------------------------ */
 
-unsigned char cpuusage_host(char *hostb, int ncores){
+int cpuusage_host(char *hostb, int ncores){
   float load;
-  unsigned char usage;
+  int usage;
 
   load = get_host_load(hostb);
   if(load>ncores)load=ncores;
-  usage = 100*(load/(float)ncores);
+  usage = MAX(0,100*(load/(float)ncores));
   return usage;
 }
 

@@ -144,7 +144,7 @@ int ReadSMV(char *smvfile){
     if(Match(buffer, "SLCF") == 1 || Match(buffer, "SLCC") == 1 || Match(buffer, "SLCD") == 1 || Match(buffer,"SLCT") == 1){
       int version_local=0,dummy;
       char *buffer2, *sliceparms, *shortlabel;
-      int len, blocknumber, slicetype;
+      int len, blocknumber, slicetype=SLCF;
       int ii1, ii2, jj1, jj2, kk1, kk2;
       slicedata *slicei;
 
@@ -308,14 +308,14 @@ void MakeFEDSmv(char *file){
   int i;
   FILE *stream;
 
-  if(nfedinfo == 0)return;
+  if(nfedinfo == 0||fedinfo==NULL)return;
   stream = fopen(file, "w");
   if(stream == NULL)return;
 
   nfedisos = 0;
   for(i = 0;i < nfedinfo;i++){
     feddata *fedi;
-    slicedata *fed;
+    slicedata *fed=NULL;
 
     fedi = fedinfo + i;
     fprintf(stream, "%s\n", fedi->keyword_label);
@@ -327,7 +327,7 @@ void MakeFEDSmv(char *file){
     if(fedi->co  != NULL)fed = fedi->co;
     if(fedi->co2 != NULL)fed = fedi->co2;
     if(fedi->o2  != NULL)fed = fedi->o2;
-    if(fed->vol == 1){
+    if(fed != NULL && fed->vol == 1){
       fprintf(stream, "%s %i\n", "ISOF", fed->blocknumber+1);
       fprintf(stream, " %s\n", fedi->iso_file);
       fprintf(stream, " Fractional Effective Dose\n");
@@ -519,6 +519,7 @@ void MakeFEDSlice(feddata *fedi){
     timesfrom = fedi->o2->times;
     fedi->fed = fedi->o2;
   }
+  if(timesfrom==NULL)return;
   if(fedi->co != NULL)nframes = MIN(nframes, fedi->co->nframes);
   if(fedi->co2 != NULL)nframes = MIN(nframes, fedi->co2->nframes);
   if(fedi->o2 != NULL)nframes = MIN(nframes, fedi->o2->nframes);

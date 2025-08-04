@@ -1,4 +1,3 @@
-
 # smokezip makefile
 
 SOURCE_DIR = ../../../Source/
