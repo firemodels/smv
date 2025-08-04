@@ -26,12 +26,12 @@ unsigned char cpuusage(void);
 int get_ncores(void);
 float get_load(void);
 float get_host_load(char *host);
-unsigned char cpuusage_host(char *host,int ncores);
+int cpuusage_host(char *host,int ncores);
 #endif
 int get_host_ncores(char *host);
 
 #ifdef pp_OSX
-unsigned char cpuusage_host(char *host,int ncores);
+int cpuusage_host(char *host,int ncores);
 #endif
 
 #ifndef WIN32
@@ -663,13 +663,13 @@ float get_load(void){
 
 /* ------------------ cpuusage_host ------------------------ */
 
-unsigned char cpuusage_host(char *hostb, int ncores){
+int cpuusage_host(char *hostb, int ncores){
   float load;
-  unsigned char usage;
+  int usage;
 
   load = get_host_load(hostb);
   if(load>ncores)load=ncores;
-  usage = 100*(load/(float)ncores);
+  usage = MAX(0,100*(load/(float)ncores));
   return usage;
 }
 

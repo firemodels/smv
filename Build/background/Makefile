@@ -72,14 +72,14 @@ no_target:
 
 linux_osx_check : CFLAGS    = $(SMV_TESTFLAG)
 linux_osx_check : $(linux_osx_chk)
-	$(CLANGSUMMARY) smokezip.summary
+	$(CLANGSUMMARY) background.summary
 
 # ------------- win_check ----------------
 
 win_check : CFLAGS    = -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
 win_check : INC_DIR += -I $(SOURCE_DIR)/pthreads
 win_check : $(win_chk)
-	$(CLANGWINSUMMARY) smokezip.summary
+	$(CLANGWINSUMMARY) background.summary
 
 # ********  rules for each platform supported *************
 
