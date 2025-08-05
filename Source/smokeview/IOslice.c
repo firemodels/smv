@@ -5579,7 +5579,7 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
           }
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
         }
-        float v11, v31, v13, v33, vmid;
+        float v11, v31, v13, v33;
 
         v11 = SLICEVAL(plotx,  j,  k);
         v31 = SLICEVAL(plotx, j2,  k);
@@ -5592,7 +5592,6 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
         r33 = SLICETEXTURE(v33);
 
         rmid = (r11 + r31 + r13 + r33) / 4.0;
-        vmid = valmin + (valmax-valmin)*rmid;
 
         z1 = zplt[k];
         z3 = zplt[k2];
@@ -5671,7 +5670,7 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
           }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, ploty, k)] == EMBED_YES)continue;
         }
-        float v11, v31, v13, v33, vmid;
+        float v11, v31, v13, v33;
 
         v11 = SLICEVAL(i,  ploty, k);
         v31 = SLICEVAL(i2, ploty, k);
@@ -5684,7 +5683,6 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
         r33 = SLICETEXTURE(v33);
 
         rmid = (r11 + r31 + r13 + r33) / 4.0;
-        vmid = valmin + (valmax-valmin)*rmid;
 
         z1 = zplt[k];
         z3 = zplt[k2];
@@ -5759,7 +5757,7 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
           }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
         }
-        float v11, v31, v13, v33, vmid;
+        float v11, v31, v13, v33;
 
         v11 = SLICEVAL(i,   j, plotz);
         v31 = SLICEVAL(i2,  j, plotz);
@@ -5772,7 +5770,6 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
         r33 = SLICETEXTURE(v33);
 
         rmid = (r11 + r31 + r13 + r33) / 4.0;
-        vmid = valmin + (valmax-valmin)*rmid;
 
         yy1 = yplt[j];
         y3 = yplt[j2];
