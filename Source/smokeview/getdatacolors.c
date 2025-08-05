@@ -1554,12 +1554,13 @@ void UpdateChopColors(void){
       }
     }
   }
-  {
+  bounds = GLUIGetBoundsData(BOUND_PATCH);
+  if(bounds != NULL){
     float smin, smax;
     int chop_patch_local;
 
-    smin = boundarylevels256[0];
-    smax = boundarylevels256[255];
+    smin = bounds->glui_valmin;
+    smax = bounds->glui_valmax;
 
 // make boundary opacities same as base colorbar opaque except when greater than chopmax or less than chopmin values
     if(setpatchchopmin_local==1){
@@ -1608,14 +1609,12 @@ void UpdateChopColors(void){
       updatefacelists = 1;
     }
   }
-  if(slicebounds!=NULL&&slicefile_labelindex!=-1){
+  bounds                     = GLUIGetBoundsData(BOUND_SLICE);
+  if(bounds!=NULL){
     float smin, smax;
 
-    //smin=slicebounds[slicefile_labelindex].dlg_valmin;
-    //smax=slicebounds[slicefile_labelindex].dlg_valmax;
-    smin = colorbar_slice_min;
-    smax = colorbar_slice_max;
-
+    smin = bounds->glui_valmin;
+    smax = bounds->glui_valmax;
     if(glui_setslicechopmin_local==1){
       ichopmin=nrgb_full*(glui_slicechopmin_local-smin)/(smax-smin);
       if(ichopmin<0)ichopmin=0;
