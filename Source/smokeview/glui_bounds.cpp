@@ -1964,6 +1964,9 @@ extern "C" void GLUIHVACSliceBoundsCPP_CB(int var){
       break;
     case SET_PERCENTILE_MIN_LEVEL:
     case SET_PERCENTILE_MAX_LEVEL:
+#ifdef pp_BOUNDS
+      break;
+#endif
     case SET_PERCENTILE_MIN_VAL:
     case SET_PERCENTILE_MAX_VAL:
       float valmin, valmax;
@@ -2085,6 +2088,9 @@ extern "C" void GLUIPlot3DBoundsCPP_CB(int var){
       break;
     case SET_PERCENTILE_MIN_LEVEL:
     case SET_PERCENTILE_MAX_LEVEL:
+#ifdef pp_BOUNDS
+      break;
+#endif
     case SET_PERCENTILE_MIN_VAL:
     case SET_PERCENTILE_MAX_VAL:
       float valmin, valmax;
@@ -2195,6 +2201,9 @@ extern "C" void GLUIPartBoundsCPP_CB(int var){
       break;
     case SET_PERCENTILE_MIN_LEVEL:
     case SET_PERCENTILE_MAX_LEVEL:
+#ifdef pp_BOUNDS
+      break;
+#endif
     case SET_PERCENTILE_MIN_VAL:
     case SET_PERCENTILE_MAX_VAL:
       float valmin, valmax;
@@ -2367,6 +2376,9 @@ extern "C" void GLUIPatchBoundsCPP_CB(int var){
       break;
     case SET_PERCENTILE_MIN_LEVEL:
     case SET_PERCENTILE_MAX_LEVEL:
+#ifdef pp_BOUNDS
+      break;
+#endif
     case SET_PERCENTILE_MIN_VAL:
     case SET_PERCENTILE_MAX_VAL:
       float valmin, valmax;
@@ -2481,12 +2493,17 @@ void SetLoadedSliceBounds(int *list, int nlist){
     set_valmin = BOUND_LOADED_MIN;
     set_valmax = BOUND_LOADED_MAX;
     GLUIGetMinMax(BOUND_SLICE, label, &set_valmin, &valmin_dlg, &set_valmax, &valmax_dlg);
+#ifdef pp_BOUNDS
+    if(set_valmin==BOUND_SET_MIN)valmin = valmin_dlg;
+    if(set_valmax==BOUND_SET_MAX)valmax = valmax_dlg;
+#else
     if(set_valmin!=BOUND_LOADED_MIN){
       valmin = valmin_dlg;
     }
     if(set_valmax!=BOUND_LOADED_MAX){
       valmax = valmax_dlg;
     }
+#endif
     GLUISetMinMax(BOUND_SLICE, label, set_valmin, valmin, set_valmax, valmax);
   }
 }
