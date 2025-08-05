@@ -1554,12 +1554,13 @@ void UpdateChopColors(void){
       }
     }
   }
-  {
+  bounds = GLUIGetBoundsData(BOUND_PATCH);
+  if(bounds != NULL){
     float smin, smax;
     int chop_patch_local;
 
-    smin = boundarylevels256[0];
-    smax = boundarylevels256[255];
+    smin = bounds->glui_valmin;
+    smax = bounds->glui_valmax;
 
 // make boundary opacities same as base colorbar opaque except when greater than chopmax or less than chopmin values
     if(setpatchchopmin_local==1){
