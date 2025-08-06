@@ -4315,7 +4315,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
       if(global_times != NULL)chopmax = global_times[nglobal_times-1] + 0.5;
       GLUISetChopMax(BOUND_SLICE, sd->label.shortlabel, set_chopmax, chopmax);
-      GLUISetChopHide("TOA", 1);
     }
     else{
       is_toa_slice = 0;
@@ -5182,16 +5181,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
     valmax = 1.0;
   }
 
-  int set_chopmin=0, set_chopmax=0;
-  float chopmin, chopmax;
-  int slice_interp;
-
-  slice_interp = GLUIGetChopHide(sd->label.shortlabel);
-  if(slice_interp == 1){
-    GLUIGetChopMin(BOUND_SLICE, sd->label.shortlabel, &set_chopmin, &chopmin);
-    GLUIGetChopMax(BOUND_SLICE, sd->label.shortlabel, &set_chopmax, &chopmax);
-  }
-
   if(cullfaces == 1)glDisable(GL_CULL_FACE);
 
   if(use_transparency_data == 1)TransparentOn();
@@ -5279,14 +5268,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
         r13 = SLICETEXTURE(v13);
         r33 = SLICETEXTURE(v33);
 
-        if(set_chopmax==1){
-           if(v11>chopmax || v31>chopmax || v33 > chopmax)draw123=0;
-           if(v11>chopmax || v13>chopmax || v33 > chopmax)draw134=0;
-        }
-        if(set_chopmin==1){
-           if(v11<chopmin || v31<chopmin || v33<chopmin)draw123=0;
-           if(v11<chopmin || v13<chopmin || v33<chopmin)draw134=0;
-        }
         if(draw123==1){
           glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
           glTexCoord1f(r31);  glVertex3f(x3, yy1, z31);
@@ -5526,16 +5507,6 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
   if(sd->volslice == 1 && visx_all == 0 && visy_all == 0 && visz_all == 0)return;
   meshi = global_scase.meshescoll.meshinfo + sd->blocknumber;
 
-  int slice_interp;
-  int set_chopmin=0, set_chopmax=0;
-  float chopmin, chopmax;
-
-  slice_interp = GLUIGetChopHide(sd->label.shortlabel);
-  if(slice_interp == 1){
-    GLUIGetChopMin(BOUND_SLICE, sd->label.shortlabel, &set_chopmin, &chopmin);
-    GLUIGetChopMax(BOUND_SLICE, sd->label.shortlabel, &set_chopmax, &chopmax);
-  }
-
   xplt = meshi->xplt;
   yplt = meshi->yplt;
   zplt = meshi->zplt;
@@ -5608,7 +5579,7 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
           }
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
         }
-        float v11, v31, v13, v33, vmid;
+        float v11, v31, v13, v33;
 
         v11 = SLICEVAL(plotx,  j,  k);
         v31 = SLICEVAL(plotx, j2,  k);
@@ -5621,26 +5592,6 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
         r33 = SLICETEXTURE(v33);
 
         rmid = (r11 + r31 + r13 + r33) / 4.0;
-        vmid = valmin + (valmax-valmin)*rmid;
-
-        int draw1, draw2, draw3, draw4;
-
-        draw1=1;
-        draw2=1;
-        draw3=1;
-        draw4=1;
-        if(set_chopmax==1){
-           if(vmid>chopmax || v11>chopmax || v31>chopmax)draw1 = 0;
-           if(vmid>chopmax || v31>chopmax || v33>chopmax)draw2 = 0;
-           if(vmid>chopmax || v33>chopmax || v13>chopmax)draw3 = 0;
-           if(vmid>chopmax || v13>chopmax || v11>chopmax)draw4 = 0;
-         }
-        if(set_chopmin==1){
-           if(vmid<chopmin || v11<chopmin || v31<chopmin)draw1 = 0;
-           if(vmid<chopmin || v31<chopmin || v33<chopmin)draw2 = 0;
-           if(vmid<chopmin || v33<chopmin || v13<chopmin)draw3 = 0;
-           if(vmid<chopmin || v13<chopmin || v11<chopmin)draw4 = 0;
-         }
 
         z1 = zplt[k];
         z3 = zplt[k2];
@@ -5653,26 +5604,21 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
         //  (yy1,z3,r13)                    (y3,z3,r33)
         //                (ymid,zmid,rmid)
         //  (yy1,z1,r11)                    (y3,z1,r31)
-        if(draw1==1){
-          glTexCoord1f(r11);  glVertex3f(constval, yy1, z1);
-          glTexCoord1f(r31);  glVertex3f(constval, y3, z1);
-          glTexCoord1f(rmid); glVertex3f(constval, ymid, zmid);
-        }
-        if(draw2==1){
-          glTexCoord1f(r31);  glVertex3f(constval, y3, z1);
-          glTexCoord1f(r33);  glVertex3f(constval, y3, z3);
-          glTexCoord1f(rmid); glVertex3f(constval, ymid, zmid);
-        }
-        if(draw3==1){
-          glTexCoord1f(r33);  glVertex3f(constval, y3, z3);
-          glTexCoord1f(r13);  glVertex3f(constval, yy1, z3);
-          glTexCoord1f(rmid); glVertex3f(constval, ymid, zmid);
-        }
-        if(draw4==1){
-          glTexCoord1f(r13);  glVertex3f(constval, yy1, z3);
-          glTexCoord1f(r11);  glVertex3f(constval, yy1, z1);
-          glTexCoord1f(rmid); glVertex3f(constval, ymid, zmid);
-        }
+        glTexCoord1f(r11);  glVertex3f(constval, yy1, z1);
+        glTexCoord1f(r31);  glVertex3f(constval, y3, z1);
+        glTexCoord1f(rmid); glVertex3f(constval, ymid, zmid);
+
+        glTexCoord1f(r31);  glVertex3f(constval, y3, z1);
+        glTexCoord1f(r33);  glVertex3f(constval, y3, z3);
+        glTexCoord1f(rmid); glVertex3f(constval, ymid, zmid);
+
+        glTexCoord1f(r33);  glVertex3f(constval, y3, z3);
+        glTexCoord1f(r13);  glVertex3f(constval, yy1, z3);
+        glTexCoord1f(rmid); glVertex3f(constval, ymid, zmid);
+
+        glTexCoord1f(r13);  glVertex3f(constval, yy1, z3);
+        glTexCoord1f(r11);  glVertex3f(constval, yy1, z1);
+        glTexCoord1f(rmid); glVertex3f(constval, ymid, zmid);
       }
     }
     glEnd();
@@ -5724,7 +5670,7 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
           }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, ploty, k)] == EMBED_YES)continue;
         }
-        float v11, v31, v13, v33, vmid;
+        float v11, v31, v13, v33;
 
         v11 = SLICEVAL(i,  ploty, k);
         v31 = SLICEVAL(i2, ploty, k);
@@ -5737,26 +5683,7 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
         r33 = SLICETEXTURE(v33);
 
         rmid = (r11 + r31 + r13 + r33) / 4.0;
-        vmid = valmin + (valmax-valmin)*rmid;
 
-        int draw1, draw2, draw3, draw4;
-
-        draw1=1;
-        draw2=1;
-        draw3=1;
-        draw4=1;
-        if(set_chopmax==1){
-          if(vmid>chopmax || v11>chopmax || v31>chopmax)draw1 = 0;
-          if(vmid>chopmax || v31>chopmax || v33>chopmax)draw2 = 0;
-          if(vmid>chopmax || v33>chopmax || v13>chopmax)draw3 = 0;
-          if(vmid>chopmax || v13>chopmax || v11>chopmax)draw4 = 0;
-        }
-        if(set_chopmin==1){
-          if(vmid<chopmin || v11<chopmin || v31<chopmin)draw1 = 0;
-          if(vmid<chopmin || v31<chopmin || v33<chopmin)draw2 = 0;
-          if(vmid<chopmin || v33<chopmin || v13<chopmin)draw3 = 0;
-          if(vmid<chopmin || v13<chopmin || v11<chopmin)draw4 = 0;
-        }
         z1 = zplt[k];
         z3 = zplt[k2];
         zmid = (z1 + z3) / 2.0;
@@ -5770,26 +5697,21 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
         //  (x1,z3,r13)                    (x3,z3,r33)
         //                (xmid,zmid,rmid)
         //  (x1,z1,r11)                    (x3,z1,r31)
-        if(draw1==1){
-          glTexCoord1f(r11);  glVertex3f(x1,    constval, z1);
-          glTexCoord1f(r31);  glVertex3f(x3,    constval, z1);
-          glTexCoord1f(rmid); glVertex3f(xmid, constval, zmid);
-        }
-        if(draw2==1){
-          glTexCoord1f(r31);  glVertex3f(x3,    constval, z1);
-          glTexCoord1f(r33);  glVertex3f(x3,    constval, z3);
-          glTexCoord1f(rmid); glVertex3f(xmid, constval, zmid);
-        }
-        if(draw3==1){
-          glTexCoord1f(r33);  glVertex3f(x3,    constval, z3);
-          glTexCoord1f(r13);  glVertex3f(x1,    constval, z3);
-          glTexCoord1f(rmid); glVertex3f(xmid, constval, zmid);
-        }
-        if(draw4==1){
-          glTexCoord1f(r13);  glVertex3f(x1,    constval, z3);
-          glTexCoord1f(r11);  glVertex3f(x1,    constval, z1);
-          glTexCoord1f(rmid); glVertex3f(xmid, constval, zmid);
-        }
+        glTexCoord1f(r11);  glVertex3f(x1,    constval, z1);
+        glTexCoord1f(r31);  glVertex3f(x3,    constval, z1);
+        glTexCoord1f(rmid); glVertex3f(xmid, constval, zmid);
+
+        glTexCoord1f(r31);  glVertex3f(x3,    constval, z1);
+        glTexCoord1f(r33);  glVertex3f(x3,    constval, z3);
+        glTexCoord1f(rmid); glVertex3f(xmid, constval, zmid);
+
+        glTexCoord1f(r33);  glVertex3f(x3,    constval, z3);
+        glTexCoord1f(r13);  glVertex3f(x1,    constval, z3);
+        glTexCoord1f(rmid); glVertex3f(xmid, constval, zmid);
+
+        glTexCoord1f(r13);  glVertex3f(x1,    constval, z3);
+        glTexCoord1f(r11);  glVertex3f(x1,    constval, z1);
+        glTexCoord1f(rmid); glVertex3f(xmid, constval, zmid);
       }
     }
     glEnd();
@@ -5835,7 +5757,7 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
           }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
         }
-        float v11, v31, v13, v33, vmid;
+        float v11, v31, v13, v33;
 
         v11 = SLICEVAL(i,   j, plotz);
         v31 = SLICEVAL(i2,  j, plotz);
@@ -5848,26 +5770,6 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
         r33 = SLICETEXTURE(v33);
 
         rmid = (r11 + r31 + r13 + r33) / 4.0;
-        vmid = valmin + (valmax-valmin)*rmid;
-
-        int draw1, draw2, draw3, draw4;
-
-        draw1=1;
-        draw2=1;
-        draw3=1;
-        draw4=1;
-        if(set_chopmax==1){
-           if(vmid>chopmax || v11>chopmax || v31>chopmax)draw1 = 0;
-           if(vmid>chopmax || v31>chopmax || v33>chopmax)draw2 = 0;
-           if(vmid>chopmax || v33>chopmax || v13>chopmax)draw3 = 0;
-           if(vmid>chopmax || v13>chopmax || v11>chopmax)draw4 = 0;
-         }
-        if(set_chopmin==1){
-           if(vmid<chopmin || v11<chopmin || v31<chopmin)draw1 = 0;
-           if(vmid<chopmin || v31<chopmin || v33<chopmin)draw2 = 0;
-           if(vmid<chopmin || v33<chopmin || v13<chopmin)draw3 = 0;
-           if(vmid<chopmin || v13<chopmin || v11<chopmin)draw4 = 0;
-         }
 
         yy1 = yplt[j];
         y3 = yplt[j2];
@@ -5883,29 +5785,21 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
         //                (xmid,ymid,rmid)
         //  (x1,yy1,r11)                    (x3,yy1,r31)
 
-        if(draw1==1){
-          glTexCoord1f(r11);  glVertex3f(x1, yy1, constval);
-          glTexCoord1f(r31);  glVertex3f(x3, yy1, constval);
-          glTexCoord1f(rmid); glVertex3f(xmid, ymid, constval);
-        }
+        glTexCoord1f(r11);  glVertex3f(x1, yy1, constval);
+        glTexCoord1f(r31);  glVertex3f(x3, yy1, constval);
+        glTexCoord1f(rmid); glVertex3f(xmid, ymid, constval);
 
-        if(draw2==1){
-          glTexCoord1f(r31);  glVertex3f(x3, yy1, constval);
-          glTexCoord1f(r33);  glVertex3f(x3, y3, constval);
-          glTexCoord1f(rmid); glVertex3f(xmid, ymid, constval);
-        }
+        glTexCoord1f(r31);  glVertex3f(x3, yy1, constval);
+        glTexCoord1f(r33);  glVertex3f(x3, y3, constval);
+        glTexCoord1f(rmid); glVertex3f(xmid, ymid, constval);
 
-        if(draw3==1){
-          glTexCoord1f(r33);  glVertex3f(x3, y3, constval);
-          glTexCoord1f(r13);  glVertex3f(x1, y3, constval);
-          glTexCoord1f(rmid); glVertex3f(xmid, ymid, constval);
-        }
+        glTexCoord1f(r33);  glVertex3f(x3, y3, constval);
+        glTexCoord1f(r13);  glVertex3f(x1, y3, constval);
+        glTexCoord1f(rmid); glVertex3f(xmid, ymid, constval);
 
-        if(draw4==1){
-          glTexCoord1f(r13);  glVertex3f(x1, y3, constval);
-          glTexCoord1f(r11);  glVertex3f(x1, yy1, constval);
-          glTexCoord1f(rmid); glVertex3f(xmid, ymid, constval);
-        }
+        glTexCoord1f(r13);  glVertex3f(x1, y3, constval);
+        glTexCoord1f(r11);  glVertex3f(x1, yy1, constval);
+        glTexCoord1f(rmid); glVertex3f(xmid, ymid, constval);
       }
     }
     glEnd();
