@@ -1495,7 +1495,6 @@ void GetGlobalSliceBounds(int flag, int set_flag, char *label){
       boundscppi->hist = NULL;
 
       if(bound_slice_init == 1){
-        boundscppi->chop_hide = 0;
         boundscppi->set_chopmin = 0;
         boundscppi->set_chopmax = 0;
         boundscppi->chopmin = 0.0;

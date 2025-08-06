@@ -318,7 +318,7 @@ typedef struct _splitslicedata {
 
 typedef struct _cpp_boundsdata {
   char label[32], unit[32];
-  int set_valmin, set_valmax, set_chopmin, set_chopmax, chop_hide;
+  int set_valmin, set_valmax, set_chopmin, set_chopmax;
   float valmin[4], valmax[4], chopmin, chopmax;
   float glui_valmin, glui_valmax;
   int set_valtype, cache;

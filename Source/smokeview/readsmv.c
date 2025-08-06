@@ -4686,26 +4686,6 @@ int ReadIni2(const char *inifile, int localfile){
       SetSliceBounds(set_valmin, valmin, set_valmax, valmax, buffer2);
       continue;
     }
-    if(MatchINI(buffer, "C_SLICE_HIDE")==1){
-      int chop_hide;
-
-      fgets(buffer, 255, stream);
-      strcpy(buffer2, "");
-      sscanf(buffer, "%i  %s", &chop_hide, buffer2);
-      if(strcmp(buffer, "")!=0){
-        for(i = 0; i<nslicebounds_cpp; i++){
-          cpp_boundsdata *boundi;
-
-          boundi = slicebounds_cpp+i;
-          if(strcmp(buffer2,boundi->label)==0){
-            boundi->chop_hide = chop_hide;
-            break;
-          }
-        }
-      }
-      update_chop_colors = 1;
-      continue;
-    }
     if(MatchINI(buffer, "C_SLICE")==1){
       float valmin, valmax;
       int setvalmin, setvalmax;
@@ -7508,8 +7488,6 @@ void WriteIniLocal(FILE *fileout){
       boundi = slicebounds_cpp+i;
       fprintf(fileout, "C_SLICE\n");
       fprintf(fileout, " %i %f %i %f %s\n", boundi->set_chopmin, boundi->chopmin, boundi->set_chopmax, boundi->chopmax, boundi->label);
-      fprintf(fileout, "C_SLICE_HIDE\n");
-      fprintf(fileout, " %i %s\n", boundi->chop_hide, boundi->label);
     }
   }
   fprintf(fileout, "CACHE_DATA\n");
