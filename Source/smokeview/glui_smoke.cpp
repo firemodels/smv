@@ -76,7 +76,6 @@ GLUI_Spinner *SPINNER_smoke3d_jmax = NULL;
 GLUI_Spinner *SPINNER_smoke3d_kmax = NULL;
 GLUI_Spinner *SPINNER_smoke3d_extinct = NULL;
 GLUI_Spinner *SPINNER_smoke3d_extinct2 = NULL;
-GLUI_Spinner *SPINNER_smoke3d_demo_mode;
 GLUI_Spinner *SPINNER_smoke3d_frame_inc = NULL;
 
 GLUI_Spinner *SPINNER_smoke3d_fire_red=NULL;
@@ -98,6 +97,7 @@ GLUI_Spinner *SPINNER_timeloadframe = NULL;
 GLUI_Spinner *SPINNER_co2color[3];
 GLUI_Spinner *SPINNER_emission_factor=NULL;
 
+GLUI_Checkbox *CHECKBOX_smoke3d_demo_mode=NULL;
 GLUI_Checkbox *CHECKBOX_smoke3d_use_skip=NULL;
 GLUI_Checkbox *CHECKBOX_use_opacity_depth = NULL;
 GLUI_Checkbox *CHECKBOX_use_opacity_multiplier = NULL;
@@ -702,7 +702,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   SPINNER_smoke3d_jmax = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max j", GLUI_SPINNER_INT, &smoke3d_jmax);
   SPINNER_smoke3d_kmax = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max k", GLUI_SPINNER_INT, &smoke3d_kmax);
   CHECKBOX_smokecullflag = glui_3dsmoke->add_checkbox_to_panel(PANEL_skip_planes, "Cull hidden planes", &smokecullflag);
-  SPINNER_smoke3d_demo_mode = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, _("Demo mode"), GLUI_SPINNER_INT, &demo_mode, SMOKE_DEMO_MODE, GLUISmoke3dCB);
+  CHECKBOX_smoke3d_demo_mode = glui_3dsmoke->add_checkbox_to_panel(PANEL_skip_planes, _("Show only YZ Planes"), &smoke3d_demo_mode, SMOKE_DEMO_MODE, GLUISmoke3dCB);
   GLUISmoke3dCB(SMOKE_SKIP_X);
 
   //---------------------------------------------Volume render settings--------------------------------------------------------------
@@ -1344,14 +1344,17 @@ extern "C" void GLUISmoke3dCB(int var){
       }
       break;
     case SMOKE_DEMO_MODE:
-      if(demo_mode > 5){
+      if(smoke3d_demo_mode == 0){
         demo_mode = 0;
-        SPINNER_smoke3d_demo_mode->set_int_val(demo_mode);
+        glui_smoke3d_extinct = glui_smoke3d_extinct_save;
       }
-      if(demo_mode < 0) {
+      else{
         demo_mode = 5;
-        SPINNER_smoke3d_demo_mode->set_int_val(demo_mode);
+        glui_smoke3d_extinct_save = glui_smoke3d_extinct;
+        glui_smoke3d_extinct *= 3.0;
       }
+      SPINNER_smoke3d_extinct->set_float_val(glui_smoke3d_extinct);
+      GLUISmoke3dCB(SMOKE_EXTINCT);
       break;
    case SMOKE_EXTINCT:
      global_scase.update_smoke_alphas = 1;
