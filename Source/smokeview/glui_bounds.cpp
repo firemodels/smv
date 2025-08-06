@@ -2430,8 +2430,8 @@ void SetLoadedSliceBounds(int *list, int nlist){
     set_valmax = BOUND_LOADED_MAX;
     GLUIGetMinMax(BOUND_SLICE, label, &set_valmin, &valmin_dlg, &set_valmax, &valmax_dlg);
 #ifdef pp_BOUNDS
-    if(set_valmin==BOUND_SET_MIN)valmin = valmin_dlg;
-    if(set_valmax==BOUND_SET_MAX)valmax = valmax_dlg;
+    valmin = valmin_dlg;
+    valmax = valmax_dlg;
 #else
     if(set_valmin!=BOUND_LOADED_MIN){
       valmin = valmin_dlg;
