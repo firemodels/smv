@@ -173,7 +173,7 @@ SVEXTERN int SVDECL(texture_showall, 0);
 SVEXTERN int SVDECL(texture_hideall, 0);
 SVEXTERN int SVDECL(force_gray_smoke, 1);
 SVEXTERN int SVDECL(verbose_output, 0);
-SVEXTERN float glui_smoke3d_extinct;
+SVEXTERN float glui_smoke3d_extinct, glui_smoke3d_extinct_save;
 SVEXTERN float glui_smoke3d_extinct_default;
 SVEXTERN int SVDECL(force_alpha_opaque, 0);
 SVEXTERN int SVDECL(max_colorbar_label_width, 0);
@@ -1135,6 +1135,7 @@ SVEXTERN char blank_global[2];
 
 SVEXTERN float SVDECL(*sphere_xyz,NULL);
 SVEXTERN int SVDECL(demo_mode,0), SVDECL(update_demo,1);
+SVEXTERN int SVDECL(smoke3d_demo_mode, 0);
 SVEXTERN int SVDECL(loadplot3dall,0);
 SVEXTERN char *shortp3label[MAXPLOT3DVARS], *unitp3label[MAXPLOT3DVARS];
 SVEXTERN int SVDECL(update_plot3d_bnd, 0);
