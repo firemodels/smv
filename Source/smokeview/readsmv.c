@@ -6072,11 +6072,6 @@ int ReadIni2(const char *inifile, int localfile){
       continue;
     }
     {
-      if(MatchINI(buffer, "SMOKECULL") == 1){
-        if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i", &smokecullflag);
-        continue;
-      }
       if(MatchINI(buffer, "SMOKESKIP") == 1){
         int smokeskippm1_local;
 
@@ -8374,8 +8369,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i\n", slice_skip, slice_skipx, slice_skipy, slice_skipz);
   fprintf(fileout, "SMOKECOLOR\n");
   fprintf(fileout, " %i %i %i %i\n", smoke_color_int255[0], smoke_color_int255[1], smoke_color_int255[2], force_gray_smoke);
-  fprintf(fileout, "SMOKECULL\n");
-  fprintf(fileout," %i\n",smokecullflag);
   if(ABS(global_scase.smoke_albedo - global_scase.smoke_albedo_base) > 0.001){
     fprintf(fileout, "SMOKEALBEDO\n");
     fprintf(fileout, " %f\n", global_scase.smoke_albedo);

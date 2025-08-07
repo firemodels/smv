@@ -111,7 +111,6 @@ GLUI_Checkbox *CHECKBOX_update_smokeplanes = NULL;
 GLUI_Checkbox *CHECKBOX_plane_single = NULL;
 GLUI_Checkbox *CHECKBOX_freeze = NULL;
 GLUI_Checkbox *CHECKBOX_combine_meshes = NULL;
-GLUI_Checkbox *CHECKBOX_smokecullflag = NULL;
 GLUI_Checkbox *CHECKBOX_test_smokesensors = NULL;
 GLUI_Checkbox *CHECKBOX_smokeGPU = NULL;
 GLUI_Checkbox *CHECKBOX_zlib = NULL;
@@ -342,7 +341,6 @@ extern "C" void GLUIUpdateSmoke3dFlags(void){
 #ifdef pp_GPU
   if(CHECKBOX_smokeGPU!=NULL)CHECKBOX_smokeGPU->set_int_val(usegpu);
 #endif
-  if(CHECKBOX_smokecullflag!=NULL)CHECKBOX_smokecullflag->set_int_val(smokecullflag);
   if(SPINNER_smoke3d_frame_inc!=NULL)SPINNER_smoke3d_frame_inc->set_int_val(smoke3d_frame_inc);
   GLUISmoke3dCB(VOL_SMOKE);
   glutPostRedisplay();
@@ -701,7 +699,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   SPINNER_smoke3d_imax = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max i", GLUI_SPINNER_INT, &smoke3d_imax);
   SPINNER_smoke3d_jmax = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max j", GLUI_SPINNER_INT, &smoke3d_jmax);
   SPINNER_smoke3d_kmax = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max k", GLUI_SPINNER_INT, &smoke3d_kmax);
-  CHECKBOX_smokecullflag = glui_3dsmoke->add_checkbox_to_panel(PANEL_skip_planes, "Cull hidden planes", &smokecullflag);
   CHECKBOX_smoke3d_demo_mode = glui_3dsmoke->add_checkbox_to_panel(PANEL_skip_planes, _("Show only YZ Planes"), &smoke3d_demo_mode, SMOKE_DEMO_MODE, GLUISmoke3dCB);
   GLUISmoke3dCB(SMOKE_SKIP_X);
 
