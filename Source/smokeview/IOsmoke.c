@@ -546,10 +546,10 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
           n22 = n12+nxy;      //n+nx+nxy
           n21 = n22-nx;       //n+nxy
 
-                              //        n11 = (i-is1)   + (j-js1)*nx   + (k-ks1)*nx*ny;
-                              //        n12 = (i-is1)   + (j+1-js1)*nx + (k-ks1)*nx*ny;
-                              //        n22 = (i-is1)   + (j+1-js1)*nx + (k+1-ks1)*nx*ny;
-                              //        n21 = (i-is1)   + (j-js1)*nx   + (k+1-ks1)*nx*ny;
+          //        n11 = (i-is1)   + (j-js1)*nx   + (k-ks1)*nx*ny;
+          //        n12 = (i-is1)   + (j+1-js1)*nx + (k-ks1)*nx*ny;
+          //        n22 = (i-is1)   + (j+1-js1)*nx + (k+1-ks1)*nx*ny;
+          //        n21 = (i-is1)   + (j-js1)*nx   + (k+1-ks1)*nx*ny;
 
           if(global_scase.nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
             int m11, m12, m22, m21;
@@ -620,10 +620,10 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
           n22 = n12+nxy;      //n+1+nxy
           n21 = n22-1;        //n+nxy
 
-                              //        n11 = (i-is1)   + (j-js1)*nx   + (k-ks1)*nx*ny;
-                              //        n12 = (i+1-is1) + (j-js1)*nx   + (k-ks1)*nx*ny;
-                              //        n22 = (i+1-is1) + (j-js1)*nx   + (k+1-ks1)*nx*ny;
-                              //        n21 = (i-is1)   + (j-js1)*nx   + (k+1-ks1)*nx*ny;
+          //        n11 = (i-is1)   + (j-js1)*nx   + (k-ks1)*nx*ny;
+          //        n12 = (i+1-is1) + (j-js1)*nx   + (k-ks1)*nx*ny;
+          //        n22 = (i+1-is1) + (j-js1)*nx   + (k+1-ks1)*nx*ny;
+          //        n21 = (i-is1)   + (j-js1)*nx   + (k+1-ks1)*nx*ny;
 
           if(global_scase.nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
             int m11, m12, m22, m21;
@@ -1393,8 +1393,7 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
   unsigned char *iblank_smoke3d, *is_firenode;
 
   unsigned char value[4];
-  int ivalue[4];
-  int nsmoke_triangles = 0;
+  int ivalue[4];               int nsmoke_triangles = 0;
 
   meshdata *meshi;
 
@@ -1553,10 +1552,10 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
           n22 = n12+koffset*nxy;      //n+nx+nxy
           n21 = n22-joffset*nx;       //n+nxy
 
-                              //        n11 = (i-is1)   + (j  -js1)*nx + (k  -ks1)*nx*ny;
-                              //        n12 = (i-is1)   + (j+1-js1)*nx + (k  -ks1)*nx*ny;
-                              //        n22 = (i-is1)   + (j+1-js1)*nx + (k+1-ks1)*nx*ny;
-                              //        n21 = (i-is1)   + (j  -js1)*nx + (k+1-ks1)*nx*ny;
+          //        n11 = (i-is1)   + (j  -js1)*nx + (k  -ks1)*nx*ny;
+          //        n12 = (i-is1)   + (j+1-js1)*nx + (k  -ks1)*nx*ny;
+          //        n22 = (i-is1)   + (j+1-js1)*nx + (k+1-ks1)*nx*ny;
+          //        n21 = (i-is1)   + (j  -js1)*nx + (k+1-ks1)*nx*ny;
 
           if(global_scase.nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
             int m11, m12, m22, m21;
@@ -1644,10 +1643,10 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
           n22 = n12+koffset*nxy;  //n+1+nxy
           n21 = n22-ioffset;      //n+nxy
 
-                              //        n11 = (i-is1)   + (j-js1)*nx   + (k-ks1)*nx*ny;
-                              //        n12 = (i+1-is1) + (j-js1)*nx   + (k-ks1)*nx*ny;
-                              //        n22 = (i+1-is1) + (j-js1)*nx   + (k+1-ks1)*nx*ny;
-                              //        n21 = (i-is1)   + (j-js1)*nx   + (k+1-ks1)*nx*ny;
+          //        n11 = (i-is1)   + (j-js1)*nx   + (k-ks1)*nx*ny;
+          //        n12 = (i+1-is1) + (j-js1)*nx   + (k-ks1)*nx*ny;
+          //        n22 = (i+1-is1) + (j-js1)*nx   + (k+1-ks1)*nx*ny;
+          //        n21 = (i-is1)   + (j-js1)*nx   + (k+1-ks1)*nx*ny;
 
           if(global_scase.nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
             int m11, m12, m22, m21;
