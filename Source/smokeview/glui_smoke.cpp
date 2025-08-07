@@ -135,6 +135,7 @@ GLUI_Panel *PANEL_temp_minmax = NULL;
 GLUI_Panel *PANEL_blackbody = NULL;
 GLUI_Panel *PANEL_settings1 = NULL;
 GLUI_Panel *PANEL_skip_planes = NULL;
+GLUI_Panel *PANEL_max_planes = NULL;
 GLUI_Panel *PANEL_smokesensor = NULL;
 GLUI_Panel *PANEL_color = NULL;
 GLUI_Panel *PANEL_smoke = NULL;
@@ -683,23 +684,28 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
 
   //---------------------------------------------Skip planes--------------------------------------------------------------
 
-  ROLLOUT_skip = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoke3d, "Skip planes", false, SKIP_ROLLOUT, SmokeRolloutCB);
+  ROLLOUT_skip = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoke3d, "Planes", false, SKIP_ROLLOUT, SmokeRolloutCB);
   TOGGLE_ROLLOUT(smokeprocinfo, nsmokeprocinfo, ROLLOUT_skip, SKIP_ROLLOUT, glui_3dsmoke);
 
-  PANEL_skip_planes = glui_3dsmoke->add_panel_to_panel(ROLLOUT_skip, "", GLUI_PANEL_NONE);
-  SPINNER_smoke3d_skip   = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "x/y/z", GLUI_SPINNER_INT, &smoke3d_skip,   SMOKE_SKIP_XYZ, GLUISmoke3dCB);
-  SPINNER_smoke3d_skipxy = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "x/y",   GLUI_SPINNER_INT, &smoke3d_skipxy, SMOKE_SKIP_XY,  GLUISmoke3dCB);
-  SPINNER_smoke3d_skipx  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "x",     GLUI_SPINNER_INT, &smoke3d_skipx,  SMOKE_SKIP_X,   GLUISmoke3dCB);
-  SPINNER_smoke3d_skipy  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "y",     GLUI_SPINNER_INT, &smoke3d_skipy,  SMOKE_SKIP_Y,   GLUISmoke3dCB);
-  SPINNER_smoke3d_skipz  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "z",     GLUI_SPINNER_INT, &smoke3d_skipz,  SMOKE_SKIP_Z,   GLUISmoke3dCB);
+  
+  PANEL_skip_planes = glui_3dsmoke->add_panel_to_panel(ROLLOUT_skip, "skip planes");
+  SPINNER_smoke3d_skip   = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "yz/xz/xy", GLUI_SPINNER_INT, &smoke3d_skip,   SMOKE_SKIP_XYZ, GLUISmoke3dCB);
+  SPINNER_smoke3d_skipxy = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "yz/xz",   GLUI_SPINNER_INT, &smoke3d_skipxy, SMOKE_SKIP_XY,  GLUISmoke3dCB);
+  SPINNER_smoke3d_skipx  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "yz",     GLUI_SPINNER_INT, &smoke3d_skipx,  SMOKE_SKIP_X,   GLUISmoke3dCB);
+  SPINNER_smoke3d_skipy  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "xz",     GLUI_SPINNER_INT, &smoke3d_skipy,  SMOKE_SKIP_Y,   GLUISmoke3dCB);
+  SPINNER_smoke3d_skipz  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "xy",     GLUI_SPINNER_INT, &smoke3d_skipz,  SMOKE_SKIP_Z,   GLUISmoke3dCB);
+
+  glui_3dsmoke->add_column_to_panel(ROLLOUT_skip, false);
+  PANEL_max_planes = glui_3dsmoke->add_panel_to_panel(ROLLOUT_skip, "max plane");
+  SPINNER_smoke3d_imax = glui_3dsmoke->add_spinner_to_panel(PANEL_max_planes, "yz", GLUI_SPINNER_INT, &smoke3d_imax);
+  SPINNER_smoke3d_jmax = glui_3dsmoke->add_spinner_to_panel(PANEL_max_planes, "xz", GLUI_SPINNER_INT, &smoke3d_jmax);
+  SPINNER_smoke3d_kmax = glui_3dsmoke->add_spinner_to_panel(PANEL_max_planes, "xy", GLUI_SPINNER_INT, &smoke3d_kmax);
+
   char label[256];
   strcpy(label, "");
-  STATIC_pixels_per_triangle = glui_3dsmoke->add_statictext_to_panel(PANEL_skip_planes, label);
+  STATIC_pixels_per_triangle = glui_3dsmoke->add_statictext_to_panel(ROLLOUT_skip, label);
+  CHECKBOX_smoke3d_demo_mode = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_skip, _("Show only yz planes"), &smoke3d_demo_mode, SMOKE_DEMO_MODE, GLUISmoke3dCB);
 
-  SPINNER_smoke3d_imax = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max i", GLUI_SPINNER_INT, &smoke3d_imax);
-  SPINNER_smoke3d_jmax = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max j", GLUI_SPINNER_INT, &smoke3d_jmax);
-  SPINNER_smoke3d_kmax = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max k", GLUI_SPINNER_INT, &smoke3d_kmax);
-  CHECKBOX_smoke3d_demo_mode = glui_3dsmoke->add_checkbox_to_panel(PANEL_skip_planes, _("Show only YZ Planes"), &smoke3d_demo_mode, SMOKE_DEMO_MODE, GLUISmoke3dCB);
   GLUISmoke3dCB(SMOKE_SKIP_X);
 
   //---------------------------------------------Volume render settings--------------------------------------------------------------
