@@ -1352,10 +1352,10 @@ int CompareMeshes(const void *arg1, const void *arg2){
   meshi = global_scase.meshescoll.meshinfo + smoke3di->blocknumber;
   meshj = global_scase.meshescoll.meshinfo + smoke3dj->blocknumber;
   if(meshi == meshj)return 0;
-  xyzmini = meshi->boxmin;
-  xyzmaxi = meshi->boxmax;
-  xyzminj = meshj->boxmin;
-  xyzmaxj = meshj->boxmax;
+  xyzmini = meshi->boxmin_fds;
+  xyzmaxi = meshi->boxmax_fds;
+  xyzminj = meshj->boxmin_fds;
+  xyzmaxj = meshj->boxmax_fds;
   if(dir == 0){
     if(xyzmaxi[0] <= xyzminj[0])dir = 1;
     if(xyzmaxj[0] <= xyzmini[0])dir = -1;
@@ -1466,9 +1466,9 @@ void GetEyePos(float *mm){
     meshdata *meshi;
 
     meshi = global_scase.meshescoll.meshinfo+i;
-    scene_center[0] += meshi->boxmiddle[0];
-    scene_center[1] += meshi->boxmiddle[1];
-    scene_center[2] += meshi->boxmiddle[2];
+    scene_center[0] += meshi->boxmiddle_fds[0];
+    scene_center[1] += meshi->boxmiddle_fds[1];
+    scene_center[2] += meshi->boxmiddle_fds[2];
   }
   scene_center[0] /= global_scase.meshescoll.nmeshes;
   scene_center[1] /= global_scase.meshescoll.nmeshes;
@@ -1747,9 +1747,9 @@ void GetSmokeDir(float *mm){
     int iminangle, alphadir, minalphadir;
 
     meshj = global_scase.meshescoll.meshinfo + j;
-    dx = meshj->boxmiddle_scaled[0] - eye_position_smv[0];
-    dy = meshj->boxmiddle_scaled[1] - eye_position_smv[1];
-    dz = meshj->boxmiddle_scaled[2] - eye_position_smv[2];
+    dx = meshj->boxmiddle_smv[0] - eye_position_smv[0];
+    dy = meshj->boxmiddle_smv[1] - eye_position_smv[1];
+    dz = meshj->boxmiddle_smv[2] - eye_position_smv[2];
     meshj->eyedist = sqrt(dx*dx + dy*dy + dz*dz);
 
     minalphadir = ALPHA_X;

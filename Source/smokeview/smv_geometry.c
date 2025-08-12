@@ -828,12 +828,12 @@ int BoxInFrustum(float *xx, float *yy, float *zz, int n){
 int MeshInFrustum(meshdata *meshi){
   float xx[2], yy[2], zz[2];
 
-  xx[0] = meshi->boxmin_scaled[0];
-  xx[1] = meshi->boxmax_scaled[0];
-  yy[0] = meshi->boxmin_scaled[1];
-  yy[1] = meshi->boxmax_scaled[1];
-  zz[0] = meshi->boxmin_scaled[2];
-  zz[1] = meshi->boxmax_scaled[2];
+  xx[0] = meshi->boxmin_smv[0];
+  xx[1] = meshi->boxmax_smv[0];
+  yy[0] = meshi->boxmin_smv[1];
+  yy[1] = meshi->boxmax_smv[1];
+  zz[0] = meshi->boxmin_smv[2];
+  zz[1] = meshi->boxmax_smv[2];
   return BoxInFrustum(xx,yy,zz,5);
 }
 
@@ -1134,10 +1134,9 @@ int MakeIBlankCarve(void){
 
       if(i==j)continue;
       meshj = global_scase.meshescoll.meshinfo + j;
-      if(
-        meshi->boxmin[0]<=meshj->boxmin[0]&&meshj->boxmax[0]<=meshi->boxmax[0]&&
-        meshi->boxmin[1]<=meshj->boxmin[1]&&meshj->boxmax[1]<=meshi->boxmax[1]&&
-        meshi->boxmin[2]<=meshj->boxmin[2]&&meshj->boxmax[2]<=meshi->boxmax[2]
+      if(meshi->boxmin_fds[0] <= meshj->boxmin_fds[0] && meshj->boxmax_fds[0] <= meshi->boxmax_fds[0] &&
+         meshi->boxmin_fds[1] <= meshj->boxmin_fds[1] && meshj->boxmax_fds[1] <= meshi->boxmax_fds[1] &&
+         meshi->boxmin_fds[2] <= meshj->boxmin_fds[2] && meshj->boxmax_fds[2] <= meshi->boxmax_fds[2]
       ){
         n_embedded++;
         n_embedded_meshes++;
@@ -1164,9 +1163,9 @@ int MakeIBlankCarve(void){
       meshj = global_scase.meshescoll.meshinfo + j;
       // meshj is embedded inside meshi
       if(
-        meshi->boxmin[0]>meshj->boxmin[0]||meshj->boxmax[0]>meshi->boxmax[0]||
-        meshi->boxmin[1]>meshj->boxmin[1]||meshj->boxmax[1]>meshi->boxmax[1]||
-        meshi->boxmin[2]>meshj->boxmin[2]||meshj->boxmax[2]>meshi->boxmax[2]
+        meshi->boxmin_fds[0]>meshj->boxmin_fds[0]||meshj->boxmax_fds[0]>meshi->boxmax_fds[0]||
+        meshi->boxmin_fds[1]>meshj->boxmin_fds[1]||meshj->boxmax_fds[1]>meshi->boxmax_fds[1]||
+        meshi->boxmin_fds[2]>meshj->boxmin_fds[2]||meshj->boxmax_fds[2]>meshi->boxmax_fds[2]
       )continue;
 
       xplt = meshi->xplt_orig;
@@ -1174,38 +1173,38 @@ int MakeIBlankCarve(void){
       zplt = meshi->zplt_orig;
       k2 = 0;
       for(ii=0;ii<nx;ii++){
-        if(xplt[ii]<=meshj->boxmin[0]&&meshj->boxmin[0]<xplt[ii+1]){
+        if(xplt[ii]<=meshj->boxmin_fds[0]&&meshj->boxmin_fds[0]<xplt[ii+1]){
           i1=ii;
           break;
         }
       }
       for(ii=0;ii<nx;ii++){
-        if(xplt[ii]<meshj->boxmax[0]&&meshj->boxmax[0]<=xplt[ii+1]){
+        if(xplt[ii]<meshj->boxmax_fds[0]&&meshj->boxmax_fds[0]<=xplt[ii+1]){
           i2=ii;
           break;
         }
       }
       for(jj=0;jj<ny;jj++){
-        if(yplt[jj]<=meshj->boxmin[1]&&meshj->boxmin[1]<yplt[jj+1]){
+        if(yplt[jj]<=meshj->boxmin_fds[1]&&meshj->boxmin_fds[1]<yplt[jj+1]){
           jj1=jj;
           break;
         }
       }
       for(jj=0;jj<ny;jj++){
-        if(yplt[jj]<meshj->boxmax[1]&&meshj->boxmax[1]<=yplt[jj+1]){
+        if(yplt[jj]<meshj->boxmax_fds[1]&&meshj->boxmax_fds[1]<=yplt[jj+1]){
           j2=jj;
           break;
         }
       }
       k1 = 0;
       for(kk=0;kk<nz;kk++){
-        if(zplt[kk]<=meshj->boxmin[2]&&meshj->boxmin[2]<zplt[kk+1]){
+        if(zplt[kk]<=meshj->boxmin_fds[2]&&meshj->boxmin_fds[2]<zplt[kk+1]){
           k1=kk;
           break;
         }
       }
       for(kk=0;kk<nz;kk++){
-        if(zplt[kk]<meshj->boxmax[2]&&meshj->boxmax[2]<=zplt[kk+1]){
+        if(zplt[kk]<meshj->boxmax_fds[2]&&meshj->boxmax_fds[2]<=zplt[kk+1]){
           k2=kk;
           break;
         }

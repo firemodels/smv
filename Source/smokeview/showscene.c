@@ -193,8 +193,8 @@ void ShowScene2(int mode){
         float *xyz_min, *xyz_max;
 
         meshi = global_scase.meshescoll.meshinfo + i;
-        xyz_min = meshi->boxmin_scaled;
-        xyz_max = meshi->boxmax_scaled;
+        xyz_min = meshi->boxmin_smv;
+        xyz_max = meshi->boxmax_smv;
         if(meshi->use == 1){
           if(show_mesh_labels == 1){
             char label[32];

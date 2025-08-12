@@ -220,10 +220,11 @@ typedef struct _meshdata {
   int is_extface[6]; // 1 if adjacent to exterior, 0 if adjacent to interior, -1 if unknown
   int inside;
   int in_frustum;    // 1 if part or all of mesh is in the view frustum
-  float boxmin[3], boxmiddle[3], boxmax[3], dbox[3], boxeps[3], dcell, dcell3[3], verts[24], eyedist;
+  float boxmin_fds[3], boxmiddle_fds[3], boxmax_fds[3];
+  float boxmin_smv[3], boxmiddle_smv[3], boxmax_smv[3];
+  float dbox[3], boxeps[3], dcell, dcell3[3], verts[24], eyedist;
   float boxeps_fds[3];
   float slice_min[3], slice_max[3];
-  float boxmin_scaled[3], boxmiddle_scaled[3], boxmax_scaled[3];
   float xyz_bar0[3], xyz_bar[3];
   float xcen, ycen, zcen;
   float face_centers[18];
@@ -369,7 +370,7 @@ typedef struct _supermeshdata {
   float *volsmoke_texture_buffer, *volfire_texture_buffer;
 #endif
   float *f_iblank_cell;
-  float boxmin_scaled[3], boxmax_scaled[3];
+  float boxmin_smv[3], boxmax_smv[3];
   int drawsides[7];
   int nmeshes;
   meshdata **meshes;

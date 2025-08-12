@@ -266,8 +266,8 @@ int GetCellindex(float *xyz, meshdata **mesh_tryptr){
       meshi = global_scase.meshescoll.meshinfo + i;
       if(meshi == mesh_try)continue;
     }
-    boxmin = meshi->boxmin;
-    boxmax = meshi->boxmax;
+    boxmin = meshi->boxmin_fds;
+    boxmax = meshi->boxmax_fds;
     dbox = meshi->dbox;
     if(boxmin[0] <= xyz[0] && xyz[0] <= boxmax[0] &&
       boxmin[1] <= xyz[1] && xyz[1] <= boxmax[1] &&

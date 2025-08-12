@@ -998,12 +998,12 @@ void UpdateMeshBoxBounds(void){
 
     // xplt, yplt, zplt has original coordinates because this routine is called before UpdateMeshCoords
     meshi = global_scase.meshescoll.meshinfo+i;
-    meshi->boxmin[0] = meshi->xplt[0];
-    meshi->boxmin[1] = meshi->yplt[0];
-    meshi->boxmin[2] = meshi->zplt[0];
-    meshi->boxmax[0] = meshi->xplt[meshi->ibar];
-    meshi->boxmax[1] = meshi->yplt[meshi->jbar];
-    meshi->boxmax[2] = meshi->zplt[meshi->kbar];
+    meshi->boxmin_fds[0] = meshi->xplt[0];
+    meshi->boxmin_fds[1] = meshi->yplt[0];
+    meshi->boxmin_fds[2] = meshi->zplt[0];
+    meshi->boxmax_fds[0] = meshi->xplt[meshi->ibar];
+    meshi->boxmax_fds[1] = meshi->yplt[meshi->jbar];
+    meshi->boxmax_fds[2] = meshi->zplt[meshi->kbar];
     meshi->boxeps_fds[0] = (meshi->xplt[1] - meshi->xplt[0]) / 2.0;
     meshi->boxeps_fds[1] = (meshi->yplt[1] - meshi->yplt[0]) / 2.0;
     meshi->boxeps_fds[2] = (meshi->zplt[1] - meshi->zplt[0]) / 2.0;
@@ -1507,21 +1507,21 @@ void UpdateMeshCoords(void){
     }
 
     meshi->boxoffset=-(zplt[1]-zplt[0])/10.0;
-    meshi->dbox[0]=meshi->boxmax[0]-meshi->boxmin[0];
-    meshi->dbox[1]=meshi->boxmax[1]-meshi->boxmin[1];
-    meshi->dbox[2]=meshi->boxmax[2]-meshi->boxmin[2];
-    meshi->boxmiddle[0] = meshi->boxmin[0]+meshi->dbox[0]/2.0;
-    meshi->boxmiddle[1] = meshi->boxmin[1]+meshi->dbox[1]/2.0;
-    meshi->boxmiddle[2] = meshi->boxmin[2]+meshi->dbox[2]/2.0;
+    meshi->dbox[0]=meshi->boxmax_fds[0]-meshi->boxmin_fds[0];
+    meshi->dbox[1]=meshi->boxmax_fds[1]-meshi->boxmin_fds[1];
+    meshi->dbox[2]=meshi->boxmax_fds[2]-meshi->boxmin_fds[2];
+    meshi->boxmiddle_fds[0] = meshi->boxmin_fds[0]+meshi->dbox[0]/2.0;
+    meshi->boxmiddle_fds[1] = meshi->boxmin_fds[1]+meshi->dbox[1]/2.0;
+    meshi->boxmiddle_fds[2] = meshi->boxmin_fds[2]+meshi->dbox[2]/2.0;
     meshi->boxeps[0]=0.5*(xplt[ibar]-xplt[0])/(float)ibar;
     meshi->boxeps[1]=0.5*(yplt[jbar]-yplt[0])/(float)jbar;
     meshi->boxeps[2]=0.5*(zplt[kbar]-zplt[0])/(float)kbar;
     meshi->dcell3[0] = xplt[1]-xplt[0];
     meshi->dcell3[1] = yplt[1]-yplt[0];
     meshi->dcell3[2] = zplt[1]-zplt[0];
-    FDS2SMV_XYZ(meshi->boxmin_scaled,meshi->boxmin);
-    FDS2SMV_XYZ(meshi->boxmax_scaled,meshi->boxmax);
-    FDS2SMV_XYZ(meshi->boxmiddle_scaled, meshi->boxmiddle);
+    FDS2SMV_XYZ(meshi->boxmin_smv,meshi->boxmin_fds);
+    FDS2SMV_XYZ(meshi->boxmax_smv,meshi->boxmax_fds);
+    FDS2SMV_XYZ(meshi->boxmiddle_smv, meshi->boxmiddle_fds);
     meshi->x0 = xplt[0];
     meshi->x1 = xplt[ibar];
     meshi->y0 = yplt[0];
@@ -1553,12 +1553,12 @@ void UpdateMeshCoords(void){
       face_centers+=3;
     }
     face_centers = meshi->face_centers;
-    face_centers[0]=meshi->boxmin_scaled[0];
-    face_centers[3]=meshi->boxmax_scaled[0];
-    face_centers[7]=meshi->boxmin_scaled[1];
-    face_centers[10]=meshi->boxmax_scaled[1];
-    face_centers[14]=meshi->boxmin_scaled[2];
-    face_centers[17]=meshi->boxmax_scaled[2];
+    face_centers[0]=meshi->boxmin_smv[0];
+    face_centers[3]=meshi->boxmax_smv[0];
+    face_centers[7]=meshi->boxmin_smv[1];
+    face_centers[10]=meshi->boxmax_smv[1];
+    face_centers[14]=meshi->boxmin_smv[2];
+    face_centers[17]=meshi->boxmax_smv[2];
   }
   if(global_scase.nterraininfo>0){
     boundaryoffset = (global_scase.meshescoll.meshinfo->zplt_orig[1] - global_scase.meshescoll.meshinfo->zplt_orig[0]) / 10.0;
@@ -1837,8 +1837,8 @@ void SetupMeshWalls(void){
     int *is_extface;
 
     meshi = global_scase.meshescoll.meshinfo + i;
-    bmin = meshi->boxmin;
-    bmax = meshi->boxmax;
+    bmin = meshi->boxmin_fds;
+    bmax = meshi->boxmax_fds;
     is_extface = meshi->is_extface;
 
     bmid[0] = (bmin[0] + bmax[0]) / 2.0;

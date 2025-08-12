@@ -4492,8 +4492,8 @@ void DrawGSliceDataGpu(slicedata *slicei){
   sb = slicebounds + slicefile_labelindex;
   valmin = sb->levels256[0];
   valmax = sb->levels256[255];
-  boxmin = meshi->boxmin;
-  boxmax = meshi->boxmax;
+  boxmin = meshi->boxmin_fds;
+  boxmax = meshi->boxmax_fds;
 
   glUniform1i(GPU3dslice_valtexture, 0);
   glUniform1i(GPU3dslice_colormap, 4);
@@ -6730,8 +6730,8 @@ int InSliceMesh(slicedata *slicei, float *xyz){
 
   meshi = global_scase.meshescoll.meshinfo + slicei->blocknumber;
   dir = slicei->idir;
-  boxmin = meshi->boxmin;
-  boxmax = meshi->boxmax;
+  boxmin = meshi->boxmin_fds;
+  boxmax = meshi->boxmax_fds;
   if(slicei->volslice==0){
     if(dir==XDIR){
       if(xyz[1]<boxmin[1]||xyz[1]>boxmax[1])return 0;

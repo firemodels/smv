@@ -4429,13 +4429,13 @@ void InitUserTicks(void){
     meshdata *meshi;
 
     meshi = global_scase.meshescoll.meshinfo + i;
-    user_tick_min[0]=MIN(meshi->boxmin[0],user_tick_min[0]);
-    user_tick_min[1]=MIN(meshi->boxmin[1],user_tick_min[1]);
-    user_tick_min[2]=MIN(meshi->boxmin[2],user_tick_min[2]);
+    user_tick_min[0]=MIN(meshi->boxmin_fds[0],user_tick_min[0]);
+    user_tick_min[1]=MIN(meshi->boxmin_fds[1],user_tick_min[1]);
+    user_tick_min[2]=MIN(meshi->boxmin_fds[2],user_tick_min[2]);
 
-    user_tick_max[0]=MAX(meshi->boxmax[0],user_tick_max[0]);
-    user_tick_max[1]=MAX(meshi->boxmax[1],user_tick_max[1]);
-    user_tick_max[2]=MAX(meshi->boxmax[2],user_tick_max[2]);
+    user_tick_max[0]=MAX(meshi->boxmax_fds[0],user_tick_max[0]);
+    user_tick_max[1]=MAX(meshi->boxmax_fds[1],user_tick_max[1]);
+    user_tick_max[2]=MAX(meshi->boxmax_fds[2],user_tick_max[2]);
   }
 
   user_tick_origin[0]=user_tick_min[0];

@@ -388,7 +388,7 @@ void GetDeviceScreenCoords(void){
     if(STRCMP(label,"smokesensor")!=0)continue;
     xyz = devicei->xyz;
     device_mesh = devicei->device_mesh;
-    devicei->eyedist = GetPoint2BoxDist(device_mesh->boxmin,device_mesh->boxmax,xyz,fds_eyepos);
+    devicei->eyedist = GetPoint2BoxDist(device_mesh->boxmin_fds,device_mesh->boxmax_fds,xyz,fds_eyepos);
     ijk = devicei->screenijk;
     gluProject(xyz[0],xyz[1],xyz[2],mv_setup,projection_setup,viewport_setup,d_ijk,d_ijk+1,d_ijk+2);
     ijk[0] = d_ijk[0];

@@ -4296,12 +4296,12 @@ void MeshBoundCB(int var){
       meshdata *meshi;
 
       meshi = global_scase.meshescoll.meshinfo + set_mesh - 1;
-      meshclip[0] = meshi->boxmin[0];
-      meshclip[2] = meshi->boxmin[1];
-      meshclip[4] = meshi->boxmin[2];
-      meshclip[1] = meshi->boxmax[0];
-      meshclip[3] = meshi->boxmax[1];
-      meshclip[5] = meshi->boxmax[2];
+      meshclip[0] = meshi->boxmin_fds[0];
+      meshclip[2] = meshi->boxmin_fds[1];
+      meshclip[4] = meshi->boxmin_fds[2];
+      meshclip[1] = meshi->boxmax_fds[0];
+      meshclip[3] = meshi->boxmax_fds[1];
+      meshclip[5] = meshi->boxmax_fds[2];
       meshi->use = 1;
     }
     for(i = 0;i < 6;i++){
@@ -4338,10 +4338,10 @@ void MeshBoundCB(int var){
        use_meshclip[3] == 0 && use_meshclip[4] == 0 && use_meshclip[5] == 0)break;
     for(i=0;i<global_scase.meshescoll.nmeshes;i++){
       meshdata *meshi;
-
-      meshi = global_scase.meshescoll.meshinfo + i;
       float meshclip_min[3],  meshclip_max[3];
       int use_meshclip_min[3], use_meshclip_max[3];
+
+      meshi = global_scase.meshescoll.meshinfo + i;
       meshclip_min[0] = meshclip[0];
       meshclip_min[1] = meshclip[2];
       meshclip_min[2] = meshclip[4];
@@ -4361,53 +4361,53 @@ void MeshBoundCB(int var){
       if(use_meshclip_min[2] == 0)meshclip_min[2] = zbar0FDS;
       if(use_meshclip_max[2] == 0)meshclip_max[2] = zbarFDS;
       if(glui_mesh_intersection_option == 0){
-        if(use_meshclip_min[0] == 1 && meshclip_min[0] + MESH_EPS > meshi->boxmax[0]){
+        if(use_meshclip_min[0] == 1 && meshclip_min[0] + MESH_EPS > meshi->boxmax_fds[0]){
           meshi->use = 0;
           continue;
         }
-        if(use_meshclip_max[0] == 1 && meshclip_max[0] - MESH_EPS < meshi->boxmin[0]){
+        if(use_meshclip_max[0] == 1 && meshclip_max[0] - MESH_EPS < meshi->boxmin_fds[0]){
           meshi->use = 0;
           continue;
         }
-        if(use_meshclip_min[1] == 1 && meshclip_min[1] + MESH_EPS > meshi->boxmax[1]){
+        if(use_meshclip_min[1] == 1 && meshclip_min[1] + MESH_EPS > meshi->boxmax_fds[1]){
           meshi->use = 0;
           continue;
         }
-        if(use_meshclip_max[1] == 1 && meshclip_max[1] - MESH_EPS < meshi->boxmin[1]){
+        if(use_meshclip_max[1] == 1 && meshclip_max[1] - MESH_EPS < meshi->boxmin_fds[1]){
           meshi->use = 0;
           continue;
         }
-        if(use_meshclip_min[2] == 1 && meshclip_min[2] + MESH_EPS > meshi->boxmax[2]){
+        if(use_meshclip_min[2] == 1 && meshclip_min[2] + MESH_EPS > meshi->boxmax_fds[2]){
           meshi->use = 0;
           continue;
         }
-        if(use_meshclip_max[2] == 1 && meshclip_max[2] - MESH_EPS < meshi->boxmin[2]){
+        if(use_meshclip_max[2] == 1 && meshclip_max[2] - MESH_EPS < meshi->boxmin_fds[2]){
           meshi->use = 0;
           continue;
         }
       }
       else{
-        if(use_meshclip_max[0] == 1 && meshclip_max[0] + MESH_EPS < meshi->boxmax[0]){
+        if(use_meshclip_max[0] == 1 && meshclip_max[0] + MESH_EPS < meshi->boxmax_fds[0]){
           meshi->use = 0;
           continue;
         }
-        if(use_meshclip_min[0] == 1 && meshclip_min[0] - MESH_EPS > meshi->boxmin[0]){
+        if(use_meshclip_min[0] == 1 && meshclip_min[0] - MESH_EPS > meshi->boxmin_fds[0]){
           meshi->use = 0;
           continue;
         }
-        if(use_meshclip_max[1] == 1 && meshclip_max[1] + MESH_EPS < meshi->boxmax[1]){
+        if(use_meshclip_max[1] == 1 && meshclip_max[1] + MESH_EPS < meshi->boxmax_fds[1]){
           meshi->use = 0;
           continue;
         }
-        if(use_meshclip_min[1] == 1 && meshclip_min[1] - MESH_EPS > meshi->boxmin[1]){
+        if(use_meshclip_min[1] == 1 && meshclip_min[1] - MESH_EPS > meshi->boxmin_fds[1]){
           meshi->use = 0;
           continue;
         }
-        if(use_meshclip_max[2] == 1 && meshclip_max[2] + MESH_EPS < meshi->boxmax[2]){
+        if(use_meshclip_max[2] == 1 && meshclip_max[2] + MESH_EPS < meshi->boxmax_fds[2]){
           meshi->use = 0;
           continue;
         }
-        if(use_meshclip_min[2] == 1 && meshclip_min[2] - MESH_EPS > meshi->boxmin[2]){
+        if(use_meshclip_min[2] == 1 && meshclip_min[2] - MESH_EPS > meshi->boxmin_fds[2]){
           meshi->use = 0;
           continue;
         }

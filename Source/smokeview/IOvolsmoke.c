@@ -857,8 +857,8 @@ int IsBottomMesh(meshdata *mesh_from){
   float *boxmax, *boxmin;
   int return_val;
 
-  boxmin = mesh_from->boxmin;
-  boxmax = mesh_from->boxmax;
+  boxmin = mesh_from->boxmin_fds;
+  boxmax = mesh_from->boxmax_fds;
   xyz[0] = (boxmin[0]+boxmax[0])/2.0;
   xyz[1] = (boxmin[1]+boxmax[1])/2.0;
   xyz[2] = boxmin[2]-(boxmax[2]-boxmin[2])/100.0;
@@ -1103,30 +1103,30 @@ void *InitNabors(void *arg){
     float xyzmid[3], xyz[3];
 
     meshi = global_scase.meshescoll.meshinfo + i;
-    memcpy(xyzmid, meshi->boxmiddle, 3*sizeof(float));
+    memcpy(xyzmid, meshi->boxmiddle_fds, 3*sizeof(float));
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
-    xyz[0] = meshi->boxmin[0]- meshi->boxeps_fds[0];
+    xyz[0] = meshi->boxmin_fds[0]- meshi->boxeps_fds[0];
     meshi->skip_nabors[MLEFT] = GetMesh(xyz);
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
-    xyz[0] = meshi->boxmax[0] + meshi->boxeps_fds[0];
+    xyz[0] = meshi->boxmax_fds[0] + meshi->boxeps_fds[0];
     meshi->skip_nabors[MRIGHT] = GetMesh(xyz);
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
-    xyz[1] = meshi->boxmin[1] - meshi->boxeps_fds[1];
+    xyz[1] = meshi->boxmin_fds[1] - meshi->boxeps_fds[1];
     meshi->skip_nabors[MFRONT] = GetMesh(xyz);
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
-    xyz[1] = meshi->boxmax[0] + meshi->boxeps_fds[1];
+    xyz[1] = meshi->boxmax_fds[0] + meshi->boxeps_fds[1];
     meshi->skip_nabors[MBACK] = GetMesh(xyz);
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
-    xyz[2] = meshi->boxmin[2] - meshi->boxeps_fds[2];
+    xyz[2] = meshi->boxmin_fds[2] - meshi->boxeps_fds[2];
     meshi->skip_nabors[MDOWN] = GetMesh(xyz);
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
-    xyz[2] = meshi->boxmax[2] + meshi->boxeps_fds[2];
+    xyz[2] = meshi->boxmax_fds[2] + meshi->boxeps_fds[2];
     meshi->skip_nabors[MUP] = GetMesh(xyz);
   }
   PRINT_TIMER(timer_init_nabors, "InitNabors");
@@ -1157,15 +1157,15 @@ void InitSuperMesh(void){
     float *smin, *smax;
     int nsize;
 
-    smin = smesh->boxmin_scaled;
-    smax = smesh->boxmax_scaled;
+    smin = smesh->boxmin_smv;
+    smax = smesh->boxmax_smv;
 
     for(i = 0;i<smesh->nmeshes;i++){
       int j;
       float *bmin, *bmax;
 
-      bmin = smesh->meshes[i]->boxmin_scaled;
-      bmax = smesh->meshes[i]->boxmax_scaled;
+      bmin = smesh->meshes[i]->boxmin_smv;
+      bmax = smesh->meshes[i]->boxmax_smv;
       if(i==0){
         memcpy(smin, bmin, 3*sizeof(float));
         memcpy(smax, bmax, 3*sizeof(float));
@@ -1414,8 +1414,8 @@ meshdata *GetMeshInSmesh(meshdata *mesh_guess, supermeshdata *smesh, float *xyz)
   int i;
   float *smin, *smax;
 
-  smin = smesh->boxmin_scaled;
-  smax = smesh->boxmax_scaled;
+  smin = smesh->boxmin_smv;
+  smax = smesh->boxmax_smv;
 
   if(xyz[0]<smin[0]||xyz[1]<smin[1]||xyz[2]<smin[2])return NULL;
   if(xyz[0]>smax[0]||xyz[1]>smax[1]||xyz[2]>smax[2])return NULL;
@@ -1432,8 +1432,8 @@ meshdata *GetMeshInSmesh(meshdata *mesh_guess, supermeshdata *smesh, float *xyz)
       if(meshi==mesh_guess)continue;
     }
 
-    bmin = meshi->boxmin_scaled;
-    bmax = meshi->boxmax_scaled;
+    bmin = meshi->boxmin_smv;
+    bmax = meshi->boxmax_smv;
 
     if(
       bmin[0]<=xyz[0]&&xyz[0]<=bmax[0]&&
@@ -1463,12 +1463,12 @@ void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlen
   meshdata *xyz_mesh=NULL;
 
   if(combine_meshes==1){
-    boxmin = meshi->super->boxmin_scaled;
-    boxmax = meshi->super->boxmax_scaled;
+    boxmin = meshi->super->boxmin_smv;
+    boxmax = meshi->super->boxmax_smv;
   }
   else{
-    boxmin = meshi->boxmin_scaled;
-    boxmax = meshi->boxmax_scaled;
+    boxmin = meshi->boxmin_smv;
+    boxmax = meshi->boxmax_smv;
   }
 
   if(meshi->inside==1){
@@ -2482,8 +2482,8 @@ void DrawSmoke3DGPUVol(void){
         float *smin, *smax;
         int *sdrawsides;
 
-        smin = meshi->super->boxmin_scaled;
-        smax = meshi->super->boxmax_scaled;
+        smin = meshi->super->boxmin_smv;
+        smax = meshi->super->boxmax_smv;
         sdrawsides = meshi->super->drawsides;
         glUniform3f(GPUvol_boxmin,smin[0],smin[1],smin[2]);
         glUniform3f(GPUvol_boxmax,smax[0],smax[1],smax[2]);

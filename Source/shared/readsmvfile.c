@@ -4322,9 +4322,9 @@ blockagedata *GetBlockagePtr(smv_case *scase, float *xyz){
     int j;
 
     meshi = scase->meshescoll.meshinfo + i;
-    if(xyzcenter[0]<meshi->boxmin[0]||xyzcenter[0]>meshi->boxmax[0])continue;
-    if(xyzcenter[1]<meshi->boxmin[1]||xyzcenter[1]>meshi->boxmax[1])continue;
-    if(xyzcenter[2]<meshi->boxmin[2]||xyzcenter[2]>meshi->boxmax[2])continue;
+    if(xyzcenter[0]<meshi->boxmin_fds[0]||xyzcenter[0]>meshi->boxmax_fds[0])continue;
+    if(xyzcenter[1]<meshi->boxmin_fds[1]||xyzcenter[1]>meshi->boxmax_fds[1])continue;
+    if(xyzcenter[2]<meshi->boxmin_fds[2]||xyzcenter[2]>meshi->boxmax_fds[2])continue;
     for(j=0;j<meshi->nbptrs;j++){
       blockagedata *bc;
       float *xyzEXACT;
