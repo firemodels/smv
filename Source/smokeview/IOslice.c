@@ -1537,7 +1537,7 @@ char *GetMSliceDir(multislicedata *mslicei){
     if(slicei->idir==0){
       return slicei->cdir;
     }
-    delta = meshi->dcell3[slicei->idir-1];
+    delta = meshi->dcell3_smv[slicei->idir-1];
     if(i==0||delta<deltamin){
       if(i==0){
         deltamin = delta;

@@ -268,10 +268,10 @@ int GetCellindex(float *xyz, meshdata **mesh_tryptr){
     }
     boxmin = meshi->boxmin_fds;
     boxmax = meshi->boxmax_fds;
-    dbox = meshi->dbox;
+    dbox   = meshi->dbox_fds;
     if(boxmin[0] <= xyz[0] && xyz[0] <= boxmax[0] &&
-      boxmin[1] <= xyz[1] && xyz[1] <= boxmax[1] &&
-      boxmin[2] <= xyz[2] && xyz[2] <= boxmax[2]){
+       boxmin[1] <= xyz[1] && xyz[1] <= boxmax[1] &&
+       boxmin[2] <= xyz[2] && xyz[2] <= boxmax[2]){
       int nx, ny, nxy, ijk;
       int ix, iy, iz;
       int ibar, jbar, kbar;

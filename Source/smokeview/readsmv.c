@@ -1507,18 +1507,18 @@ void UpdateMeshCoords(void){
     }
 
     meshi->boxoffset=-(zplt[1]-zplt[0])/10.0;
-    meshi->dbox[0]=meshi->boxmax_fds[0]-meshi->boxmin_fds[0];
-    meshi->dbox[1]=meshi->boxmax_fds[1]-meshi->boxmin_fds[1];
-    meshi->dbox[2]=meshi->boxmax_fds[2]-meshi->boxmin_fds[2];
-    meshi->boxmiddle_fds[0] = meshi->boxmin_fds[0]+meshi->dbox[0]/2.0;
-    meshi->boxmiddle_fds[1] = meshi->boxmin_fds[1]+meshi->dbox[1]/2.0;
-    meshi->boxmiddle_fds[2] = meshi->boxmin_fds[2]+meshi->dbox[2]/2.0;
-    meshi->boxeps[0]=0.5*(xplt[ibar]-xplt[0])/(float)ibar;
-    meshi->boxeps[1]=0.5*(yplt[jbar]-yplt[0])/(float)jbar;
-    meshi->boxeps[2]=0.5*(zplt[kbar]-zplt[0])/(float)kbar;
-    meshi->dcell3[0] = xplt[1]-xplt[0];
-    meshi->dcell3[1] = yplt[1]-yplt[0];
-    meshi->dcell3[2] = zplt[1]-zplt[0];
+    meshi->dbox_fds[0]      = meshi->boxmax_fds[0]-meshi->boxmin_fds[0];
+    meshi->dbox_fds[1]      = meshi->boxmax_fds[1]-meshi->boxmin_fds[1];
+    meshi->dbox_fds[2]      = meshi->boxmax_fds[2]-meshi->boxmin_fds[2];
+    meshi->boxmiddle_fds[0] = meshi->boxmin_fds[0]+meshi->dbox_fds[0]/2.0;
+    meshi->boxmiddle_fds[1] = meshi->boxmin_fds[1]+meshi->dbox_fds[1]/2.0;
+    meshi->boxmiddle_fds[2] = meshi->boxmin_fds[2]+meshi->dbox_fds[2]/2.0;
+    meshi->boxeps_smv[0]    = 0.5*(xplt[ibar]-xplt[0])/(float)ibar;
+    meshi->boxeps_smv[1]    = 0.5*(yplt[jbar]-yplt[0])/(float)jbar;
+    meshi->boxeps_smv[2]    = 0.5*(zplt[kbar]-zplt[0])/(float)kbar;
+    meshi->dcell3_smv[0]    = xplt[1]-xplt[0];
+    meshi->dcell3_smv[1]    = yplt[1]-yplt[0];
+    meshi->dcell3_smv[2]    = zplt[1]-zplt[0];
     FDS2SMV_XYZ(meshi->boxmin_smv,meshi->boxmin_fds);
     FDS2SMV_XYZ(meshi->boxmax_smv,meshi->boxmax_fds);
     FDS2SMV_XYZ(meshi->boxmiddle_smv, meshi->boxmiddle_fds);
@@ -1531,7 +1531,7 @@ void UpdateMeshCoords(void){
     dx = xplt[1]-xplt[0];
     dy = yplt[1]-yplt[0];
     dz = zplt[1]-zplt[0];
-    meshi->dcell = sqrt(dx*dx+dy*dy+dz*dz);
+    meshi->dcell_smv = sqrt(dx*dx+dy*dy+dz*dz);
 
     dplane_min = meshi->dplane_min;
     dplane_min[0] = MIN(MIN(dx, dy), dz);

@@ -873,14 +873,14 @@ int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to){
 
   //  returns 1 if mesh_from  is 'val' of mesh_to (where val is MLEFT, MRIGHT, MFRONT, MBACK, MDOWN, MBACK )
 
-  eps = mesh_from->boxeps;
+  eps = mesh_from->boxeps_fds;
   switch(val){
   case MLEFT:
   case MRIGHT:
     if(mesh_from->jbar!=mesh_to->jbar)return 0;
     if(mesh_from->kbar!=mesh_to->kbar)return 0;
-    if(ABS(mesh_from->dbox[1]-mesh_to->dbox[1])>eps[1])return 0;
-    if(ABS(mesh_from->dbox[2]-mesh_to->dbox[2])>eps[2])return 0;
+    if(ABS(mesh_from->dbox_fds[1]-mesh_to->dbox_fds[1])>eps[1])return 0;
+    if(ABS(mesh_from->dbox_fds[2]-mesh_to->dbox_fds[2])>eps[2])return 0;
     if(ABS(mesh_from->y0-mesh_to->y0)>eps[1])return 0;
     if(ABS(mesh_from->z0-mesh_to->z0)>eps[2])return 0;
     break;
@@ -888,8 +888,8 @@ int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to){
   case MBACK:
     if(mesh_from->ibar!=mesh_to->ibar)return 0;
     if(mesh_from->kbar!=mesh_to->kbar)return 0;
-    if(ABS(mesh_from->dbox[0]-mesh_to->dbox[0])>eps[0])return 0;
-    if(ABS(mesh_from->dbox[2]-mesh_to->dbox[2])>eps[2])return 0;
+    if(ABS(mesh_from->dbox_fds[0]-mesh_to->dbox_fds[0])>eps[0])return 0;
+    if(ABS(mesh_from->dbox_fds[2]-mesh_to->dbox_fds[2])>eps[2])return 0;
     if(ABS(mesh_from->x0-mesh_to->x0)>eps[0])return 0;
     if(ABS(mesh_from->z0-mesh_to->z0)>eps[2])return 0;
     break;
@@ -897,8 +897,8 @@ int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to){
   case MUP:
     if(mesh_from->ibar!=mesh_to->ibar)return 0;
     if(mesh_from->jbar!=mesh_to->jbar)return 0;
-    if(ABS(mesh_from->dbox[0]-mesh_to->dbox[0])>eps[0])return 0;
-    if(ABS(mesh_from->dbox[1]-mesh_to->dbox[1])>eps[1])return 0;
+    if(ABS(mesh_from->dbox_fds[0]-mesh_to->dbox_fds[0])>eps[0])return 0;
+    if(ABS(mesh_from->dbox_fds[1]-mesh_to->dbox_fds[1])>eps[1])return 0;
     if(ABS(mesh_from->x0-mesh_to->x0)>eps[0])return 0;
     if(ABS(mesh_from->y0-mesh_to->y0)>eps[1])return 0;
     break;
@@ -1021,7 +1021,7 @@ int CompareSMeshes(const void *arg1, const void *arg2){
 
   meshi = *(meshdata **)arg1;
   meshj = *(meshdata **)arg2;
-  dcell = MIN(meshi->dcell, meshj->dcell)/2.0;
+  dcell = MIN(meshi->dcell_smv, meshj->dcell_smv)/2.0;
   if(meshi->z0<meshj->z0-dcell)return -1;
   if(meshi->z0>meshj->z0+dcell)return 1;
   if(meshi->y0<meshj->y0-dcell)return -1;
@@ -2452,7 +2452,7 @@ void DrawSmoke3DGPUVol(void){
     yy2 = meshi->y1;
     z1 = meshi->z0;
     z2 = meshi->z1;
-    dcell = meshi->dcell;
+    dcell = meshi->dcell_smv;
     inside = meshi->inside;
     newmesh=0;
     if(combine_meshes==1){
@@ -2501,7 +2501,7 @@ void DrawSmoke3DGPUVol(void){
         glUniform1i(GPUvol_havefire,0);
       }
       glUniform1i(GPUvol_slicetype,vr->smokeslice->slice_filetype);
-      glUniform3f(GPUvol_dcell3,meshi->dcell3[0],meshi->dcell3[1],meshi->dcell3[2]);
+      glUniform3f(GPUvol_dcell3,meshi->dcell3_smv[0],meshi->dcell3_smv[1],meshi->dcell3_smv[2]);
       glUniform1i(GPUvol_soot_density, 0);  // smokedata_local
       glUniform1i(GPUvol_fire,         1);  // firedata_local
       glUniform1i(GPUvol_smokecolormap,2);  // rgb_volsmokecolormap

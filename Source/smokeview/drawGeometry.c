@@ -1567,34 +1567,34 @@ void SetInteriorBlockages(void){
       }
       xyzDELTA = bc->xyzDELTA;
 
-      xyzDELTA[0] = bc->xmin-meshi->boxeps[0];
+      xyzDELTA[0] = bc->xmin-meshi->boxeps_smv[0];
       xyzDELTA[1] = (bc->ymin+bc->ymax)/2.0;
       xyzDELTA[2] = (bc->zmin+bc->zmax)/2.0;
 
       xyzDELTA += 3;
-      xyzDELTA[0] = bc->xmax+meshi->boxeps[0];
+      xyzDELTA[0] = bc->xmax+meshi->boxeps_smv[0];
       xyzDELTA[1] = (bc->ymin+bc->ymax)/2.0;
       xyzDELTA[2] = (bc->zmin+bc->zmax)/2.0;
 
       xyzDELTA += 3;
       xyzDELTA[0] = (bc->xmin+bc->xmax)/2.0;
-      xyzDELTA[1] = bc->ymin-meshi->boxeps[1];
+      xyzDELTA[1] = bc->ymin-meshi->boxeps_smv[1];
       xyzDELTA[2] = (bc->zmin+bc->zmax)/2.0;
 
       xyzDELTA += 3;
       xyzDELTA[0] = (bc->xmin+bc->xmax)/2.0;
-      xyzDELTA[1] = bc->ymax+meshi->boxeps[1];
+      xyzDELTA[1] = bc->ymax+meshi->boxeps_smv[1];
       xyzDELTA[2] = (bc->zmin+bc->zmax)/2.0;
 
       xyzDELTA += 3;
       xyzDELTA[0] = (bc->xmin+bc->xmax)/2.0;
       xyzDELTA[1] = (bc->ymin+bc->ymax)/2.0;
-      xyzDELTA[2] = bc->zmin-meshi->boxeps[2];
+      xyzDELTA[2] = bc->zmin-meshi->boxeps_smv[2];
 
       xyzDELTA += 3;
       xyzDELTA[0] = (bc->xmin+bc->xmax)/2.0;
       xyzDELTA[1] = (bc->ymin+bc->ymax)/2.0;
-      xyzDELTA[2] = bc->zmax+meshi->boxeps[2];
+      xyzDELTA[2] = bc->zmax+meshi->boxeps_smv[2];
     }
   }
   for(i = 0; i<global_scase.meshescoll.nmeshes; i++){
