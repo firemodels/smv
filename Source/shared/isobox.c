@@ -1798,10 +1798,12 @@ void CCIsoSurface2File(char *isofile, float *t, float *data, char *iblank,
     surface.dataflag=0;
     if(GetIsoSurface(&surface,data,NULL,(const char *)iblank,level[i],xplt,*nx,yplt,*ny,zplt,*nz)!=0){
       *error=1;
+      fclose(isostream);
       return;
     }
     if(GetNormalSurface(&surface)!=0){
       *error=1;
+      fclose(isostream);
       return;
     }
     if(CompressIsoSurface(&surface,*reduce_triangles,
@@ -1809,6 +1811,7 @@ void CCIsoSurface2File(char *isofile, float *t, float *data, char *iblank,
       yplt[0],yplt[*ny-1],
       zplt[0],zplt[*nz-1]
       )!=0){
+      fclose(isostream);
       *error=1;
       return;
     }
@@ -1852,10 +1855,12 @@ void CCIsoSurfaceT2File(char *isofile, float *t, float *data, int *data2flag, fl
     surface.dataflag=dataflag;
     if(GetIsoSurface(&surface,data,tdata,(const char *)iblank,level[i],xplt,*nx,yplt,*ny,zplt,*nz)!=0){
       *error=1;
+      fclose(isostream);
       return;
     }
     if(GetNormalSurface(&surface)!=0){
       *error=1;
+      fclose(isostream);
       return;
     }
     if(CompressIsoSurface(&surface,*reduce_triangles,
@@ -1864,6 +1869,7 @@ void CCIsoSurfaceT2File(char *isofile, float *t, float *data, int *data2flag, fl
       zplt[0],zplt[*nz-1]
       )!=0){
       *error=1;
+      fclose(isostream);
       return;
     }
 

@@ -1774,7 +1774,7 @@ int ReadPartBounds(partdata *parti,int read_bounds_arg){
 
   if(read_bounds_arg==1){
     parti->bounds_set = 1;
-    fclose(stream);
+    if(stream!=NULL)fclose(stream);
     return 0;
   }
 
