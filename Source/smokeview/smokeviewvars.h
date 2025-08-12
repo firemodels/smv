@@ -947,6 +947,7 @@ SVEXTERN int SVDECL(cullgeom_portsize,16);
 SVEXTERN int SVDECL(update_initcullgeom,1),SVDECL(cullgeom,1);
 SVEXTERN int opengl_version;
 SVEXTERN char opengl_version_label[256];
+SVEXTERN int SVDECL(cull_meshes, 1);
 
 SVEXTERN int SVDECL(usevolrender,1);
 #ifdef pp_GPU

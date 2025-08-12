@@ -2314,11 +2314,21 @@ void GetMinMaxDepth(float *min_depth, float *max_depth){
 void UpdateMeshInFrustum(void) {
   int i;
 
-  for(i = 0; i < global_scase.meshescoll.nmeshes; i++) {
-    meshdata *meshi;
+  if(cull_meshes == 0){
+    for(i = 0; i < global_scase.meshescoll.nmeshes; i++) {
+      meshdata *meshi;
 
-    meshi = global_scase.meshescoll.meshinfo + i;
-    meshi->in_frustum = MeshInFrustum(meshi);
+      meshi = global_scase.meshescoll.meshinfo + i;
+      meshi->in_frustum = MeshInFrustum(meshi);
+    }
+  }
+  else {
+    for(i = 0; i < global_scase.meshescoll.nmeshes; i++) {
+      meshdata *meshi;
+
+      meshi = global_scase.meshescoll.meshinfo + i;
+      meshi->in_frustum = MeshInFrustum(meshi);
+    }
   }
 }
 
