@@ -2705,6 +2705,7 @@ void DrawSmokeFrame(void){
     if(smoke3di->primary_file==0)continue;
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,smoke3di->blocknumber);
     smokemesh = global_scase.meshescoll.meshinfo + smoke3di->blocknumber;
+    if(smokemesh->in_frustum == 0)continue;
     if(smokemesh->datavis == 0)continue;
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
     if(smoke3d_use_skip==1){
