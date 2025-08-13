@@ -1178,9 +1178,9 @@ void UpdateMeshCoords(void){
     for(ii=0;ii<meshi->kbar+1;ii++){
       meshi->zplt_fds[ii] += meshi->offset[ZZZ];
     }
-    meshi->xcen+=meshi->offset[XXX];
-    meshi->ycen+=meshi->offset[YYY];
-    meshi->zcen+=meshi->offset[ZZZ];
+    meshi->xcen_smv+=meshi->offset[XXX];
+    meshi->ycen_smv+=meshi->offset[YYY];
+    meshi->zcen_smv+=meshi->offset[ZZZ];
   }
   for(i=1;i<global_scase.meshescoll.nmeshes;i++){
     meshdata *meshi;
@@ -1417,9 +1417,9 @@ void UpdateMeshCoords(void){
     meshi->xyzmaxdiff=MAX(MAX(meshi->xyz_bar[XXX]-meshi->xyz_bar0[XXX],meshi->xyz_bar[YYY]-meshi->xyz_bar0[YYY]),meshi->xyz_bar[ZZZ]-meshi->xyz_bar0[ZZZ]);
 
     FDS2SMV_XYZ(meshi->xyz_bar,meshi->xyz_bar);
-    meshi->xcen = FDS2SMV_X(meshi->xcen);
-    meshi->ycen = FDS2SMV_Y(meshi->ycen);
-    meshi->zcen = FDS2SMV_Z(meshi->zcen);
+    meshi->xcen_smv = FDS2SMV_X(meshi->xcen_smv);
+    meshi->ycen_smv = FDS2SMV_Y(meshi->ycen_smv);
+    meshi->zcen_smv = FDS2SMV_Z(meshi->zcen_smv);
   }
 
   for(i=0;i<global_scase.noutlineinfo;i++){
@@ -1546,9 +1546,9 @@ void UpdateMeshCoords(void){
 
     face_centers = meshi->face_centers;
     for(j=0;j<6;j++){
-      face_centers[0]=meshi->xcen;
-      face_centers[1]=meshi->ycen;
-      face_centers[2]=meshi->zcen;
+      face_centers[0]=meshi->xcen_smv;
+      face_centers[1]=meshi->ycen_smv;
+      face_centers[2]=meshi->zcen_smv;
       face_centers+=3;
     }
     face_centers = meshi->face_centers;

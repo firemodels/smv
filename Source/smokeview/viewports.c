@@ -1555,9 +1555,9 @@ void GetVolSmokeDir(float *mm){
      yy1 = meshj->y1;
       z0 = meshj->z0;
       z1 = meshj->z1;
-    xcen = meshj->xcen;
-    ycen = meshj->ycen;
-    zcen = meshj->zcen;
+    xcen = meshj->xcen_smv;
+    ycen = meshj->ycen_smv;
+    zcen = meshj->zcen_smv;
 
     *inside = 0;
     if(

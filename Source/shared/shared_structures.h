@@ -226,7 +226,7 @@ typedef struct _meshdata {
   float verts[24], eyedist;
   float slice_min[3], slice_max[3];
   float xyz_bar0[3], xyz_bar[3];
-  float xcen, ycen, zcen;
+  float xcen_smv, ycen_smv, zcen_smv;
   float face_centers[18];
   float offset[3];
   float xyzmaxdiff;

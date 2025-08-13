@@ -1113,9 +1113,9 @@ void InitMesh(meshdata *meshi){
 
   meshi->xyzmaxdiff = 1.0;
 
-  meshi->xcen = 0.5;
-  meshi->ycen = 0.5;
-  meshi->zcen = 0.5;
+  meshi->xcen_smv = 0.5;
+  meshi->ycen_smv = 0.5;
+  meshi->zcen_smv = 0.5;
 
   meshi->plotx = 1;
   meshi->ploty = 1;
@@ -5536,13 +5536,13 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
     meshi=scase->meshescoll.meshinfo;
     meshi->xyz_bar0[XXX]=scase->xbar0;
     meshi->xyz_bar[XXX] =scase->xbar;
-    meshi->xcen=(scase->xbar+scase->xbar0)/2.0;
+    meshi->xcen_smv=(scase->xbar+scase->xbar0)/2.0;
     meshi->xyz_bar0[YYY]=scase->ybar0;
     meshi->xyz_bar[YYY] =scase->ybar;
-    meshi->ycen=(scase->ybar+scase->ybar0)/2.0;
+    meshi->ycen_smv=(scase->ybar+scase->ybar0)/2.0;
     meshi->xyz_bar0[ZZZ]=scase->zbar0;
     meshi->xyz_bar[ZZZ] =scase->zbar;
-    meshi->zcen=(scase->zbar+scase->zbar0)/2.0;
+    meshi->zcen_smv=(scase->zbar+scase->zbar0)/2.0;
   }
 
   // define labels and memory for default colorbars
@@ -6967,13 +6967,13 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
     meshi=scase->meshescoll.meshinfo;
     meshi->xyz_bar0[XXX]=scase->xbar0;
     meshi->xyz_bar[XXX] =scase->xbar;
-    meshi->xcen=(scase->xbar+scase->xbar0)/2.0;
+    meshi->xcen_smv=(scase->xbar+scase->xbar0)/2.0;
     meshi->xyz_bar0[YYY]=scase->ybar0;
     meshi->xyz_bar[YYY] =scase->ybar;
-    meshi->ycen=(scase->ybar+scase->ybar0)/2.0;
+    meshi->ycen_smv=(scase->ybar+scase->ybar0)/2.0;
     meshi->xyz_bar0[ZZZ]=scase->zbar0;
     meshi->xyz_bar[ZZZ] =scase->zbar;
-    meshi->zcen=(scase->zbar+scase->zbar0)/2.0;
+    meshi->zcen_smv=(scase->zbar+scase->zbar0)/2.0;
   }
 
   if(scase->devicecoll.ndeviceinfo>0){
@@ -7557,13 +7557,13 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
       meshi->xyz_bar0[XXX]=scase->xbar0;
       meshi->xyz_bar[XXX] =scase->xbar;
-      meshi->xcen=(scase->xbar+scase->xbar0)/2.0;
+      meshi->xcen_smv=(scase->xbar+scase->xbar0)/2.0;
       meshi->xyz_bar0[YYY]=scase->ybar0;
       meshi->xyz_bar[YYY] =scase->ybar;
-      meshi->ycen =(scase->ybar+scase->ybar0)/2.0;
+      meshi->ycen_smv =(scase->ybar+scase->ybar0)/2.0;
       meshi->xyz_bar0[ZZZ]=scase->zbar0;
       meshi->xyz_bar[ZZZ] =scase->zbar;
-      meshi->zcen =(scase->zbar+scase->zbar0)/2.0;
+      meshi->zcen_smv =(scase->zbar+scase->zbar0)/2.0;
       InitBoxClipInfo(meshi->box_clipinfo,scase->xbar0,scase->xbar,scase->ybar0,scase->ybar,scase->zbar0,scase->zbar);
       if(scase->ntrnx==0){
         int nn;
