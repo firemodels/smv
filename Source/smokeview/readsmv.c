@@ -1463,7 +1463,6 @@ void UpdateMeshCoords(void){
     float *face_centers;
     float *xplt_cen_smv, *yplt_cen_smv, *zplt_cen_smv;
     int ibar, jbar, kbar;
-    float *xplt_fds, *yplt_fds, *zplt_fds;
     float *xplt_smv, *yplt_smv, *zplt_smv;
     int j,k;
     float dx, dy, dz;
@@ -1473,9 +1472,6 @@ void UpdateMeshCoords(void){
     ibar=meshi->ibar;
     jbar=meshi->jbar;
     kbar=meshi->kbar;
-    xplt_fds = meshi->xplt_fds;
-    yplt_fds = meshi->yplt_fds;
-    zplt_fds = meshi->zplt_fds;
     xplt_smv = meshi->xplt_smv;
     yplt_smv = meshi->yplt_smv;
     zplt_smv = meshi->zplt_smv;

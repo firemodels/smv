@@ -6690,7 +6690,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
   */
     if(MatchSMV(buffer,"GRID") == 1){
       meshdata *meshi;
-      float *xp, *yp, *zp;
       double *xpd, *ypd, *zpd;
       float *xp2, *yp2, *zp2;
       float *xplt_cen_smv, *yplt_cen_smv,*zplt_cen_smv;
@@ -6734,7 +6733,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       if(ibartemp<1)ibartemp=1;
       if(jbartemp<1)jbartemp=1;
       if(kbartemp<1)kbartemp=1;
-      xp=NULL; yp=NULL; zp=NULL;
       xpd = NULL; ypd = NULL; zpd = NULL;
       xp2=NULL; yp2=NULL; zp2=NULL;
       if(
