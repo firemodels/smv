@@ -92,17 +92,17 @@ int PrintJson(smv_case *scase) {
     json_object_object_add(mesh_obj, "coordinates", mesh_coordinates);
     struct json_object *mesh_dimensions = json_object_new_object();
     json_object_object_add(mesh_dimensions, "x_min",
-                           json_object_new_double(mesh->x0));
+                           json_object_new_double(mesh->boxmin_fds[0]));
     json_object_object_add(mesh_dimensions, "x_max",
-                           json_object_new_double(mesh->x1));
+                           json_object_new_double(mesh->boxmax_fds[0]));
     json_object_object_add(mesh_dimensions, "y_min",
-                           json_object_new_double(mesh->y0));
+                           json_object_new_double(mesh->boxmin_fds[1]));
     json_object_object_add(mesh_dimensions, "y_max",
-                           json_object_new_double(mesh->y1));
+                           json_object_new_double(mesh->boxmax_fds[1]));
     json_object_object_add(mesh_dimensions, "z_min",
-                           json_object_new_double(mesh->z0));
+                           json_object_new_double(mesh->boxmin_fds[2]));
     json_object_object_add(mesh_dimensions, "z_max",
-                           json_object_new_double(mesh->z1));
+                           json_object_new_double(mesh->boxmax_fds[2]));
     json_object_object_add(mesh_obj, "dimensions", mesh_dimensions);
 
     struct json_object *vents = json_object_new_array();
