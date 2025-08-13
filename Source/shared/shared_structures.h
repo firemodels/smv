@@ -214,7 +214,6 @@ typedef struct _meshdata {
   float *xvolplt_smv, *yvolplt_smv, *zvolplt_smv;
   float *xplt_cen_smv, *yplt_cen_smv, *zplt_cen_smv;
   float *xplt_fds, *yplt_fds, *zplt_fds;
-  float x0, x1, y0, y1, z0, z1;
   int drawsides[7];
   int extsides[7];   // 1 if on exterior side of a supermesh, 0 otherwise
   int is_extface[6]; // 1 if adjacent to exterior, 0 if adjacent to interior, -1 if unknown

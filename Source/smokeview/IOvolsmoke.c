@@ -881,8 +881,8 @@ int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to){
     if(mesh_from->kbar!=mesh_to->kbar)return 0;
     if(ABS(mesh_from->dbox_fds[1]-mesh_to->dbox_fds[1])>eps[1])return 0;
     if(ABS(mesh_from->dbox_fds[2]-mesh_to->dbox_fds[2])>eps[2])return 0;
-    if(ABS(mesh_from->y0-mesh_to->y0)>eps[1])return 0;
-    if(ABS(mesh_from->z0-mesh_to->z0)>eps[2])return 0;
+    if(ABS(mesh_from->boxmin_fds[1]-mesh_to->boxmin_fds[1])>eps[1])return 0;
+    if(ABS(mesh_from->boxmin_fds[2]-mesh_to->boxmin_fds[2])>eps[2])return 0;
     break;
   case MFRONT:
   case MBACK:
@@ -890,8 +890,8 @@ int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to){
     if(mesh_from->kbar!=mesh_to->kbar)return 0;
     if(ABS(mesh_from->dbox_fds[0]-mesh_to->dbox_fds[0])>eps[0])return 0;
     if(ABS(mesh_from->dbox_fds[2]-mesh_to->dbox_fds[2])>eps[2])return 0;
-    if(ABS(mesh_from->x0-mesh_to->x0)>eps[0])return 0;
-    if(ABS(mesh_from->z0-mesh_to->z0)>eps[2])return 0;
+    if(ABS(mesh_from->boxmin_fds[0]-mesh_to->boxmin_fds[0])>eps[0])return 0;
+    if(ABS(mesh_from->boxmin_fds[2]-mesh_to->boxmin_fds[2])>eps[2])return 0;
     break;
   case MDOWN:
   case MUP:
@@ -899,30 +899,30 @@ int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to){
     if(mesh_from->jbar!=mesh_to->jbar)return 0;
     if(ABS(mesh_from->dbox_fds[0]-mesh_to->dbox_fds[0])>eps[0])return 0;
     if(ABS(mesh_from->dbox_fds[1]-mesh_to->dbox_fds[1])>eps[1])return 0;
-    if(ABS(mesh_from->x0-mesh_to->x0)>eps[0])return 0;
-    if(ABS(mesh_from->y0-mesh_to->y0)>eps[1])return 0;
+    if(ABS(mesh_from->boxmin_fds[0]-mesh_to->boxmin_fds[0])>eps[0])return 0;
+    if(ABS(mesh_from->boxmin_fds[1]-mesh_to->boxmin_fds[1])>eps[1])return 0;
     break;
   default:
     break;
   }
   switch(val){
   case MLEFT:
-    if(ABS(mesh_from->x1-mesh_to->x0)<eps[0])return 1;
+    if(ABS(mesh_from->boxmax_fds[0]-mesh_to->boxmin_fds[0])<eps[0])return 1;
     break;
   case MRIGHT:
-    if(ABS(mesh_from->x0-mesh_to->x1)<eps[0])return 1;
+    if(ABS(mesh_from->boxmin_fds[0]-mesh_to->boxmax_fds[0])<eps[0])return 1;
     break;
   case MFRONT:
-    if(ABS(mesh_from->y1-mesh_to->y0)<eps[1])return 1;
+    if(ABS(mesh_from->boxmax_fds[1]-mesh_to->boxmin_fds[1])<eps[1])return 1;
     break;
   case MBACK:
-    if(ABS(mesh_from->y0-mesh_to->y1)<eps[1])return 1;
+    if(ABS(mesh_from->boxmin_fds[1]-mesh_to->boxmax_fds[1])<eps[1])return 1;
     break;
   case MDOWN:
-    if(ABS(mesh_from->z1-mesh_to->z0)<eps[2])return 1;
+    if(ABS(mesh_from->boxmax_fds[2]-mesh_to->boxmin_fds[2])<eps[2])return 1;
     break;
   case MUP:
-    if(ABS(mesh_from->z0-mesh_to->z1)<eps[2])return 1;
+    if(ABS(mesh_from->boxmin_fds[2]-mesh_to->boxmax_fds[2])<eps[2])return 1;
     break;
   default:
     break;
@@ -945,7 +945,7 @@ meshdata *GetMinMesh(void){
 
     meshi = global_scase.meshescoll.meshinfo+i;
     if(meshi->super!=NULL)continue;
-    dist2 = meshi->x0*meshi->x0+meshi->y0*meshi->y0+meshi->z0*meshi->z0;
+    dist2 = meshi->boxmin_fds[0]*meshi->boxmin_fds[0]+meshi->boxmin_fds[1]*meshi->boxmin_fds[1]+meshi->boxmin_fds[2]*meshi->boxmin_fds[2];
     if(mindist<0.0||dist2<mindist){
       mindist = dist2;
       minmesh = meshi;
@@ -1022,12 +1022,12 @@ int CompareSMeshes(const void *arg1, const void *arg2){
   meshi = *(meshdata **)arg1;
   meshj = *(meshdata **)arg2;
   dcell = MIN(meshi->dcell_smv, meshj->dcell_smv)/2.0;
-  if(meshi->z0<meshj->z0-dcell)return -1;
-  if(meshi->z0>meshj->z0+dcell)return 1;
-  if(meshi->y0<meshj->y0-dcell)return -1;
-  if(meshi->y0>meshj->y0+dcell)return 1;
-  if(meshi->x0<meshj->x0-dcell)return -1;
-  if(meshi->x0>meshj->x0+dcell)return 1;
+  if(meshi->boxmin_fds[2]<meshj->boxmin_fds[2]-dcell)return -1;
+  if(meshi->boxmin_fds[2]>meshj->boxmin_fds[2]+dcell)return 1;
+  if(meshi->boxmin_fds[1]<meshj->boxmin_fds[1]-dcell)return -1;
+  if(meshi->boxmin_fds[1]>meshj->boxmin_fds[1]+dcell)return 1;
+  if(meshi->boxmin_fds[0]<meshj->boxmin_fds[0]-dcell)return -1;
+  if(meshi->boxmin_fds[0]>meshj->boxmin_fds[0]+dcell)return 1;
   return 0;
 }
 
@@ -1695,11 +1695,11 @@ void ComputeAllSmokecolors(void){
         case XWALLMAX:
           if(iwall<0){
             smokecolor=vr->smokecolor_yz0;
-            xyz[0] = meshi->x0;
+            xyz[0] = meshi->boxmin_fds[0];
           }
           else{
             smokecolor=vr->smokecolor_yz1;
-            xyz[0] = meshi->x1;
+            xyz[0] = meshi->boxmax_fds[0];
           }
           if(vr->firedataptr==NULL||vr->smokedataptr==NULL){
             for(i=0;i<=jbar;i++){
@@ -1727,11 +1727,11 @@ void ComputeAllSmokecolors(void){
         case YWALLMAX:
           if(iwall<0){
             smokecolor=vr->smokecolor_xz0;
-            xyz[1] = meshi->y0;
+            xyz[1] = meshi->boxmin_fds[1];
           }
           else{
             smokecolor=vr->smokecolor_xz1;
-            xyz[1] = meshi->y1;
+            xyz[1] = meshi->boxmax_fds[1];
           }
           if(vr->firedataptr==NULL||vr->smokedataptr==NULL){
             for(i=0;i<=ibar;i++){
@@ -1759,11 +1759,11 @@ void ComputeAllSmokecolors(void){
         case ZWALLMAX:
           if(iwall<0){
             smokecolor=vr->smokecolor_xy0;
-            xyz[2]=meshi->z0;
+            xyz[2]=meshi->boxmin_fds[2];
           }
           else{
             smokecolor=vr->smokecolor_xy1;
-            xyz[2]=meshi->z1;
+            xyz[2]=meshi->boxmax_fds[2];
           }
           if(vr->firedataptr==NULL||vr->smokedataptr==NULL){
             for(i=0;i<=ibar;i++){
@@ -1826,11 +1826,11 @@ void DrawSmoke3dVolDebug(void){
       case XWALLMIN:
       case XWALLMAX:
         if(iwall<0){
-          x[0] = meshi->x0;
+          x[0] = meshi->boxmin_fds[0];
           x[1] = x[0];
         }
         else{
-          x[0]=meshi->x1;
+          x[0]=meshi->boxmax_fds[0];
           x[1]=x[0];
         }
         y[0] = yplt[0];
@@ -1842,11 +1842,11 @@ void DrawSmoke3dVolDebug(void){
       case YWALLMIN:
       case YWALLMAX:
         if(iwall<0){
-          y[0] = meshi->y0;
+          y[0] = meshi->boxmin_fds[1];
           y[1] = y[0];
         }
         else{
-          y[0] = meshi->y1;
+          y[0] = meshi->boxmax_fds[1];
           y[1] = y[0];
         }
         x[0] = xplt[0];
@@ -1858,11 +1858,11 @@ void DrawSmoke3dVolDebug(void){
       case ZWALLMIN:
       case ZWALLMAX:
         if(iwall<0){
-          z[0] = meshi->z0;
+          z[0] = meshi->boxmin_fds[2];
           z[1] = z[0];
         }
         else{
-          z[0] = meshi->z1;
+          z[0] = meshi->boxmax_fds[2];
           z[1] = z[0];
         }
         x[0] = xplt[0];
@@ -1903,11 +1903,11 @@ void DrawSmoke3dVolDebug(void){
       case XWALLMIN:
       case XWALLMAX:
         if(iwall<0){
-          x[0] = meshi->x0;
+          x[0] = meshi->boxmin_fds[0];
           glColor3f(1.0,0.0,0.0);
         }
         else{
-          x[0]=meshi->x1;
+          x[0]=meshi->boxmax_fds[0];
           glColor3f(0.0,0.0,1.0);
         }
         y[0] = yplt[0];
@@ -1922,11 +1922,11 @@ void DrawSmoke3dVolDebug(void){
       case YWALLMIN:
       case YWALLMAX:
         if(iwall<0){
-          y[0] = meshi->y0;
+          y[0] = meshi->boxmin_fds[1];
           glColor3f(1.0,0.0,0.0);
         }
         else{
-          y[0] = meshi->y1;
+          y[0] = meshi->boxmax_fds[1];
           glColor3f(0.0,0.0,1.0);
         }
         x[0] = xplt[0];
@@ -1941,11 +1941,11 @@ void DrawSmoke3dVolDebug(void){
       case ZWALLMIN:
       case ZWALLMAX:
         if(iwall<0){
-          z[0] = meshi->z0;
+          z[0] = meshi->boxmin_fds[2];
           glColor3f(1.0,0.0,0.0);
         }
         else{
-          z[0] = meshi->z1;
+          z[0] = meshi->boxmax_fds[2];
           glColor3f(0.0,0.0,1.0);
         }
         x[0] = xplt[0];
@@ -2070,11 +2070,11 @@ void DrawSmoke3DVol(void){
       case XWALLMIN:
       case XWALLMAX:
         if(iwall<0){
-          xx = meshi->x0;
+          xx = meshi->boxmin_fds[0];
           smokecolor_base = vr->smokecolor_yz0;
         }
         else{
-          xx=meshi->x1;
+          xx=meshi->boxmax_fds[0];
           smokecolor_base = vr->smokecolor_yz1;
         }
         n00 = 0;
@@ -2148,11 +2148,11 @@ void DrawSmoke3DVol(void){
         zindex[3] = 1;
         if(iwall<0){
           smokecolor_base = vr->smokecolor_xz0;
-          yy=meshi->y0;
+          yy=meshi->boxmin_fds[1];
         }
         else{
           smokecolor_base = vr->smokecolor_xz1;
-          yy=meshi->y1;
+          yy=meshi->boxmax_fds[1];
         }
         for(i=0;i<ibar;i++){
           x[0] = xplt[i];
@@ -2209,11 +2209,11 @@ void DrawSmoke3DVol(void){
         yindex[3] = 1;
        if(iwall<0){
           smokecolor_base = vr->smokecolor_xy0;
-          zz=meshi->z0;
+          zz=meshi->boxmin_fds[2];
         }
         else{
           smokecolor_base = vr->smokecolor_xy1;
-          zz=meshi->z1;
+          zz=meshi->boxmax_fds[2];
         }
         for(i=0;i<ibar;i++){
           x[0] = xplt[i];
@@ -2437,21 +2437,21 @@ void DrawSmoke3DGPUVol(void){
     // define parameters for smoke drawing
 
     if(iwall<0){
-      xx = meshi->x0;
-      yy = meshi->y0;
-      zz = meshi->z0;
+      xx = meshi->boxmin_fds[0];
+      yy = meshi->boxmin_fds[1];
+      zz = meshi->boxmin_fds[2];
     }
     else{
-      xx = meshi->x1;
-      yy = meshi->y1;
-      zz = meshi->z1;
+      xx = meshi->boxmax_fds[0];
+      yy = meshi->boxmax_fds[1];
+      zz = meshi->boxmax_fds[2];
     }
-    x1 = meshi->x0;
-    x2 = meshi->x1;
-    yy1 = meshi->y0;
-    yy2 = meshi->y1;
-    z1 = meshi->z0;
-    z2 = meshi->z1;
+    x1 = meshi->boxmin_fds[0];
+    x2 = meshi->boxmax_fds[0];
+    yy1 = meshi->boxmin_fds[1];
+    yy2 = meshi->boxmax_fds[1];
+    z1 = meshi->boxmin_fds[2];
+    z2 = meshi->boxmax_fds[2];
     dcell = meshi->dcell_smv;
     inside = meshi->inside;
     newmesh=0;

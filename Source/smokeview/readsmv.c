@@ -1521,12 +1521,6 @@ void UpdateMeshCoords(void){
     FDS2SMV_XYZ(meshi->boxmin_smv,meshi->boxmin_fds);
     FDS2SMV_XYZ(meshi->boxmax_smv,meshi->boxmax_fds);
     FDS2SMV_XYZ(meshi->boxmiddle_smv, meshi->boxmiddle_fds);
-    meshi->x0 = xplt_smv[0];
-    meshi->x1 = xplt_smv[ibar];
-    meshi->y0 = yplt_smv[0];
-    meshi->y1 = yplt_smv[jbar];
-    meshi->z0 = zplt_smv[0];
-    meshi->z1 = zplt_smv[kbar];
     dx = xplt_smv[1]-xplt_smv[0];
     dy = yplt_smv[1]-yplt_smv[0];
     dz = zplt_smv[1]-zplt_smv[0];
