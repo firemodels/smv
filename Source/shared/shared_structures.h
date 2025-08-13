@@ -211,7 +211,7 @@ typedef struct _meshdata {
   float *xplt_smv, *yplt_smv, *zplt_smv;
   double *xpltd, *ypltd, *zpltd;
   int ivolbar, jvolbar, kvolbar;
-  float *xvolplt, *yvolplt, *zvolplt;
+  float *xvolplt_smv, *yvolplt_smv, *zvolplt_smv;
   float *xplt_cen_smv, *yplt_cen_smv, *zplt_cen_smv;
   float *xplt_fds, *yplt_fds, *zplt_fds;
   float x0, x1, y0, y1, z0, z1;

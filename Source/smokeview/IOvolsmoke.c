@@ -705,23 +705,23 @@ void InitVolRenderSurface(int flag){
     meshi->ivolbar=meshi->ibar*nongpu_vol_factor;
     meshi->jvolbar=meshi->jbar*nongpu_vol_factor;
     meshi->kvolbar=meshi->kbar*nongpu_vol_factor;
-    FREEMEMORY(meshi->xvolplt);
-    FREEMEMORY(meshi->yvolplt);
-    FREEMEMORY(meshi->zvolplt);
-    NewMemory((void **)&meshi->xvolplt,(meshi->ivolbar+1)*sizeof(float));
-    NewMemory((void **)&meshi->yvolplt,(meshi->jvolbar+1)*sizeof(float));
-    NewMemory((void **)&meshi->zvolplt,(meshi->kvolbar+1)*sizeof(float));
+    FREEMEMORY(meshi->xvolplt_smv);
+    FREEMEMORY(meshi->yvolplt_smv);
+    FREEMEMORY(meshi->zvolplt_smv);
+    NewMemory((void **)&meshi->xvolplt_smv,(meshi->ivolbar+1)*sizeof(float));
+    NewMemory((void **)&meshi->yvolplt_smv,(meshi->jvolbar+1)*sizeof(float));
+    NewMemory((void **)&meshi->zvolplt_smv,(meshi->kvolbar+1)*sizeof(float));
     dx=(meshi->xplt_smv[meshi->ibar]-meshi->xplt_smv[0])/(float)meshi->ivolbar;
     dy=(meshi->yplt_smv[meshi->jbar]-meshi->yplt_smv[0])/(float)meshi->jvolbar;
     dz=(meshi->zplt_smv[meshi->kbar]-meshi->zplt_smv[0])/(float)meshi->kvolbar;
     for(ii=0;ii<=meshi->ivolbar;ii++){
-      meshi->xvolplt[ii]=meshi->xplt_smv[0]+(float)ii*dx;
+      meshi->xvolplt_smv[ii]=meshi->xplt_smv[0]+(float)ii*dx;
     }
     for(ii=0;ii<=meshi->jvolbar;ii++){
-      meshi->yvolplt[ii]=meshi->yplt_smv[0]+(float)ii*dy;
+      meshi->yvolplt_smv[ii]=meshi->yplt_smv[0]+(float)ii*dy;
     }
     for(ii=0;ii<=meshi->kvolbar;ii++){
-      meshi->zvolplt[ii]=meshi->zplt_smv[0]+(float)ii*dz;
+      meshi->zvolplt_smv[ii]=meshi->zplt_smv[0]+(float)ii*dz;
     }
   }
   ijkbarmax=0;
@@ -1672,9 +1672,9 @@ void ComputeAllSmokecolors(void){
     vr = meshi->volrenderinfo;
     if(vr->loaded==0||vr->display==0)continue;
 
-    x = meshi->xvolplt;
-    y = meshi->yvolplt;
-    z = meshi->zvolplt;
+    x = meshi->xvolplt_smv;
+    y = meshi->yvolplt_smv;
+    z = meshi->zvolplt_smv;
     ibar = meshi->ivolbar;
     jbar = meshi->jvolbar;
     kbar = meshi->kvolbar;
@@ -2052,9 +2052,9 @@ void DrawSmoke3DVol(void){
     iwall=vi->iwall;
     meshi = vi->facemesh;
     if(meshvisptr[meshi-global_scase.meshescoll.meshinfo]==0)continue;
-    xplt = meshi->xvolplt;
-    yplt = meshi->yvolplt;
-    zplt = meshi->zvolplt;
+    xplt = meshi->xvolplt_smv;
+    yplt = meshi->yvolplt_smv;
+    zplt = meshi->zvolplt_smv;
     ibar = meshi->ivolbar;
     jbar = meshi->jvolbar;
     kbar = meshi->kvolbar;

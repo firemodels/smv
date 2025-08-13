@@ -1075,9 +1075,9 @@ void InitMesh(meshdata *meshi){
   meshi->xplt_smv = NULL;
   meshi->yplt_smv = NULL;
   meshi->zplt_smv = NULL;
-  meshi->xvolplt = NULL;
-  meshi->yvolplt = NULL;
-  meshi->zvolplt = NULL;
+  meshi->xvolplt_smv = NULL;
+  meshi->yvolplt_smv = NULL;
+  meshi->zvolplt_smv = NULL;
   meshi->xplt_cen_smv = NULL;
   meshi->yplt_cen_smv = NULL;
   meshi->zplt_cen_smv = NULL;
