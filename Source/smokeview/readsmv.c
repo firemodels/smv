@@ -998,15 +998,15 @@ void UpdateMeshBoxBounds(void){
 
     // xplt, yplt, zplt has original coordinates because this routine is called before UpdateMeshCoords
     meshi = global_scase.meshescoll.meshinfo+i;
-    meshi->boxmin_fds[0] = meshi->xplt_smv[0];
-    meshi->boxmin_fds[1] = meshi->yplt_smv[0];
-    meshi->boxmin_fds[2] = meshi->zplt_smv[0];
-    meshi->boxmax_fds[0] = meshi->xplt_smv[meshi->ibar];
-    meshi->boxmax_fds[1] = meshi->yplt_smv[meshi->jbar];
-    meshi->boxmax_fds[2] = meshi->zplt_smv[meshi->kbar];
-    meshi->boxeps_fds[0] = (meshi->xplt_smv[1] - meshi->xplt_smv[0]) / 2.0;
-    meshi->boxeps_fds[1] = (meshi->yplt_smv[1] - meshi->yplt_smv[0]) / 2.0;
-    meshi->boxeps_fds[2] = (meshi->zplt_smv[1] - meshi->zplt_smv[0]) / 2.0;
+    meshi->boxmin_fds[0] = meshi->xplt_fds[0];
+    meshi->boxmin_fds[1] = meshi->yplt_fds[0];
+    meshi->boxmin_fds[2] = meshi->zplt_fds[0];
+    meshi->boxmax_fds[0] = meshi->xplt_fds[meshi->ibar];
+    meshi->boxmax_fds[1] = meshi->yplt_fds[meshi->jbar];
+    meshi->boxmax_fds[2] = meshi->zplt_fds[meshi->kbar];
+    meshi->boxeps_fds[0] = (meshi->xplt_fds[1] - meshi->xplt_fds[0]) / 2.0;
+    meshi->boxeps_fds[1] = (meshi->yplt_fds[1] - meshi->yplt_fds[0]) / 2.0;
+    meshi->boxeps_fds[2] = (meshi->zplt_fds[1] - meshi->zplt_fds[0]) / 2.0;
   }
 }
 
@@ -1170,13 +1170,13 @@ void UpdateMeshCoords(void){
       meshi->cellsize=sqrt(dx*dx+dy*dy+dz*dz);
     }
     for(ii=0;ii<meshi->ibar+1;ii++){
-      meshi->xplt_smv[ii] += meshi->offset[XXX];
+      meshi->xplt_fds[ii] += meshi->offset[XXX];
     }
     for(ii=0;ii<meshi->jbar+1;ii++){
-      meshi->yplt_smv[ii] += meshi->offset[YYY];
+      meshi->yplt_fds[ii] += meshi->offset[YYY];
     }
     for(ii=0;ii<meshi->kbar+1;ii++){
-      meshi->zplt_smv[ii] += meshi->offset[ZZZ];
+      meshi->zplt_fds[ii] += meshi->offset[ZZZ];
     }
     meshi->xcen+=meshi->offset[XXX];
     meshi->ycen+=meshi->offset[YYY];
@@ -1398,7 +1398,7 @@ void UpdateMeshCoords(void){
   global_scase.zbar = FDS2SMV_Z(global_scase.zbar);
 
   float outline_offset;
-  outline_offset = (global_scase.meshescoll.meshinfo->zplt_smv[1] - global_scase.meshescoll.meshinfo->zplt_smv[0]) / 10.0;
+  outline_offset = (global_scase.meshescoll.meshinfo->zplt_fds[1] - global_scase.meshescoll.meshinfo->zplt_fds[0]) / 10.0;
   if(global_scase.is_terrain_case==1){
     geom_dz_offset = outline_offset;
     geom_norm_offset = 0.0;
@@ -1444,15 +1444,15 @@ void UpdateMeshCoords(void){
     }
   }
 
-  min_gridcell_size=global_scase.meshescoll.meshinfo->xplt_smv[1]-global_scase.meshescoll.meshinfo->xplt_smv[0];
+  min_gridcell_size=global_scase.meshescoll.meshinfo->xplt_fds[1]-global_scase.meshescoll.meshinfo->xplt_fds[0];
   for(i=0;i<global_scase.meshescoll.nmeshes;i++){
     float dx, dy, dz;
     meshdata *meshi;
 
     meshi=global_scase.meshescoll.meshinfo+i;
-    dx = meshi->xplt_smv[1] - meshi->xplt_smv[0];
-    dy = meshi->yplt_smv[1] - meshi->yplt_smv[0];
-    dz = meshi->zplt_smv[1] - meshi->zplt_smv[0];
+    dx = meshi->xplt_fds[1] - meshi->xplt_fds[0];
+    dy = meshi->yplt_fds[1] - meshi->yplt_fds[0];
+    dz = meshi->zplt_fds[1] - meshi->zplt_fds[0];
     min_gridcell_size=MIN(dx,min_gridcell_size);
     min_gridcell_size=MIN(dy,min_gridcell_size);
     min_gridcell_size=MIN(dz,min_gridcell_size);
@@ -1483,16 +1483,19 @@ void UpdateMeshCoords(void){
     yplt_cen_smv = meshi->yplt_cen_smv;
     zplt_cen_smv = meshi->zplt_cen_smv;
 
+    NewMemory((void **)&xplt_smv, sizeof(float)*(ibar + 1));
+    meshi->xplt_smv = xplt_smv;
     for(i=0;i<ibar+1;i++){
-      xplt_fds[i]=xplt_smv[i];
       xplt_smv[i]=FDS2SMV_X(meshi->xpltd_fds[i]);
     }
-    for(j=0;j<jbar+1;j++){
-      yplt_fds[j]=yplt_smv[j];
+    NewMemory((void **)&yplt_smv, sizeof(float)*(jbar + 1));
+    meshi->yplt_smv = yplt_smv;
+    for(j = 0; j < jbar + 1; j++) {
       yplt_smv[j]=FDS2SMV_Y(meshi->ypltd_fds[j]);
     }
-    for(k=0;k<kbar+1;k++){
-      zplt_fds[k]=zplt_smv[k];
+    NewMemory((void **)&zplt_smv, sizeof(float)*(kbar + 1));
+    meshi->zplt_smv = zplt_smv;
+    for(k = 0; k < kbar + 1; k++) {
       zplt_smv[k]=FDS2SMV_Z(meshi->zpltd_fds[k]);
     }
 

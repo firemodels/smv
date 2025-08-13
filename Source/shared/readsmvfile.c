@@ -6738,9 +6738,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       xpd = NULL; ypd = NULL; zpd = NULL;
       xp2=NULL; yp2=NULL; zp2=NULL;
       if(
-         NewMemory((void **)&xp,sizeof(float)*(ibartemp+1))==0||
-         NewMemory((void **)&yp,sizeof(float)*(jbartemp+1))==0||
-         NewMemory((void **)&zp,sizeof(float)*(kbartemp+1))==0||
          NewMemory((void **)&xpd, sizeof(double)*(ibartemp + 1)) == 0 ||
          NewMemory((void **)&ypd, sizeof(double)*(jbartemp + 1)) == 0 ||
          NewMemory((void **)&zpd, sizeof(double)*(kbartemp + 1)) == 0 ||
@@ -6757,9 +6754,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         NewMemory((void **)&kmap, sizeof(int) * (kbartemp + 1)) == 0
         )return 2;
       if(scase->meshescoll.meshinfo!=NULL){
-        meshi->xplt_smv=xp;
-        meshi->yplt_smv=yp;
-        meshi->zplt_smv=zp;
         meshi->xpltd_fds = xpd;
         meshi->ypltd_fds = ypd;
         meshi->zpltd_fds = zpd;
@@ -7608,7 +7602,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       int nn;
 
       itrnx++;
-      xpltcopy=scase->meshescoll.meshinfo[itrnx-1].xplt_smv;
+      xpltcopy=scase->meshescoll.meshinfo[itrnx-1].xplt_fds;
       xpltdcopy=scase->meshescoll.meshinfo[itrnx - 1].xpltd_fds;
       ibartemp=scase->meshescoll.meshinfo[itrnx-1].ibar;
       FGETS(buffer,255,stream);
@@ -7635,7 +7629,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       int nn;
 
       itrny++;
-      ypltcopy=scase->meshescoll.meshinfo[itrny-1].yplt_smv;
+      ypltcopy=scase->meshescoll.meshinfo[itrny-1].yplt_fds;
       ypltdcopy = scase->meshescoll.meshinfo[itrny - 1].ypltd_fds;
       jbartemp=scase->meshescoll.meshinfo[itrny-1].jbar;
       FGETS(buffer,255,stream);
@@ -7662,7 +7656,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       int nn;
 
       itrnz++;
-      zpltcopy=scase->meshescoll.meshinfo[itrnz-1].zplt_smv;
+      zpltcopy=scase->meshescoll.meshinfo[itrnz-1].zplt_fds;
       zpltdcopy=scase->meshescoll.meshinfo[itrnz - 1].zpltd_fds;
       kbartemp=scase->meshescoll.meshinfo[itrnz-1].kbar;
       FGETS(buffer,255,stream);
@@ -8251,9 +8245,9 @@ typedef struct {
 
       ivent++;
       meshi=scase->meshescoll.meshinfo+ivent-1;
-      xplttemp=meshi->xplt_smv;
-      yplttemp=meshi->yplt_smv;
-      zplttemp=meshi->zplt_smv;
+      xplttemp=meshi->xplt_fds;
+      yplttemp=meshi->yplt_fds;
+      zplttemp=meshi->zplt_fds;
       if(scase->nVENT==0){
         strcpy(buffer,"0 0");
         scase->nVENT=1;
