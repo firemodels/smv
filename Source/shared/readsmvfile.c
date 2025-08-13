@@ -1072,9 +1072,9 @@ void InitMesh(meshdata *meshi){
   meshi->face_textures = NULL;
   meshi->face_outlines = NULL;
 
-  meshi->xplt = NULL;
-  meshi->yplt = NULL;
-  meshi->zplt = NULL;
+  meshi->xplt_smv = NULL;
+  meshi->yplt_smv = NULL;
+  meshi->zplt_smv = NULL;
   meshi->xvolplt = NULL;
   meshi->yvolplt = NULL;
   meshi->zvolplt = NULL;
@@ -6757,9 +6757,9 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         NewMemory((void **)&kmap, sizeof(int) * (kbartemp + 1)) == 0
         )return 2;
       if(scase->meshescoll.meshinfo!=NULL){
-        meshi->xplt=xp;
-        meshi->yplt=yp;
-        meshi->zplt=zp;
+        meshi->xplt_smv=xp;
+        meshi->yplt_smv=yp;
+        meshi->zplt_smv=zp;
         meshi->xpltd = xpd;
         meshi->ypltd = ypd;
         meshi->zpltd = zpd;
@@ -6953,9 +6953,9 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       zp[nn]=scase->zbar0+(float)nn*(scase->zbar-scase->zbar0)/(float)kbartemp;
     }
     meshi=scase->meshescoll.meshinfo;
-    meshi->xplt=xp;
-    meshi->yplt=yp;
-    meshi->zplt=zp;
+    meshi->xplt_smv=xp;
+    meshi->yplt_smv=yp;
+    meshi->zplt_smv=zp;
     meshi->xplt_cen=xplt_cen;
     meshi->yplt_cen=yplt_cen;
     meshi->zplt_cen=zplt_cen;
@@ -7577,21 +7577,21 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         int nn;
 
         for(nn = 0; nn<=meshi->ibar; nn++){
-          meshi->xplt[nn] = scase->xbar0+(float)nn*(scase->xbar-scase->xbar0)/(float)meshi->ibar;
+          meshi->xplt_smv[nn] = scase->xbar0+(float)nn*(scase->xbar-scase->xbar0)/(float)meshi->ibar;
         }
       }
       if(scase->ntrny==0){
         int nn;
 
         for(nn = 0; nn<=meshi->jbar; nn++){
-          meshi->yplt[nn] = scase->ybar0+(float)nn*(scase->ybar-scase->ybar0)/(float)meshi->jbar;
+          meshi->yplt_smv[nn] = scase->ybar0+(float)nn*(scase->ybar-scase->ybar0)/(float)meshi->jbar;
         }
       }
       if(scase->ntrnz==0){
         int nn;
 
         for(nn = 0; nn<=meshi->kbar; nn++){
-          meshi->zplt[nn]=scase->zbar0+(float)nn*(scase->zbar-scase->zbar0)/(float)meshi->kbar;
+          meshi->zplt_smv[nn]=scase->zbar0+(float)nn*(scase->zbar-scase->zbar0)/(float)meshi->kbar;
         }
       }
       continue;
@@ -7608,7 +7608,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       int nn;
 
       itrnx++;
-      xpltcopy=scase->meshescoll.meshinfo[itrnx-1].xplt;
+      xpltcopy=scase->meshescoll.meshinfo[itrnx-1].xplt_smv;
       xpltdcopy=scase->meshescoll.meshinfo[itrnx - 1].xpltd;
       ibartemp=scase->meshescoll.meshinfo[itrnx-1].ibar;
       FGETS(buffer,255,stream);
@@ -7635,7 +7635,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       int nn;
 
       itrny++;
-      ypltcopy=scase->meshescoll.meshinfo[itrny-1].yplt;
+      ypltcopy=scase->meshescoll.meshinfo[itrny-1].yplt_smv;
       ypltdcopy = scase->meshescoll.meshinfo[itrny - 1].ypltd;
       jbartemp=scase->meshescoll.meshinfo[itrny-1].jbar;
       FGETS(buffer,255,stream);
@@ -7662,7 +7662,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       int nn;
 
       itrnz++;
-      zpltcopy=scase->meshescoll.meshinfo[itrnz-1].zplt;
+      zpltcopy=scase->meshescoll.meshinfo[itrnz-1].zplt_smv;
       zpltdcopy=scase->meshescoll.meshinfo[itrnz - 1].zpltd;
       kbartemp=scase->meshescoll.meshinfo[itrnz-1].kbar;
       FGETS(buffer,255,stream);
@@ -8251,9 +8251,9 @@ typedef struct {
 
       ivent++;
       meshi=scase->meshescoll.meshinfo+ivent-1;
-      xplttemp=meshi->xplt;
-      yplttemp=meshi->yplt;
-      zplttemp=meshi->zplt;
+      xplttemp=meshi->xplt_smv;
+      yplttemp=meshi->yplt_smv;
+      zplttemp=meshi->zplt_smv;
       if(scase->nVENT==0){
         strcpy(buffer,"0 0");
         scase->nVENT=1;

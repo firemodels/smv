@@ -2413,9 +2413,9 @@ void GetSliceParams(sliceparmdata *sp){
       float *xplt, *yplt, *zplt;
       float *xyz_min, *xyz_max;
 
-      xplt = meshi->xplt;
-      yplt = meshi->yplt;
-      zplt = meshi->zplt;
+      xplt = meshi->xplt_smv;
+      yplt = meshi->yplt_smv;
+      zplt = meshi->zplt_smv;
       sd->xmin = xplt[sd->is1];
       sd->xmax = xplt[sd->is2];
       sd->ymin = yplt[sd->js1];
@@ -2859,9 +2859,9 @@ void UpdateSliceContours(int slice_type_index, float line_min, float line_max, i
     }
     meshi = global_scase.meshescoll.meshinfo + sd->blocknumber;
 
-    xplt=meshi->xplt;
-    yplt=meshi->yplt;
-    zplt=meshi->zplt;
+    xplt=meshi->xplt_smv;
+    yplt=meshi->yplt_smv;
+    zplt=meshi->zplt_smv;
     ibar=meshi->ibar;
     jbar=meshi->jbar;
     kbar=meshi->kbar;
@@ -4087,9 +4087,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     that it does not "interfere" with an adjacent block */
 
     blocknumber = global_scase.slicecoll.sliceinfo[ifile].blocknumber;
-    xplt_local = global_scase.meshescoll.meshinfo[blocknumber].xplt;
-    yplt_local = global_scase.meshescoll.meshinfo[blocknumber].yplt;
-    zplt_local = global_scase.meshescoll.meshinfo[blocknumber].zplt;
+    xplt_local = global_scase.meshescoll.meshinfo[blocknumber].xplt_smv;
+    yplt_local = global_scase.meshescoll.meshinfo[blocknumber].yplt_smv;
+    zplt_local = global_scase.meshescoll.meshinfo[blocknumber].zplt_smv;
 
     xslicemid = (xplt_local[sd->is1] + xplt_local[sd->is2]) / 2.0;
     yslicemid = (yplt_local[sd->js1] + yplt_local[sd->js2]) / 2.0;
@@ -4547,9 +4547,9 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int is1, int is2, int js1, 
     valmax = 1.0;
   }
 
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   if(sd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
     ploty = meshi->iploty_all[iploty_all];
@@ -4782,9 +4782,9 @@ void DrawVolSliceValues(slicedata *sd){
   float *rgb_ptr;
 
   meshi = global_scase.meshescoll.meshinfo + sd->blocknumber;
-  xplttemp = meshi->xplt;
-  yplttemp = meshi->yplt;
-  zplttemp = meshi->zplt;
+  xplttemp = meshi->xplt_smv;
+  yplttemp = meshi->yplt_smv;
+  zplttemp = meshi->zplt_smv;
 
   if(sd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
@@ -4953,9 +4953,9 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd){
 
   meshi = global_scase.meshescoll.meshinfo + sd->blocknumber;
 
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   if(sd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
     ploty = meshi->iploty_all[iploty_all];
@@ -5310,9 +5310,9 @@ void DrawVolAllSlicesTextureDiag(const slicedata *sd, int direction){
   if(sd->volslice == 1 && visx_all == 0 && visy_all == 0 && visz_all == 0)return;
   meshi = global_scase.meshescoll.meshinfo+sd->blocknumber;
 
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   ibar = meshi->ibar;
   jbar = meshi->jbar;
   c_iblank_x = meshi->c_iblank_x;
@@ -5507,9 +5507,9 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
   if(sd->volslice == 1 && visx_all == 0 && visy_all == 0 && visz_all == 0)return;
   meshi = global_scase.meshescoll.meshinfo + sd->blocknumber;
 
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   if(sd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
     if(plotx>=0)plotx = CLAMP(plotx, sd->iis1, sd->iis2);
@@ -5837,9 +5837,9 @@ void DrawVolSliceLines(const slicedata *sd){
     valmin = 0.0;
     valmax = 1.0;
   }
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   if(sd->volslice==1){
     plotx = meshi->iplotx_all[iplotx_all];
     ploty = meshi->iploty_all[iploty_all];
@@ -6174,9 +6174,9 @@ void DrawVolSliceVerts(const slicedata *sd){
     valmin = 0.0;
     valmax = 1.0;
   }
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   if(sd->volslice==1){
     plotx = meshi->iplotx_all[iplotx_all];
     ploty = meshi->iploty_all[iploty_all];
@@ -6466,9 +6466,9 @@ void ComputeOpacityCorrections(meshdata *meshi, float *xyz0, float *normal){
   nx = meshi->ibar+1;
   ny = meshi->jbar+1;
   nz = meshi->kbar+1;
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   opacity_adjustments = meshi->opacity_adjustments;
   if(opacity_adjustments==NULL){
     NewMemory((void **)&opacity_adjustments, nx*ny*nz*sizeof(float));
@@ -7317,9 +7317,9 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
   sd = global_scase.slicecoll.sliceinfo + vd->ival;
   meshi = global_scase.meshescoll.meshinfo + sd->blocknumber;
-  xplttemp = meshi->xplt;
-  yplttemp = meshi->yplt;
-  zplttemp = meshi->zplt;
+  xplttemp = meshi->xplt_smv;
+  yplttemp = meshi->yplt_smv;
+  zplttemp = meshi->zplt_smv;
   if(vd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
     ploty = meshi->iploty_all[iploty_all];
@@ -7986,9 +7986,9 @@ void DrawVVolSlice(const vslicedata *vd){
 
   sd = global_scase.slicecoll.sliceinfo + vd->ival;
   meshi = global_scase.meshescoll.meshinfo + sd->blocknumber;
-  xplttemp = meshi->xplt;
-  yplttemp = meshi->yplt;
-  zplttemp = meshi->zplt;
+  xplttemp = meshi->xplt_smv;
+  yplttemp = meshi->yplt_smv;
+  zplttemp = meshi->zplt_smv;
 
   float valmin, valmax;
 
@@ -8967,12 +8967,12 @@ int CompareSortSlices(const void *arg1, const void *arg2){
   s2 = *(splitslicedata **)arg2;
   m1 = s1->mesh;
   m2 = s2->mesh;
-  x1 = m1->xplt;
-  y1 = m1->yplt;
-  z1 = m1->zplt;
-  x2 = m2->xplt;
-  y2 = m2->yplt;
-  z2 = m2->zplt;
+  x1 = m1->xplt_smv;
+  y1 = m1->yplt_smv;
+  z1 = m1->zplt_smv;
+  x2 = m2->xplt_smv;
+  y2 = m2->yplt_smv;
+  z2 = m2->zplt_smv;
   float dx1, dy1, dz1;
   float dx2, dy2, dz2;
 

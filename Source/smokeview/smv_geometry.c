@@ -348,30 +348,30 @@ void UpdatePlotxyzAll(void){
 
     meshi = global_scase.meshescoll.meshinfo + i;
     for(j=0;j<meshi->ibar+1;j++){
-      *xp++ = meshi->xplt[j];
+      *xp++ = meshi->xplt_smv[j];
     }
     for(j=0;j<meshi->jbar+1;j++){
-      *yp++ = meshi->yplt[j];
+      *yp++ = meshi->yplt_smv[j];
     }
     for(j=0;j<meshi->kbar+1;j++){
-      *zp++ = meshi->zplt[j];
+      *zp++ = meshi->zplt_smv[j];
     }
     for(j=1;j<meshi->ibar+1;j++){
       float dxyz;
 
-      dxyz = meshi->xplt[j]-meshi->xplt[j-1];
+      dxyz = meshi->xplt_smv[j]-meshi->xplt_smv[j-1];
       dxyz_min = MIN(dxyz_min,dxyz);
     }
     for(j=1;j<meshi->jbar+1;j++){
       float dxyz;
 
-      dxyz = meshi->yplt[j]-meshi->yplt[j-1];
+      dxyz = meshi->yplt_smv[j]-meshi->yplt_smv[j-1];
       dxyz_min = MIN(dxyz_min,dxyz);
     }
     for(j=1;j<meshi->kbar+1;j++){
       float dxyz;
 
-      dxyz = meshi->zplt[j]-meshi->zplt[j-1];
+      dxyz = meshi->zplt_smv[j]-meshi->zplt_smv[j-1];
       dxyz_min = MIN(dxyz_min,dxyz);
     }
   }
@@ -394,7 +394,7 @@ void UpdatePlotxyzAll(void){
 
       meshi->iplotx_all[j]=-1;
       val = plotx_all[j];
-        ival = ClosestNodeIndex(val,meshi->xplt,meshi->ibar+1);
+      ival = ClosestNodeIndex(val,meshi->xplt_smv,meshi->ibar+1);
       if(ival<0)continue;
       meshi->iplotx_all[j]=ival;
     }
@@ -404,7 +404,7 @@ void UpdatePlotxyzAll(void){
 
       meshi->iploty_all[j]=-1;
       val = ploty_all[j];
-      ival = ClosestNodeIndex(val,meshi->yplt,meshi->jbar+1);
+      ival = ClosestNodeIndex(val,meshi->yplt_smv,meshi->jbar+1);
       if(ival<0)continue;
       meshi->iploty_all[j]=ival;
     }
@@ -414,7 +414,7 @@ void UpdatePlotxyzAll(void){
 
       meshi->iplotz_all[j]=-1;
       val = plotz_all[j];
-      ival = ClosestNodeIndex(val,meshi->zplt,meshi->kbar+1);
+      ival = ClosestNodeIndex(val,meshi->zplt_smv,meshi->kbar+1);
       if(ival<0)continue;
       meshi->iplotz_all[j]=ival;
     }
@@ -424,7 +424,7 @@ void UpdatePlotxyzAll(void){
     int ival;
 
     meshi = global_scase.meshescoll.meshinfo+i;
-    ival = ClosestNodeIndex(global_scase.xbar/2.0, meshi->xplt, meshi->ibar+1);
+    ival = ClosestNodeIndex(global_scase.xbar/2.0, meshi->xplt_smv, meshi->ibar+1);
     if(ival<0)continue;
     iplotx_all = ival;
   }
@@ -433,7 +433,7 @@ void UpdatePlotxyzAll(void){
     int ival;
 
     meshi = global_scase.meshescoll.meshinfo+i;
-    ival = ClosestNodeIndex(global_scase.ybar/2.0, meshi->yplt, meshi->jbar+1);
+    ival = ClosestNodeIndex(global_scase.ybar/2.0, meshi->yplt_smv, meshi->jbar+1);
     if(ival<0)continue;
     iploty_all = ival;
   }
@@ -442,7 +442,7 @@ void UpdatePlotxyzAll(void){
     int ival;
 
     meshi = global_scase.meshescoll.meshinfo+i;
-    ival = ClosestNodeIndex(global_scase.zbar/2.0, meshi->zplt, meshi->kbar+1);
+    ival = ClosestNodeIndex(global_scase.zbar/2.0, meshi->zplt_smv, meshi->kbar+1);
     if(ival<0)continue;
     iplotz_all = ival;
   }

@@ -268,9 +268,9 @@ int NodeInBlockage(const meshdata *meshnode, int i, int j, int k, int *imesh, in
   int ii;
   float xn, yn, zn;
 
-  xn   = meshnode->xplt[i];
-  yn   = meshnode->yplt[j];
-  zn   = meshnode->zplt[k];
+  xn   = meshnode->xplt_smv[i];
+  yn   = meshnode->yplt_smv[j];
+  zn   = meshnode->zplt_smv[k];
 
   *imesh = -1;
 
@@ -289,9 +289,9 @@ int NodeInBlockage(const meshdata *meshnode, int i, int j, int k, int *imesh, in
     meshii = global_scase.meshescoll.meshinfo + ii;
     if(meshnode == meshii)continue;
 
-    xplt = meshii->xplt;
-    yplt = meshii->yplt;
-    zplt = meshii->zplt;
+    xplt = meshii->xplt_smv;
+    yplt = meshii->yplt_smv;
+    zplt = meshii->zplt_smv;
 
     float obst_eps;
     obst_eps = (xplt[1] - xplt[0])/2.0;
@@ -1455,9 +1455,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
   patchi->extreme_max=0;
   patchi->extreme_min=0;
-  xplttemp=meshi->xplt;
-  yplttemp=meshi->yplt;
-  zplttemp=meshi->zplt;
+  xplttemp=meshi->xplt_smv;
+  yplttemp=meshi->yplt_smv;
+  zplttemp=meshi->zplt_smv;
   do_threshold=0;
 
   if(activate_threshold==1){
@@ -1610,37 +1610,37 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     dyy = 0.0;
     dzz = 0.0;
 
-    ig_factor_x = ABS(meshi->xplt[1] - meshi->xplt[0]) / 10.0;
-    ig_factor_y = ABS(meshi->yplt[1] - meshi->yplt[0]) / 10.0;
-    ig_factor_z = ABS(meshi->zplt[1] - meshi->zplt[0]) / 10.0;
+    ig_factor_x = ABS(meshi->xplt_smv[1] - meshi->xplt_smv[0]) / 10.0;
+    ig_factor_y = ABS(meshi->yplt_smv[1] - meshi->yplt_smv[0]) / 10.0;
+    ig_factor_z = ABS(meshi->zplt_smv[1] - meshi->zplt_smv[0]) / 10.0;
     block_factor_x = ig_factor_x;
     block_factor_y = ig_factor_y;
     block_factor_z = ig_factor_z;
 
     switch(pfi->dir){
     case XDIRNEG:
-      dxx  = -meshi->xplt[1]*ig_factor_x;
-      dxx2 = -meshi->xplt[1]*block_factor_x;
+      dxx  = -meshi->xplt_smv[1]*ig_factor_x;
+      dxx2 = -meshi->xplt_smv[1]*block_factor_x;
       break;
     case XDIR:
-      dxx  =  meshi->xplt[1]*ig_factor_x;
-      dxx2 =  meshi->xplt[1]*block_factor_x;
+      dxx  =  meshi->xplt_smv[1]*ig_factor_x;
+      dxx2 =  meshi->xplt_smv[1]*block_factor_x;
       break;
     case YDIRNEG:
-      dyy  =  meshi->yplt[1]*ig_factor_y;
-      dyy2 =  meshi->yplt[1]*block_factor_y;
+      dyy  =  meshi->yplt_smv[1]*ig_factor_y;
+      dyy2 =  meshi->yplt_smv[1]*block_factor_y;
       break;
     case YDIR:
-      dyy  = -meshi->yplt[1]*ig_factor_y;
-      dyy2 = -meshi->yplt[1]*block_factor_y;
+      dyy  = -meshi->yplt_smv[1]*ig_factor_y;
+      dyy2 = -meshi->yplt_smv[1]*block_factor_y;
       break;
     case ZDIRNEG:
-      dzz  = -meshi->zplt[1]*ig_factor_z;
-      dzz2 = -meshi->zplt[1]*block_factor_z;
+      dzz  = -meshi->zplt_smv[1]*ig_factor_z;
+      dzz2 = -meshi->zplt_smv[1]*block_factor_z;
       break;
     case ZDIR:
-      dzz  =  meshi->zplt[1]*ig_factor_z;
-      dzz2 =  meshi->zplt[1]*block_factor_z;
+      dzz  =  meshi->zplt_smv[1]*ig_factor_z;
+      dzz2 =  meshi->zplt_smv[1]*block_factor_z;
       break;
     default:
       assert(FFALSE);
@@ -1674,20 +1674,20 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
           int j;
 
           if(k==k1){
-            dz_factor=-meshi->zplt[1]*ig_factor_z;
+            dz_factor=-meshi->zplt_smv[1]*ig_factor_z;
           }
           else if(k==k2){
-            dz_factor=meshi->zplt[1]*ig_factor_z;
+            dz_factor=meshi->zplt_smv[1]*ig_factor_z;
           }
           else{
             dz_factor=0.0;
           }
           for(j=j1;j<=j2;j++){
             if(j==j1){
-              dy_factor=-meshi->yplt[1]*ig_factor_y;
+              dy_factor=-meshi->yplt_smv[1]*ig_factor_y;
             }
             else if(j==j2){
-              dy_factor=meshi->yplt[1]*ig_factor_y;
+              dy_factor=meshi->yplt_smv[1]*ig_factor_y;
             }
             else{
               dy_factor=0.0;
@@ -1716,20 +1716,20 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
           int j;
 
           if(k==k1){
-            dz_factor=-meshi->zplt[1]*ig_factor_z;
+            dz_factor=-meshi->zplt_smv[1]*ig_factor_z;
           }
           else if(k==k2){
-            dz_factor=meshi->zplt[1]*ig_factor_z;
+            dz_factor=meshi->zplt_smv[1]*ig_factor_z;
           }
           else{
             dz_factor=0.0;
           }
           for(j=j1;j<=j2;j++){
             if(j==j1){
-              dy_factor=-meshi->yplt[1]*ig_factor_y;
+              dy_factor=-meshi->yplt_smv[1]*ig_factor_y;
             }
             else if(j==j2){
-              dy_factor=meshi->yplt[1]*ig_factor_y;
+              dy_factor=meshi->yplt_smv[1]*ig_factor_y;
             }
             else{
               dy_factor=0.0;
@@ -1776,20 +1776,20 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
           int i;
 
           if(k==k1){
-            dz_factor=-meshi->zplt[1]*ig_factor_z;
+            dz_factor=-meshi->zplt_smv[1]*ig_factor_z;
           }
           else if(k==k2){
-            dz_factor=meshi->zplt[1]*ig_factor_z;
+            dz_factor=meshi->zplt_smv[1]*ig_factor_z;
           }
           else{
             dz_factor=0.0;
           }
           for(i = i1;i <= i2;i++){
             if(i == i1){
-              dx_factor = -meshi->xplt[1] * ig_factor_x;
+              dx_factor = -meshi->xplt_smv[1] * ig_factor_x;
             }
             else if(i == i2){
-              dx_factor = meshi->xplt[1] * ig_factor_x;
+              dx_factor = meshi->xplt_smv[1] * ig_factor_x;
             }
             else{
               dx_factor = 0.0;
@@ -1817,20 +1817,20 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
           int i;
 
           if(k==k1){
-            dz_factor=-meshi->zplt[1]*ig_factor_z;
+            dz_factor=-meshi->zplt_smv[1]*ig_factor_z;
           }
           else if(k==k2){
-            dz_factor=meshi->zplt[1]*ig_factor_z;
+            dz_factor=meshi->zplt_smv[1]*ig_factor_z;
           }
           else{
             dz_factor=0.0;
           }
           for(i=i1;i<=i2;i++){
             if(i==i1){
-              dx_factor=-meshi->xplt[1]*ig_factor_x;
+              dx_factor=-meshi->xplt_smv[1]*ig_factor_x;
             }
             else if(i==i2){
-              dx_factor=meshi->xplt[1]*ig_factor_x;
+              dx_factor=meshi->xplt_smv[1]*ig_factor_x;
             }
             else{
               dx_factor=0.0;
@@ -1877,20 +1877,20 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
           int i;
 
           if(j==j1){
-            dy_factor=-meshi->yplt[1]*ig_factor_y;
+            dy_factor=-meshi->yplt_smv[1]*ig_factor_y;
           }
           else if(j==j2){
-            dy_factor=meshi->yplt[1]*ig_factor_y;
+            dy_factor=meshi->yplt_smv[1]*ig_factor_y;
           }
           else{
             dy_factor=0.0;
           }
           for(i=i1;i<=i2;i++){
             if(i==i1){
-              dx_factor=-meshi->xplt[1]*ig_factor_x;
+              dx_factor=-meshi->xplt_smv[1]*ig_factor_x;
             }
             else if(i==i2){
-              dx_factor=meshi->xplt[1]*ig_factor_x;
+              dx_factor=meshi->xplt_smv[1]*ig_factor_x;
             }
             else{
               dx_factor=0.0;
@@ -1919,20 +1919,20 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
           int i;
 
           if(j==j1){
-            dy_factor=-meshi->yplt[1]*ig_factor_y;
+            dy_factor=-meshi->yplt_smv[1]*ig_factor_y;
           }
           else if(j==j2){
-            dy_factor=meshi->yplt[1]*ig_factor_y;
+            dy_factor=meshi->yplt_smv[1]*ig_factor_y;
           }
           else{
             dy_factor=0.0;
           }
           for(i=i1;i<=i2;i++){
             if(i==i1){
-              dx_factor=-meshi->xplt[1]*ig_factor_x;
+              dx_factor=-meshi->xplt_smv[1]*ig_factor_x;
             }
             else if(i==i2){
-              dx_factor=meshi->xplt[1]*ig_factor_x;
+              dx_factor=meshi->xplt_smv[1]*ig_factor_x;
             }
             else{
               dx_factor=0.0;
@@ -2616,9 +2616,9 @@ void DrawBoundaryTexture(const meshdata *meshi){
     float *xplt, *yplt, *zplt;
     float dx, dy, dz;
 
-    xplt = global_scase.meshescoll.meshinfo->zplt;
-    yplt = global_scase.meshescoll.meshinfo->yplt;
-    zplt = global_scase.meshescoll.meshinfo->zplt;
+    xplt = global_scase.meshescoll.meshinfo->zplt_smv;
+    yplt = global_scase.meshescoll.meshinfo->yplt_smv;
+    zplt = global_scase.meshescoll.meshinfo->zplt_smv;
     dx = xplt[1] - xplt[0];
     dy = yplt[1] - yplt[0];
     dz = zplt[1] - zplt[0];
@@ -4095,9 +4095,9 @@ void GetBoundaryParams(void){
     ijk = patchi->ijk;
     meshi = global_scase.meshescoll.meshinfo + patchi->blocknumber;
 
-    xplt = meshi->xplt;
-    yplt = meshi->yplt;
-    zplt = meshi->zplt;
+    xplt = meshi->xplt_smv;
+    yplt = meshi->yplt_smv;
+    zplt = meshi->zplt_smv;
 
     xyz_min[0] = xplt[ijk[0]];
     xyz_min[1] = yplt[ijk[2]];

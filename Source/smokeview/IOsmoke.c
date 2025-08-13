@@ -435,9 +435,9 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
     znode_offset = meshi->terrain->znode_offset;
   }
 
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   alphaf_in = smoke3di->smokeframe_in;
 
   is1 = smoke3di->is1;
@@ -1415,9 +1415,9 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
     znode_offset = meshi->terrain->znode_offset;
   }
 
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   iblank_smoke3d = meshi->iblank_smoke3d;
   alphaf_out = smoke3di->smokeframe_out;
 
@@ -4312,9 +4312,9 @@ int InMeshSmoke(float x, float y, float z, int nm, int flag){
     if(flag==ALLMESHES&&i==nm)continue;
     if(meshi->iblank_smoke3d==NULL)continue;
 
-    if(x<meshi->xplt[0]||x>meshi->xplt[meshi->ibar])continue;
-    if(y<meshi->yplt[0]||y>meshi->yplt[meshi->jbar])continue;
-    if(z<meshi->zplt[0]||z>meshi->zplt[meshi->kbar])continue;
+    if(x<meshi->xplt_smv[0]||x>meshi->xplt_smv[meshi->ibar])continue;
+    if(y<meshi->yplt_smv[0]||y>meshi->yplt_smv[meshi->jbar])continue;
+    if(z<meshi->zplt_smv[0]||z>meshi->zplt_smv[meshi->kbar])continue;
     return i;
   }
   return -1;
@@ -4364,9 +4364,9 @@ void MakeIBlankSmoke3D(void){
     if(iblank_smoke3d==NULL)continue;
     mesh_smoke3d->iblank_smoke3d_defined = 1;
 
-    xplt=mesh_smoke3d->xplt;
-    yplt=mesh_smoke3d->yplt;
-    zplt=mesh_smoke3d->zplt;
+    xplt=mesh_smoke3d->xplt_smv;
+    yplt=mesh_smoke3d->yplt_smv;
+    zplt=mesh_smoke3d->zplt_smv;
     dx = xplt[1]-xplt[0];
     dy = yplt[1]-yplt[0];
     dz = zplt[1]-zplt[0];

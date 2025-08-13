@@ -773,9 +773,9 @@ void UpdateVentOffset(void){
     meshdata *meshi;
 
     meshi = global_scase.meshescoll.meshinfo + i;
-    meshi->vent_offset[XXX] = ventoffset_factor*(meshi->xplt[1] - meshi->xplt[0]);
-    meshi->vent_offset[YYY] = ventoffset_factor*(meshi->yplt[1] - meshi->yplt[0]);
-    meshi->vent_offset[ZZZ] = ventoffset_factor*(meshi->zplt[1] - meshi->zplt[0]);
+    meshi->vent_offset[XXX] = ventoffset_factor*(meshi->xplt_smv[1] - meshi->xplt_smv[0]);
+    meshi->vent_offset[YYY] = ventoffset_factor*(meshi->yplt_smv[1] - meshi->yplt_smv[0]);
+    meshi->vent_offset[ZZZ] = ventoffset_factor*(meshi->zplt_smv[1] - meshi->zplt_smv[0]);
   }
 }
 
@@ -998,15 +998,15 @@ void UpdateMeshBoxBounds(void){
 
     // xplt, yplt, zplt has original coordinates because this routine is called before UpdateMeshCoords
     meshi = global_scase.meshescoll.meshinfo+i;
-    meshi->boxmin_fds[0] = meshi->xplt[0];
-    meshi->boxmin_fds[1] = meshi->yplt[0];
-    meshi->boxmin_fds[2] = meshi->zplt[0];
-    meshi->boxmax_fds[0] = meshi->xplt[meshi->ibar];
-    meshi->boxmax_fds[1] = meshi->yplt[meshi->jbar];
-    meshi->boxmax_fds[2] = meshi->zplt[meshi->kbar];
-    meshi->boxeps_fds[0] = (meshi->xplt[1] - meshi->xplt[0]) / 2.0;
-    meshi->boxeps_fds[1] = (meshi->yplt[1] - meshi->yplt[0]) / 2.0;
-    meshi->boxeps_fds[2] = (meshi->zplt[1] - meshi->zplt[0]) / 2.0;
+    meshi->boxmin_fds[0] = meshi->xplt_smv[0];
+    meshi->boxmin_fds[1] = meshi->yplt_smv[0];
+    meshi->boxmin_fds[2] = meshi->zplt_smv[0];
+    meshi->boxmax_fds[0] = meshi->xplt_smv[meshi->ibar];
+    meshi->boxmax_fds[1] = meshi->yplt_smv[meshi->jbar];
+    meshi->boxmax_fds[2] = meshi->zplt_smv[meshi->kbar];
+    meshi->boxeps_fds[0] = (meshi->xplt_smv[1] - meshi->xplt_smv[0]) / 2.0;
+    meshi->boxeps_fds[1] = (meshi->yplt_smv[1] - meshi->yplt_smv[0]) / 2.0;
+    meshi->boxeps_fds[2] = (meshi->zplt_smv[1] - meshi->zplt_smv[0]) / 2.0;
   }
 }
 
@@ -1136,13 +1136,13 @@ void UpdateMeshCoords(void){
   if(current_mesh == NULL)current_mesh = global_scase.meshescoll.meshinfo;
   if(global_scase.setPDIM==0&&current_mesh!=NULL){
     for(nn=0;nn<=current_mesh->ibar;nn++){
-      current_mesh->xplt[nn]=global_scase.xbar0+(float)nn*(global_scase.xbar-global_scase.xbar0)/(float)current_mesh->ibar;
+      current_mesh->xplt_smv[nn]=global_scase.xbar0+(float)nn*(global_scase.xbar-global_scase.xbar0)/(float)current_mesh->ibar;
     }
     for(nn=0;nn<=current_mesh->jbar;nn++){
-      current_mesh->yplt[nn]=global_scase.ybar0+(float)nn*(global_scase.ybar-global_scase.ybar0)/(float)current_mesh->jbar;
+      current_mesh->yplt_smv[nn]=global_scase.ybar0+(float)nn*(global_scase.ybar-global_scase.ybar0)/(float)current_mesh->jbar;
     }
     for(nn=0;nn<=current_mesh->kbar;nn++){
-      current_mesh->zplt[nn]=global_scase.zbar0+(float)nn*(global_scase.zbar-global_scase.zbar0)/(float)current_mesh->kbar;
+      current_mesh->zplt_smv[nn]=global_scase.zbar0+(float)nn*(global_scase.zbar-global_scase.zbar0)/(float)current_mesh->kbar;
     }
   }
 
@@ -1170,13 +1170,13 @@ void UpdateMeshCoords(void){
       meshi->cellsize=sqrt(dx*dx+dy*dy+dz*dz);
     }
     for(ii=0;ii<meshi->ibar+1;ii++){
-      meshi->xplt[ii] += meshi->offset[XXX];
+      meshi->xplt_smv[ii] += meshi->offset[XXX];
     }
     for(ii=0;ii<meshi->jbar+1;ii++){
-      meshi->yplt[ii] += meshi->offset[YYY];
+      meshi->yplt_smv[ii] += meshi->offset[YYY];
     }
     for(ii=0;ii<meshi->kbar+1;ii++){
-      meshi->zplt[ii] += meshi->offset[ZZZ];
+      meshi->zplt_smv[ii] += meshi->offset[ZZZ];
     }
     meshi->xcen+=meshi->offset[XXX];
     meshi->ycen+=meshi->offset[YYY];
@@ -1398,7 +1398,7 @@ void UpdateMeshCoords(void){
   global_scase.zbar = FDS2SMV_Z(global_scase.zbar);
 
   float outline_offset;
-  outline_offset = (global_scase.meshescoll.meshinfo->zplt[1] - global_scase.meshescoll.meshinfo->zplt[0]) / 10.0;
+  outline_offset = (global_scase.meshescoll.meshinfo->zplt_smv[1] - global_scase.meshescoll.meshinfo->zplt_smv[0]) / 10.0;
   if(global_scase.is_terrain_case==1){
     geom_dz_offset = outline_offset;
     geom_norm_offset = 0.0;
@@ -1444,15 +1444,15 @@ void UpdateMeshCoords(void){
     }
   }
 
-  min_gridcell_size=global_scase.meshescoll.meshinfo->xplt[1]-global_scase.meshescoll.meshinfo->xplt[0];
+  min_gridcell_size=global_scase.meshescoll.meshinfo->xplt_smv[1]-global_scase.meshescoll.meshinfo->xplt_smv[0];
   for(i=0;i<global_scase.meshescoll.nmeshes;i++){
     float dx, dy, dz;
     meshdata *meshi;
 
     meshi=global_scase.meshescoll.meshinfo+i;
-    dx = meshi->xplt[1] - meshi->xplt[0];
-    dy = meshi->yplt[1] - meshi->yplt[0];
-    dz = meshi->zplt[1] - meshi->zplt[0];
+    dx = meshi->xplt_smv[1] - meshi->xplt_smv[0];
+    dy = meshi->yplt_smv[1] - meshi->yplt_smv[0];
+    dz = meshi->zplt_smv[1] - meshi->zplt_smv[0];
     min_gridcell_size=MIN(dx,min_gridcell_size);
     min_gridcell_size=MIN(dy,min_gridcell_size);
     min_gridcell_size=MIN(dz,min_gridcell_size);
@@ -1476,9 +1476,9 @@ void UpdateMeshCoords(void){
     xplt_fds = meshi->xplt_fds;
     yplt_fds = meshi->yplt_fds;
     zplt_fds = meshi->zplt_fds;
-    xplt = meshi->xplt;
-    yplt = meshi->yplt;
-    zplt = meshi->zplt;
+    xplt = meshi->xplt_smv;
+    yplt = meshi->yplt_smv;
+    zplt = meshi->zplt_smv;
     xplt_cen = meshi->xplt_cen;
     yplt_cen = meshi->yplt_cen;
     zplt_cen = meshi->zplt_cen;

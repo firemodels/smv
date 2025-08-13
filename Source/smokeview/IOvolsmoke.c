@@ -556,9 +556,9 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
 
   if(slicetype==SLICE_NODE_CENTER){
     // check this
-    xplt = meshi->xplt;
-    yplt = meshi->yplt;
-    zplt = meshi->zplt;
+    xplt = meshi->xplt_smv;
+    yplt = meshi->yplt_smv;
+    zplt = meshi->zplt_smv;
   }
   else{
     xplt = meshi->xplt_cen;
@@ -711,17 +711,17 @@ void InitVolRenderSurface(int flag){
     NewMemory((void **)&meshi->xvolplt,(meshi->ivolbar+1)*sizeof(float));
     NewMemory((void **)&meshi->yvolplt,(meshi->jvolbar+1)*sizeof(float));
     NewMemory((void **)&meshi->zvolplt,(meshi->kvolbar+1)*sizeof(float));
-    dx=(meshi->xplt[meshi->ibar]-meshi->xplt[0])/(float)meshi->ivolbar;
-    dy=(meshi->yplt[meshi->jbar]-meshi->yplt[0])/(float)meshi->jvolbar;
-    dz=(meshi->zplt[meshi->kbar]-meshi->zplt[0])/(float)meshi->kvolbar;
+    dx=(meshi->xplt_smv[meshi->ibar]-meshi->xplt_smv[0])/(float)meshi->ivolbar;
+    dy=(meshi->yplt_smv[meshi->jbar]-meshi->yplt_smv[0])/(float)meshi->jvolbar;
+    dz=(meshi->zplt_smv[meshi->kbar]-meshi->zplt_smv[0])/(float)meshi->kvolbar;
     for(ii=0;ii<=meshi->ivolbar;ii++){
-      meshi->xvolplt[ii]=meshi->xplt[0]+(float)ii*dx;
+      meshi->xvolplt[ii]=meshi->xplt_smv[0]+(float)ii*dx;
     }
     for(ii=0;ii<=meshi->jvolbar;ii++){
-      meshi->yvolplt[ii]=meshi->yplt[0]+(float)ii*dy;
+      meshi->yvolplt[ii]=meshi->yplt_smv[0]+(float)ii*dy;
     }
     for(ii=0;ii<=meshi->kvolbar;ii++){
-      meshi->zvolplt[ii]=meshi->zplt[0]+(float)ii*dz;
+      meshi->zvolplt[ii]=meshi->zplt_smv[0]+(float)ii*dz;
     }
   }
   ijkbarmax=0;
@@ -1814,9 +1814,9 @@ void DrawSmoke3dVolDebug(void){
     sprintf(label,"*** %i %2.1f ***",ii,vi->dist2);
     iwall=vi->iwall;
     meshi = vi->facemesh;
-    xplt = meshi->xplt;
-    yplt = meshi->yplt;
-    zplt = meshi->zplt;
+    xplt = meshi->xplt_smv;
+    yplt = meshi->yplt_smv;
+    zplt = meshi->zplt_smv;
     ibar = meshi->ibar;
     jbar = meshi->jbar;
     kbar = meshi->kbar;
@@ -1891,9 +1891,9 @@ void DrawSmoke3dVolDebug(void){
     vi = volfacelistinfoptrs[ii];
     iwall=vi->iwall;
     meshi = vi->facemesh;
-    xplt = meshi->xplt;
-    yplt = meshi->yplt;
-    zplt = meshi->zplt;
+    xplt = meshi->xplt_smv;
+    yplt = meshi->yplt_smv;
+    zplt = meshi->zplt_smv;
     ibar = meshi->ibar;
     jbar = meshi->jbar;
     kbar = meshi->kbar;

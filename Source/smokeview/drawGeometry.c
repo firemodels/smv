@@ -34,9 +34,9 @@ void DrawCircVentsApproxSolid(int option){
     float dx, dy, dz, dxyz;
 
     meshi = global_scase.meshescoll.meshinfo + i;
-    xplt = meshi->xplt;
-    yplt = meshi->yplt;
-    zplt = meshi->zplt;
+    xplt = meshi->xplt_smv;
+    yplt = meshi->yplt_smv;
+    zplt = meshi->zplt_smv;
     dx = xplt[1] - xplt[0];
     dy = yplt[1] - yplt[0];
     dz = zplt[1] - zplt[0];
@@ -187,9 +187,9 @@ void DrawCircVentsApproxOutline(int option){
     float dx, dy, dz, dxyz;
 
     meshi = global_scase.meshescoll.meshinfo + i;
-    xplt = meshi->xplt;
-    yplt = meshi->yplt;
-    zplt = meshi->zplt;
+    xplt = meshi->xplt_smv;
+    yplt = meshi->yplt_smv;
+    zplt = meshi->zplt_smv;
 
     dx = xplt[1] - xplt[0];
     dy = yplt[1] - yplt[0];
@@ -1321,9 +1321,9 @@ void SetVentDirs(void){
     jbar = meshi->jbar;
     kbar = meshi->kbar;
     c_iblank = meshi->c_iblank_cell;
-    xplttemp=meshi->xplt;
-    yplttemp=meshi->yplt;
-    zplttemp=meshi->zplt;
+    xplttemp=meshi->xplt_smv;
+    yplttemp=meshi->yplt_smv;
+    zplttemp=meshi->zplt_smv;
 
     for(iv=0;iv<meshi->nvents+12;iv++){
       ventdata *vi;
@@ -1513,9 +1513,9 @@ int InBlockage(const meshdata *meshi,float x, float y, float z){
   int i;
   float *xplt, *yplt, *zplt;
 
-  xplt=meshi->xplt;
-  yplt=meshi->yplt;
-  zplt=meshi->zplt;
+  xplt=meshi->xplt_smv;
+  yplt=meshi->yplt_smv;
+  zplt=meshi->zplt_smv;
 
   for(i=0;i<meshi->nbptrs;i++){
     blockagedata *bc;
@@ -1947,9 +1947,9 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
 
   assert((bc==NULL&&vi!=NULL)||(bc!=NULL&&vi==NULL));
 
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   assert((bc!=NULL&&vi==NULL)||(bc==NULL&&vi!=NULL));
   if(bc!=NULL){
     jend=6;
