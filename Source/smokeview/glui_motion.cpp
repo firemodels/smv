@@ -1779,9 +1779,9 @@ extern "C" void GLUIUpdateRotationIndex(int val){
     meshdata *meshi;
 
     meshi = global_scase.meshescoll.meshinfo + *rotation_index;
-    camera_current->xcen=meshi->xcen;
-    camera_current->ycen=meshi->ycen;
-    camera_current->zcen=meshi->zcen;
+    camera_current->xcen=meshi->xcen_smv;
+    camera_current->ycen=meshi->ycen_smv;
+    camera_current->zcen=meshi->zcen_smv;
   }
   else{
     if(custom_worldcenter==0){

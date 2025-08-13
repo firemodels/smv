@@ -589,9 +589,9 @@ void DrawPlot3dTexture(meshdata *meshi){
   ibar = meshi->ibar;
   jbar = meshi->jbar;
   kbar = meshi->kbar;
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   c_iblank_x = meshi->c_iblank_x;
   c_iblank_y = meshi->c_iblank_y;
   c_iblank_z = meshi->c_iblank_z;
@@ -1018,9 +1018,9 @@ void UpdateSurface(void){
     jbar=meshi->jbar;
     kbar=meshi->kbar;
     plot3dsize=(ibar+1)*(jbar+1)*(kbar+1);
-    xplt=meshi->xplt;
-    yplt=meshi->yplt;
-    zplt=meshi->zplt;
+    xplt=meshi->xplt_smv;
+    yplt=meshi->yplt_smv;
+    zplt=meshi->zplt_smv;
     iblank_cell=meshi->c_iblank_cell;
 
     currentsurfptr = meshi->currentsurf;
@@ -1085,15 +1085,15 @@ int GetPlot3dIndex(meshdata *meshi, int dir, float val){
 
   switch(dir){
     case XDIR:
-      xyz = meshi->xplt_orig;
+      xyz = meshi->xplt_fds;
       nvals = meshi->ibar;
       break;
     case YDIR:
-      xyz = meshi->yplt_orig;
+      xyz = meshi->yplt_fds;
       nvals = meshi->jbar;
       break;
     case ZDIR:
-      xyz = meshi->zplt_orig;
+      xyz = meshi->zplt_fds;
       nvals = meshi->kbar;
       break;
     default:
@@ -1122,9 +1122,9 @@ void UpdatePlotXYZ(meshdata *current_mesh_local){
   int i;
   float xval, yval, zval;
 
-  xval = current_mesh_local->xplt[current_mesh_local->plotx];
-  yval = current_mesh_local->yplt[current_mesh_local->ploty];
-  zval = current_mesh_local->zplt[current_mesh_local->plotz];
+  xval = current_mesh_local->xplt_smv[current_mesh_local->plotx];
+  yval = current_mesh_local->yplt_smv[current_mesh_local->ploty];
+  zval = current_mesh_local->zplt_smv[current_mesh_local->plotz];
 
   for(i=0;i<global_scase.meshescoll.nmeshes;i++){
     meshdata *meshi;
@@ -1135,20 +1135,20 @@ void UpdatePlotXYZ(meshdata *current_mesh_local){
     meshi=global_scase.meshescoll.meshinfo+i;
     if(meshi==current_mesh_local)continue;
 
-    xmin = meshi->xplt[0];
-    xmax = meshi->xplt[meshi->ibar];
+    xmin = meshi->xplt_smv[0];
+    xmax = meshi->xplt_smv[meshi->ibar];
     if(xmin<=xval&&xval<=xmax){
       int j;
       int iimin;
       float xxmin,xxdif;
 
       iimin=0;
-      xxdif = xval - meshi->xplt[0];
+      xxdif = xval - meshi->xplt_smv[0];
       if(xxdif<0)xxdif=-xxdif;
       xxmin = xxdif;
 
       for(j=1;j<=meshi->ibar;j++){
-        xxdif = xval - meshi->xplt[j];
+        xxdif = xval - meshi->xplt_smv[j];
         if(xxdif<0)xxdif=-xxdif;
         if(xxdif<xxmin){
           xxmin=xxdif;
@@ -1158,20 +1158,20 @@ void UpdatePlotXYZ(meshdata *current_mesh_local){
       meshi->plotx=iimin;
     }
 
-    ymin = meshi->yplt[0];
-    ymax = meshi->yplt[meshi->jbar];
+    ymin = meshi->yplt_smv[0];
+    ymax = meshi->yplt_smv[meshi->jbar];
     if(ymin<=yval&&yval<=ymax){
       int j;
       int iimin;
       float yymin,yydif;
 
       iimin=0;
-      yydif = yval - meshi->yplt[0];
+      yydif = yval - meshi->yplt_smv[0];
       if(yydif<0)yydif=-yydif;
       yymin = yydif;
 
       for(j=1;j<=meshi->jbar;j++){
-        yydif = yval - meshi->yplt[j];
+        yydif = yval - meshi->yplt_smv[j];
         if(yydif<0)yydif=-yydif;
         if(yydif<yymin){
           yymin=yydif;
@@ -1181,20 +1181,20 @@ void UpdatePlotXYZ(meshdata *current_mesh_local){
       meshi->ploty=iimin;
     }
 
-    zmin = meshi->zplt[0];
-    zmax = meshi->zplt[meshi->kbar];
+    zmin = meshi->zplt_smv[0];
+    zmax = meshi->zplt_smv[meshi->kbar];
     if(zmin<=zval&&zval<=zmax){
       int j;
       int iimin;
       float zzmin,zzdif;
 
       iimin=0;
-      zzdif = zval - meshi->zplt[0];
+      zzdif = zval - meshi->zplt_smv[0];
       if(zzdif<0)zzdif=-zzdif;
       zzmin = zzdif;
 
       for(j=1;j<=meshi->kbar;j++){
-        zzdif = zval - meshi->zplt[j];
+        zzdif = zval - meshi->zplt_smv[j];
         if(zzdif<0)zzdif=-zzdif;
         if(zzdif<zzmin){
           zzmin=zzdif;
@@ -1242,9 +1242,9 @@ void UpdatePlotSliceMesh(meshdata *mesh_in, int slicedir){
   ibar = meshi->ibar;
   jbar = meshi->jbar;
   kbar = meshi->kbar;
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   c_iblank_x = meshi->c_iblank_x;
   c_iblank_y = meshi->c_iblank_y;
   c_iblank_z = meshi->c_iblank_z;
@@ -1491,12 +1491,12 @@ void UpdateShowStep(int val, int slicedir){
     float ymin, ymax;
     float zmin, zmax;
 
-    xmin = current_mesh->xplt[0];
-    xmax = current_mesh->xplt[current_mesh->ibar];
-    ymin = current_mesh->yplt[0];
-    ymax = current_mesh->yplt[current_mesh->jbar];
-    zmin = current_mesh->zplt[0];
-    zmax = current_mesh->zplt[current_mesh->kbar];
+    xmin = current_mesh->xplt_smv[0];
+    xmax = current_mesh->xplt_smv[current_mesh->ibar];
+    ymin = current_mesh->yplt_smv[0];
+    ymax = current_mesh->yplt_smv[current_mesh->jbar];
+    zmin = current_mesh->zplt_smv[0];
+    zmax = current_mesh->zplt_smv[current_mesh->kbar];
     for(i=0;i<global_scase.meshescoll.nmeshes;i++){
       meshdata *meshi;
       float xmin2, xmax2;
@@ -1506,12 +1506,12 @@ void UpdateShowStep(int val, int slicedir){
       meshi = global_scase.meshescoll.meshinfo+i;
       if(meshi==current_mesh)continue;
 
-      xmin2 = meshi->xplt[0];
-      xmax2 = meshi->xplt[meshi->ibar];
-      ymin2 = meshi->yplt[0];
-      ymax2 = meshi->yplt[meshi->jbar];
-      zmin2 = meshi->zplt[0];
-      zmax2 = meshi->zplt[meshi->kbar];
+      xmin2 = meshi->xplt_smv[0];
+      xmax2 = meshi->xplt_smv[meshi->ibar];
+      ymin2 = meshi->yplt_smv[0];
+      ymax2 = meshi->yplt_smv[meshi->jbar];
+      zmin2 = meshi->zplt_smv[0];
+      zmax2 = meshi->zplt_smv[meshi->kbar];
 
 
       if(slicedir==XDIR&&(xmax-MESHEPS<xmin2||xmax2-MESHEPS<xmin))continue;
@@ -1529,9 +1529,9 @@ void DrawGrid(const meshdata *meshi){
   int ibar, jbar, kbar;
   int plotx, ploty, plotz;
 
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   ibar = meshi->ibar;
   jbar = meshi->jbar;
   kbar = meshi->kbar;
@@ -1744,9 +1744,9 @@ void GetPlot3dUVW(float xyz[3], float uvw[3]){
 
     meshi = global_scase.meshescoll.meshinfo + i;
 
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
+    xplt = meshi->xplt_fds;
+    yplt = meshi->yplt_fds;
+    zplt = meshi->zplt_fds;
     if(xyz[0]<xplt[0]||xyz[1]<yplt[0]||xyz[2]<zplt[0])continue;
 
     ibar = meshi->ibar;

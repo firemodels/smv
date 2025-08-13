@@ -165,9 +165,9 @@ float Get3DSliceVal(slicedata *sd, float *xyz){
 
   valmesh = global_scase.meshescoll.meshinfo + sd->blocknumber;
 
-  xplt = valmesh->xplt_orig;
-  yplt = valmesh->yplt_orig;
-  zplt = valmesh->zplt_orig;
+  xplt = valmesh->xplt_fds;
+  yplt = valmesh->yplt_fds;
+  zplt = valmesh->zplt_fds;
   ibar = valmesh->ibar;
   jbar = valmesh->jbar;
   kbar = valmesh->kbar;
@@ -258,9 +258,9 @@ float GetSliceTextureIndex(float *xyz){
   valmax = gslice_valmax;
   valmesh = gslice_valmesh;
 
-  xplt = valmesh->xplt_orig;
-  yplt = valmesh->yplt_orig;
-  zplt = valmesh->zplt_orig;
+  xplt = valmesh->xplt_fds;
+  yplt = valmesh->yplt_fds;
+  zplt = valmesh->zplt_fds;
   ibar = valmesh->ibar;
   jbar = valmesh->jbar;
   kbar = valmesh->kbar;
@@ -1126,9 +1126,9 @@ void GetSliceHists(slicedata *sd, int use_bounds, float valmin, float valmax){
   meshi = global_scase.meshescoll.meshinfo + sd->blocknumber;
   iblank_node = meshi->c_iblank_node;
   iblank_cell = meshi->c_iblank_cell;
-  xplt = meshi->xplt_orig;
-  yplt = meshi->yplt_orig;
-  zplt = meshi->zplt_orig;
+  xplt = meshi->xplt_fds;
+  yplt = meshi->yplt_fds;
+  zplt = meshi->zplt_fds;
 
   ibar = meshi->ibar;
   jbar = meshi->jbar;
@@ -1537,7 +1537,7 @@ char *GetMSliceDir(multislicedata *mslicei){
     if(slicei->idir==0){
       return slicei->cdir;
     }
-    delta = meshi->dcell3[slicei->idir-1];
+    delta = meshi->dcell3_smv[slicei->idir-1];
     if(i==0||delta<deltamin){
       if(i==0){
         deltamin = delta;
@@ -1796,9 +1796,9 @@ void UpdateVectorSkipUniform(int skip){
     if(slicei->loaded == 0)continue;
     slicemesh = global_scase.meshescoll.meshinfo + slicei->blocknumber;
 
-    mesh_dx = slicemesh->xplt_orig[1] - slicemesh->xplt_orig[0];
-    mesh_dy = slicemesh->yplt_orig[1] - slicemesh->yplt_orig[0];
-    mesh_dz = slicemesh->zplt_orig[1] - slicemesh->zplt_orig[0];
+    mesh_dx = slicemesh->xplt_fds[1] - slicemesh->xplt_fds[0];
+    mesh_dy = slicemesh->yplt_fds[1] - slicemesh->yplt_fds[0];
+    mesh_dz = slicemesh->zplt_fds[1] - slicemesh->zplt_fds[0];
     factor_i = MAX(1, max_dx / mesh_dx + 0.5);
     factor_j = MAX(1, max_dy / mesh_dy + 0.5);
     factor_k = MAX(1, max_dz / mesh_dz + 0.5);
@@ -1963,19 +1963,19 @@ void GetGSliceParams(void){
       float *grid, position;
 
       if(ABS(ii1 - ii2) < MIN(ABS(jj1 - jj2), ABS(kk1 - kk2))){
-        grid = meshi->xplt_orig;
+        grid = meshi->xplt_fds;
         ii2=MAX(ii1-1,0);
         position = (grid[ii1] + grid[ii2]) / 2.0;
         sprintf(patchi->gslicedir, "X=%f", position);
       }
       else if(ABS(jj1 - jj2) < MIN(ABS(ii1 - ii2), ABS(kk1 - kk2))){
-        grid = meshi->yplt_orig;
+        grid = meshi->yplt_fds;
         jj2=MAX(jj1-1,0);
         position = (grid[jj1] + grid[jj2]) / 2.0;
         sprintf(patchi->gslicedir, "Y=%f", position);
       }
       else{
-        grid = meshi->zplt_orig;
+        grid = meshi->zplt_fds;
         kk2=MAX(kk1-1,0);
         position = (grid[kk1] + grid[kk2]) / 2.0;
         sprintf(patchi->gslicedir, "Z=%f", position);
@@ -2330,20 +2330,20 @@ void GetSliceParams(sliceparmdata *sp){
 
       if(direction==1){
         sd->idir=1;
-        position = meshi->xplt_orig[is1];
+        position = meshi->xplt_fds[is1];
         if(sd->slice_filetype==SLICE_CELL_CENTER){
           float *xp;
 
           is2=is1-1;
           if(is2<0)is2=0;
-          xp = meshi->xplt_orig;
+          xp = meshi->xplt_fds;
           position = (xp[is1]+xp[is2])/2.0;
         }
         if(is1>0){
-          sd->delta_orig=(meshi->xplt_orig[is1]-meshi->xplt_orig[is1-1])/2.0;
+          sd->delta_orig=(meshi->xplt_fds[is1]-meshi->xplt_fds[is1-1])/2.0;
         }
         else{
-          sd->delta_orig=(meshi->xplt_orig[is1+1]-meshi->xplt_orig[is1])/2.0;
+          sd->delta_orig=(meshi->xplt_fds[is1+1]-meshi->xplt_fds[is1])/2.0;
         }
         if(sd->volslice==0){
           sd->dplane_min = meshi->dplane_min[1];
@@ -2361,20 +2361,20 @@ void GetSliceParams(sliceparmdata *sp){
         sd->dplane_max = meshi->dplane_max[2];
 
         sd->idir = 2;
-        position = meshi->yplt_orig[js1];
+        position = meshi->yplt_fds[js1];
         if(sd->slice_filetype==SLICE_CELL_CENTER){
           float *yp;
 
           js2=js1-1;
           if(js2<0)js2=0;
-          yp = meshi->yplt_orig;
+          yp = meshi->yplt_fds;
           position = (yp[js1]+yp[js2])/2.0;
         }
         if(js1>0){
-          sd->delta_orig=(meshi->yplt_orig[js1]-meshi->yplt_orig[js1-1])/2.0;
+          sd->delta_orig=(meshi->yplt_fds[js1]-meshi->yplt_fds[js1-1])/2.0;
         }
         else{
-          sd->delta_orig=(meshi->yplt_orig[js1+1]-meshi->yplt_orig[js1])/2.0;
+          sd->delta_orig=(meshi->yplt_fds[js1+1]-meshi->yplt_fds[js1])/2.0;
         }
         sprintf(sd->cdir,"Y=%f",position);
       }
@@ -2383,20 +2383,20 @@ void GetSliceParams(sliceparmdata *sp){
         sd->dplane_max = meshi->dplane_max[3];
 
         sd->idir = 3;
-        position = meshi->zplt_orig[ks1];
+        position = meshi->zplt_fds[ks1];
         if(sd->slice_filetype==SLICE_CELL_CENTER){
           float *zp;
 
           ks2=ks1-1;
           if(ks2<0)ks2=0;
-          zp = meshi->zplt_orig;
+          zp = meshi->zplt_fds;
           position = (zp[ks1]+zp[ks2])/2.0;
         }
         if(ks1>0){
-          sd->delta_orig=(meshi->zplt_orig[ks1]-meshi->zplt_orig[ks1-1])/2.0;
+          sd->delta_orig=(meshi->zplt_fds[ks1]-meshi->zplt_fds[ks1-1])/2.0;
         }
         else{
-          sd->delta_orig=(meshi->zplt_orig[ks1+1]-meshi->zplt_orig[ks1])/2.0;
+          sd->delta_orig=(meshi->zplt_fds[ks1+1]-meshi->zplt_fds[ks1])/2.0;
         }
         if(sd->slice_filetype==SLICE_TERRAIN){
           position=sd->above_ground_level;
@@ -2413,9 +2413,9 @@ void GetSliceParams(sliceparmdata *sp){
       float *xplt, *yplt, *zplt;
       float *xyz_min, *xyz_max;
 
-      xplt = meshi->xplt;
-      yplt = meshi->yplt;
-      zplt = meshi->zplt;
+      xplt = meshi->xplt_smv;
+      yplt = meshi->yplt_smv;
+      zplt = meshi->zplt_smv;
       sd->xmin = xplt[sd->is1];
       sd->xmax = xplt[sd->is2];
       sd->ymin = yplt[sd->js1];
@@ -2580,17 +2580,17 @@ void *UpdateVSlices(void *arg){
   sliceparmdata *sp;
 
   sp = (sliceparmdata *)arg;
-  max_dx = global_scase.meshescoll.meshinfo->xplt_orig[1] - global_scase.meshescoll.meshinfo->xplt_orig[0];
-  max_dy = global_scase.meshescoll.meshinfo->yplt_orig[1] - global_scase.meshescoll.meshinfo->yplt_orig[0];
-  max_dz = global_scase.meshescoll.meshinfo->zplt_orig[1] - global_scase.meshescoll.meshinfo->zplt_orig[0];
+  max_dx = global_scase.meshescoll.meshinfo->xplt_fds[1] - global_scase.meshescoll.meshinfo->xplt_fds[0];
+  max_dy = global_scase.meshescoll.meshinfo->yplt_fds[1] - global_scase.meshescoll.meshinfo->yplt_fds[0];
+  max_dz = global_scase.meshescoll.meshinfo->zplt_fds[1] - global_scase.meshescoll.meshinfo->zplt_fds[0];
   for(i = 1; i<global_scase.meshescoll.nmeshes; i++){
     meshdata *meshi;
     float *xplt, *yplt, *zplt;
 
     meshi = global_scase.meshescoll.meshinfo+i;
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
+    xplt = meshi->xplt_fds;
+    yplt = meshi->yplt_fds;
+    zplt = meshi->zplt_fds;
     max_dx = MAX(max_dx, xplt[1]-xplt[0]);
     max_dy = MAX(max_dy, yplt[1]-yplt[0]);
     max_dz = MAX(max_dz, zplt[1]-zplt[0]);
@@ -2859,9 +2859,9 @@ void UpdateSliceContours(int slice_type_index, float line_min, float line_max, i
     }
     meshi = global_scase.meshescoll.meshinfo + sd->blocknumber;
 
-    xplt=meshi->xplt;
-    yplt=meshi->yplt;
-    zplt=meshi->zplt;
+    xplt=meshi->xplt_smv;
+    yplt=meshi->yplt_smv;
+    zplt=meshi->zplt_smv;
     ibar=meshi->ibar;
     jbar=meshi->jbar;
     kbar=meshi->kbar;
@@ -4087,9 +4087,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     that it does not "interfere" with an adjacent block */
 
     blocknumber = global_scase.slicecoll.sliceinfo[ifile].blocknumber;
-    xplt_local = global_scase.meshescoll.meshinfo[blocknumber].xplt;
-    yplt_local = global_scase.meshescoll.meshinfo[blocknumber].yplt;
-    zplt_local = global_scase.meshescoll.meshinfo[blocknumber].zplt;
+    xplt_local = global_scase.meshescoll.meshinfo[blocknumber].xplt_smv;
+    yplt_local = global_scase.meshescoll.meshinfo[blocknumber].yplt_smv;
+    zplt_local = global_scase.meshescoll.meshinfo[blocknumber].zplt_smv;
 
     xslicemid = (xplt_local[sd->is1] + xplt_local[sd->is2]) / 2.0;
     yslicemid = (yplt_local[sd->js1] + yplt_local[sd->js2]) / 2.0;
@@ -4492,8 +4492,8 @@ void DrawGSliceDataGpu(slicedata *slicei){
   sb = slicebounds + slicefile_labelindex;
   valmin = sb->levels256[0];
   valmax = sb->levels256[255];
-  boxmin = meshi->boxmin;
-  boxmax = meshi->boxmax;
+  boxmin = meshi->boxmin_fds;
+  boxmax = meshi->boxmax_fds;
 
   glUniform1i(GPU3dslice_valtexture, 0);
   glUniform1i(GPU3dslice_colormap, 4);
@@ -4547,9 +4547,9 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int is1, int is2, int js1, 
     valmax = 1.0;
   }
 
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   if(sd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
     ploty = meshi->iploty_all[iploty_all];
@@ -4782,9 +4782,9 @@ void DrawVolSliceValues(slicedata *sd){
   float *rgb_ptr;
 
   meshi = global_scase.meshescoll.meshinfo + sd->blocknumber;
-  xplttemp = meshi->xplt;
-  yplttemp = meshi->yplt;
-  zplttemp = meshi->zplt;
+  xplttemp = meshi->xplt_smv;
+  yplttemp = meshi->yplt_smv;
+  zplttemp = meshi->zplt_smv;
 
   if(sd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
@@ -4953,9 +4953,9 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd){
 
   meshi = global_scase.meshescoll.meshinfo + sd->blocknumber;
 
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   if(sd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
     ploty = meshi->iploty_all[iploty_all];
@@ -5163,8 +5163,8 @@ void DrawVolSliceTerrain(const slicedata *sd){
   if(meshi->in_frustum == 0)return;
   nycell = meshi->jbar;
 
-  xplt = meshi->xplt_orig;
-  yplt = meshi->yplt_orig;
+  xplt = meshi->xplt_fds;
+  yplt = meshi->yplt_fds;
 
   if(sd->volslice == 1){
     plotz = meshi->iplotz_all[iplotz_all];
@@ -5203,8 +5203,8 @@ void DrawVolSliceTerrain(const slicedata *sd){
       voffset = MAX(agl_smv, slice_dz);
     }
 
-    zmin = meshi->zplt_orig[0];
-    zmax = meshi->zplt_orig[meshi->kbar];
+    zmin = meshi->zplt_fds[0];
+    zmax = meshi->zplt_fds[meshi->kbar];
     zmin -= agl_smv;
     zmax -= agl_smv;
 
@@ -5310,9 +5310,9 @@ void DrawVolAllSlicesTextureDiag(const slicedata *sd, int direction){
   if(sd->volslice == 1 && visx_all == 0 && visy_all == 0 && visz_all == 0)return;
   meshi = global_scase.meshescoll.meshinfo+sd->blocknumber;
 
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   ibar = meshi->ibar;
   jbar = meshi->jbar;
   c_iblank_x = meshi->c_iblank_x;
@@ -5507,9 +5507,9 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
   if(sd->volslice == 1 && visx_all == 0 && visy_all == 0 && visz_all == 0)return;
   meshi = global_scase.meshescoll.meshinfo + sd->blocknumber;
 
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   if(sd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
     if(plotx>=0)plotx = CLAMP(plotx, sd->iis1, sd->iis2);
@@ -5837,9 +5837,9 @@ void DrawVolSliceLines(const slicedata *sd){
     valmin = 0.0;
     valmax = 1.0;
   }
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   if(sd->volslice==1){
     plotx = meshi->iplotx_all[iplotx_all];
     ploty = meshi->iploty_all[iploty_all];
@@ -6174,9 +6174,9 @@ void DrawVolSliceVerts(const slicedata *sd){
     valmin = 0.0;
     valmax = 1.0;
   }
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   if(sd->volslice==1){
     plotx = meshi->iplotx_all[iplotx_all];
     ploty = meshi->iploty_all[iploty_all];
@@ -6466,9 +6466,9 @@ void ComputeOpacityCorrections(meshdata *meshi, float *xyz0, float *normal){
   nx = meshi->ibar+1;
   ny = meshi->jbar+1;
   nz = meshi->kbar+1;
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   opacity_adjustments = meshi->opacity_adjustments;
   if(opacity_adjustments==NULL){
     NewMemory((void **)&opacity_adjustments, nx*ny*nz*sizeof(float));
@@ -6609,9 +6609,9 @@ int GetSliceOffsetReg(slicedata *sd, float *xyz, float *device_xyz){
 
   memcpy(device_xyz, xyz, 3*sizeof(float));
   slicemesh = global_scase.meshescoll.meshinfo+sd->blocknumber;
-  xplt = slicemesh->xplt_orig;
-  yplt = slicemesh->yplt_orig;
-  zplt = slicemesh->zplt_orig;
+  xplt = slicemesh->xplt_fds;
+  yplt = slicemesh->yplt_fds;
+  zplt = slicemesh->zplt_fds;
   if(sd->volslice==0){
     plotx = sd->is1;
     ploty = sd->js1;
@@ -6730,8 +6730,8 @@ int InSliceMesh(slicedata *slicei, float *xyz){
 
   meshi = global_scase.meshescoll.meshinfo + slicei->blocknumber;
   dir = slicei->idir;
-  boxmin = meshi->boxmin;
-  boxmax = meshi->boxmax;
+  boxmin = meshi->boxmin_fds;
+  boxmax = meshi->boxmax_fds;
   if(slicei->volslice==0){
     if(dir==XDIR){
       if(xyz[1]<boxmin[1]||xyz[1]>boxmax[1])return 0;
@@ -6755,7 +6755,7 @@ int InSliceMesh(slicedata *slicei, float *xyz){
 
       if(xyz[1]<boxmin[1]||xyz[1]>boxmax[1]||xyz[2]<boxmin[2]||xyz[2]>boxmax[2])return 0;
       plotx = meshi->iplotx_all[iplotx_all];
-      dx = meshi->xplt_orig[plotx];
+      dx = meshi->xplt_fds[plotx];
       if(dx<boxmin[0]||dx>boxmax[0])return 0;
       xyz[0] = dx;
       update_slicexyz = 1;
@@ -6766,7 +6766,7 @@ int InSliceMesh(slicedata *slicei, float *xyz){
 
       if(xyz[0]<boxmin[0]||xyz[0]>boxmax[0]||xyz[2]<boxmin[2]||xyz[2]>boxmax[2])return 0;
       ploty = meshi->iploty_all[iploty_all];
-      dy = meshi->yplt_orig[ploty];
+      dy = meshi->yplt_fds[ploty];
       if(dy<boxmin[1]||dy>boxmax[1])return 0;
       xyz[1] = dy;
       update_slicexyz = 1;
@@ -6777,7 +6777,7 @@ int InSliceMesh(slicedata *slicei, float *xyz){
 
       if(xyz[0]<boxmin[0]||xyz[0]>boxmax[0]||xyz[1]<boxmin[1]||xyz[1]>boxmax[1])return 0;
       plotz = meshi->iplotz_all[iplotz_all];
-      dz = meshi->zplt_orig[plotz];
+      dz = meshi->zplt_fds[plotz];
       if(dz<boxmin[2]||dz>boxmax[2])return 0;
       xyz[2] = dz;
       update_slicexyz = 1;
@@ -7317,9 +7317,9 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
   sd = global_scase.slicecoll.sliceinfo + vd->ival;
   meshi = global_scase.meshescoll.meshinfo + sd->blocknumber;
-  xplttemp = meshi->xplt;
-  yplttemp = meshi->yplt;
-  zplttemp = meshi->zplt;
+  xplttemp = meshi->xplt_smv;
+  yplttemp = meshi->yplt_smv;
+  zplttemp = meshi->zplt_smv;
   if(vd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
     ploty = meshi->iploty_all[iploty_all];
@@ -7783,8 +7783,8 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     float agl_smv;
     float zmin, zmax, voffset;
 
-    xplttemp = meshi->xplt_orig;
-    yplttemp = meshi->yplt_orig;
+    xplttemp = meshi->xplt_fds;
+    yplttemp = meshi->yplt_fds;
     znode = meshi->znodes_complete;
 
     agl_smv = sd->above_ground_level;
@@ -7795,9 +7795,9 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
       voffset = MAX(agl_smv, slice_dz);
     }
 
-    zmin  = meshi->zplt_orig[0];
+    zmin  = meshi->zplt_fds[0];
     zmin -= agl_smv;
-    zmax  = meshi->zplt_orig[meshi->kbar];
+    zmax  = meshi->zplt_fds[meshi->kbar];
     zmax -= agl_smv;
 
     glPushMatrix();
@@ -7986,9 +7986,9 @@ void DrawVVolSlice(const vslicedata *vd){
 
   sd = global_scase.slicecoll.sliceinfo + vd->ival;
   meshi = global_scase.meshescoll.meshinfo + sd->blocknumber;
-  xplttemp = meshi->xplt;
-  yplttemp = meshi->yplt;
-  zplttemp = meshi->zplt;
+  xplttemp = meshi->xplt_smv;
+  yplttemp = meshi->yplt_smv;
+  zplttemp = meshi->zplt_smv;
 
   float valmin, valmax;
 
@@ -8696,9 +8696,9 @@ void InitSliceData(void){
     fprintf(fileout, "%s\n", sd->label.unit);
     meshi = global_scase.meshescoll.meshinfo + sd->blocknumber;
 
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
+    xplt = meshi->xplt_fds;
+    yplt = meshi->yplt_fds;
+    zplt = meshi->zplt_fds;
     fprintf(fileout, "%f, %f, %f, %f, %f, %f\n",
       xplt[sd->is1], xplt[sd->is2],
       yplt[sd->js1], yplt[sd->js2],
@@ -8967,12 +8967,12 @@ int CompareSortSlices(const void *arg1, const void *arg2){
   s2 = *(splitslicedata **)arg2;
   m1 = s1->mesh;
   m2 = s2->mesh;
-  x1 = m1->xplt;
-  y1 = m1->yplt;
-  z1 = m1->zplt;
-  x2 = m2->xplt;
-  y2 = m2->yplt;
-  z2 = m2->zplt;
+  x1 = m1->xplt_smv;
+  y1 = m1->yplt_smv;
+  z1 = m1->zplt_smv;
+  x2 = m2->xplt_smv;
+  y2 = m2->yplt_smv;
+  z2 = m2->zplt_smv;
   float dx1, dy1, dz1;
   float dx2, dy2, dz2;
 
@@ -9236,9 +9236,9 @@ void DrawSortSlicesDebug(void){
     int is1, is2, js1, js2, ks1, ks2;
 
     spliti = splitsliceinfoptr[i];
-    xplt = spliti->mesh->xplt_orig;
-    yplt = spliti->mesh->yplt_orig;
-    zplt = spliti->mesh->zplt_orig;
+    xplt = spliti->mesh->xplt_fds;
+    yplt = spliti->mesh->yplt_fds;
+    zplt = spliti->mesh->zplt_fds;
     is1 = spliti->is1;
     is2 = spliti->is2;
     js1 = spliti->js1;
@@ -9303,9 +9303,9 @@ void DrawSortSlicesDebug(void){
     float xmid, ymid, zmid;
 
     spliti = splitsliceinfoptr[i];
-    xplt = spliti->mesh->xplt_orig;
-    yplt = spliti->mesh->yplt_orig;
-    zplt = spliti->mesh->zplt_orig;
+    xplt = spliti->mesh->xplt_fds;
+    yplt = spliti->mesh->yplt_fds;
+    zplt = spliti->mesh->zplt_fds;
     is1 = spliti->is1;
     is2 = spliti->is2;
     js1 = spliti->js1;

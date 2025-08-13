@@ -784,8 +784,8 @@ float GetZCellVal(meshdata *meshi,float xval, float yval, float *zval_offset, in
       meshj=global_scase.meshescoll.meshinfo+imesh;
       if(meshi==meshj)continue;
     }
-    xplt = meshj->xplt_orig;
-    yplt = meshj->yplt_orig;
+    xplt = meshj->xplt_fds;
+    yplt = meshj->yplt_fds;
     ibar = meshj->ibar;
     jbar = meshj->jbar;
     if(xplt[0]<=xval&&xval<=xplt[ibar]&&yplt[0]<=yval&&yval<=yplt[jbar]){
@@ -844,8 +844,8 @@ float GetZCellValOffset(meshdata *meshi,float xval, float yval, int *loc){
     xval = SMV2FDS_X(xval);
     yval = SMV2FDS_Y(yval);
 
-    xplt = meshj->xplt_orig;
-    yplt = meshj->yplt_orig;
+    xplt = meshj->xplt_fds;
+    yplt = meshj->yplt_fds;
     ibar = meshj->ibar;
     jbar = meshj->jbar;
     if(xplt[0]<=xval&&xval<=xplt[ibar]&&yplt[0]<=yval&&yval<=yplt[jbar]){
@@ -1506,7 +1506,7 @@ void DrawTerrainOBSTSides(meshdata *meshi){
     zcutoff = terri->zmin_cutoff;
   }
   else{
-    zcutoff = meshi->zplt_orig[0]-0.1;
+    zcutoff = meshi->zplt_fds[0]-0.1;
   }
 
   terrain_color[0] = 0.47843;
@@ -1529,8 +1529,8 @@ void DrawTerrainOBSTSides(meshdata *meshi){
   nycell = meshi->jbar;
   ibar   = meshi->ibar;
   jbar   = meshi->jbar;
-  x      = meshi->xplt_orig;
-  y      = meshi->yplt_orig;
+  x      = meshi->xplt_fds;
+  y      = meshi->yplt_fds;
 
   if(meshi->is_extface[0]==1 && znode!=NULL){
     float zij, zijp1;
@@ -1619,13 +1619,13 @@ void DrawTerrainOBSTSides(meshdata *meshi){
   }
   if(meshi->is_extface[4]==1){
     for(i = 0; i<ibar; i++){
-      glVertex3f(x[0],    y[0],    meshi->zplt_orig[0]);
-      glVertex3f(x[ibar], y[jbar], meshi->zplt_orig[0]);
-      glVertex3f(x[ibar], y[0],    meshi->zplt_orig[0]);
+      glVertex3f(x[0],    y[0],    meshi->zplt_fds[0]);
+      glVertex3f(x[ibar], y[jbar], meshi->zplt_fds[0]);
+      glVertex3f(x[ibar], y[0],    meshi->zplt_fds[0]);
 
-      glVertex3f(x[0],    y[0],    meshi->zplt_orig[0]);
-      glVertex3f(x[0],    y[jbar], meshi->zplt_orig[0]);
-      glVertex3f(x[ibar], y[jbar], meshi->zplt_orig[0]);
+      glVertex3f(x[0],    y[0],    meshi->zplt_fds[0]);
+      glVertex3f(x[0],    y[jbar], meshi->zplt_fds[0]);
+      glVertex3f(x[ibar], y[jbar], meshi->zplt_fds[0]);
     }
   }
   glEnd();
@@ -1892,10 +1892,10 @@ void UpdateTerrain(int allocate_memory){
 
       nx = meshi->ibar;
       ny = meshi->jbar;
-      xmin = meshi->xplt_orig[0];
-      xmax = meshi->xplt_orig[nx];
-      ymin = meshi->yplt_orig[0];
-      ymax = meshi->yplt_orig[ny];
+      xmin = meshi->xplt_fds[0];
+      xmax = meshi->xplt_fds[nx];
+      ymin = meshi->yplt_fds[0];
+      ymax = meshi->yplt_fds[ny];
 
       InitTerrainZNode(meshi, terri, xmin, xmax, nx, ymin, ymax, ny, allocate_memory);
     }
@@ -1931,8 +1931,8 @@ void UpdateTerrain(int allocate_memory){
       slicei = global_scase.slicecoll.sliceinfo + i;
       if(slicei->slice_filetype!=SLICE_TERRAIN)continue;
       meshi = global_scase.meshescoll.meshinfo + slicei->blocknumber;
-      zmin = meshi->zplt_orig[0];
-      zmax = meshi->zplt_orig[meshi->kbar];
+      zmin = meshi->zplt_fds[0];
+      zmax = meshi->zplt_fds[meshi->kbar];
       agl = slicei->above_ground_level;
       for(ii = 0; ii<meshi->nznodes; ii++){
         float zslice, zterrain;
@@ -1966,8 +1966,8 @@ void UpdateTerrain(int allocate_memory){
       znode_scaled = terri->znode_scaled;
       t_zmin=1.0;
       t_zmax=0.0;
-      mesh_zmin = meshi->zplt_orig[0];
-      mesh_zmax = meshi->zplt_orig[meshi->kbar];
+      mesh_zmin = meshi->zplt_fds[0];
+      mesh_zmax = meshi->zplt_fds[meshi->kbar];
 
       for(j=0;j<=terri->jbar;j++){
         for(i=0;i<=terri->ibar;i++){

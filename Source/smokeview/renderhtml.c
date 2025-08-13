@@ -363,9 +363,9 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
 
           meshi = global_scase.meshescoll.meshinfo+slicei->blocknumber;
 
-          xplt = meshi->xplt;
-          yplt = meshi->yplt;
-          zplt = meshi->zplt;
+          xplt = meshi->xplt_smv;
+          yplt = meshi->yplt_smv;
+          zplt = meshi->zplt_smv;
           plotx = slicei->is1;
           ploty = slicei->js1;
           plotz = slicei->ks1;
@@ -717,14 +717,14 @@ void GetSliceNodeVerts(int option, int option2,
           ny = meshi->jbar+1;
           nxy = nx*ny;
           iblank = meshi->c_iblank_node_html;
-          xplt = meshi->xplt;
-          yplt = meshi->yplt;
+          xplt = meshi->xplt_smv;
+          yplt = meshi->yplt_smv;
           if(slicei->slice_filetype==SLICE_TERRAIN){
             agl = SCALE2FDS(.005) + slicei->above_ground_level;
             zplt = meshi->terrain->znode;
           }
           else{
-            zplt = meshi->zplt;
+            zplt = meshi->zplt_smv;
           }
           plotx = slicei->is1;
           ploty = slicei->js1;
@@ -1028,9 +1028,9 @@ void GetBlockNodes(const meshdata *meshi, blockagedata *bc, float *xyz, float *n
     0, 2, 1, 0, 3, 2
   };
 
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
 
   xminmax[0] = xplt[bc->ijk[IMIN]];
   xminmax[1] = xplt[bc->ijk[IMAX]];

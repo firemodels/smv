@@ -591,16 +591,16 @@ void HvacCB(int var){
 
 extern "C" void GLUIGeometrySetup(int main_window){
   int ibar,jbar,kbar;
-  float *xplt_orig, *yplt_orig, *zplt_orig;
+  float *xplt_fds, *yplt_fds, *zplt_fds;
   char *surfacelabel;
   int i;
 
   ibar=current_mesh->ibar;
   jbar=current_mesh->jbar;
   kbar=current_mesh->kbar;
-  xplt_orig=current_mesh->xplt_orig;
-  yplt_orig=current_mesh->yplt_orig;
-  zplt_orig=current_mesh->zplt_orig;
+  xplt_fds=current_mesh->xplt_fds;
+  yplt_fds=current_mesh->yplt_fds;
+  zplt_fds=current_mesh->zplt_fds;
 
   if(glui_geometry!=NULL){
     glui_geometry->close();
@@ -874,12 +874,12 @@ extern "C" void GLUIGeometrySetup(int main_window){
     EDIT_zmax->disable();
     GLUIObjectCB(BLOCKAGE_AS_INPUT);
 
-    EDIT_xmin->set_float_limits(xplt_orig[0], xplt_orig[ibar], GLUI_LIMIT_CLAMP);
-    EDIT_xmax->set_float_limits(xplt_orig[0], xplt_orig[ibar], GLUI_LIMIT_CLAMP);
-    EDIT_ymin->set_float_limits(yplt_orig[0], yplt_orig[jbar], GLUI_LIMIT_CLAMP);
-    EDIT_ymax->set_float_limits(yplt_orig[0], yplt_orig[jbar], GLUI_LIMIT_CLAMP);
-    EDIT_zmin->set_float_limits(zplt_orig[0], zplt_orig[kbar], GLUI_LIMIT_CLAMP);
-    EDIT_zmax->set_float_limits(zplt_orig[0], zplt_orig[kbar], GLUI_LIMIT_CLAMP);
+    EDIT_xmin->set_float_limits(xplt_fds[0], xplt_fds[ibar], GLUI_LIMIT_CLAMP);
+    EDIT_xmax->set_float_limits(xplt_fds[0], xplt_fds[ibar], GLUI_LIMIT_CLAMP);
+    EDIT_ymin->set_float_limits(yplt_fds[0], yplt_fds[jbar], GLUI_LIMIT_CLAMP);
+    EDIT_ymax->set_float_limits(yplt_fds[0], yplt_fds[jbar], GLUI_LIMIT_CLAMP);
+    EDIT_zmin->set_float_limits(zplt_fds[0], zplt_fds[kbar], GLUI_LIMIT_CLAMP);
+    EDIT_zmax->set_float_limits(zplt_fds[0], zplt_fds[kbar], GLUI_LIMIT_CLAMP);
   }
 
   if(global_scase.ngeominfo>0){
@@ -1399,25 +1399,25 @@ extern "C" void GLUIUpdateBlockVals(int flag){
   int imin, jmin, kmin;
   int i;
   int temp;
-  float *xplt_orig, *yplt_orig, *zplt_orig;
+  float *xplt_fds, *yplt_fds, *zplt_fds;
   int ibar, jbar, kbar;
 
   if(have_obsts==0)return;
   GetBlockVals(&xmin,&xmax,&ymin,&ymax,&zmin,&zmax,&imin,&jmin,&kmin);
 
-  xplt_orig = current_mesh->xplt_orig;
-  yplt_orig = current_mesh->yplt_orig;
-  zplt_orig = current_mesh->zplt_orig;
+  xplt_fds = current_mesh->xplt_fds;
+  yplt_fds = current_mesh->yplt_fds;
+  zplt_fds = current_mesh->zplt_fds;
   ibar = current_mesh->ibar;
   jbar = current_mesh->jbar;
   kbar = current_mesh->kbar;
 
-  EDIT_xmin->set_float_limits(xplt_orig[0],xplt_orig[ibar],GLUI_LIMIT_CLAMP);
-  EDIT_xmax->set_float_limits(xplt_orig[0],xplt_orig[ibar],GLUI_LIMIT_CLAMP);
-  EDIT_ymin->set_float_limits(yplt_orig[0],yplt_orig[jbar],GLUI_LIMIT_CLAMP);
-  EDIT_ymax->set_float_limits(yplt_orig[0],yplt_orig[jbar],GLUI_LIMIT_CLAMP);
-  EDIT_zmin->set_float_limits(zplt_orig[0],zplt_orig[kbar],GLUI_LIMIT_CLAMP);
-  EDIT_zmax->set_float_limits(zplt_orig[0],zplt_orig[kbar],GLUI_LIMIT_CLAMP);
+  EDIT_xmin->set_float_limits(xplt_fds[0],xplt_fds[ibar],GLUI_LIMIT_CLAMP);
+  EDIT_xmax->set_float_limits(xplt_fds[0],xplt_fds[ibar],GLUI_LIMIT_CLAMP);
+  EDIT_ymin->set_float_limits(yplt_fds[0],yplt_fds[jbar],GLUI_LIMIT_CLAMP);
+  EDIT_ymax->set_float_limits(yplt_fds[0],yplt_fds[jbar],GLUI_LIMIT_CLAMP);
+  EDIT_zmin->set_float_limits(zplt_fds[0],zplt_fds[kbar],GLUI_LIMIT_CLAMP);
+  EDIT_zmax->set_float_limits(zplt_fds[0],zplt_fds[kbar],GLUI_LIMIT_CLAMP);
 
   EDIT_xmin->set_float_val(xmin);
   EDIT_xmax->set_float_val(xmax);

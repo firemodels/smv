@@ -1352,10 +1352,10 @@ int CompareMeshes(const void *arg1, const void *arg2){
   meshi = global_scase.meshescoll.meshinfo + smoke3di->blocknumber;
   meshj = global_scase.meshescoll.meshinfo + smoke3dj->blocknumber;
   if(meshi == meshj)return 0;
-  xyzmini = meshi->boxmin;
-  xyzmaxi = meshi->boxmax;
-  xyzminj = meshj->boxmin;
-  xyzmaxj = meshj->boxmax;
+  xyzmini = meshi->boxmin_fds;
+  xyzmaxi = meshi->boxmax_fds;
+  xyzminj = meshj->boxmin_fds;
+  xyzmaxj = meshj->boxmax_fds;
   if(dir == 0){
     if(xyzmaxi[0] <= xyzminj[0])dir = 1;
     if(xyzmaxj[0] <= xyzmini[0])dir = -1;
@@ -1466,9 +1466,9 @@ void GetEyePos(float *mm){
     meshdata *meshi;
 
     meshi = global_scase.meshescoll.meshinfo+i;
-    scene_center[0] += meshi->boxmiddle[0];
-    scene_center[1] += meshi->boxmiddle[1];
-    scene_center[2] += meshi->boxmiddle[2];
+    scene_center[0] += meshi->boxmiddle_fds[0];
+    scene_center[1] += meshi->boxmiddle_fds[1];
+    scene_center[2] += meshi->boxmiddle_fds[2];
   }
   scene_center[0] /= global_scase.meshescoll.nmeshes;
   scene_center[1] /= global_scase.meshescoll.nmeshes;
@@ -1549,15 +1549,15 @@ void GetVolSmokeDir(float *mm){
     inside = &meshj->inside;
     drawsides = meshj->drawsides;
 
-      x0 = meshj->x0;
-      x1 = meshj->x1;
-     yy0 = meshj->y0;
-     yy1 = meshj->y1;
-      z0 = meshj->z0;
-      z1 = meshj->z1;
-    xcen = meshj->xcen;
-    ycen = meshj->ycen;
-    zcen = meshj->zcen;
+      x0 = meshj->boxmin_fds[0];
+      x1 = meshj->boxmax_fds[0];
+     yy0 = meshj->boxmin_fds[1];
+     yy1 = meshj->boxmax_fds[1];
+      z0 = meshj->boxmin_fds[2];
+      z1 = meshj->boxmax_fds[2];
+    xcen = meshj->xcen_smv;
+    ycen = meshj->ycen_smv;
+    zcen = meshj->zcen_smv;
 
     *inside = 0;
     if(
@@ -1747,9 +1747,9 @@ void GetSmokeDir(float *mm){
     int iminangle, alphadir, minalphadir;
 
     meshj = global_scase.meshescoll.meshinfo + j;
-    dx = meshj->boxmiddle_scaled[0] - eye_position_smv[0];
-    dy = meshj->boxmiddle_scaled[1] - eye_position_smv[1];
-    dz = meshj->boxmiddle_scaled[2] - eye_position_smv[2];
+    dx = meshj->boxmiddle_smv[0] - eye_position_smv[0];
+    dy = meshj->boxmiddle_smv[1] - eye_position_smv[1];
+    dz = meshj->boxmiddle_smv[2] - eye_position_smv[2];
     meshj->eyedist = sqrt(dx*dx + dy*dy + dz*dz);
 
     minalphadir = ALPHA_X;
@@ -1793,8 +1793,8 @@ void GetSmokeDir(float *mm){
         break;
       case 4:
         alphadir = ALPHA_XY;
-        dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
-        dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
+        dx = meshj->xplt_fds[1] - meshj->xplt_fds[0];
+        dy = meshj->yplt_fds[1] - meshj->yplt_fds[0];
         factor = dx*dx + dy*dy;
         if(factor == 0.0){
           factor = 1.0;
@@ -1813,8 +1813,8 @@ void GetSmokeDir(float *mm){
         break;
       case 5:
         alphadir = ALPHA_XY;
-        dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
-        dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
+        dx = meshj->xplt_fds[1] - meshj->xplt_fds[0];
+        dy = meshj->yplt_fds[1] - meshj->yplt_fds[0];
         factor = dx*dx + dy*dy;
         if(factor == 0.0){
           factor = 1.0;
@@ -1833,8 +1833,8 @@ void GetSmokeDir(float *mm){
         break;
       case 6:
         alphadir = ALPHA_YZ;
-        dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
-        dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
+        dy = meshj->yplt_fds[1] - meshj->yplt_fds[0];
+        dz = meshj->zplt_fds[1] - meshj->zplt_fds[0];
         factor = dz*dz + dy*dy;
         if(factor == 0.0){
           factor = 1.0;
@@ -1853,8 +1853,8 @@ void GetSmokeDir(float *mm){
         break;
       case 7:
         alphadir = ALPHA_YZ;
-        dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
-        dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
+        dy = meshj->yplt_fds[1] - meshj->yplt_fds[0];
+        dz = meshj->zplt_fds[1] - meshj->zplt_fds[0];
         factor = dz*dz + dy*dy;
         if(factor == 0.0){
           factor = 1.0;
@@ -1873,8 +1873,8 @@ void GetSmokeDir(float *mm){
         break;
       case 8:
         alphadir = ALPHA_XZ;
-        dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
-        dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
+        dx = meshj->xplt_fds[1] - meshj->xplt_fds[0];
+        dz = meshj->zplt_fds[1] - meshj->zplt_fds[0];
         factor = dz*dz + dx*dx;
         if(factor == 0.0){
           factor = 1.0;
@@ -1893,8 +1893,8 @@ void GetSmokeDir(float *mm){
         break;
       case 9:
         alphadir = ALPHA_XZ;
-        dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
-        dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
+        dx = meshj->xplt_fds[1] - meshj->xplt_fds[0];
+        dz = meshj->zplt_fds[1] - meshj->zplt_fds[0];
         factor = dx*dx + dz*dz;
         if(factor == 0.0){
           factor = 1.0;
@@ -1958,7 +1958,7 @@ void GetSmokeDir(float *mm){
         use_soot_density = 1;
         maxval = soot->maxvals[soot->ismoke3d_time];
       }
-      InitAlphas(soot->alphas_smokedir[minalphadir], soot->alphas_firedir[minalphadir], soot->extinct, use_soot_density, maxval, glui_smoke3d_extinct, meshj->dxyz_orig[0], smoke_dist);
+      InitAlphas(soot->alphas_smokedir[minalphadir], soot->alphas_firedir[minalphadir], soot->extinct, use_soot_density, maxval, glui_smoke3d_extinct, meshj->dxyz_fds[0], smoke_dist);
     }
     if(demo_mode != 0){
       meshj->smokedir = 1;
@@ -2309,6 +2309,29 @@ void GetMinMaxDepth(float *min_depth, float *max_depth){
   }
 }
 
+/* ------------------ UpdateMeshInFrustum ------------------------ */
+
+void UpdateMeshInFrustum(void) {
+  int i;
+
+  if(cull_meshes == 1){
+    for(i = 0; i < global_scase.meshescoll.nmeshes; i++) {
+      meshdata *meshi;
+
+      meshi = global_scase.meshescoll.meshinfo + i;
+      meshi->in_frustum = MeshInFrustum(meshi);
+    }
+  }
+  else {
+    for(i = 0; i < global_scase.meshescoll.nmeshes; i++) {
+      meshdata *meshi;
+
+      meshi = global_scase.meshescoll.meshinfo + i;
+      meshi->in_frustum = 1;
+    }
+  }
+}
+
 /* ----------------------- ViewportScene ----------------------------- */
 
 void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down, screendata *screen){
@@ -2608,5 +2631,6 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 
     glScalef(mscale[0],mscale[1],mscale[2]);
     ExtractFrustum();
+    UpdateMeshInFrustum();
   }
 }

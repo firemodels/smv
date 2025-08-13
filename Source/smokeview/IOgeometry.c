@@ -3184,8 +3184,8 @@ int InMesh(float *xyz){
     float *boxmin, *boxmax;
 
     meshi = global_scase.meshescoll.meshinfo + i;
-    boxmin = meshi->boxmin;
-    boxmax = meshi->boxmax;
+    boxmin = meshi->boxmin_fds;
+    boxmax = meshi->boxmax_fds;
     if(xyz[0]<boxmin[0] || xyz[0]>boxmax[0])continue;
     if(xyz[1]<boxmin[1] || xyz[1]>boxmax[1])continue;
     if(xyz[2]<boxmin[2] || xyz[2]>boxmax[2])continue;

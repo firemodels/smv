@@ -208,24 +208,24 @@ typedef struct _meshdata {
   float meshrgb[3], *meshrgb_ptr;
   float mesh_offset[3], *mesh_offset_ptr;
   int blockvis, datavis;
-  float *xplt, *yplt, *zplt;
-  double *xpltd, *ypltd, *zpltd;
+  float *xplt_smv, *yplt_smv, *zplt_smv;
+  double *xpltd_fds, *ypltd_fds, *zpltd_fds;
   int ivolbar, jvolbar, kvolbar;
-  float *xvolplt, *yvolplt, *zvolplt;
-  float *xplt_cen, *yplt_cen, *zplt_cen;
-  float *xplt_orig, *yplt_orig, *zplt_orig;
-  float x0, x1, y0, y1, z0, z1;
+  float *xvolplt_smv, *yvolplt_smv, *zvolplt_smv;
+  float *xplt_cen_smv, *yplt_cen_smv, *zplt_cen_smv;
+  float *xplt_fds, *yplt_fds, *zplt_fds;
   int drawsides[7];
   int extsides[7];   // 1 if on exterior side of a supermesh, 0 otherwise
   int is_extface[6]; // 1 if adjacent to exterior, 0 if adjacent to interior, -1 if unknown
   int inside;
   int in_frustum;    // 1 if part or all of mesh is in the view frustum
-  float boxmin[3], boxmiddle[3], boxmax[3], dbox[3], boxeps[3], dcell, dcell3[3], verts[24], eyedist;
-  float boxeps_fds[3];
+  float boxmin_fds[3], boxmiddle_fds[3], boxmax_fds[3], boxeps_fds[3];
+  float boxmin_smv[3], boxmiddle_smv[3], boxmax_smv[3], boxeps_smv[3];
+  float dbox_fds[3], dcell_smv, dcell3_smv[3];
+  float verts[24], eyedist;
   float slice_min[3], slice_max[3];
-  float boxmin_scaled[3], boxmiddle_scaled[3], boxmax_scaled[3];
   float xyz_bar0[3], xyz_bar[3];
-  float xcen, ycen, zcen;
+  float xcen_smv, ycen_smv, zcen_smv;
   float face_centers[18];
   float offset[3];
   float xyzmaxdiff;
@@ -291,7 +291,7 @@ typedef struct _meshdata {
   int *iso_timeslist;
   int iso_itime;
   int smokedir,smokedir_old;
-  float dxDdx, dyDdx, dzDdx, dxyDdx, dxzDdx, dyzDdx, dxyz_orig[3];
+  float dxDdx, dyDdx, dzDdx, dxyDdx, dxzDdx, dyzDdx, dxyz_fds[3];
   float smoke_dist[6];
   float norm[3];
   float dplane_min[4], dplane_max[4];
@@ -369,7 +369,7 @@ typedef struct _supermeshdata {
   float *volsmoke_texture_buffer, *volfire_texture_buffer;
 #endif
   float *f_iblank_cell;
-  float boxmin_scaled[3], boxmax_scaled[3];
+  float boxmin_smv[3], boxmax_smv[3];
   int drawsides[7];
   int nmeshes;
   meshdata **meshes;

@@ -291,9 +291,9 @@ void SetClipControls(int val){
 
     meshi = global_scase.meshescoll.meshinfo + val - 1;
 
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
+    xplt = meshi->xplt_fds;
+    yplt = meshi->yplt_fds;
+    zplt = meshi->zplt_fds;
 
     clipinfo.xmin = xplt[0] - dxclip;
     clipinfo.ymin = yplt[0] - dyclip;

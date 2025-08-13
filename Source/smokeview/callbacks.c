@@ -2445,9 +2445,9 @@ void Keyboard(unsigned char key, int flag){
               plot3di = global_scase.plot3dinfo + meshi->plot3dfilenum;
               if(plot3di->display==0)continue;
               show_plot3dkeywords=1;
-              xp = meshi->xplt_orig;
-              yp = meshi->yplt_orig;
-              zp = meshi->zplt_orig;
+              xp = meshi->xplt_fds;
+              yp = meshi->yplt_fds;
+              zp = meshi->zplt_fds;
               fprintf(scriptoutstream,"SHOWPLOT3DDATA\n");
               fprintf(scriptoutstream," %i %i %i %i %f\n",i+1,1, plotn,visx_all,xp[meshi->plotx]);
               fprintf(scriptoutstream,"SHOWPLOT3DDATA\n");
@@ -3166,17 +3166,17 @@ float SetClipVal(int flag){
 
     switch(flag){
       case 0:
-        xplt = meshi->xplt_orig;
+        xplt = meshi->xplt_fds;
         plotx = meshi->iplotx_all[iplotx_all];
         if(plotx>=0)return xplt[plotx];
         break;
       case 1:
-        yplt = meshi->yplt_orig;
+        yplt = meshi->yplt_fds;
         ploty = meshi->iploty_all[iploty_all];
         if(ploty>=0)return yplt[ploty];
         break;
       case 2:
-        zplt = meshi->zplt_orig;
+        zplt = meshi->zplt_fds;
         plotz = meshi->iplotz_all[iplotz_all];
         if(plotz>=0)return zplt[plotz];
         break;

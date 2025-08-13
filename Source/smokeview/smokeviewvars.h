@@ -947,6 +947,7 @@ SVEXTERN int SVDECL(cullgeom_portsize,16);
 SVEXTERN int SVDECL(update_initcullgeom,1),SVDECL(cullgeom,1);
 SVEXTERN int opengl_version;
 SVEXTERN char opengl_version_label[256];
+SVEXTERN int SVDECL(cull_meshes, 1);
 
 SVEXTERN int SVDECL(usevolrender,1);
 #ifdef pp_GPU
@@ -2093,7 +2094,6 @@ SVEXTERN int SVDECL(use_smoke_colormap, 0), SVDECL(use_smoke_rgb, 1);
 SVEXTERN int SVDECL(use_fire_colormap, 0),  SVDECL(use_fire_rgb, 1);
 SVEXTERN int SVDECL(use_co2_colormap, 0),   SVDECL(use_co2_rgb, 1);
 
-SVEXTERN int SVDECL(smokecullflag,1);
 SVEXTERN int SVDECL(visMAINmenus,0);
 SVEXTERN int SVDECL(ijkbarmax,5);
 SVEXTERN int SVDECL(blockage_as_input,0), SVDECL(blockage_snapped,1);

@@ -34,9 +34,9 @@ void DrawCircVentsApproxSolid(int option){
     float dx, dy, dz, dxyz;
 
     meshi = global_scase.meshescoll.meshinfo + i;
-    xplt = meshi->xplt;
-    yplt = meshi->yplt;
-    zplt = meshi->zplt;
+    xplt = meshi->xplt_smv;
+    yplt = meshi->yplt_smv;
+    zplt = meshi->zplt_smv;
     dx = xplt[1] - xplt[0];
     dy = yplt[1] - yplt[0];
     dz = zplt[1] - zplt[0];
@@ -187,9 +187,9 @@ void DrawCircVentsApproxOutline(int option){
     float dx, dy, dz, dxyz;
 
     meshi = global_scase.meshescoll.meshinfo + i;
-    xplt = meshi->xplt;
-    yplt = meshi->yplt;
-    zplt = meshi->zplt;
+    xplt = meshi->xplt_smv;
+    yplt = meshi->yplt_smv;
+    zplt = meshi->zplt_smv;
 
     dx = xplt[1] - xplt[0];
     dy = yplt[1] - yplt[0];
@@ -673,9 +673,9 @@ void DrawObstOutlines(void){
     float *xplt, *yplt, *zplt;
 
     meshi = global_scase.meshescoll.meshinfo + n;
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
+    xplt = meshi->xplt_fds;
+    yplt = meshi->yplt_fds;
+    zplt = meshi->zplt_fds;
     for(i = 0;i < meshi->nbptrs;i++){
       blockagedata *bc;
 
@@ -911,12 +911,12 @@ void GetBlockVals(  float *xmin, float *xmax,
     *zmax = xyz[5];
   }
   else{
-    *xmin = current_mesh->xplt_orig[bc->ijk[IMIN]]-current_mesh->offset[XXX];
-    *xmax = current_mesh->xplt_orig[bc->ijk[IMAX]]-current_mesh->offset[XXX];
-    *ymin = current_mesh->yplt_orig[bc->ijk[JMIN]]-current_mesh->offset[YYY];
-    *ymax = current_mesh->yplt_orig[bc->ijk[JMAX]]-current_mesh->offset[YYY];
-    *zmin = current_mesh->zplt_orig[bc->ijk[KMIN]]-current_mesh->offset[ZZZ];
-    *zmax = current_mesh->zplt_orig[bc->ijk[KMAX]]-current_mesh->offset[ZZZ];
+    *xmin = current_mesh->xplt_fds[bc->ijk[IMIN]]-current_mesh->offset[XXX];
+    *xmax = current_mesh->xplt_fds[bc->ijk[IMAX]]-current_mesh->offset[XXX];
+    *ymin = current_mesh->yplt_fds[bc->ijk[JMIN]]-current_mesh->offset[YYY];
+    *ymax = current_mesh->yplt_fds[bc->ijk[JMAX]]-current_mesh->offset[YYY];
+    *zmin = current_mesh->zplt_fds[bc->ijk[KMIN]]-current_mesh->offset[ZZZ];
+    *zmax = current_mesh->zplt_fds[bc->ijk[KMAX]]-current_mesh->offset[ZZZ];
   }
   *imin = bc->ijk[IMIN];
   *jmin = bc->ijk[JMIN];
@@ -1145,9 +1145,9 @@ void SetCVentDirs(void){
 
     meshi=global_scase.meshescoll.meshinfo+ii;
 
-    xplt = meshi->xplt_cen;
-    yplt = meshi->yplt_cen;
-    zplt = meshi->zplt_cen;
+    xplt = meshi->xplt_cen_smv;
+    yplt = meshi->yplt_cen_smv;
+    zplt = meshi->zplt_cen_smv;
     for(iv = 0;iv < meshi->ncvents;iv++){
       cventdata *cvi;
       int nx=0, ny=0;
@@ -1321,9 +1321,9 @@ void SetVentDirs(void){
     jbar = meshi->jbar;
     kbar = meshi->kbar;
     c_iblank = meshi->c_iblank_cell;
-    xplttemp=meshi->xplt;
-    yplttemp=meshi->yplt;
-    zplttemp=meshi->zplt;
+    xplttemp=meshi->xplt_smv;
+    yplttemp=meshi->yplt_smv;
+    zplttemp=meshi->zplt_smv;
 
     for(iv=0;iv<meshi->nvents+12;iv++){
       ventdata *vi;
@@ -1513,9 +1513,9 @@ int InBlockage(const meshdata *meshi,float x, float y, float z){
   int i;
   float *xplt, *yplt, *zplt;
 
-  xplt=meshi->xplt;
-  yplt=meshi->yplt;
-  zplt=meshi->zplt;
+  xplt=meshi->xplt_smv;
+  yplt=meshi->yplt_smv;
+  zplt=meshi->zplt_smv;
 
   for(i=0;i<meshi->nbptrs;i++){
     blockagedata *bc;
@@ -1567,34 +1567,34 @@ void SetInteriorBlockages(void){
       }
       xyzDELTA = bc->xyzDELTA;
 
-      xyzDELTA[0] = bc->xmin-meshi->boxeps[0];
+      xyzDELTA[0] = bc->xmin-meshi->boxeps_smv[0];
       xyzDELTA[1] = (bc->ymin+bc->ymax)/2.0;
       xyzDELTA[2] = (bc->zmin+bc->zmax)/2.0;
 
       xyzDELTA += 3;
-      xyzDELTA[0] = bc->xmax+meshi->boxeps[0];
+      xyzDELTA[0] = bc->xmax+meshi->boxeps_smv[0];
       xyzDELTA[1] = (bc->ymin+bc->ymax)/2.0;
       xyzDELTA[2] = (bc->zmin+bc->zmax)/2.0;
 
       xyzDELTA += 3;
       xyzDELTA[0] = (bc->xmin+bc->xmax)/2.0;
-      xyzDELTA[1] = bc->ymin-meshi->boxeps[1];
+      xyzDELTA[1] = bc->ymin-meshi->boxeps_smv[1];
       xyzDELTA[2] = (bc->zmin+bc->zmax)/2.0;
 
       xyzDELTA += 3;
       xyzDELTA[0] = (bc->xmin+bc->xmax)/2.0;
-      xyzDELTA[1] = bc->ymax+meshi->boxeps[1];
+      xyzDELTA[1] = bc->ymax+meshi->boxeps_smv[1];
       xyzDELTA[2] = (bc->zmin+bc->zmax)/2.0;
 
       xyzDELTA += 3;
       xyzDELTA[0] = (bc->xmin+bc->xmax)/2.0;
       xyzDELTA[1] = (bc->ymin+bc->ymax)/2.0;
-      xyzDELTA[2] = bc->zmin-meshi->boxeps[2];
+      xyzDELTA[2] = bc->zmin-meshi->boxeps_smv[2];
 
       xyzDELTA += 3;
       xyzDELTA[0] = (bc->xmin+bc->xmax)/2.0;
       xyzDELTA[1] = (bc->ymin+bc->ymax)/2.0;
-      xyzDELTA[2] = bc->zmax+meshi->boxeps[2];
+      xyzDELTA[2] = bc->zmax+meshi->boxeps_smv[2];
     }
   }
   for(i = 0; i<global_scase.meshescoll.nmeshes; i++){
@@ -1947,9 +1947,9 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
 
   assert((bc==NULL&&vi!=NULL)||(bc!=NULL&&vi==NULL));
 
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_smv;
+  yplt = meshi->yplt_smv;
+  zplt = meshi->zplt_smv;
   assert((bc!=NULL&&vi==NULL)||(bc==NULL&&vi!=NULL));
   if(bc!=NULL){
     jend=6;
@@ -4429,13 +4429,13 @@ void InitUserTicks(void){
     meshdata *meshi;
 
     meshi = global_scase.meshescoll.meshinfo + i;
-    user_tick_min[0]=MIN(meshi->boxmin[0],user_tick_min[0]);
-    user_tick_min[1]=MIN(meshi->boxmin[1],user_tick_min[1]);
-    user_tick_min[2]=MIN(meshi->boxmin[2],user_tick_min[2]);
+    user_tick_min[0]=MIN(meshi->boxmin_fds[0],user_tick_min[0]);
+    user_tick_min[1]=MIN(meshi->boxmin_fds[1],user_tick_min[1]);
+    user_tick_min[2]=MIN(meshi->boxmin_fds[2],user_tick_min[2]);
 
-    user_tick_max[0]=MAX(meshi->boxmax[0],user_tick_max[0]);
-    user_tick_max[1]=MAX(meshi->boxmax[1],user_tick_max[1]);
-    user_tick_max[2]=MAX(meshi->boxmax[2],user_tick_max[2]);
+    user_tick_max[0]=MAX(meshi->boxmax_fds[0],user_tick_max[0]);
+    user_tick_max[1]=MAX(meshi->boxmax_fds[1],user_tick_max[1]);
+    user_tick_max[2]=MAX(meshi->boxmax_fds[2],user_tick_max[2]);
   }
 
   user_tick_origin[0]=user_tick_min[0];
