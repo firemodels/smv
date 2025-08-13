@@ -6230,6 +6230,10 @@ extern "C" void GLUIIsoBoundCB(int var){
     GLUIIsoBoundCB(ISO_COLORS);
     break;
   case ISO_TRANSPARENCY:
+    if(glui_iso_transparency < 0 || glui_iso_transparency > 255) {
+      glui_iso_transparency = CLAMP(glui_iso_transparency, 0, 255);
+      SPINNER_iso_transparency->set_int_val(glui_iso_transparency);
+    }
     iso_transparency = CLAMP(((float)glui_iso_transparency + 0.1) / 255.0,0.0,1.0);
     break;
   case ISO_COLORS:
