@@ -208,24 +208,24 @@ typedef struct _meshdata {
   float meshrgb[3], *meshrgb_ptr;
   float mesh_offset[3], *mesh_offset_ptr;
   int blockvis, datavis;
-  float *xplt_smv, *yplt_smv, *zplt_smv;
-  double *xpltd_fds, *ypltd_fds, *zpltd_fds;
   int ivolbar, jvolbar, kvolbar;
-  float *xvolplt_smv, *yvolplt_smv, *zvolplt_smv;
-  float *xplt_cen_smv, *yplt_cen_smv, *zplt_cen_smv;
-  float *xplt_fds, *yplt_fds, *zplt_fds;
+  float  *xplt_smv,     *yplt_smv,     *zplt_smv;
+  float  *xplt_fds,     *yplt_fds,     *zplt_fds;
+  double *xpltd_fds,    *ypltd_fds,    *zpltd_fds;
+  float  *xvolplt_smv,  *yvolplt_smv,  *zvolplt_smv;
+  float  *xplt_cen_smv, *yplt_cen_smv, *zplt_cen_smv;
+  float   xcen_smv,      ycen_smv,      zcen_smv;
+  float boxmin_fds[3], boxmiddle_fds[3], boxmax_fds[3], boxeps_fds[3];
+  float boxmin_smv[3], boxmiddle_smv[3], boxmax_smv[3], boxeps_smv[3];
+  float dbox_fds[3], dcell_smv, dcell3_smv[3];
   int drawsides[7];
   int extsides[7];   // 1 if on exterior side of a supermesh, 0 otherwise
   int is_extface[6]; // 1 if adjacent to exterior, 0 if adjacent to interior, -1 if unknown
   int inside;
   int in_frustum;    // 1 if part or all of mesh is in the view frustum
-  float boxmin_fds[3], boxmiddle_fds[3], boxmax_fds[3], boxeps_fds[3];
-  float boxmin_smv[3], boxmiddle_smv[3], boxmax_smv[3], boxeps_smv[3];
-  float dbox_fds[3], dcell_smv, dcell3_smv[3];
   float verts[24], eyedist;
   float slice_min[3], slice_max[3];
   float xyz_bar0[3], xyz_bar[3];
-  float xcen_smv, ycen_smv, zcen_smv;
   float face_centers[18];
   float offset[3];
   float xyzmaxdiff;
