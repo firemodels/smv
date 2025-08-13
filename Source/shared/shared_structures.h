@@ -212,7 +212,7 @@ typedef struct _meshdata {
   double *xpltd, *ypltd, *zpltd;
   int ivolbar, jvolbar, kvolbar;
   float *xvolplt, *yvolplt, *zvolplt;
-  float *xplt_cen, *yplt_cen, *zplt_cen;
+  float *xplt_cen_smv, *yplt_cen_smv, *zplt_cen_smv;
   float *xplt_fds, *yplt_fds, *zplt_fds;
   float x0, x1, y0, y1, z0, z1;
   int drawsides[7];

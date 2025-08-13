@@ -561,9 +561,9 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
     zplt = meshi->zplt_smv;
   }
   else{
-    xplt = meshi->xplt_cen;
-    yplt = meshi->yplt_cen;
-    zplt = meshi->zplt_cen;
+    xplt = meshi->xplt_cen_smv;
+    yplt = meshi->yplt_cen_smv;
+    zplt = meshi->zplt_cen_smv;
   }
   ibar = meshi->ibar;
   jbar = meshi->jbar;

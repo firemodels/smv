@@ -1145,9 +1145,9 @@ void SetCVentDirs(void){
 
     meshi=global_scase.meshescoll.meshinfo+ii;
 
-    xplt = meshi->xplt_cen;
-    yplt = meshi->yplt_cen;
-    zplt = meshi->zplt_cen;
+    xplt = meshi->xplt_cen_smv;
+    yplt = meshi->yplt_cen_smv;
+    zplt = meshi->zplt_cen_smv;
     for(iv = 0;iv < meshi->ncvents;iv++){
       cventdata *cvi;
       int nx=0, ny=0;

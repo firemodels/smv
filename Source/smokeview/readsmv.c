@@ -1461,10 +1461,10 @@ void UpdateMeshCoords(void){
   for(igrid=0;igrid<global_scase.meshescoll.nmeshes;igrid++){
     meshdata *meshi;
     float *face_centers;
-    float *xplt_cen, *yplt_cen, *zplt_cen;
+    float *xplt_cen_smv, *yplt_cen_smv, *zplt_cen_smv;
     int ibar, jbar, kbar;
     float *xplt_fds, *yplt_fds, *zplt_fds;
-    float *xplt, *yplt, *zplt;
+    float *xplt_smv, *yplt_smv, *zplt_smv;
     int j,k;
     float dx, dy, dz;
     float *dplane_min, *dplane_max;
@@ -1476,61 +1476,61 @@ void UpdateMeshCoords(void){
     xplt_fds = meshi->xplt_fds;
     yplt_fds = meshi->yplt_fds;
     zplt_fds = meshi->zplt_fds;
-    xplt = meshi->xplt_smv;
-    yplt = meshi->yplt_smv;
-    zplt = meshi->zplt_smv;
-    xplt_cen = meshi->xplt_cen;
-    yplt_cen = meshi->yplt_cen;
-    zplt_cen = meshi->zplt_cen;
+    xplt_smv = meshi->xplt_smv;
+    yplt_smv = meshi->yplt_smv;
+    zplt_smv = meshi->zplt_smv;
+    xplt_cen_smv = meshi->xplt_cen_smv;
+    yplt_cen_smv = meshi->yplt_cen_smv;
+    zplt_cen_smv = meshi->zplt_cen_smv;
 
     for(i=0;i<ibar+1;i++){
-      xplt_fds[i]=xplt[i];
-      xplt[i]=FDS2SMV_X(meshi->xpltd[i]);
+      xplt_fds[i]=xplt_smv[i];
+      xplt_smv[i]=FDS2SMV_X(meshi->xpltd[i]);
     }
     for(j=0;j<jbar+1;j++){
-      yplt_fds[j]=yplt[j];
-      yplt[j]=FDS2SMV_Y(meshi->ypltd[j]);
+      yplt_fds[j]=yplt_smv[j];
+      yplt_smv[j]=FDS2SMV_Y(meshi->ypltd[j]);
     }
     for(k=0;k<kbar+1;k++){
-      zplt_fds[k]=zplt[k];
-      zplt[k]=FDS2SMV_Z(meshi->zpltd[k]);
+      zplt_fds[k]=zplt_smv[k];
+      zplt_smv[k]=FDS2SMV_Z(meshi->zpltd[k]);
     }
 
     for(nn=0;nn<ibar;nn++){
-      xplt_cen[nn]=(xplt[nn]+xplt[nn+1])/2.0;
+      xplt_cen_smv[nn]=(xplt_smv[nn]+xplt_smv[nn+1])/2.0;
     }
     for(nn=0;nn<jbar;nn++){
-      yplt_cen[nn]=(yplt[nn]+yplt[nn+1])/2.0;
+      yplt_cen_smv[nn]=(yplt_smv[nn]+yplt_smv[nn+1])/2.0;
     }
     for(nn=0;nn<kbar;nn++){
-      zplt_cen[nn]=(zplt[nn]+zplt[nn+1])/2.0;
+      zplt_cen_smv[nn]=(zplt_smv[nn]+zplt_smv[nn+1])/2.0;
     }
 
-    meshi->boxoffset=-(zplt[1]-zplt[0])/10.0;
+    meshi->boxoffset=-(zplt_smv[1]-zplt_smv[0])/10.0;
     meshi->dbox_fds[0]      = meshi->boxmax_fds[0]-meshi->boxmin_fds[0];
     meshi->dbox_fds[1]      = meshi->boxmax_fds[1]-meshi->boxmin_fds[1];
     meshi->dbox_fds[2]      = meshi->boxmax_fds[2]-meshi->boxmin_fds[2];
     meshi->boxmiddle_fds[0] = meshi->boxmin_fds[0]+meshi->dbox_fds[0]/2.0;
     meshi->boxmiddle_fds[1] = meshi->boxmin_fds[1]+meshi->dbox_fds[1]/2.0;
     meshi->boxmiddle_fds[2] = meshi->boxmin_fds[2]+meshi->dbox_fds[2]/2.0;
-    meshi->boxeps_smv[0]    = 0.5*(xplt[ibar]-xplt[0])/(float)ibar;
-    meshi->boxeps_smv[1]    = 0.5*(yplt[jbar]-yplt[0])/(float)jbar;
-    meshi->boxeps_smv[2]    = 0.5*(zplt[kbar]-zplt[0])/(float)kbar;
-    meshi->dcell3_smv[0]    = xplt[1]-xplt[0];
-    meshi->dcell3_smv[1]    = yplt[1]-yplt[0];
-    meshi->dcell3_smv[2]    = zplt[1]-zplt[0];
+    meshi->boxeps_smv[0]    = 0.5*(xplt_smv[ibar]-xplt_smv[0])/(float)ibar;
+    meshi->boxeps_smv[1]    = 0.5*(yplt_smv[jbar]-yplt_smv[0])/(float)jbar;
+    meshi->boxeps_smv[2]    = 0.5*(zplt_smv[kbar]-zplt_smv[0])/(float)kbar;
+    meshi->dcell3_smv[0]    = xplt_smv[1]-xplt_smv[0];
+    meshi->dcell3_smv[1]    = yplt_smv[1]-yplt_smv[0];
+    meshi->dcell3_smv[2]    = zplt_smv[1]-zplt_smv[0];
     FDS2SMV_XYZ(meshi->boxmin_smv,meshi->boxmin_fds);
     FDS2SMV_XYZ(meshi->boxmax_smv,meshi->boxmax_fds);
     FDS2SMV_XYZ(meshi->boxmiddle_smv, meshi->boxmiddle_fds);
-    meshi->x0 = xplt[0];
-    meshi->x1 = xplt[ibar];
-    meshi->y0 = yplt[0];
-    meshi->y1 = yplt[jbar];
-    meshi->z0 = zplt[0];
-    meshi->z1 = zplt[kbar];
-    dx = xplt[1]-xplt[0];
-    dy = yplt[1]-yplt[0];
-    dz = zplt[1]-zplt[0];
+    meshi->x0 = xplt_smv[0];
+    meshi->x1 = xplt_smv[ibar];
+    meshi->y0 = yplt_smv[0];
+    meshi->y1 = yplt_smv[jbar];
+    meshi->z0 = zplt_smv[0];
+    meshi->z1 = zplt_smv[kbar];
+    dx = xplt_smv[1]-xplt_smv[0];
+    dy = yplt_smv[1]-yplt_smv[0];
+    dz = zplt_smv[1]-zplt_smv[0];
     meshi->dcell_smv = sqrt(dx*dx+dy*dy+dz*dz);
 
     dplane_min = meshi->dplane_min;

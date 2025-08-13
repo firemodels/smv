@@ -1078,9 +1078,9 @@ void InitMesh(meshdata *meshi){
   meshi->xvolplt = NULL;
   meshi->yvolplt = NULL;
   meshi->zvolplt = NULL;
-  meshi->xplt_cen = NULL;
-  meshi->yplt_cen = NULL;
-  meshi->zplt_cen = NULL;
+  meshi->xplt_cen_smv = NULL;
+  meshi->yplt_cen_smv = NULL;
+  meshi->zplt_cen_smv = NULL;
   meshi->xplt_fds = NULL;
   meshi->yplt_fds = NULL;
   meshi->zplt_fds = NULL;
@@ -6693,7 +6693,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       float *xp, *yp, *zp;
       double *xpd, *ypd, *zpd;
       float *xp2, *yp2, *zp2;
-      float *xplt_cen, *yplt_cen,*zplt_cen;
+      float *xplt_cen_smv, *yplt_cen_smv,*zplt_cen_smv;
       int *imap, *jmap, *kmap;
       int mesh_nabors[6] = {-2, -2, -2, -2, -2, -2};
 
@@ -6744,9 +6744,9 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
          NewMemory((void **)&xpd, sizeof(double)*(ibartemp + 1)) == 0 ||
          NewMemory((void **)&ypd, sizeof(double)*(jbartemp + 1)) == 0 ||
          NewMemory((void **)&zpd, sizeof(double)*(kbartemp + 1)) == 0 ||
-         NewMemory((void **)&xplt_cen, sizeof(float) * ibartemp) == 0 ||
-         NewMemory((void **)&yplt_cen,sizeof(float)*jbartemp)==0||
-         NewMemory((void **)&zplt_cen,sizeof(float)*kbartemp)==0||
+         NewMemory((void **)&xplt_cen_smv, sizeof(float) * ibartemp) == 0 ||
+         NewMemory((void **)&yplt_cen_smv,sizeof(float)*jbartemp)==0||
+         NewMemory((void **)&zplt_cen_smv,sizeof(float)*kbartemp)==0||
          NewMemory((void **)&xp2,sizeof(float)*(ibartemp+1))==0||
          NewMemory((void **)&yp2,sizeof(float)*(jbartemp+1))==0||
          NewMemory((void **)&zp2,sizeof(float)*(kbartemp+1))==0
@@ -6763,9 +6763,9 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         meshi->xpltd = xpd;
         meshi->ypltd = ypd;
         meshi->zpltd = zpd;
-        meshi->xplt_cen=xplt_cen;
-        meshi->yplt_cen=yplt_cen;
-        meshi->zplt_cen=zplt_cen;
+        meshi->xplt_cen_smv=xplt_cen_smv;
+        meshi->yplt_cen_smv=yplt_cen_smv;
+        meshi->zplt_cen_smv=zplt_cen_smv;
         meshi->xplt_fds=xp2;
         meshi->yplt_fds=yp2;
         meshi->zplt_fds=zp2;
@@ -6927,7 +6927,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
     meshdata *meshi;
     float *xp, *yp, *zp;
     float *xp2, *yp2, *zp2;
-    float *xplt_cen, *yplt_cen, *zplt_cen;
+    float *xplt_cen_smv, *yplt_cen_smv, *zplt_cen_smv;
     int  nn;
 
     xp=NULL; yp=NULL; zp=NULL;
@@ -6936,9 +6936,9 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
        NewMemory((void **)&xp,sizeof(float)*(ibartemp+1))==0||
        NewMemory((void **)&yp,sizeof(float)*(jbartemp+1))==0||
        NewMemory((void **)&zp,sizeof(float)*(kbartemp+1))==0||
-       NewMemory((void **)&xplt_cen,sizeof(float)*ibartemp)==0||
-       NewMemory((void **)&yplt_cen,sizeof(float)*jbartemp)==0||
-       NewMemory((void **)&zplt_cen,sizeof(float)*kbartemp)==0||
+       NewMemory((void **)&xplt_cen_smv,sizeof(float)*ibartemp)==0||
+       NewMemory((void **)&yplt_cen_smv,sizeof(float)*jbartemp)==0||
+       NewMemory((void **)&zplt_cen_smv,sizeof(float)*kbartemp)==0||
        NewMemory((void **)&xp2,sizeof(float)*(ibartemp+1))==0||
        NewMemory((void **)&yp2,sizeof(float)*(jbartemp+1))==0||
        NewMemory((void **)&zp2,sizeof(float)*(kbartemp+1))==0
@@ -6956,9 +6956,9 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
     meshi->xplt_smv=xp;
     meshi->yplt_smv=yp;
     meshi->zplt_smv=zp;
-    meshi->xplt_cen=xplt_cen;
-    meshi->yplt_cen=yplt_cen;
-    meshi->zplt_cen=zplt_cen;
+    meshi->xplt_cen_smv=xplt_cen_smv;
+    meshi->yplt_cen_smv=yplt_cen_smv;
+    meshi->zplt_cen_smv=zplt_cen_smv;
     meshi->xplt_fds=xp2;
     meshi->yplt_fds=yp2;
     meshi->zplt_fds=zp2;
