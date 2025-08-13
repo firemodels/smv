@@ -52,9 +52,9 @@ void OutputBoundaryData(patchdata *patchi){
   fprintf(csvstream,"region:,%f,%f,%f,%f,%f,%f\n\n",patchout_xmin,patchout_xmax,patchout_ymin,patchout_ymax,patchout_zmin,patchout_zmax);
 
   vals = meshi->patchval;
-  xplt = meshi->xplt_orig;
-  yplt = meshi->yplt_orig;
-  zplt = meshi->zplt_orig;
+  xplt = meshi->xplt_fds;
+  yplt = meshi->yplt_fds;
+  zplt = meshi->zplt_fds;
 
   for(iframe=0;iframe<patchi->ntimes;iframe++){
     int ipatch;
@@ -3975,8 +3975,8 @@ int CompareMeshResolution(int dir, meshdata *meshi, meshdata *meshj){
   float grid_eps;
   float *dxyzi, *dxyzj;
 
-  dxyzi = meshi->dxyz_orig;
-  dxyzj = meshj->dxyz_orig;
+  dxyzi = meshi->dxyz_fds;
+  dxyzj = meshj->dxyz_fds;
   grid_eps = MIN(dxyzi[dir],dxyzj[dir])/2.0;
 
   if(ABS(dxyzi[dir]-dxyzj[dir]) < grid_eps)return 0;
@@ -4016,7 +4016,7 @@ int IsBoundaryDuplicate(patchdata *patchi, int flag){
     if((patchi->dir != patchj->dir)||patchj->dir==0)continue;
     if(strcmp(labeli->longlabel, labelj->longlabel) != 0)continue;
 
-    grid_eps = MAX(meshi->dxyz_orig[patchi->dir],meshj->dxyz_orig[patchi->dir]);
+    grid_eps = MAX(meshi->dxyz_fds[patchi->dir],meshj->dxyz_fds[patchi->dir]);
 
     xyzminj = patchj->xyz_min;
     xyzmaxj = patchj->xyz_max;

@@ -1793,8 +1793,8 @@ void GetSmokeDir(float *mm){
         break;
       case 4:
         alphadir = ALPHA_XY;
-        dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
-        dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
+        dx = meshj->xplt_fds[1] - meshj->xplt_fds[0];
+        dy = meshj->yplt_fds[1] - meshj->yplt_fds[0];
         factor = dx*dx + dy*dy;
         if(factor == 0.0){
           factor = 1.0;
@@ -1813,8 +1813,8 @@ void GetSmokeDir(float *mm){
         break;
       case 5:
         alphadir = ALPHA_XY;
-        dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
-        dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
+        dx = meshj->xplt_fds[1] - meshj->xplt_fds[0];
+        dy = meshj->yplt_fds[1] - meshj->yplt_fds[0];
         factor = dx*dx + dy*dy;
         if(factor == 0.0){
           factor = 1.0;
@@ -1833,8 +1833,8 @@ void GetSmokeDir(float *mm){
         break;
       case 6:
         alphadir = ALPHA_YZ;
-        dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
-        dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
+        dy = meshj->yplt_fds[1] - meshj->yplt_fds[0];
+        dz = meshj->zplt_fds[1] - meshj->zplt_fds[0];
         factor = dz*dz + dy*dy;
         if(factor == 0.0){
           factor = 1.0;
@@ -1853,8 +1853,8 @@ void GetSmokeDir(float *mm){
         break;
       case 7:
         alphadir = ALPHA_YZ;
-        dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
-        dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
+        dy = meshj->yplt_fds[1] - meshj->yplt_fds[0];
+        dz = meshj->zplt_fds[1] - meshj->zplt_fds[0];
         factor = dz*dz + dy*dy;
         if(factor == 0.0){
           factor = 1.0;
@@ -1873,8 +1873,8 @@ void GetSmokeDir(float *mm){
         break;
       case 8:
         alphadir = ALPHA_XZ;
-        dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
-        dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
+        dx = meshj->xplt_fds[1] - meshj->xplt_fds[0];
+        dz = meshj->zplt_fds[1] - meshj->zplt_fds[0];
         factor = dz*dz + dx*dx;
         if(factor == 0.0){
           factor = 1.0;
@@ -1893,8 +1893,8 @@ void GetSmokeDir(float *mm){
         break;
       case 9:
         alphadir = ALPHA_XZ;
-        dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
-        dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
+        dx = meshj->xplt_fds[1] - meshj->xplt_fds[0];
+        dz = meshj->zplt_fds[1] - meshj->zplt_fds[0];
         factor = dx*dx + dz*dz;
         if(factor == 0.0){
           factor = 1.0;
@@ -1958,7 +1958,7 @@ void GetSmokeDir(float *mm){
         use_soot_density = 1;
         maxval = soot->maxvals[soot->ismoke3d_time];
       }
-      InitAlphas(soot->alphas_smokedir[minalphadir], soot->alphas_firedir[minalphadir], soot->extinct, use_soot_density, maxval, glui_smoke3d_extinct, meshj->dxyz_orig[0], smoke_dist);
+      InitAlphas(soot->alphas_smokedir[minalphadir], soot->alphas_firedir[minalphadir], soot->extinct, use_soot_density, maxval, glui_smoke3d_extinct, meshj->dxyz_fds[0], smoke_dist);
     }
     if(demo_mode != 0){
       meshj->smokedir = 1;

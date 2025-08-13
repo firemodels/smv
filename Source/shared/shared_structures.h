@@ -213,7 +213,7 @@ typedef struct _meshdata {
   int ivolbar, jvolbar, kvolbar;
   float *xvolplt, *yvolplt, *zvolplt;
   float *xplt_cen, *yplt_cen, *zplt_cen;
-  float *xplt_orig, *yplt_orig, *zplt_orig;
+  float *xplt_fds, *yplt_fds, *zplt_fds;
   float x0, x1, y0, y1, z0, z1;
   int drawsides[7];
   int extsides[7];   // 1 if on exterior side of a supermesh, 0 otherwise
@@ -292,7 +292,7 @@ typedef struct _meshdata {
   int *iso_timeslist;
   int iso_itime;
   int smokedir,smokedir_old;
-  float dxDdx, dyDdx, dzDdx, dxyDdx, dxzDdx, dyzDdx, dxyz_orig[3];
+  float dxDdx, dyDdx, dzDdx, dxyDdx, dxzDdx, dyzDdx, dxyz_fds[3];
   float smoke_dist[6];
   float norm[3];
   float dplane_min[4], dplane_max[4];

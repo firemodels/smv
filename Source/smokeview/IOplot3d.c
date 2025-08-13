@@ -1085,15 +1085,15 @@ int GetPlot3dIndex(meshdata *meshi, int dir, float val){
 
   switch(dir){
     case XDIR:
-      xyz = meshi->xplt_orig;
+      xyz = meshi->xplt_fds;
       nvals = meshi->ibar;
       break;
     case YDIR:
-      xyz = meshi->yplt_orig;
+      xyz = meshi->yplt_fds;
       nvals = meshi->jbar;
       break;
     case ZDIR:
-      xyz = meshi->zplt_orig;
+      xyz = meshi->zplt_fds;
       nvals = meshi->kbar;
       break;
     default:
@@ -1744,9 +1744,9 @@ void GetPlot3dUVW(float xyz[3], float uvw[3]){
 
     meshi = global_scase.meshescoll.meshinfo + i;
 
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
+    xplt = meshi->xplt_fds;
+    yplt = meshi->yplt_fds;
+    zplt = meshi->zplt_fds;
     if(xyz[0]<xplt[0]||xyz[1]<yplt[0]||xyz[2]<zplt[0])continue;
 
     ibar = meshi->ibar;

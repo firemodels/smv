@@ -673,9 +673,9 @@ void DrawObstOutlines(void){
     float *xplt, *yplt, *zplt;
 
     meshi = global_scase.meshescoll.meshinfo + n;
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
+    xplt = meshi->xplt_fds;
+    yplt = meshi->yplt_fds;
+    zplt = meshi->zplt_fds;
     for(i = 0;i < meshi->nbptrs;i++){
       blockagedata *bc;
 
@@ -911,12 +911,12 @@ void GetBlockVals(  float *xmin, float *xmax,
     *zmax = xyz[5];
   }
   else{
-    *xmin = current_mesh->xplt_orig[bc->ijk[IMIN]]-current_mesh->offset[XXX];
-    *xmax = current_mesh->xplt_orig[bc->ijk[IMAX]]-current_mesh->offset[XXX];
-    *ymin = current_mesh->yplt_orig[bc->ijk[JMIN]]-current_mesh->offset[YYY];
-    *ymax = current_mesh->yplt_orig[bc->ijk[JMAX]]-current_mesh->offset[YYY];
-    *zmin = current_mesh->zplt_orig[bc->ijk[KMIN]]-current_mesh->offset[ZZZ];
-    *zmax = current_mesh->zplt_orig[bc->ijk[KMAX]]-current_mesh->offset[ZZZ];
+    *xmin = current_mesh->xplt_fds[bc->ijk[IMIN]]-current_mesh->offset[XXX];
+    *xmax = current_mesh->xplt_fds[bc->ijk[IMAX]]-current_mesh->offset[XXX];
+    *ymin = current_mesh->yplt_fds[bc->ijk[JMIN]]-current_mesh->offset[YYY];
+    *ymax = current_mesh->yplt_fds[bc->ijk[JMAX]]-current_mesh->offset[YYY];
+    *zmin = current_mesh->zplt_fds[bc->ijk[KMIN]]-current_mesh->offset[ZZZ];
+    *zmax = current_mesh->zplt_fds[bc->ijk[KMAX]]-current_mesh->offset[ZZZ];
   }
   *imin = bc->ijk[IMIN];
   *jmin = bc->ijk[JMIN];

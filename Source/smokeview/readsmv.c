@@ -1463,7 +1463,7 @@ void UpdateMeshCoords(void){
     float *face_centers;
     float *xplt_cen, *yplt_cen, *zplt_cen;
     int ibar, jbar, kbar;
-    float *xplt_orig, *yplt_orig, *zplt_orig;
+    float *xplt_fds, *yplt_fds, *zplt_fds;
     float *xplt, *yplt, *zplt;
     int j,k;
     float dx, dy, dz;
@@ -1473,9 +1473,9 @@ void UpdateMeshCoords(void){
     ibar=meshi->ibar;
     jbar=meshi->jbar;
     kbar=meshi->kbar;
-    xplt_orig = meshi->xplt_orig;
-    yplt_orig = meshi->yplt_orig;
-    zplt_orig = meshi->zplt_orig;
+    xplt_fds = meshi->xplt_fds;
+    yplt_fds = meshi->yplt_fds;
+    zplt_fds = meshi->zplt_fds;
     xplt = meshi->xplt;
     yplt = meshi->yplt;
     zplt = meshi->zplt;
@@ -1484,15 +1484,15 @@ void UpdateMeshCoords(void){
     zplt_cen = meshi->zplt_cen;
 
     for(i=0;i<ibar+1;i++){
-      xplt_orig[i]=xplt[i];
+      xplt_fds[i]=xplt[i];
       xplt[i]=FDS2SMV_X(meshi->xpltd[i]);
     }
     for(j=0;j<jbar+1;j++){
-      yplt_orig[j]=yplt[j];
+      yplt_fds[j]=yplt[j];
       yplt[j]=FDS2SMV_Y(meshi->ypltd[j]);
     }
     for(k=0;k<kbar+1;k++){
-      zplt_orig[k]=zplt[k];
+      zplt_fds[k]=zplt[k];
       zplt[k]=FDS2SMV_Z(meshi->zpltd[k]);
     }
 
@@ -1561,7 +1561,7 @@ void UpdateMeshCoords(void){
     face_centers[17]=meshi->boxmax_smv[2];
   }
   if(global_scase.nterraininfo>0){
-    boundaryoffset = (global_scase.meshescoll.meshinfo->zplt_orig[1] - global_scase.meshescoll.meshinfo->zplt_orig[0]) / 10.0;
+    boundaryoffset = (global_scase.meshescoll.meshinfo->zplt_fds[1] - global_scase.meshescoll.meshinfo->zplt_fds[0]) / 10.0;
   }
 
   UpdateBlockType();
@@ -1686,13 +1686,13 @@ void UpdateMeshCoords(void){
 
     meshi = global_scase.meshescoll.meshinfo+i;
 
-    dx = meshi->xplt_orig[1]-meshi->xplt_orig[0];
-    dy = meshi->yplt_orig[1]-meshi->yplt_orig[0];
-    dz = meshi->zplt_orig[1]-meshi->zplt_orig[0];
+    dx = meshi->xplt_fds[1]-meshi->xplt_fds[0];
+    dy = meshi->yplt_fds[1]-meshi->yplt_fds[0];
+    dz = meshi->zplt_fds[1]-meshi->zplt_fds[0];
 
-    meshi->dxyz_orig[0] = dx;
-    meshi->dxyz_orig[1] = dy;
-    meshi->dxyz_orig[2] = dz;
+    meshi->dxyz_fds[0] = dx;
+    meshi->dxyz_fds[1] = dy;
+    meshi->dxyz_fds[2] = dz;
 
     meshi->dxDdx  = 1.0;
     meshi->dyDdx  = dy/dx;
@@ -1739,9 +1739,9 @@ void InitCellMeshInfo(void){
   dxyz      = cellmeshinfo->dxyz;
   nxyz      = cellmeshinfo->nxyz;
 
-  x = global_scase.meshescoll.meshinfo->xplt_orig;
-  y = global_scase.meshescoll.meshinfo->yplt_orig;
-  z = global_scase.meshescoll.meshinfo->zplt_orig;
+  x = global_scase.meshescoll.meshinfo->xplt_fds;
+  y = global_scase.meshescoll.meshinfo->yplt_fds;
+  z = global_scase.meshescoll.meshinfo->zplt_fds;
 
   xyzminmax[0] = x[0];
   xyzminmax[1] = x[global_scase.meshescoll.meshinfo->ibar];
@@ -1757,9 +1757,9 @@ void InitCellMeshInfo(void){
     meshdata *meshi;
 
     meshi = global_scase.meshescoll.meshinfo + i;
-    x = meshi->xplt_orig;
-    y = meshi->yplt_orig;
-    z = meshi->zplt_orig;
+    x = meshi->xplt_fds;
+    y = meshi->yplt_fds;
+    z = meshi->zplt_fds;
 
     xyzminmax[0] = MIN(xyzminmax[0], x[0]);
     xyzminmax[1] = MAX(xyzminmax[1], x[global_scase.meshescoll.meshinfo->ibar]);
@@ -1790,9 +1790,9 @@ void InitCellMeshInfo(void){
     float xmin, xmax, ymin, ymax, zmin, zmax;
 
     meshi = global_scase.meshescoll.meshinfo + i;
-    x = meshi->xplt_orig;
-    y = meshi->yplt_orig;
-    z = meshi->zplt_orig;
+    x = meshi->xplt_fds;
+    y = meshi->yplt_fds;
+    z = meshi->zplt_fds;
     xmin = x[0];
     xmax = x[meshi->ibar];
     ymin = y[0];
@@ -2330,9 +2330,9 @@ void InitMeshBlockages(void){
 
     meshi = global_scase.meshescoll.meshinfo + i;
     if(meshi->nbptrs == 0)continue;
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
+    xplt = meshi->xplt_fds;
+    yplt = meshi->yplt_fds;
+    zplt = meshi->zplt_fds;
     is_extface = meshi->is_extface;
     for(j=0; j< 6; j++){
       counts[j]            = 0;

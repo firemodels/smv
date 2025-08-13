@@ -1081,9 +1081,9 @@ void InitMesh(meshdata *meshi){
   meshi->xplt_cen = NULL;
   meshi->yplt_cen = NULL;
   meshi->zplt_cen = NULL;
-  meshi->xplt_orig = NULL;
-  meshi->yplt_orig = NULL;
-  meshi->zplt_orig = NULL;
+  meshi->xplt_fds = NULL;
+  meshi->yplt_fds = NULL;
+  meshi->zplt_fds = NULL;
 
   meshi->f_iblank_cell = NULL;
   meshi->c_iblank_cell = NULL;
@@ -6766,9 +6766,9 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         meshi->xplt_cen=xplt_cen;
         meshi->yplt_cen=yplt_cen;
         meshi->zplt_cen=zplt_cen;
-        meshi->xplt_orig=xp2;
-        meshi->yplt_orig=yp2;
-        meshi->zplt_orig=zp2;
+        meshi->xplt_fds=xp2;
+        meshi->yplt_fds=yp2;
+        meshi->zplt_fds=zp2;
         meshi->ibar=ibartemp;
         meshi->jbar=jbartemp;
         meshi->kbar=kbartemp;
@@ -6959,9 +6959,9 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
     meshi->xplt_cen=xplt_cen;
     meshi->yplt_cen=yplt_cen;
     meshi->zplt_cen=zplt_cen;
-    meshi->xplt_orig=xp2;
-    meshi->yplt_orig=yp2;
-    meshi->zplt_orig=zp2;
+    meshi->xplt_fds=xp2;
+    meshi->yplt_fds=yp2;
+    meshi->zplt_fds=zp2;
     meshi->ibar=ibartemp;
     meshi->jbar=jbartemp;
     meshi->kbar=kbartemp;

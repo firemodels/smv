@@ -295,10 +295,10 @@ void UpdatePlotxyzAll(void){
     float *xplt, *yplt, *zplt, *dxyz;
 
     meshi = global_scase.meshescoll.meshinfo + i;
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
-    dxyz = meshi->dxyz_orig;
+    xplt = meshi->xplt_fds;
+    yplt = meshi->yplt_fds;
+    zplt = meshi->zplt_fds;
+    dxyz = meshi->dxyz_fds;
     dxyz[0] = ABS(xplt[1] - xplt[0]);
     dxyz[1] = ABS(yplt[1] - yplt[0]);
     dxyz[2] = ABS(zplt[1] - zplt[0]);
@@ -482,9 +482,9 @@ int InExterior(float *xyz){
     meshdata *meshi;
 
     meshi = global_scase.meshescoll.meshinfo + i;
-    if(x >= meshi->xplt_orig[0] && x <= meshi->xplt_orig[meshi->ibar] &&
-       y >= meshi->yplt_orig[0] && y <= meshi->yplt_orig[meshi->jbar] &&
-       z >= meshi->zplt_orig[0] && z <= meshi->zplt_orig[meshi->kbar]){
+    if(x >= meshi->xplt_fds[0] && x <= meshi->xplt_fds[meshi->ibar] &&
+       y >= meshi->yplt_fds[0] && y <= meshi->yplt_fds[meshi->jbar] &&
+       z >= meshi->zplt_fds[0] && z <= meshi->zplt_fds[meshi->kbar]){
        return 0;
      }
   }
@@ -507,9 +507,9 @@ meshdata *GetMesh(float *xyz){
     jbar = meshi->jbar;
     kbar = meshi->kbar;
 
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
+    xplt = meshi->xplt_fds;
+    yplt = meshi->yplt_fds;
+    zplt = meshi->zplt_fds;
 
     if(
       xplt[0]<=xyz[0]&&xyz[0]<xplt[ibar]&&
@@ -537,9 +537,9 @@ int OnMeshBoundary(float *xyz){
     jbar = meshi->jbar;
     kbar = meshi->kbar;
 
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
+    xplt = meshi->xplt_fds;
+    yplt = meshi->yplt_fds;
+    zplt = meshi->zplt_fds;
 
     if(xyz[0]<xplt[0]-MESHEPS||xyz[0]>xplt[ibar]+MESHEPS)continue;
     if(xyz[1]<yplt[0]-MESHEPS||xyz[1]>yplt[jbar]+MESHEPS)continue;
@@ -600,9 +600,9 @@ meshdata *GetMeshNoFail(float *xyz){
     jbar = meshi->jbar;
     kbar = meshi->kbar;
 
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
+    xplt = meshi->xplt_fds;
+    yplt = meshi->yplt_fds;
+    zplt = meshi->zplt_fds;
 
     if(
       xplt[0]<=xyz[0]&&xyz[0]<xplt[ibar]&&
@@ -622,9 +622,9 @@ meshdata *GetMeshNoFail(float *xyz){
     jbar = meshi->jbar;
     kbar = meshi->kbar;
 
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
+    xplt = meshi->xplt_fds;
+    yplt = meshi->yplt_fds;
+    zplt = meshi->zplt_fds;
 
     if(
       xplt[0]<=xyz[0]+MESHEPS&&xyz[0]-MESHEPS<=xplt[ibar]&&
@@ -1059,9 +1059,9 @@ float GetBlockageDistance(float x, float y, float z){
     nx = ibar+1;
     nxy = (ibar+1)*(jbar+1);
 
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
+    xplt = meshi->xplt_fds;
+    yplt = meshi->yplt_fds;
+    zplt = meshi->zplt_fds;
 
     xmin = xplt[0];
     xmax = xplt[ibar];
@@ -1168,9 +1168,9 @@ int MakeIBlankCarve(void){
         meshi->boxmin_fds[2]>meshj->boxmin_fds[2]||meshj->boxmax_fds[2]>meshi->boxmax_fds[2]
       )continue;
 
-      xplt = meshi->xplt_orig;
-      yplt = meshi->yplt_orig;
-      zplt = meshi->zplt_orig;
+      xplt = meshi->xplt_fds;
+      yplt = meshi->yplt_fds;
+      zplt = meshi->zplt_fds;
       k2 = 0;
       for(ii=0;ii<nx;ii++){
         if(xplt[ii]<=meshj->boxmin_fds[0]&&meshj->boxmin_fds[0]<xplt[ii+1]){
