@@ -6760,9 +6760,9 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         meshi->xplt_smv=xp;
         meshi->yplt_smv=yp;
         meshi->zplt_smv=zp;
-        meshi->xpltd = xpd;
-        meshi->ypltd = ypd;
-        meshi->zpltd = zpd;
+        meshi->xpltd_fds = xpd;
+        meshi->ypltd_fds = ypd;
+        meshi->zpltd_fds = zpd;
         meshi->xplt_cen_smv=xplt_cen_smv;
         meshi->yplt_cen_smv=yplt_cen_smv;
         meshi->zplt_cen_smv=zplt_cen_smv;
@@ -7609,7 +7609,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
       itrnx++;
       xpltcopy=scase->meshescoll.meshinfo[itrnx-1].xplt_smv;
-      xpltdcopy=scase->meshescoll.meshinfo[itrnx - 1].xpltd;
+      xpltdcopy=scase->meshescoll.meshinfo[itrnx - 1].xpltd_fds;
       ibartemp=scase->meshescoll.meshinfo[itrnx-1].ibar;
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i ",&idummy);
@@ -7636,7 +7636,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
       itrny++;
       ypltcopy=scase->meshescoll.meshinfo[itrny-1].yplt_smv;
-      ypltdcopy = scase->meshescoll.meshinfo[itrny - 1].ypltd;
+      ypltdcopy = scase->meshescoll.meshinfo[itrny - 1].ypltd_fds;
       jbartemp=scase->meshescoll.meshinfo[itrny-1].jbar;
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i ",&idummy);
@@ -7663,7 +7663,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
       itrnz++;
       zpltcopy=scase->meshescoll.meshinfo[itrnz-1].zplt_smv;
-      zpltdcopy=scase->meshescoll.meshinfo[itrnz - 1].zpltd;
+      zpltdcopy=scase->meshescoll.meshinfo[itrnz - 1].zpltd_fds;
       kbartemp=scase->meshescoll.meshinfo[itrnz-1].kbar;
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i ",&idummy);

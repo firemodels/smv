@@ -209,7 +209,7 @@ typedef struct _meshdata {
   float mesh_offset[3], *mesh_offset_ptr;
   int blockvis, datavis;
   float *xplt_smv, *yplt_smv, *zplt_smv;
-  double *xpltd, *ypltd, *zpltd;
+  double *xpltd_fds, *ypltd_fds, *zpltd_fds;
   int ivolbar, jvolbar, kvolbar;
   float *xvolplt_smv, *yvolplt_smv, *zvolplt_smv;
   float *xplt_cen_smv, *yplt_cen_smv, *zplt_cen_smv;

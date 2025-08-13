@@ -1485,15 +1485,15 @@ void UpdateMeshCoords(void){
 
     for(i=0;i<ibar+1;i++){
       xplt_fds[i]=xplt_smv[i];
-      xplt_smv[i]=FDS2SMV_X(meshi->xpltd[i]);
+      xplt_smv[i]=FDS2SMV_X(meshi->xpltd_fds[i]);
     }
     for(j=0;j<jbar+1;j++){
       yplt_fds[j]=yplt_smv[j];
-      yplt_smv[j]=FDS2SMV_Y(meshi->ypltd[j]);
+      yplt_smv[j]=FDS2SMV_Y(meshi->ypltd_fds[j]);
     }
     for(k=0;k<kbar+1;k++){
       zplt_fds[k]=zplt_smv[k];
-      zplt_smv[k]=FDS2SMV_Z(meshi->zpltd[k]);
+      zplt_smv[k]=FDS2SMV_Z(meshi->zpltd_fds[k]);
     }
 
     for(nn=0;nn<ibar;nn++){
