@@ -2412,12 +2412,12 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     printf("************************************\n");
     printf("loading boundary file for mesh: %i\n", patchi->blocknumber+1);
     printf("************************************\n");
+    if(patchi->npatches > 0)printf("\n");
     for(n = 0; n < patchi->npatches; n++){
       patchfacedata *pfi;
       char *wall_type[7] = {"interior", "front exterior", "back exterior", "left exterior", "right exterior", "upper exterior", "lower exterior"};
 
       pfi = patchi->patchfaceinfo + n;
-      if(n == 0)printf("\n");
       printf("patch %i: (%i,%i,%i,%i,%i,%i) direction: %i, obst index: %i, mesh index: %i,",
         n+1, pfi->ib[0], pfi->ib[1], pfi->ib[2], pfi->ib[3], pfi->ib[4], pfi->ib[5],
         pfi->dir, pfi->obst_index, pfi->mesh_index+1);
