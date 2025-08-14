@@ -1696,7 +1696,7 @@ void GetVolSmokeDir(float *mm){
       if(drawsides[j + 3] == 0)continue;
       vi->facemesh = meshi;
       vi->iwall = j;
-      xyz = meshi->face_centers_smv + facemap[j + 3];
+      xyz = meshi->face_centers + facemap[j + 3];
 
       dx = xyz[0] - eye_position_smv[0];
       dy = xyz[1] - eye_position_smv[1];
