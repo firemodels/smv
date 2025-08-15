@@ -1538,14 +1538,14 @@ void UpdateMeshCoords(void){
     dplane_max[2] = MAX(dx, dz);
     dplane_max[3] = MAX(dx, dy);
 
-    face_centers = meshi->face_centers;
+    face_centers = meshi->face_centers_smv;
     for(j=0;j<6;j++){
       face_centers[0]=meshi->xcen_smv;
       face_centers[1]=meshi->ycen_smv;
       face_centers[2]=meshi->zcen_smv;
       face_centers+=3;
     }
-    face_centers = meshi->face_centers;
+    face_centers = meshi->face_centers_smv;
     face_centers[0]=meshi->boxmin_smv[0];
     face_centers[3]=meshi->boxmax_smv[0];
     face_centers[7]=meshi->boxmin_smv[1];
