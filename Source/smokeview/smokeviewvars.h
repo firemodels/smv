@@ -948,6 +948,9 @@ SVEXTERN int SVDECL(update_initcullgeom,1),SVDECL(cullgeom,1);
 SVEXTERN int opengl_version;
 SVEXTERN char opengl_version_label[256];
 SVEXTERN int SVDECL(cull_meshes, 1);
+#ifdef pp_BF_FIX
+SVEXTERN int SVDECL(boundary_file_fix, 1);
+#endif
 
 SVEXTERN int SVDECL(usevolrender,1);
 #ifdef pp_GPU

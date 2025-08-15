@@ -599,7 +599,11 @@ void DrawOnlyThreshold(const meshdata *meshi){
         nn2 = nn1+ncol;
 
         for(icol = 0;icol<ncol-1;icol++){
+#ifdef pp_BF_FIX
+          if(boundary_file_fix == 1 || (*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS)){
+#else
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+#endif
             int nnulls;
 
             nnulls = 4;
@@ -688,7 +692,11 @@ void DrawOnlyThreshold(const meshdata *meshi){
         nn2 = nn1+ncol;
 
         for(icol = 0;icol<ncol-1;icol++){
+#ifdef pp_BF_FIX
+          if(boundary_file_fix == 1 || (*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS)){
+#else
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+#endif
             int nnulls;
 
             color11 = NULL;
@@ -772,7 +780,11 @@ void DrawOnlyThreshold(const meshdata *meshi){
         nn2 = nn1+ncol;
 
         for(icol = 0;icol<ncol-1;icol++){
+#ifdef pp_BF_FIX
+          if(boundary_file_fix == 1 || (*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS)){
+#else
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+#endif
             int nnulls;
 
             color11 = NULL;
@@ -2412,12 +2424,12 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     printf("************************************\n");
     printf("loading boundary file for mesh: %i\n", patchi->blocknumber+1);
     printf("************************************\n");
+    if(patchi->npatches > 0)printf("\n");
     for(n = 0; n < patchi->npatches; n++){
       patchfacedata *pfi;
       char *wall_type[7] = {"interior", "front exterior", "back exterior", "left exterior", "right exterior", "upper exterior", "lower exterior"};
 
       pfi = patchi->patchfaceinfo + n;
-      if(n == 0)printf("\n");
       printf("patch %i: (%i,%i,%i,%i,%i,%i) direction: %i, obst index: %i, mesh index: %i,",
         n+1, pfi->ib[0], pfi->ib[1], pfi->ib[2], pfi->ib[3], pfi->ib[4], pfi->ib[5],
         pfi->dir, pfi->obst_index, pfi->mesh_index+1);
@@ -2682,7 +2694,11 @@ void DrawBoundaryTexture(const meshdata *meshi){
           iparm[1] = CLAMP(255.0*cparm[1], 0, 255);
           iparm[2] = CLAMP(255.0*cparm[2], 0, 255);
           iparm[3] = CLAMP(255.0*cparm[3], 0, 255);
+#ifdef pp_BF_FIX
+          if(boundary_file_fix == 1 || (*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS)){
+#else
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+#endif
             if(SkipPatchTriangle(is_time_arrival, rgb_patch, parm, iparm) == 0){
               r11 = cparm[0];
               r12 = cparm[1];
@@ -2771,7 +2787,11 @@ void DrawBoundaryTexture(const meshdata *meshi){
           iparm[1] = CLAMP(255.0*cparm[1], 0, 255);
           iparm[2] = CLAMP(255.0*cparm[2], 0, 255);
           iparm[3] = CLAMP(255.0*cparm[3], 0, 255);
+#ifdef pp_BF_FIX
+          if(boundary_file_fix == 1 || (*patchblank1 == GAS && *patchblank2 == GAS && *(patchblank1 + 1) == GAS && *(patchblank2 + 1) == GAS)){
+#else
           if(*patchblank1 == GAS && *patchblank2 == GAS && *(patchblank1 + 1) == GAS && *(patchblank2 + 1) == GAS){
+#endif
             if(SkipPatchTriangle(is_time_arrival, rgb_patch, parm, iparm) == 0){
               r11 = cparm[0];
               r12 = cparm[1];
@@ -2854,7 +2874,11 @@ void DrawBoundaryTexture(const meshdata *meshi){
           iparm[1] = CLAMP(255.0*cparm[1], 0, 255);
           iparm[2] = CLAMP(255.0*cparm[2], 0, 255);
           iparm[3] = CLAMP(255.0*cparm[3], 0, 255);
+#ifdef pp_BF_FIX
+          if(boundary_file_fix == 1 || (*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS)){
+#else
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+#endif
             if(SkipPatchTriangle(is_time_arrival, rgb_patch, parm, iparm) == 0){
               r11 = cparm[0];
               r12 = cparm[1];
@@ -2973,7 +2997,11 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
         nn2 = nn1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
+#ifdef pp_BF_FIX
+          if(boundary_file_fix == 1 || (*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS)){
+#else
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+#endif
             r11 = CLAMP(BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax), 0.0, 1.0);
             r12 = CLAMP(BOUNDCONVERT(IJKBF(irow, icol + 1), ttmin, ttmax), 0.0, 1.0);
             r21 = CLAMP(BOUNDCONVERT(IJKBF(irow + 1, icol), ttmin, ttmax), 0.0, 1.0);
@@ -3065,7 +3093,11 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
         nn2 = nn1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
+#ifdef pp_BF_FIX
+          if(boundary_file_fix == 1 || (*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS)){
+#else
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+#endif
             r11 = CLAMP(BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax), 0.0, 1.0);
             r12 = CLAMP(BOUNDCONVERT(IJKBF(irow, icol + 1), ttmin, ttmax), 0.0, 1.0);
             r21 = CLAMP(BOUNDCONVERT(IJKBF(irow + 1, icol), ttmin, ttmax), 0.0, 1.0);
@@ -3151,7 +3183,11 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
         nn2 = nn1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
+#ifdef pp_BF_FIX
+          if(boundary_file_fix == 1 || (*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS)){
+#else
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+#endif
             r11 = CLAMP(BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax), 0.0, 1.0);
             r12 = CLAMP(BOUNDCONVERT(IJKBF(irow, icol + 1), ttmin, ttmax), 0.0, 1.0);
             r21 = CLAMP(BOUNDCONVERT(IJKBF(irow + 1, icol), ttmin, ttmax), 0.0, 1.0);
@@ -3275,7 +3311,11 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
         patchblank2 = patchblank1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
+#ifdef pp_BF_FIX
+          if(boundary_file_fix == 1 || (*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS)){
+#else
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+#endif
             color11=clear_color;
             if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ])color11=burn_color;
 
@@ -3335,7 +3375,11 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
         patchblank2 = patchblank1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
+#ifdef pp_BF_FIX
+          if(boundary_file_fix == 1 || (*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS)){
+#else
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+#endif
             color11=clear_color;
             if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ])color11=burn_color;
 
@@ -3390,7 +3434,11 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
         patchblank2 = patchblank1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
+#ifdef pp_BF_FIX
+          if(boundary_file_fix == 1 || (*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS)){
+#else
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+#endif
             color11=clear_color;
             if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ])color11=burn_color;
 
@@ -3537,7 +3585,11 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
             xyzp2 += 3;
             continue;
           }
+#ifdef pp_BF_FIX
+          if(boundary_file_fix == 1 || (patchblank1[0] == GAS && patchblank2[0] == GAS && patchblank1[1] == GAS && patchblank2[1] == GAS)){
+#else
           if(patchblank1[0] == GAS && patchblank2[0] == GAS && patchblank1[1] == GAS && patchblank2[1] == GAS){
+#endif
             if(patchventcolors==NULL){
               color11 = rgb_patch+4*cval;
               if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
@@ -3622,7 +3674,11 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
             xyzp2 += 3;
             continue;
           }
+#ifdef pp_BF_FIX
+          if(boundary_file_fix == 1 || (*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS)){
+#else
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+#endif
             if(patchventcolors==NULL){
               color11 = rgb_patch+4*cval;
               if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
@@ -3698,7 +3754,11 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
             xyzp2 += 3;
             continue;
           }
+#ifdef pp_BF_FIX
+          if(boundary_file_fix == 1 || (*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS)){
+#else
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+#endif
             if(patchventcolors==NULL){
               color11 = rgb_patch+4*cval;
               if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
