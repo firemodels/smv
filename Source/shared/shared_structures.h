@@ -763,6 +763,7 @@ typedef struct _blockagedata {
   int usecolorindex;
   int blockage_id,dup;
   int is_wuiblock;
+  int show_bndf[6];
   int patch_face_index[6];
   int hole;
   int nnodes;

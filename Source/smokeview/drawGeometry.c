@@ -2581,32 +2581,36 @@ void ShowHideInternalFaces(meshdata *meshi, int show){
   for(j = 0; j < meshi->nbptrs; j++){
     facedata *facej;
     blockagedata *bc;
+    int *show_bndf, *is_extface;
 
     bc = meshi->blockageinfoptrs[j];
+    show_bndf  = bc->show_bndf;
+    is_extface = bc->is_extface;
+
     facej = meshi->faceinfo + 6 * j;
 
 //down y
-    if(bc->is_extface[2] == 0)facej->hidden = 1;
+    if(show_bndf[2]==1 && is_extface[2] == 0)facej->hidden = 1;
     facej++;
 
 // up x
-    if(bc->is_extface[1] == 0)facej->hidden = 1;
+    if(show_bndf[1]==1 && is_extface[1] == 0)facej->hidden = 1;
     facej++;
 
 //up y
-    if(bc->is_extface[3] == 0)facej->hidden = 1;
+    if(show_bndf[3]==1 && is_extface[3] == 0)facej->hidden = 1;
     facej++;
 
 // down x
-    if(bc->is_extface[0] == 0)facej->hidden = 1;
+    if(show_bndf[0]==1 && is_extface[0] == 0)facej->hidden = 1;
     facej++;
 
 // down z
-    if(bc->is_extface[4] == 0)facej->hidden = 1;
+    if(show_bndf[4]==1 && is_extface[4] == 0)facej->hidden = 1;
     facej++;
 
 // up z
-    if(bc->is_extface[5] == 0)facej->hidden = 1;
+    if(show_bndf[5]==1 && is_extface[5] == 0)facej->hidden = 1;
     facej++;
   }
 }
