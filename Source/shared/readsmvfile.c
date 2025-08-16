@@ -7930,7 +7930,7 @@ typedef struct {
         FGETS(buffer,255,stream);
         {
           char *exclaim;
-          int hidden6[6] = {-1,-1,-1,-1,-1,-1};
+          int hidden6[6] = {-1,-1,-1,-1,-1,-1}, show_bndf[6]={1,1,1,1,1,1};
 
           memcpy(bc->hidden6, hidden6, 6*sizeof(int));
           exclaim = strchr(buffer, '!');
@@ -7940,14 +7940,18 @@ typedef struct {
             if(exclaim[0] == 'T' || exclaim[0] == 't')scase->have_removable_obsts = 1;
             exclaim++;
             if(strlen(exclaim) > 0){
-              sscanf(exclaim, "%i %i %i %i %i %i",
-                hidden6, hidden6 + 1, hidden6 + 2, hidden6 + 3, hidden6 + 4, hidden6 + 5);
+              sscanf(exclaim, "%i %i %i %i %i %i %i %i %i %i %i %i",
+                hidden6, hidden6 + 1, hidden6 + 2, hidden6 + 3, hidden6 + 4, hidden6 + 5,
+                show_bndf, show_bndf+1, show_bndf+2, show_bndf+3, show_bndf+4, show_bndf+5);
               int ii;
               for(ii = 0; ii < 6; ii++){
                 if(hidden6[ii] >= 0)hidden6[ii] = 1 - hidden6[ii];
               }
               memcpy(bc->hidden6, hidden6, 6*sizeof(int));
               if(hidden6[0] >= 0)scase->have_hidden6 = 1;
+              for(ii = 0; ii < 6; ii++) {
+                bc->show_bndf[ii] = CLAMP(show_bndf[ii], 0, 1);
+              }
             }
           }
         }
