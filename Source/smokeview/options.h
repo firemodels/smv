@@ -20,6 +20,7 @@
 //*** options: Linux
 
 #ifdef pp_LINUX
+#define pp_memload
 #define pp_REFRESH          // refresh glui dialogs when they change size
 #define pp_DIALOG_SHORTCUTS // dialog shortcuts
 #endif

@@ -84,16 +84,10 @@ MMEXTERN pthread_mutex_t mutexMEM;
 #define RESIZEMEMORY(f,g) ResizeMemory((void **)&(f),(g))
 
 #ifdef pp_memload
-#ifdef WIN32
-void _memoryload(unsigned int size,unsigned int *availmem);
-#define MEMLOAD(f,g) _memoryload(f,g)
+void _memoryload(unsigned int *availmem);
+#define MEMLOAD(g) _memoryload(g)
 #else
-#define MEMLOAD(f,g)
-#endif
-#endif
-
-#ifndef pp_memload
-#define MEMLOAD(f,g)
+#define MEMLOAD(g)
 #endif
 
 #ifdef pp_MEMPRINT

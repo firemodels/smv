@@ -43,16 +43,48 @@ int memusage(void){
 
 #ifdef pp_memload
 #ifdef WIN32
-void _memoryload(unsigned int size,unsigned int *availmem){
-  MEMORYSTATUS stat;
+void _memoryload(unsigned int *availmem){
+  if(availmem!=NULL){
+    MEMORYSTATUS stat;
 
     GlobalMemoryStatus(&stat);
-    if(availmem!=NULL)*availmem=stat.dwMemoryLoad;
-    if(size!=0&&size>stat.dwAvailPhys-0.1*stat.dwTotalPhys){
-      fprintf(stderr,"*** Warning: Low Memory. Only %i M available for viewing data.\n",
-           (int)stat.dwAvailPhys/(1024*1024));
-      fprintf(stderr,"    Unload datafiles or system performance may degrade.\n");
+    *availmem=stat.dwMemoryLoad;
+  }
+}
+#endif
+#ifdef pp_LINUX
+void _memoryload(unsigned int *availmem){
+  if(availmem != NULL){
+    FILE *fp = fopen("/proc/meminfo", "r");
+    if(fp==NULL){
+      *availmem = 0;
+      return;
     }
+
+    long memTotal = 0, memAvailable = 0;
+    char label[64];
+    long value;
+    char unit[32];
+
+    while(fscanf(fp, "%63s %ld %31s\n", label, &value, unit) == 3) {
+      if(strcmp(label, "MemTotal:") == 0) {
+        memTotal = value;
+      }
+      else if(strcmp(label, "MemAvailable:") == 0) {
+        memAvailable = value;
+        break; // we got what we need
+      }
+    }
+    fclose(fp);
+
+    if(memTotal <= 0){
+      *availmem = 0;
+      return;
+    }
+
+    long used = memTotal - memAvailable;
+    *availmem =  (double)used / (double)memTotal * 100.0;
+  }
 }
 #endif
 #endif
