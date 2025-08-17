@@ -1060,7 +1060,6 @@ void InitMesh(meshdata *meshi){
   meshi->patchval = NULL;
   meshi->patchval_iframe = NULL;
   meshi->thresholdtime = NULL;
-  meshi->patchblank = NULL;
   meshi->patch_timeslist = NULL;
   meshi->blockageinfoptrs = NULL;
   meshi->blockageinfo     = NULL;

@@ -1,9 +1,9 @@
 &HEAD CHID='pine_tree', TITLE='Test for burning vegetation mass conservation' /
 
-cMESH IJK=10,10,10, XB=-1.0,0.0,-1.0,0.0,0.0,1.0, MULT_ID='mesh'
-cMULT ID='mesh', DX=1.0, DY=1.0, DZ=1.0, I_UPPER=1, J_UPPER=1, K_UPPER=3 /
-&MESH IJK=20,20,10, XB=-1.0,1.0,-1.0,1.0,0.0,1.0, MULT_ID='mesh'
-&MULT ID='mesh', DX=1.0, DY=1.0, DZ=1.0, K_UPPER=3 /
+&MESH IJK=10,10,10, XB=-1.0,0.0,-1.0,0.0,0.0,1.0, MULT_ID='mesh'
+&MULT ID='mesh', DX=1.0, DY=1.0, DZ=1.0, I_UPPER=1, J_UPPER=1, K_UPPER=3 /
+MESH IJK=20,20,10, XB=-1.0,1.0,-1.0,1.0,0.0,1.0, MULT_ID='mesh'
+MULT ID='mesh', DX=1.0, DY=1.0, DZ=1.0, K_UPPER=3 /
 MESH IJK=20,20,40, XB=-1.0,1.0,-1.0,1.0,0.0,4.0 /
 
 &TIME T_END=40. / 

@@ -304,7 +304,6 @@ typedef struct _meshdata {
 
   float *xyzpatch_offset, *xyzpatch_no_offset, *xyzpatch_threshold;
   float *thresholdtime;
-  int *patchblank;
 
   unsigned char *cpatchval_zlib, *cpatchval_iframe_zlib;
   unsigned char *cpatchval, *cpatchval_iframe;
