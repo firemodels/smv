@@ -11,6 +11,11 @@ static int checkmemoryflag=1;
 #ifdef WIN32
 #include <windows.h>
 #endif
+#ifdef pp_memload
+#ifdef pp_OSX
+#include <mach/mach.h>
+#endif
+#endif
 
 #ifdef pp_MEMDEBUG
 static blockinfo *GetBlockInfo(bbyte *pb);
@@ -96,7 +101,7 @@ void _memoryload(unsigned int *availmem){
 
     if (kr != KERN_SUCCESS) {
       *availmem = 0;
-      return
+      return;
     }
 
     int64_t pageSize;
