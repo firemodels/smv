@@ -281,9 +281,7 @@ void GetViewportInfo(void){
     if(doit==0&&vis_slice_average==1&&show_slice_average&&slice_average_flag==1)doit=1;
   }
   if(show_horizontal_colorbar == 1
-#ifdef pp_memload
     ||vismemload==1
-#endif
 #ifdef pp_memusage
      || vismemusage == 1
 #endif
@@ -311,9 +309,7 @@ void GetViewportInfo(void){
     if(vis_hrr_plot==1 || vis_slice_plot==1||vis_colorbar_dists_plot==1)VP_timebar.width -= (VP_hrr_plot.right - titlesafe_offset);
     temp_height = text_height + v_space;
     if(visFramelabel==1||vis_hrr_label==1
-#ifdef  pp_memload
       ||vismemload==1
-#endif
 #ifdef pp_memusage
        || vismemusage == 1
 #endif
@@ -1187,17 +1183,11 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down){
 /* ------------------------ ViewportTimebar ------------------------- */
 
 void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
-#ifdef pp_memload
-  unsigned int loadmemory;
-  char percen[] = "%";
-#endif
   int right_label_pos, timebar_right_pos;
   int timebar_left_pos;
   int time_width=0, hrr_width=0, frame_width=0;
   int framerate_width = 0;
-#ifdef pp_memload
   int memload_width = 0;
-#endif
 #ifdef pp_memusage
   int memusage_width = 0;
 #endif
@@ -1220,12 +1210,10 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
     timebar_right_width = MAX(timebar_right_width, memusage_width);
   }
 #endif
-#ifdef pp_memload
   if(vismemload == 1){
     memload_width = GetStringWidth("Mem Load: 100%x");
     timebar_right_width = MAX(timebar_right_width, memload_width);
   }
-#endif
 
   if(vis_hrr_label==1)hrr_width = GetStringWidth("HRR: 1000.0kW");
   if(visFrameTimelabel==1){
@@ -1275,26 +1263,34 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
   }
 
   if(visFramerate==1&&showtime==1){
+    char frameratelabel[30];
+
     sprintf(frameratelabel," Frame rate:%4.1f",framerate);
     OutputText(right_label_pos,v_space,frameratelabel);
   }
   if(show_slice_average==1&&vis_slice_average==1&&slice_average_flag==1){
-    sprintf(frameratelabel," AVG: %4.1f",slice_average_interval);
-    OutputText(right_label_pos,3*v_space+2*VP_timebar.text_height, frameratelabel); // test print
+    char sliceavglabel[30];
+
+    sprintf(sliceavglabel," AVG: %4.1f",slice_average_interval);
+    OutputText(right_label_pos,3*v_space+2*VP_timebar.text_height, sliceavglabel); // test print
   }
 
-#ifdef pp_memload
   if(vismemload==1){
-    MEMLOAD(0,&loadmemory);
-    sprintf(frameratelabel," Mem Load:%u%s",loadmemory,percen);
-    if(visFramerate==1&&showtime==1){
-      OutputText(right_label_pos,2*v_space+VP_timebar.text_height,frameratelabel);
-    }
-    else{
-      OutputText(right_label_pos,v_space,frameratelabel);
+    int loadmemory;
+
+    loadmemory = MemoryLoad();
+    if(loadmemory >= 0){
+      char memloadlabel[30], percen[] = "%";
+
+      sprintf(memloadlabel, " Mem Load:%u%s", loadmemory, percen);
+      if(visFramerate == 1 && showtime == 1){
+        OutputText(right_label_pos, 2 * v_space + VP_timebar.text_height, memloadlabel);
+      }
+      else{
+        OutputText(right_label_pos, v_space, memloadlabel);
+      }
     }
   }
-#endif
 #ifdef pp_memusage
   if(vismemusage==1){
       char MEMlabel[128];

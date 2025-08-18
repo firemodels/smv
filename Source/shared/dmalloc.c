@@ -11,6 +11,9 @@ static int checkmemoryflag=1;
 #ifdef WIN32
 #include <windows.h>
 #endif
+#ifdef pp_OSX
+#include <mach/mach.h>
+#endif
 
 #ifdef pp_MEMDEBUG
 static blockinfo *GetBlockInfo(bbyte *pb);
@@ -39,22 +42,64 @@ int memusage(void){
 }
 #endif
 
-/* ------------------ _memoryload ------------------------ */
+/* ------------------ MemoryLoad ------------------------ */
 
-#ifdef pp_memload
 #ifdef WIN32
-void _memoryload(unsigned int size,unsigned int *availmem){
+int MemoryLoad(void){
   MEMORYSTATUS stat;
 
-    GlobalMemoryStatus(&stat);
-    if(availmem!=NULL)*availmem=stat.dwMemoryLoad;
-    if(size!=0&&size>stat.dwAvailPhys-0.1*stat.dwTotalPhys){
-      fprintf(stderr,"*** Warning: Low Memory. Only %i M available for viewing data.\n",
-           (int)stat.dwAvailPhys/(1024*1024));
-      fprintf(stderr,"    Unload datafiles or system performance may degrade.\n");
-    }
+  GlobalMemoryStatus(&stat);
+  return (int)stat.dwMemoryLoad;
 }
 #endif
+#ifdef pp_LINUX
+int MemoryLoad(void){
+  FILE *fp = fopen("/proc/meminfo", "r");
+  if(fp == NULL)return -1;
+
+  long memTotal = 0, memAvailable = 0;
+  char label[64];
+  long value;
+  char unit[32];
+
+  while(fscanf(fp, "%63s %ld %31s\n", label, &value, unit) == 3) {
+    if(strcmp(label, "MemTotal:") == 0) {
+      memTotal = value;
+    }
+    else if(strcmp(label, "MemAvailable:") == 0) {
+      memAvailable = value;
+      break; // we got what we need
+    }
+  }
+  fclose(fp);
+
+  if(memTotal <= 0)return -1;
+
+  long used = memTotal - memAvailable;
+  return (int)((double)used / (double)memTotal * 100.0);
+}
+#endif
+#ifdef pp_OSX
+int MemoryLoad(void){
+  mach_msg_type_number_t count = HOST_VM_INFO64_COUNT;
+  vm_statistics64_data_t vmstat;
+  kern_return_t kr = host_statistics64(mach_host_self(), HOST_VM_INFO64, (host_info64_t)&vmstat, &count);
+
+  if (kr != KERN_SUCCESS)return -1;
+
+  int64_t pageSize;
+  host_page_size(mach_host_self(), (vm_size_t*)&pageSize);
+
+  int64_t free     = (int64_t)vmstat.free_count   * pageSize;
+  int64_t active   = (int64_t)vmstat.active_count * pageSize;
+  int64_t inactive = (int64_t)vmstat.inactive_count * pageSize;
+  int64_t wired    = (int64_t)vmstat.wire_count   * pageSize;
+
+  int64_t used = active + inactive + wired;
+  int64_t total = used + free;
+
+  return (int)((double)used / (double)total * 100.0);
+}
 #endif
 
 /* ------------------ initMALLOC ------------------------ */

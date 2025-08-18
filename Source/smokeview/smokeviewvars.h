@@ -1578,9 +1578,7 @@ SVEXTERN float SVDECL(max_mem_GB,0.0);
 #ifdef pp_memusage
 SVEXTERN int SVDECL(vismemusage,0);
 #endif
-#ifdef pp_memload
 SVEXTERN int SVDECL(vismemload, 0);
-#endif
 SVEXTERN float gslice_norm[3];
 #ifdef INMAIN
 SVEXTERN float glui_tour_view[3] = {0.0,0.0,0.0};
@@ -1866,7 +1864,6 @@ SVEXTERN float SVDECL(desired_view_height,1.5);
 SVEXTERN int thistime, lasttime, SVDECL(resetclock,1),SVDECL(initialtime,0);
 SVEXTERN int SVDECL(realtime_flag,0);
 SVEXTERN char timelabel[30];
-SVEXTERN char frameratelabel[30];
 SVEXTERN char framelabel[30];
 SVEXTERN float SVDECL(**p3levels,NULL), SVDECL(*zonelevels,NULL);
 SVEXTERN float SVDECL(**p3levels256,NULL);
