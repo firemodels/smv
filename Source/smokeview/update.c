@@ -349,7 +349,6 @@ void UpdateFileLoad(void){
   nvolsmoke3dvis_old = nvolsmoke3dvis;
   npart5vis_old      = npart5vis;
   npartvis_old       = npartvis;
-  printf("nplot3dvis=%i npatchvis=%i\n",nplot3dvis,npatchvis);
 }
 
 /* ------------------ UpdateShow ------------------------ */
