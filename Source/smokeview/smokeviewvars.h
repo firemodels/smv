@@ -1578,9 +1578,7 @@ SVEXTERN float SVDECL(max_mem_GB,0.0);
 #ifdef pp_memusage
 SVEXTERN int SVDECL(vismemusage,0);
 #endif
-#ifdef pp_memload
 SVEXTERN int SVDECL(vismemload, 0);
-#endif
 SVEXTERN float gslice_norm[3];
 #ifdef INMAIN
 SVEXTERN float glui_tour_view[3] = {0.0,0.0,0.0};

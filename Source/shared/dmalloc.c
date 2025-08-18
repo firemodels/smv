@@ -11,10 +11,8 @@ static int checkmemoryflag=1;
 #ifdef WIN32
 #include <windows.h>
 #endif
-#ifdef pp_memload
 #ifdef pp_OSX
 #include <mach/mach.h>
-#endif
 #endif
 
 #ifdef pp_MEMDEBUG
@@ -46,7 +44,6 @@ int memusage(void){
 
 /* ------------------ MemoryLoad ------------------------ */
 
-#ifdef pp_memload
 #ifdef WIN32
 int MemoryLoad(void){
   MEMORYSTATUS stat;
@@ -103,7 +100,6 @@ int MemoryLoad(void){
 
   return (int)((double)used / (double)total * 100.0);
 }
-#endif
 #endif
 
 /* ------------------ initMALLOC ------------------------ */

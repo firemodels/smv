@@ -10,7 +10,6 @@
 //*** options: windows
 
 #ifdef WIN32
-#define pp_memload
 #define pp_DIALOG_SHORTCUTS // dialog shortcuts
 #ifdef pp_GPU
 #define pp_WINGPU           // only draw 3d slices with the GPU on windows
@@ -20,7 +19,6 @@
 //*** options: Linux
 
 #ifdef pp_LINUX
-#define pp_memload
 #define pp_REFRESH          // refresh glui dialogs when they change size
 #define pp_DIALOG_SHORTCUTS // dialog shortcuts
 #endif
@@ -28,7 +26,6 @@
 //*** options: OSX
 
 #ifdef pp_OSX
-#define pp_memload
 #define pp_SMOKE3D_FORCE        // always have at least one smoke3d entry to prevent crash when unloading slices
 #define GL_SILENCE_DEPRECATION
 #endif

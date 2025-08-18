@@ -130,9 +130,7 @@ GLUI_Checkbox *CHECKBOX_labels_timelabel=NULL;
 GLUI_Checkbox *CHECKBOX_labels_framelabel=NULL;
 GLUI_Checkbox *CHECKBOX_labels_frametimelabel = NULL;
 GLUI_Checkbox *CHECKBOX_labels_hrrlabel=NULL;
-#ifdef pp_memload
 GLUI_Checkbox *CHECKBOX_labels_memload=NULL;
-#endif
 #ifdef pp_memusage
 GLUI_Checkbox *CHECKBOX_labels_memusage = NULL;
 #endif
@@ -849,9 +847,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
   CHECKBOX_labels_framerate = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame rate"), &visFramerate, LABELS_label, GLUILabelsCB);
   CHECKBOX_labels_gridloc = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Grid location"), &visgridloc, LABELS_label, GLUILabelsCB);
   CHECKBOX_labels_hrrlabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("HRR"), &vis_hrr_label, HRR_label, GLUILabelsCB);
-#ifdef pp_memload
   CHECKBOX_labels_memload = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Memory load"), &vismemload, LABELS_memload, GLUILabelsCB);
-#endif
 #ifdef pp_memusage
   CHECKBOX_labels_memusage = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Memory usage"), &vismemusage, LABELS_memusage, GLUILabelsCB);
 #endif
@@ -1469,7 +1465,6 @@ extern "C" void GLUILabelsCB(int var){
   case LABELS_transparent:
   case FIRECUTOFF_label:
     break;
-#ifdef pp_memload
   case LABELS_memload:
 #ifdef pp_memusage
     if(vismemload == 1 && vismemusage == 1){
@@ -1478,15 +1473,12 @@ extern "C" void GLUILabelsCB(int var){
     }
 #endif
     break;
-#endif
 #ifdef pp_memusage
   case LABELS_memusage:
-#ifdef pp_memload
     if(vismemload == 1 && vismemusage == 1){
       vismemload = 0;
       CHECKBOX_labels_memload->set_int_val(vismemload);
     }
-#endif
     break;
 #endif
   case LABELS_usertick:
@@ -1571,9 +1563,7 @@ extern "C" void GLUISetLabelControls(){
   if(CHECKBOX_labels_axis!=NULL)CHECKBOX_labels_axis->set_int_val(visaxislabels);
   if(CHECKBOX_labels_framerate!=NULL)CHECKBOX_labels_framerate->set_int_val(visFramerate);
   if(CHECKBOX_labels_average!=NULL)CHECKBOX_labels_average->set_int_val(vis_slice_average);
-#ifdef pp_memload
   if(CHECKBOX_labels_memload!=NULL)CHECKBOX_labels_memload->set_int_val(vismemload);
-#endif
 #ifdef pp_memusage
   if(CHECKBOX_labels_memusage != NULL)CHECKBOX_labels_memusage->set_int_val(vismemusage);
 #endif

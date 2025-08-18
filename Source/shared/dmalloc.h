@@ -83,9 +83,7 @@ MMEXTERN pthread_mutex_t mutexMEM;
 #define NEWMEMORY(f,g)       NewMemory((void **)&(f),(g))
 #define RESIZEMEMORY(f,g) ResizeMemory((void **)&(f),(g))
 
-#ifdef pp_memload
 int MemoryLoad(void);
-#endif
 
 #ifdef pp_MEMPRINT
 #define PrintMemoryInfo \
