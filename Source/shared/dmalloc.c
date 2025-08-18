@@ -87,6 +87,33 @@ void _memoryload(unsigned int *availmem){
   }
 }
 #endif
+#ifdef pp_OSX
+void _memoryload(unsigned int *availmem){
+  if(availmem != NULL){
+    mach_msg_type_number_t count = HOST_VM_INFO64_COUNT;
+    vm_statistics64_data_t vmstat;
+    kern_return_t kr = host_statistics64(mach_host_self(), HOST_VM_INFO64, (host_info64_t)&vmstat, &count);
+
+    if (kr != KERN_SUCCESS) {
+      *availmem = 0;
+      return
+    }
+
+    int64_t pageSize;
+    host_page_size(mach_host_self(), (vm_size_t*)&pageSize);
+
+    int64_t free     = (int64_t)vmstat.free_count   * pageSize;
+    int64_t active   = (int64_t)vmstat.active_count * pageSize;
+    int64_t inactive = (int64_t)vmstat.inactive_count * pageSize;
+    int64_t wired    = (int64_t)vmstat.wire_count   * pageSize;
+
+    int64_t used = active + inactive + wired;
+    int64_t total = used + free;
+
+    *availmem =  (double)used / (double)total * 100.0;
+  }
+}
+#endif
 #endif
 
 /* ------------------ initMALLOC ------------------------ */
