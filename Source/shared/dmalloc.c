@@ -88,7 +88,7 @@ int MemoryLoad(void){
   vm_statistics64_data_t vmstat;
   kern_return_t kr = host_statistics64(mach_host_self(), HOST_VM_INFO64, (host_info64_t)&vmstat, &count);
 
-  if (kr != KERN_SUCCESS)return -1
+  if (kr != KERN_SUCCESS)return -1;
 
   int64_t pageSize;
   host_page_size(mach_host_self(), (vm_size_t*)&pageSize);
