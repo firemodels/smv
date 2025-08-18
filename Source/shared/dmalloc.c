@@ -44,11 +44,11 @@ int memusage(void){
 }
 #endif
 
-/* ------------------ _memoryload ------------------------ */
+/* ------------------ MemoryLoad ------------------------ */
 
 #ifdef pp_memload
 #ifdef WIN32
-void _memoryload(unsigned int *availmem){
+void MemoryLoad(unsigned int *availmem){
   if(availmem!=NULL){
     MEMORYSTATUS stat;
 
@@ -58,7 +58,7 @@ void _memoryload(unsigned int *availmem){
 }
 #endif
 #ifdef pp_LINUX
-void _memoryload(unsigned int *availmem){
+void MemoryLoad(unsigned int *availmem){
   if(availmem != NULL){
     FILE *fp = fopen("/proc/meminfo", "r");
     if(fp==NULL){
@@ -93,7 +93,7 @@ void _memoryload(unsigned int *availmem){
 }
 #endif
 #ifdef pp_OSX
-void _memoryload(unsigned int *availmem){
+void MemoryLoad(unsigned int *availmem){
   if(availmem != NULL){
     mach_msg_type_number_t count = HOST_VM_INFO64_COUNT;
     vm_statistics64_data_t vmstat;

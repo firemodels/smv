@@ -1285,7 +1285,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
 
 #ifdef pp_memload
   if(vismemload==1){
-    MEMLOAD(&loadmemory);
+    MemoryLoad(&loadmemory);
     sprintf(frameratelabel," Mem Load:%u%s",loadmemory,percen);
     if(visFramerate==1&&showtime==1){
       OutputText(right_label_pos,2*v_space+VP_timebar.text_height,frameratelabel);
