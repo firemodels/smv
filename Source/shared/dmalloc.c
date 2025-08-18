@@ -48,75 +48,60 @@ int memusage(void){
 
 #ifdef pp_memload
 #ifdef WIN32
-void MemoryLoad(unsigned int *availmem){
-  if(availmem!=NULL){
-    MEMORYSTATUS stat;
+int MemoryLoad(void){
+  MEMORYSTATUS stat;
 
-    GlobalMemoryStatus(&stat);
-    *availmem=stat.dwMemoryLoad;
-  }
+  GlobalMemoryStatus(&stat);
+  return (int)stat.dwMemoryLoad;
 }
 #endif
 #ifdef pp_LINUX
-void MemoryLoad(unsigned int *availmem){
-  if(availmem != NULL){
-    FILE *fp = fopen("/proc/meminfo", "r");
-    if(fp==NULL){
-      *availmem = 0;
-      return;
+int MemoryLoad(void){
+  FILE *fp = fopen("/proc/meminfo", "r");
+  if(fp == NULL)return -1;
+
+  long memTotal = 0, memAvailable = 0;
+  char label[64];
+  long value;
+  char unit[32];
+
+  while(fscanf(fp, "%63s %ld %31s\n", label, &value, unit) == 3) {
+    if(strcmp(label, "MemTotal:") == 0) {
+      memTotal = value;
     }
-
-    long memTotal = 0, memAvailable = 0;
-    char label[64];
-    long value;
-    char unit[32];
-
-    while(fscanf(fp, "%63s %ld %31s\n", label, &value, unit) == 3) {
-      if(strcmp(label, "MemTotal:") == 0) {
-        memTotal = value;
-      }
-      else if(strcmp(label, "MemAvailable:") == 0) {
-        memAvailable = value;
-        break; // we got what we need
-      }
+    else if(strcmp(label, "MemAvailable:") == 0) {
+      memAvailable = value;
+      break; // we got what we need
     }
-    fclose(fp);
-
-    if(memTotal <= 0){
-      *availmem = 0;
-      return;
-    }
-
-    long used = memTotal - memAvailable;
-    *availmem =  (double)used / (double)memTotal * 100.0;
   }
+  fclose(fp);
+
+  if(memTotal <= 0)return -1;
+
+  long used = memTotal - memAvailable;
+  return (int)((double)used / (double)memTotal * 100.0);
 }
 #endif
 #ifdef pp_OSX
-void MemoryLoad(unsigned int *availmem){
-  if(availmem != NULL){
-    mach_msg_type_number_t count = HOST_VM_INFO64_COUNT;
-    vm_statistics64_data_t vmstat;
-    kern_return_t kr = host_statistics64(mach_host_self(), HOST_VM_INFO64, (host_info64_t)&vmstat, &count);
+int MemoryLoad(void){
+  mach_msg_type_number_t count = HOST_VM_INFO64_COUNT;
+  vm_statistics64_data_t vmstat;
+  kern_return_t kr = host_statistics64(mach_host_self(), HOST_VM_INFO64, (host_info64_t)&vmstat, &count);
 
-    if (kr != KERN_SUCCESS) {
-      *availmem = 0;
-      return;
-    }
+  if (kr != KERN_SUCCESS)return -1
 
-    int64_t pageSize;
-    host_page_size(mach_host_self(), (vm_size_t*)&pageSize);
+  int64_t pageSize;
+  host_page_size(mach_host_self(), (vm_size_t*)&pageSize);
 
-    int64_t free     = (int64_t)vmstat.free_count   * pageSize;
-    int64_t active   = (int64_t)vmstat.active_count * pageSize;
-    int64_t inactive = (int64_t)vmstat.inactive_count * pageSize;
-    int64_t wired    = (int64_t)vmstat.wire_count   * pageSize;
+  int64_t free     = (int64_t)vmstat.free_count   * pageSize;
+  int64_t active   = (int64_t)vmstat.active_count * pageSize;
+  int64_t inactive = (int64_t)vmstat.inactive_count * pageSize;
+  int64_t wired    = (int64_t)vmstat.wire_count   * pageSize;
 
-    int64_t used = active + inactive + wired;
-    int64_t total = used + free;
+  int64_t used = active + inactive + wired;
+  int64_t total = used + free;
 
-    *availmem =  (double)used / (double)total * 100.0;
-  }
+  return (int)((double)used / (double)total * 100.0);
 }
 #endif
 #endif

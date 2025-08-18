@@ -1866,7 +1866,6 @@ SVEXTERN float SVDECL(desired_view_height,1.5);
 SVEXTERN int thistime, lasttime, SVDECL(resetclock,1),SVDECL(initialtime,0);
 SVEXTERN int SVDECL(realtime_flag,0);
 SVEXTERN char timelabel[30];
-SVEXTERN char frameratelabel[30];
 SVEXTERN char framelabel[30];
 SVEXTERN float SVDECL(**p3levels,NULL), SVDECL(*zonelevels,NULL);
 SVEXTERN float SVDECL(**p3levels256,NULL);
