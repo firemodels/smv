@@ -6072,7 +6072,8 @@ void LoadBoundaryMenu(int value){
 int GetInternalFaceShow(void){
   int show = 1;
 
-  if(boundary_loaded == 1){
+  if(plotstate != DYNAMIC_PLOTS) return show;
+  if(npatchvis>0){
     cpp_boundsdata *bounds;
     bounds = GLUIGetBoundsData(BOUND_PATCH);
     if(bounds->set_chopmax == 1 || bounds->set_chopmin == 1){

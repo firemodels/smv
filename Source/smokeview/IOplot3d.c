@@ -273,6 +273,7 @@ FILE_SIZE ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   CheckMemory;
   START_TIMER(total_time);
   *errorcode=0;
+  updatefacelists = 1;
 
   assert(ifile>=0&&ifile<global_scase.nplot3dinfo);
   p=global_scase.plot3dinfo+ifile;

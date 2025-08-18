@@ -7059,6 +7059,7 @@ void DrawSliceFrame(){
   int jjj, nslicemax=0, blend_mode;
   int draw_slice;
 
+  if(plotstate != DYNAMIC_PLOTS) return;
   if(vis_slice_plot==1||vis_colorbar_dists_plot==1){
     DrawSlicePlots();
   }
