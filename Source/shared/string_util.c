@@ -478,9 +478,9 @@ float ScaleFloat2Float(float floatfrom, const float *scale){
 
 /* ------------------ ScaleFloat2String ------------------------ */
 
-void ScaleFloat2String(float floatfrom, char *stringto, const float *scale){
+void ScaleFloat2String(float floatfrom, char *stringto, const float *scale, int ndigits, int fixedpoint_labels){
   if(scale!=NULL)floatfrom = scale[0]*floatfrom+scale[1];
-  Num2String(stringto, floatfrom);
+  Float2String(stringto, floatfrom, ndigits, fixedpoint_labels);
 }
 
 /* ------------------ GetFormat ------------------------ */
