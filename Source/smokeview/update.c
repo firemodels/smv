@@ -649,6 +649,7 @@ void UpdateShow(void){
   }
 
   num_colorbars=0;
+  showiso_colorbar = 0;
   if(plotstate==DYNAMIC_PLOTS){
     if(partflag==1&&parttype!=0)num_colorbars++;
     if(slicecolorbarflag==1||vslicecolorbarflag==1)num_colorbars++;
