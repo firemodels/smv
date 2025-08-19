@@ -364,9 +364,15 @@ SVEXTERN int SVDECL(slice_fileupdate, 0);
 SVEXTERN int SVDECL(zone_temp_bounds_defined, 0);
 SVEXTERN int SVDECL(slice_temp_bounds_defined, 0);
 
-SVEXTERN int nplot3dloaded, nsmoke3dloaded, nisoloaded, nsliceloaded, nvsliceloaded, npartloaded, npatchloaded;
-SVEXTERN int nvolsmoke3dloaded;
-SVEXTERN int npart5loaded, npartloaded;
+SVEXTERN int nplot3dloaded, nsmoke3dloaded, nisoloaded, nsliceloaded, nvsliceloaded;
+SVEXTERN int npartloaded, npatchloaded, nvolsmoke3dloaded, npart5loaded, npartloaded;
+SVEXTERN int nplot3dvis, nsmoke3dvis, nisovis, nslicevis, nvslicevis;
+SVEXTERN int npatchvis, nvolsmoke3dvis, npart5vis, npartvis;
+
+SVEXTERN int SVDECL(nplot3dloaded_old,0),     SVDECL(nsmoke3dloaded_old,0), SVDECL(nisoloaded_old,0);
+SVEXTERN int SVDECL(nsliceloaded_old,0),      SVDECL(nvsliceloaded_old,0),  SVDECL(npatchloaded_old,0);
+SVEXTERN int SVDECL(nvolsmoke3dloaded_old,0), SVDECL(npart5loaded_old,0),   SVDECL(npartloaded_old,0);
+
 SVEXTERN int SVDECL(select_part, 0), SVDECL(selected_part_index, -1);
 SVEXTERN int SVDECL(smoke3d_compression_type, COMPRESSED_UNKNOWN);
 SVEXTERN int SVDECL(update_smoke3dmenulabels, 0);

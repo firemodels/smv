@@ -232,63 +232,80 @@ void UpdateFrameNumber(int changetime){
 void UpdateFileLoad(void){
   int i;
 
-  npartloaded = 0;
-  for(i = 0; i<global_scase.npartinfo; i++){
-    partdata *parti;
-
-    parti = global_scase.partinfo+i;
-    if(parti->loaded==1)npartloaded++;
-  }
-
   nsliceloaded = 0;
+  nslicevis = 0;
   for(i = 0; i<global_scase.slicecoll.nsliceinfo; i++){
     slicedata *slicei;
 
     slicei = global_scase.slicecoll.sliceinfo+i;
-    if(slicei->loaded==1)nsliceloaded++;
+    if(slicei->loaded==1){
+      nsliceloaded++;
+      if(slicei->display==1)nslicevis++;
+    }
   }
 
   nvsliceloaded = 0;
+  nvslicevis = 0;
   for(i = 0; i<global_scase.slicecoll.nvsliceinfo; i++){
     vslicedata *vslicei;
 
     vslicei = global_scase.slicecoll.vsliceinfo+i;
-    if(vslicei->loaded==1)nvsliceloaded++;
+    if(vslicei->loaded==1){
+      nvsliceloaded++;
+      if(vslicei->display==1)nvslicevis++;
+    }
   }
 
   nisoloaded = 0;
+  nisovis = 0;
   for(i = 0; i<global_scase.nisoinfo; i++){
     isodata *isoi;
 
     isoi = global_scase.isoinfo+i;
-    if(isoi->loaded==1)nisoloaded++;
+    if(isoi->loaded==1){
+      nisoloaded++;
+      if(isoi->display==1)nisovis++;
+    }
   }
 
   npatchloaded = 0;
+  npatchvis = 0;
   for(i = 0; i<global_scase.npatchinfo; i++){
     patchdata *patchi;
 
     patchi = global_scase.patchinfo+i;
-    if(patchi->loaded==1)npatchloaded++;
+    if(patchi->loaded==1){
+      npatchloaded++;
+      if(patchi->display==1)npatchvis++;
+    }
   }
 
   nsmoke3dloaded = 0;
+  nsmoke3dvis = 0;
   for(i = 0; i<global_scase.smoke3dcoll.nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
 
     smoke3di = global_scase.smoke3dcoll.smoke3dinfo+i;
-    if(smoke3di->loaded==1)nsmoke3dloaded++;
+    if(smoke3di->loaded==1){
+      nsmoke3dloaded++;
+      if(smoke3di->display==1)nsmoke3dvis++;
+    }
   }
 
   nplot3dloaded = 0;
+  nplot3dvis = 0;
   for(i = 0; i<global_scase.nplot3dinfo; i++){
     plot3ddata *plot3di;
 
     plot3di = global_scase.plot3dinfo+i;
-    if(plot3di->loaded==1)nplot3dloaded++;
+    if(plot3di->loaded==1){
+      nplot3dloaded++;
+      if(plot3di->display==1)nplot3dvis++;
+    }
   }
 
   nvolsmoke3dloaded = 0;
+  nvolsmoke3dvis = 0;
   for(i = 0; i<global_scase.meshescoll.nmeshes; i++){
     meshdata *meshi;
     volrenderdata *vr;
@@ -296,18 +313,45 @@ void UpdateFileLoad(void){
     meshi = global_scase.meshescoll.meshinfo+i;
     vr = meshi->volrenderinfo;
     if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
-    if(vr->loaded==1)nvolsmoke3dloaded++;
+    if(vr->loaded==1){
+      nvolsmoke3dloaded++;
+      if(vr->display==1)nvolsmoke3dvis++;
+    }
   }
 
   npart5loaded = 0;
   npartloaded = 0;
+  npart5vis = 0;
+  npartvis = 0;
   for(i = 0; i<global_scase.npartinfo; i++){
     partdata *parti;
 
     parti = global_scase.partinfo+i;
-    if(parti->loaded==1)npartloaded++;
-    if(parti->loaded==1)npart5loaded++;
+    if(parti->loaded==1){
+      npartloaded++;
+      npart5loaded++;
+      if(parti->display==1){
+        npartvis++;
+        npart5vis++;
+      }
+    }
   }
+
+  if(nplot3dloaded_old != nplot3dloaded         || nsmoke3dloaded_old != nsmoke3dloaded ||
+     nisoloaded_old != nisoloaded               || nsliceloaded_old != nsliceloaded ||
+     nvsliceloaded_old != nvsliceloaded         || npatchloaded_old != npatchloaded ||
+     nvolsmoke3dloaded_old != nvolsmoke3dloaded || npart5loaded_old != npart5loaded ||
+    npartloaded_old != npartloaded)updatefacelists=1;
+
+  nplot3dloaded_old     = nplot3dloaded;
+  nsmoke3dloaded_old    = nsmoke3dloaded;
+  nisoloaded_old        = nisoloaded;
+  nsliceloaded_old      = nsliceloaded;
+  nvsliceloaded_old     = nvsliceloaded;
+  npatchloaded_old      = npatchloaded;
+  nvolsmoke3dloaded_old = nvolsmoke3dloaded;
+  npart5loaded_old      = npart5loaded;
+  npartloaded_old       = npartloaded;
 }
 
 /* ------------------ UpdateShow ------------------------ */
@@ -321,6 +365,7 @@ void UpdateShow(void){
   int showhvacflag;
 
   UpdateFileLoad();
+  if(nplot3dloaded > 0 || npatchloaded > 0)updatefacelists = 1;
   showtime             = 0;
   showtime2            = 0;
   showplot3d           = 0;
@@ -649,6 +694,7 @@ void UpdateShow(void){
   }
 
   num_colorbars=0;
+  showiso_colorbar = 0;
   if(plotstate==DYNAMIC_PLOTS){
     if(partflag==1&&parttype!=0)num_colorbars++;
     if(slicecolorbarflag==1||vslicecolorbarflag==1)num_colorbars++;

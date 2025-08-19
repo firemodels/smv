@@ -1388,8 +1388,8 @@ void DrawHorizontalColorbarRegLabels(void){
       float horiz_position;
 
       tttval = sb->levels256[valindex];
-      Num2String(isolabel, tttval);
-      ScaleFloat2String(tttval, isocolorlabel, isofactor);
+      Float2String(isolabel, tttval, ncolorlabel_digits, force_fixedpoint);
+      ScaleFloat2String(tttval, isocolorlabel, isofactor, ncolorlabel_digits, force_fixedpoint);
       isocolorlabel_ptr = isocolorlabel;
       horiz_position = MIX2(global_colorbar_index, 255, hcolorbar_right_pos, hcolorbar_left_pos);
       iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
@@ -1405,7 +1405,7 @@ void DrawHorizontalColorbarRegLabels(void){
       if(iposition == i)continue;
 
       val = tttmin + i*isorange / (global_scase.nrgb - 2);
-      ScaleFloat2String(val, isocolorlabel, isofactor);
+      ScaleFloat2String(val, isocolorlabel, isofactor, ncolorlabel_digits, force_fixedpoint);
       isocolorlabel_ptr = isocolorlabel;
       OutputBarText(horiz_position, 0.0, foreground_color, isocolorlabel_ptr);
     }
@@ -1434,10 +1434,10 @@ void DrawHorizontalColorbarRegLabels(void){
       float horiz_position;
 
       tttval = partlevels256_ptr[valindex];
-      Num2String(partlabel, tttval);
+      Float2String(partlabel, tttval, ncolorlabel_digits, force_fixedpoint);
       partcolorlabel_ptr = partlabel;
       if(partflag == 1){
-        ScaleFloat2String(tttval, partcolorlabel, partfactor);
+        ScaleFloat2String(tttval, partcolorlabel, partfactor, ncolorlabel_digits, force_fixedpoint);
         partcolorlabel_ptr = partcolorlabel;
       }
       horiz_position = MIX2(global_colorbar_index, 255, hcolorbar_right_pos, hcolorbar_left_pos);
@@ -1499,10 +1499,10 @@ void DrawHorizontalColorbarRegLabels(void){
       float horiz_position;
 
       tttval = sb->levels256[valindex];
-      Num2String(slicelabel, tttval);
+      Float2String(slicelabel, tttval, ncolorlabel_digits, force_fixedpoint);
       slicecolorlabel_ptr = slicelabel;
       if(sliceflag == 1){
-        ScaleFloat2String(tttval, slicecolorlabel, slicefactor);
+        ScaleFloat2String(tttval, slicecolorlabel, slicefactor, ncolorlabel_digits, force_fixedpoint);
         slicecolorlabel_ptr = slicecolorlabel;
       }
       horiz_position = MIX2(global_colorbar_index, 255, hcolorbar_right_pos, hcolorbar_left_pos);
@@ -1549,10 +1549,10 @@ void DrawHorizontalColorbarRegLabels(void){
 
       // draw boundary file value selected with mouse
       tttval = boundarylevels256[valindex];
-      Num2String(boundarylabel, tttval);
+      Float2String(boundarylabel, tttval, ncolorlabel_digits, force_fixedpoint);
       boundary_colorlabel_ptr = &(boundarylabel[0]);
       if(patchflag == 1){
-        ScaleFloat2String(tttval, boundary_colorlabel, patchfactor);
+        ScaleFloat2String(tttval, boundary_colorlabel, patchfactor, ncolorlabel_digits, force_fixedpoint);
         boundary_colorlabel_ptr = boundary_colorlabel;
       }
       horiz_position = MIX2(global_colorbar_index, 255, hcolorbar_right_pos, hcolorbar_left_pos);
@@ -1599,10 +1599,10 @@ void DrawHorizontalColorbarRegLabels(void){
       float horiz_position;
 
       tttval = zonelevels256[valindex];
-      Num2String(zonelabel, tttval);
+      Float2String(zonelabel, tttval, ncolorlabel_digits, force_fixedpoint);
       zonecolorlabel_ptr = &(zonelabel[0]);
       if(zoneflag == 1){
-        ScaleFloat2String(tttval, zonecolorlabel, zonefactor);
+        ScaleFloat2String(tttval, zonecolorlabel, zonefactor, ncolorlabel_digits, force_fixedpoint);
         zonecolorlabel_ptr = zonecolorlabel;
       }
       horiz_position = MIX2(global_colorbar_index, 255, hcolorbar_right_pos, hcolorbar_left_pos);
@@ -1621,7 +1621,7 @@ void DrawHorizontalColorbarRegLabels(void){
         float val;
 
         val = tttmin + (i - 1)*zonerange / (global_scase.nrgb - 2);
-        ScaleFloat2String(val, zonecolorlabel, zonefactor);
+        ScaleFloat2String(val, zonecolorlabel, zonefactor, ncolorlabel_digits, force_fixedpoint);
         zonecolorlabel_ptr = zonecolorlabel;
       }
       OutputBarText(horiz_position, 0.0, foreground_color, zonecolorlabel_ptr);
@@ -1648,10 +1648,10 @@ void DrawHorizontalColorbarRegLabels(void){
       float horiz_position;
 
       tttval = p3lev[valindex];
-      Num2String(p3dlabel, tttval);
+      Float2String(p3dlabel, tttval, ncolorlabel_digits, force_fixedpoint);
       plot3dcolorlabel_ptr = p3dlabel;
       if(plot3dflag == 1){
-        ScaleFloat2String(tttval, plot3dcolorlabel, plot3dfactor);
+        ScaleFloat2String(tttval, plot3dcolorlabel, plot3dfactor, ncolorlabel_digits, force_fixedpoint);
         plot3dcolorlabel_ptr = plot3dcolorlabel;
       }
       horiz_position = MIX2(global_colorbar_index, 255, hcolorbar_right_pos, hcolorbar_left_pos);
@@ -1697,7 +1697,7 @@ void DrawHorizontalColorbarRegLabels(void){
           float val;
 
           val = tttmin + (i - 1)*plot3drange / (global_scase.nrgb - 2);
-          ScaleFloat2String(val, plot3dcolorlabel, plot3dfactor);
+          ScaleFloat2String(val, plot3dcolorlabel, plot3dfactor, ncolorlabel_digits, force_fixedpoint);
           plot3dcolorlabel_ptr = plot3dcolorlabel;
         }
         if(isolevelindex == i || isolevelindex2 == i){
@@ -1802,8 +1802,8 @@ void DrawVerticalColorbarRegLabels(void){
       float vert_position;
 
       tttval = sb->levels256[valindex];
-      Num2String(isolabel, tttval);
-      ScaleFloat2String(tttval, isocolorlabel, isofactor);
+      Float2String(isolabel, tttval, ncolorlabel_digits, force_fixedpoint);
+      ScaleFloat2String(tttval, isocolorlabel, isofactor, ncolorlabel_digits, force_fixedpoint);
       isocolorlabel_ptr = isocolorlabel;
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
       iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
@@ -1819,7 +1819,7 @@ void DrawVerticalColorbarRegLabels(void){
       if(iposition == i)continue;
 
       val = tttmin + i*isorange / (global_scase.nrgb - 2);
-      ScaleFloat2String(val, isocolorlabel, isofactor);
+      ScaleFloat2String(val, isocolorlabel, isofactor, ncolorlabel_digits, force_fixedpoint);
       isocolorlabel_ptr = isocolorlabel;
       OutputBarText(0.0, vert_position, foreground_color, isocolorlabel_ptr);
     }
@@ -1874,10 +1874,10 @@ void DrawVerticalColorbarRegLabels(void){
       float vert_position;
 
       tttval = partlevels256_ptr[valindex];
-      Num2String(partlabel, tttval);
+      Float2String(partlabel, tttval, ncolorlabel_digits, force_fixedpoint);
       partcolorlabel_ptr = partlabel;
       if(partflag == 1){
-        ScaleFloat2String(tttval, partcolorlabel, partfactor);
+        ScaleFloat2String(tttval, partcolorlabel, partfactor, ncolorlabel_digits, force_fixedpoint);
         partcolorlabel_ptr = partcolorlabel;
       }
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
@@ -1993,7 +1993,7 @@ void DrawVerticalColorbarRegLabels(void){
       Float2String(slicelabel, tttval, ncolorlabel_digits, force_fixedpoint);
       slicecolorlabel_ptr = slicelabel;
       if(sliceflag == 1){
-        ScaleFloat2String(tttval, slicecolorlabel, slicefactor);
+        ScaleFloat2String(tttval, slicecolorlabel, slicefactor, ncolorlabel_digits, force_fixedpoint);
         slicecolorlabel_ptr = slicecolorlabel;
       }
       vert_position = MIX2(shifted_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
@@ -2099,7 +2099,7 @@ void DrawVerticalColorbarRegLabels(void){
 
       // draw hvac file value selected with mouse
       tttval = hi->levels256[valindex];
-      Num2String(hvaclabel, tttval);
+      Float2String(hvaclabel, tttval, ncolorlabel_digits, force_fixedpoint);
       hvac_colorlabel_ptr = &(hvaclabel[0]);
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
       iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
@@ -2148,7 +2148,7 @@ void DrawVerticalColorbarRegLabels(void){
 
       // draw hvac file value selected with mouse
       tttval = hi->levels256[valindex];
-      Num2String(hvaclabel, tttval);
+      Float2String(hvaclabel, tttval, ncolorlabel_digits, force_fixedpoint);
       hvac_colorlabel_ptr = &(hvaclabel[0]);
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
       iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
@@ -2258,10 +2258,10 @@ void DrawVerticalColorbarRegLabels(void){
 
       // draw boundary file value selected with mouse
       tttval = boundarylevels256[valindex];
-      Num2String(boundarylabel, tttval);
+      Float2String(boundarylabel, tttval, ncolorlabel_digits, force_fixedpoint);
       boundary_colorlabel_ptr = &(boundarylabel[0]);
       if(patchflag == 1){
-        ScaleFloat2String(tttval, boundary_colorlabel, patchfactor);
+        ScaleFloat2String(tttval, boundary_colorlabel, patchfactor, ncolorlabel_digits, force_fixedpoint);
         boundary_colorlabel_ptr = boundary_colorlabel;
       }
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
@@ -2356,10 +2356,10 @@ void DrawVerticalColorbarRegLabels(void){
       float vert_position;
 
       tttval = zonelevels256[valindex];
-      Num2String(zonelabel, tttval);
+      Float2String(zonelabel, tttval, ncolorlabel_digits, force_fixedpoint);
       zonecolorlabel_ptr = &(zonelabel[0]);
       if(zoneflag == 1){
-        ScaleFloat2String(tttval, zonecolorlabel, zonefactor);
+        ScaleFloat2String(tttval, zonecolorlabel, zonefactor, ncolorlabel_digits, force_fixedpoint);
         zonecolorlabel_ptr = zonecolorlabel;
       }
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
@@ -2449,10 +2449,10 @@ void DrawVerticalColorbarRegLabels(void){
       float vert_position;
 
       tttval = p3lev[valindex];
-      Num2String(p3dlabel, tttval);
+      Float2String(p3dlabel, tttval, ncolorlabel_digits, force_fixedpoint);
       plot3dcolorlabel_ptr = p3dlabel;
       if(plot3dflag == 1){
-        ScaleFloat2String(tttval, plot3dcolorlabel, plot3dfactor);
+        ScaleFloat2String(tttval, plot3dcolorlabel, plot3dfactor, ncolorlabel_digits, force_fixedpoint);
         plot3dcolorlabel_ptr = plot3dcolorlabel;
       }
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);

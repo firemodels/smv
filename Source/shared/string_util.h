@@ -139,7 +139,7 @@ EXTERNCPP void           TrimMZeros(char *line);
 EXTERNCPP char          *Strstr(char *c, char *key);
 EXTERNCPP char          *STRSTR(char *c, const char *key);
 EXTERNCPP void           ScaleString(const char *stringfrom, char *stringto, const float *scale);
-EXTERNCPP void           ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
+EXTERNCPP void           ScaleFloat2String(float floatfrom, char *stringto, const float *scale, int ndigits, int fixedpoint_labels);
 EXTERNCPP float          ScaleFloat2Float(float floatfrom, const float *scale);
 EXTERNCPP void           Num2String(char *string, float tval);
 EXTERNCPP void           Float2String(char *string, float tval, int ndecimals, int fixed_point);

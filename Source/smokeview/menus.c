@@ -2593,6 +2593,7 @@ void Plot3DShowMenu(int value){
      for(i=0;i<global_scase.nplot3dinfo;i++){
        if(global_scase.plot3dinfo[i].loaded==1)global_scase.plot3dinfo[i].display=show_plot3dfiles;
      }
+     updatefacelists = 1;
      break;
    default:
      if(value>=1000){
@@ -6072,7 +6073,8 @@ void LoadBoundaryMenu(int value){
 int GetInternalFaceShow(void){
   int show = 1;
 
-  if(boundary_loaded == 1){
+  if(plotstate != DYNAMIC_PLOTS) return show;
+  if(npatchvis>0){
     cpp_boundsdata *bounds;
     bounds = GLUIGetBoundsData(BOUND_PATCH);
     if(bounds->set_chopmax == 1 || bounds->set_chopmin == 1){
@@ -9507,7 +9509,8 @@ static int menu_count=0;
         plot3di = global_scase.plot3dinfo+i;
         if(plot3di->loaded==0)continue;
         strcpy(menulabel, "");
-        if(show_plot3dfiles==1)strcat(menulabel, "*");
+        if(plotstate == DYNAMIC_PLOTS)show_plot3dfiles = 0;
+        if(show_plot3dfiles == 1)strcat(menulabel, "*");
         strcat(menulabel, plot3di->timelabel);
         strcat(menulabel, ", ");
         strcat(menulabel, plot3di->longlabel);
