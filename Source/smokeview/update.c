@@ -337,18 +337,21 @@ void UpdateFileLoad(void){
     }
   }
 
-  if(nplot3dvis_old!=nplot3dvis         || nsmoke3dvis_old!=nsmoke3dvis || nisovis_old!=nisovis     ||
-     nslicevis_old!=nslicevis           || nvslicevis_old!=nvslicevis   || npatchvis_old!=npatchvis ||
-     nvolsmoke3dvis_old!=nvolsmoke3dvis || npart5vis_old!=npart5vis     || npartvis_old!=npartvis)updatefacelists=1;
-  nplot3dvis_old     = nplot3dvis;
-  nsmoke3dvis_old    = nsmoke3dvis;
-  nisovis_old        = nisovis;
-  nslicevis_old      = nslicevis;
-  nvslicevis_old     = nvslicevis;
-  npatchvis_old      = npatchvis;
-  nvolsmoke3dvis_old = nvolsmoke3dvis;
-  npart5vis_old      = npart5vis;
-  npartvis_old       = npartvis;
+  if(nplot3dloaded_old != nplot3dloaded         || nsmoke3dloaded_old != nsmoke3dloaded ||
+     nisoloaded_old != nisoloaded               || nsliceloaded_old != nsliceloaded ||
+     nvsliceloaded_old != nvsliceloaded         || npatchloaded_old != npatchloaded ||
+     nvolsmoke3dloaded_old != nvolsmoke3dloaded || npart5loaded_old != npart5loaded ||
+    npartloaded_old != npartloaded)updatefacelists=1;
+
+  nplot3dloaded_old     = nplot3dloaded;
+  nsmoke3dloaded_old    = nsmoke3dloaded;
+  nisoloaded_old        = nisoloaded;
+  nsliceloaded_old      = nsliceloaded;
+  nvsliceloaded_old     = nvsliceloaded;
+  npatchloaded_old      = npatchloaded;
+  nvolsmoke3dloaded_old = nvolsmoke3dloaded;
+  npart5loaded_old      = npart5loaded;
+  npartloaded_old       = npartloaded;
 }
 
 /* ------------------ UpdateShow ------------------------ */
@@ -362,6 +365,7 @@ void UpdateShow(void){
   int showhvacflag;
 
   UpdateFileLoad();
+  if(nplot3dloaded > 0 || npatchloaded > 0)updatefacelists = 1;
   showtime             = 0;
   showtime2            = 0;
   showplot3d           = 0;

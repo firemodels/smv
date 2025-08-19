@@ -2593,6 +2593,7 @@ void Plot3DShowMenu(int value){
      for(i=0;i<global_scase.nplot3dinfo;i++){
        if(global_scase.plot3dinfo[i].loaded==1)global_scase.plot3dinfo[i].display=show_plot3dfiles;
      }
+     updatefacelists = 1;
      break;
    default:
      if(value>=1000){

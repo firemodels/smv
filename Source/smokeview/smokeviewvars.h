@@ -369,8 +369,9 @@ SVEXTERN int npartloaded, npatchloaded, nvolsmoke3dloaded, npart5loaded, npartlo
 SVEXTERN int nplot3dvis, nsmoke3dvis, nisovis, nslicevis, nvslicevis;
 SVEXTERN int npatchvis, nvolsmoke3dvis, npart5vis, npartvis;
 
-SVEXTERN int SVDECL(nplot3dvis_old,0), SVDECL(nsmoke3dvis_old,0), SVDECL(nisovis_old,0), SVDECL(nslicevis_old,0), SVDECL(nvslicevis_old,0);
-SVEXTERN int SVDECL(npatchvis_old,0), SVDECL(nvolsmoke3dvis_old,0), SVDECL(npart5vis_old,0), SVDECL(npartvis_old,0);
+SVEXTERN int SVDECL(nplot3dloaded_old,0),     SVDECL(nsmoke3dloaded_old,0), SVDECL(nisoloaded_old,0);
+SVEXTERN int SVDECL(nsliceloaded_old,0),      SVDECL(nvsliceloaded_old,0),  SVDECL(npatchloaded_old,0);
+SVEXTERN int SVDECL(nvolsmoke3dloaded_old,0), SVDECL(npart5loaded_old,0),   SVDECL(npartloaded_old,0);
 
 SVEXTERN int SVDECL(select_part, 0), SVDECL(selected_part_index, -1);
 SVEXTERN int SVDECL(smoke3d_compression_type, COMPRESSED_UNKNOWN);
