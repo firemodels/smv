@@ -4930,6 +4930,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
           if(geomi->currentframe != NULL)geomlisti = geomi->currentframe;
         }
         if(itime==1&&geomi->geomtype==GEOM_ISO){
+          if(plotstate != DYNAMIC_PLOTS)continue;
           if(use_tload_begin==1&&global_times[itimes]<global_scase.tload_begin)continue;
           if(use_tload_end==1&&global_times[itimes]>global_scase.tload_end)continue;
         }
