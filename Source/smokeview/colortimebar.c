@@ -1990,8 +1990,9 @@ void DrawVerticalColorbarRegLabels(void){
       if(ABS(colorbar_shift-1.0)>0.0001){
         shifted_colorbar_index = SHIFT_VAL(global_colorbar_index, 0, 255, colorbar_shift);
       }
-      Float2String(slicelabel, tttval, ncolorlabel_digits, force_fixedpoint);
-      slicecolorlabel_ptr = slicelabel;
+      Floats2Strings(colorbar_labels, &tttval, 1, ncolorlabel_digits, force_fixedpoint, force_exponential,
+                     force_decimal, force_zero_pad, exp_factor_label);
+      slicecolorlabel_ptr = colorbar_labels[0];
       if(sliceflag == 1){
         ScaleFloat2String(tttval, slicecolorlabel, slicefactor, ncolorlabel_digits, force_fixedpoint);
         slicecolorlabel_ptr = slicecolorlabel;
