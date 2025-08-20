@@ -1179,7 +1179,7 @@ int SmokeviewImage2File(char *directory, char *RENDERfilename, int rendertype, i
     fprintf(stderr,"*** Error: unable to render screen image to %s", RENDERfilename);
     return 1;
   }
-  RENDERfile = fopen(renderfile, "wb");
+  RENDERfile = FOPEN(renderfile, "wb");
   if(RENDERfile == NULL){
     fprintf(stderr,"*** Error: unable to render screen image to %s", renderfile);
     return 1;
