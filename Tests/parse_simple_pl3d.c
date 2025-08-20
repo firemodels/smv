@@ -5,6 +5,11 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+int show_help;
+int hash_option;
+int show_version;
+char append_string[1024];
+
 // TODO: This is an additional function to aid in testing. This should be
 // replaced by a better file IO API.
 int get_pl3d_spec(const char *filename, int npts[3]) {
