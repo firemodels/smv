@@ -84,13 +84,13 @@ float     part_load_time;
 #define MENU_TRAINER_CLEAR 998
 #define MENU_MAIN_QUIT 3
 
-#define MENU_READCASEINI    -1
-#define MENU_READINI         1
-#define MENU_WRITEINI        2
-#define MENU_WRITECASEINI    3
-#define MENU_READSVO         4
-#define MENU_CONFIG_SETTINGS 5
-#define MENU_REVERT_WRITEINI 6
+#define MENU_READCASEINI       -1
+#define MENU_READINI            1
+#define MENU_WRITE_SMOKEVIEWINI 2
+#define MENU_WRITE_CASEINI      3
+#define MENU_READSVO            4
+#define MENU_CONFIG_SETTINGS    5
+#define MENU_REVERT_WRITEINI    6
 
 #define MENU_DUMMY2 -1
 
@@ -2767,11 +2767,10 @@ void SmokeviewIniMenu(int value){
   case MENU_REVERT_WRITEINI:
     ReadBinIni();
     break;
-  case MENU_WRITEINI:
+  case MENU_WRITE_SMOKEVIEWINI:
     WriteIni(GLOBAL_INI,NULL);
-    WriteIni(LOCAL_INI,NULL);
     break;
-  case MENU_WRITECASEINI:
+  case MENU_WRITE_CASEINI:
     WriteIni(LOCAL_INI,NULL);
     break;
   case MENU_READSVO:
@@ -12738,19 +12737,18 @@ static int menu_count=0;
       char caselabel[255];
 
       char *caseini_filename = CasePathCaseIni(&global_scase);
-      STRCPY(caselabel, _("Save settings (this case - "));
+      STRCPY(caselabel, _("Save settings to "));
       STRCAT(caselabel, caseini_filename);
-      STRCAT(caselabel, ")");
       FREEMEMORY(caseini_filename);
 
-      glutAddMenuEntry(caselabel,MENU_WRITECASEINI);
+      glutAddMenuEntry(caselabel,MENU_WRITE_CASEINI);
     }
 
     glutAddMenuEntry("-", MENU_DUMMY);
     if(global_scase.devicecoll.ndeviceinfo>0){
       glutAddMenuEntry(_("Read .svo files"),MENU_READSVO);
     }
-    glutAddMenuEntry("Save settings (all cases - smokeview.ini)", MENU_WRITEINI);
+    glutAddMenuEntry("Save settings to smokeview.ini", MENU_WRITE_SMOKEVIEWINI);
     glutAddMenuEntry("Revert settings to installation defaults", MENU_REVERT_WRITEINI);
     glutAddMenuEntry(_("Settings..."), MENU_CONFIG_SETTINGS);
 
