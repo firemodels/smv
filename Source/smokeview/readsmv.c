@@ -7271,8 +7271,8 @@ void WriteIniLocal(FILE *fileout){
           plot2d_xyz_offset[0], plot2d_xyz_offset[1], plot2d_xyz_offset[2], plot2d_font_spacing
   );
   fprintf(fileout, "SHOWGENPLOTXLABEL\n");
-  fprintf(fileout, " %i, %f\n", plot2d_show_xaxis_labels, plot2d_xaxis_position);
-  fprintf(fileout, "%s\n", plot2d_xaxis_label);
+  fprintf(fileout, " %i %f\n", plot2d_show_xaxis_labels, plot2d_xaxis_position);
+  fprintf(fileout, " %s\n", plot2d_xaxis_label);
 
   fprintf(fileout, "SHOWGENPLOTS\n");
   fprintf(fileout, " %i\n", nplot2dinfo);
@@ -7358,17 +7358,17 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, " %f %i %f %f %f %f\n", ticki->dlength, ticki->dir, rgbtemp[0], rgbtemp[1], rgbtemp[2], ticki->width);
   }
   fprintf(fileout, "SHOWGEOMTERRAIN\n");
-  fprintf(fileout, "%i %i %i %i %i\n",
+  fprintf(fileout, " %i %i %i %i %i\n",
     global_scase.terrain_texture_coll.nterrain_textures, terrain_show_geometry_surface, terrain_show_geometry_outline, terrain_show_geometry_points, terrain_showonly_top);
   for(i = 0; i<global_scase.terrain_texture_coll.nterrain_textures; i++){
     texturedata *texti;
 
     texti = global_scase.terrain_texture_coll.terrain_textures+i;
-    fprintf(fileout, "%i\n", texti->display);
+    fprintf(fileout, " %i\n", texti->display);
   }
 
   fprintf(fileout, "TOURCIRCLE\n");
-  fprintf(fileout, "%f %f %f %f %f %f %f %f\n",
+  fprintf(fileout, " %f %f %f %f %f %f %f %f\n",
     tour_circular_center[0],
     tour_circular_center[1], tour_circular_center[2],
     tour_circular_view[0], tour_circular_view[1], tour_circular_view[2],
@@ -7850,14 +7850,14 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SORTSLICES\n");
   fprintf(fileout, " %i\n", sortslices);
   fprintf(fileout, "SPHEREARRAY\n");
-  fprintf(fileout, "%f %f %f %f %f %f\n",
+  fprintf(fileout, " %f %f %f %f %f %f\n",
     sphere_xyz0[0], sphere_xyz0[1], sphere_xyz0[2],
     sphere_dxyz[0], sphere_dxyz[1], sphere_dxyz[2]);
-  fprintf(fileout, "%i %i %i %i %i %i\n",
+  fprintf(fileout, " %i %i %i %i %i %i\n",
     sphere_nxyz[0], sphere_nxyz[1], sphere_nxyz[2],
     sphere_rgb[0], sphere_rgb[1], sphere_rgb[2]
   );
-  fprintf(fileout, "%f %i\n", sphere_diameter, sphere_show);
+  fprintf(fileout, " %f %i\n", sphere_diameter, sphere_show);
   fprintf(fileout, "SPHERESEGS\n");
   fprintf(fileout, " %i\n", device_sphere_segments);
   fprintf(fileout, "SPRINKLERABSSIZE\n");
@@ -7950,11 +7950,11 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "CLIP\n");
   fprintf(fileout, " %f %f\n", nearclip, farclip);
   fprintf(fileout, "COLORGROUND\n");
-  fprintf(fileout, " %i %i %i", ground_color[0], ground_color[1], ground_color[2]);
+  fprintf(fileout, " %i %i %i\n", ground_color[0], ground_color[1], ground_color[2]);
   fprintf(fileout, "COLORZENITH\n");
-  fprintf(fileout, " %i %i %i", zenith_color[0], zenith_color[1], zenith_color[2]);
+  fprintf(fileout, " %i %i %i\n", zenith_color[0], zenith_color[1], zenith_color[2]);
   fprintf(fileout, "COLORHORIZON\n");
-  fprintf(fileout, " %i %i %i", horizon_color[0], horizon_color[1], horizon_color[2]);
+  fprintf(fileout, " %i %i %i\n", horizon_color[0], horizon_color[1], horizon_color[2]);
   fprintf(fileout, "CONTOURTYPE\n");
   fprintf(fileout, " %i %i\n", contour_type, colorbar_linewidth);
   fprintf(fileout, "CULLFACES\n");
@@ -7965,7 +7965,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", rotation_type);
   fprintf(fileout, "FONTSIZE\n");
   fprintf(fileout, " %i\n", fontindex);
-  fprintf(fileout, "FIREPARAMS\n");
   fprintf(fileout, "FRAMERATEVALUE\n");
   fprintf(fileout, " %i\n", frameratevalue);
   fprintf(fileout, "FREEZEVOLSMOKE\n");
@@ -8129,7 +8128,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWSMOKEPART\n");
   fprintf(fileout, " %i\n", visSmokePart);
   fprintf(fileout, "SHOWSKYSPHERE\n");
-  fprintf(fileout, "%i %i %i %i %i %f\n", visSkysphere, visSkybox, visSkyground, visSkyboxoutline, visSkySpheretexture, sky_diam);
+  fprintf(fileout, " %i %i %i %i %i %f\n", visSkysphere, visSkybox, visSkyground, visSkyboxoutline, visSkySpheretexture, sky_diam);
   fprintf(fileout, "SHOWSPRINKPART\n");
   fprintf(fileout, " %i\n", visSprinkPart);
   fprintf(fileout, "SHOWSTREAK\n");
@@ -8247,7 +8246,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", render_label_type);
   fprintf(fileout, "RENDERFILETYPE\n");
   fprintf(fileout," %i %i %i\n",render_filetype, movie_filetype, render_resolution);
-  fprintf(fileout, "MOVIEFILETYPE\n");
   {
     int quicktime_dummy=1;
 
@@ -8367,7 +8365,7 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, " %i %i\n", use_opacity_depth, use_opacity_multiplier);
   }
   fprintf(fileout, "SMOKEPROP\n");
-  fprintf(fileout, "%f\n", glui_smoke3d_extinct);
+  fprintf(fileout, " %f\n", glui_smoke3d_extinct);
   glui_smoke3d_extinct_default = glui_smoke3d_extinct;
   fprintf(fileout, "SMOKESKIP\n");
   fprintf(fileout," %i %i %i %i %i\n", smoke3d_frame_inc-1,smoke3d_skip, smoke3d_skipx, smoke3d_skipy, smoke3d_skipz);
