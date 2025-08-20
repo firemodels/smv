@@ -6974,7 +6974,7 @@ int ReadBinIni(void){
 /* ------------------ ReadIni ------------------------ */
 
 int ReadIni(char *inifile){
-  // There are 2 places to retrieve configuration files:
+  // There are 3 places to retrieve configuration files:
   //
   //   1. A file named smokeview.ini in the installation directory
   //   2. A file named casename.ini in the current directory where casename
