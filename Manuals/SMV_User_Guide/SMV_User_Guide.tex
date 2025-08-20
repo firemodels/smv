@@ -6272,7 +6272,6 @@ B_BOUNDARY
  global_min percentile_min percentile_max global_max data_type
 \end{lstlisting}
 
-
 %---------------------------------------------------------------------------------
 %---------------------------------------------------------------------------------
 \section{Smokeview Configuration File Format (.ini files)}
@@ -6281,21 +6280,20 @@ B_BOUNDARY
 % --------------------CONFIGURATION FILES -----------------------
 
 Smokeview uses configuration or .ini files to save the visualization state.
-Smokeview looks for these files in the following locations:
+Smokeview looks for these files in:
 \begin{enumerate}
-\item smokeview.ini in the installation directory.  On a PC this is typically\\
-{\tt C:\textbackslash Program~Files\textbackslash firemodels\textbackslash SMV6}~.
+\item smokeview.ini in the installation directory.  On a PC this is typically at\\
+{\tt C:\textbackslash Program~Files\textbackslash firemodels\textbackslash SMV6\textbackslash smokeview.ini}~.
 The installation directory may be
-overidden using the -bindir command line option
+overridden by using the -bindir command line option.
 \item casename.ini in the current directory, the directory where the case is located.
-\item casename.ini in \$HOME/.smokeview if the current directory is not writable
-This could occur when the user is viewing a case owned by someone else.
+\item casename.ini in \$HOME/.smokeview if the current directory is not writable.
+This could occur if one does not {\em own}\ the directory containing the case.
 \end{enumerate}
 
-The casename.ini file may be created by selecting the {\tt Save settings to casename.ini}\ menu item.
-The smokeview.ini file may be created by selecting the {\tt Save settings to smokeview.ini}\ menu item.
-This file is saved to the \$HOME/.smokeview directory. Smokeview does not read this file.
-It may be used to change the default view settings by copying it 
+The {\tt casename.ini}\ file is created by selecting the {\tt Save settings to casename.ini}\ menu item.
+The smokeview.ini file is created by typing {\tt smokeview -ini}\ in a command shell.
+This file may be used to change default smokeview settings by copying it
 to the installation directory.
 
 All configuration file parameters unless otherwise noted consist of a {\tt KEYWORD}
