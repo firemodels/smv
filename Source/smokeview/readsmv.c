@@ -6978,9 +6978,9 @@ int ReadIni(char *inifile){
   //
   //   1. A file named smokeview.ini in the installation directory
   //   2. A file named casename.ini in the current directory where casename
-  //      is name of the case as specified by the CHID parameter in the input file
-  //   3. A file named casename.ini in $HOME/.smokeview if the current directory is not writable
-  //
+  //      is the name of the case specified by the CHID parameter in the input file
+  //   3. A file named casename.ini in $HOME/.smokeview if the current directory
+  //      is not writable
 
   global_scase.ntickinfo=global_scase.ntickinfo_smv;
 
