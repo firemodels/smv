@@ -1980,7 +1980,7 @@ void DrawVerticalColorbarRegLabels(void){
     glTranslatef(vcolorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     glTranslatef(-leftslice*(colorbar_label_width + h_space), 0.0, 0.0);
     if(global_colorbar_index != -1){
-      char slicelabel[256], slicecolorlabel[256];
+      char slicecolorlabel[256];
       char *slicecolorlabel_ptr = NULL;
       float vert_position;
       int shifted_colorbar_index;
