@@ -1721,8 +1721,6 @@ void DrawVerticalColorbarRegLabels(void){
   int lefthvacduct, lefthvacnode;
   int iposition;
 
-  float *isofactor = NULL;
-
   int dohist = 0;
 
   GLfloat *foreground_color, *red_color;
@@ -1766,8 +1764,19 @@ void DrawVerticalColorbarRegLabels(void){
     float tttval, tttmin, tttmax;
     boundsdata *sb;
     float isorange;
+    float *isofactor = NULL;
+    int isounitclass, isounittype;
+    char unitlabel[256];
 
     sb = isobounds + iisottype;
+    strcpy(unitlabel, sb->label->unit);
+    GetUnitInfo(sb->label->unit, &isounitclass, &isounittype);
+    if(isounitclass >= 0 && isounitclass < nunitclasses){
+      if(isounittype > 0){
+        isofactor = unitclasses[isounitclass].units[isounittype].scale;
+        strcpy(unitlabel, unitclasses[isounitclass].units[isounittype].unit);
+      }
+    }
     tttmin = iso_valmin;
     tttmax = iso_valmax;
     for(i = 0;i < 256;i++){
@@ -1782,43 +1791,40 @@ void DrawVerticalColorbarRegLabels(void){
     glTranslatef(vcolorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     glTranslatef(-leftiso*(colorbar_label_width + h_space), 0.0, 0.0);
     if(global_colorbar_index != -1){
-      char isocolorlabel[256], isolabel[256];
       char *isocolorlabel_ptr = NULL;
       float vert_position;
 
-      tttval = sb->levels256[valindex];
-      Float2String(isolabel, tttval, ncolorlabel_digits, force_fixedpoint);
-      ScaleFloat2String(tttval, isocolorlabel, isofactor, ncolorlabel_digits, force_fixedpoint);
-      isocolorlabel_ptr = isocolorlabel;
+      tttval = ScaleFloat(sb->levels256[valindex], isofactor);
+      Floats2Strings(colorbar_labels, &tttval, 1, ncolorlabel_digits, force_fixedpoint, force_exponential, force_decimal, force_zero_pad, exp_factor_label);
+      isocolorlabel_ptr = colorbar_labels[0];
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
       iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
       OutputBarText(0.0, vert_position, red_color, isocolorlabel_ptr);
     }
     for(i = 0; i < global_scase.nrgb - 1; i++){
-      float vert_position;
-      char isocolorlabel[256];
-      char *isocolorlabel_ptr = NULL;
       float val;
+
+      if(iposition == i)continue;
+      val = tttmin + i*isorange / (global_scase.nrgb - 2);;
+      val = ScaleFloat(val, isofactor);
+      colorbar_vals[i] = val;
+    }
+    Floats2Strings(colorbar_labels, colorbar_vals, global_scase.nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, force_decimal, force_zero_pad, exp_factor_label);
+    max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
+    for(i = 0; i < global_scase.nrgb - 1; i++){
+      float vert_position;
+      char *isocolorlabel_ptr = NULL;
 
       vert_position = MIX2(i, global_scase.nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
       if(iposition == i)continue;
 
-      val = tttmin + i*isorange / (global_scase.nrgb - 2);
-      ScaleFloat2String(val, isocolorlabel, isofactor, ncolorlabel_digits, force_fixedpoint);
-      isocolorlabel_ptr = isocolorlabel;
+      isocolorlabel_ptr = colorbar_labels[i];
       OutputBarText(0.0, vert_position, foreground_color, isocolorlabel_ptr);
     }
     glPopMatrix();
-  }
 
   // -------------- isosurface top labels ------------
 
-  if(showiso_colorbar == 1){
-    char unitlabel[256];
-    boundsdata *sb;
-
-    sb = isobounds + iisottype;
-    strcpy(unitlabel, sb->label->unit);
     glPushMatrix();
     glTranslatef(
       vcolorbar_left_pos - colorbar_label_width,
