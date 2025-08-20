@@ -7607,7 +7607,7 @@ void WriteIni(int flag,char *filename){
   FILE *fileout=NULL;
   int i;
   char *outfilename=NULL, *outfiledir=NULL;
-  char *smokeviewini_filename = GetUserIniPath();
+  char *smokeviewini_filename = CombinePaths(".","smokeview.ini");
   char *smokeview_scratchdir = GetUserConfigDir();
   char *caseini_filename = CasePathCaseIni(&global_scase);
 
@@ -7641,17 +7641,20 @@ void WriteIni(int flag,char *filename){
   if(fileout==NULL){
     if(outfilename!=NULL){
       fprintf(stderr,"*** Error: unable to open %s for writing ",outfilename);
-      return;
     }
     else{
       fprintf(stderr,"*** Error: unable to open ini file for output ");
     }
     if(outfiledir==NULL){
-      printf("in current directory\n");
+      printf("in the current directory\n");
     }
     else{
-      printf("in directory %s\n", outfiledir);
+      printf("in the directory %s\n", outfiledir);
     }
+    return;
+  }
+  if(outfilename != NULL){
+    printf("Settings output to %s\n", outfilename);
   }
   FREEMEMORY(smokeviewini_filename);
 

@@ -12717,10 +12717,10 @@ static int menu_count=0;
     char *caseini_filename = CasePathCaseIni(&global_scase);
     if( n_inifiles>0||FILE_EXISTS(user_ini_path)==YES||FILE_EXISTS(caseini_filename)==YES||FILE_EXISTS(global_ini_path)==YES){
       if(n_inifiles==0){
-        glutAddMenuEntry(_("Read ini files"),MENU_READINI);
+        glutAddMenuEntry(_("Read ini file"),MENU_READINI);
       }
       else{
-        GLUTADDSUBMENU(_("Read ini files"),inisubmenu);
+        GLUTADDSUBMENU(_("Read ini file"),inisubmenu);
       }
     }
     FREEMEMORY(caseini_filename);
