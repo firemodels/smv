@@ -469,9 +469,9 @@ void ScaleString(const char *stringfrom, char *stringto, const float *scale){
   Num2String(stringto,val);
 }
 
-/* ------------------ ScaleFloat2Float ------------------------ */
+/* ------------------ ScaleFloat ------------------------ */
 
-float ScaleFloat2Float(float floatfrom, const float *scale){
+float ScaleFloat(float floatfrom, const float *scale){
   if(scale!=NULL)floatfrom = scale[0]*floatfrom+scale[1];
   return floatfrom;
 }
