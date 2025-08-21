@@ -173,7 +173,7 @@ SVEXTERN int SVDECL(texture_showall, 0);
 SVEXTERN int SVDECL(texture_hideall, 0);
 SVEXTERN int SVDECL(force_gray_smoke, 1);
 SVEXTERN int SVDECL(verbose_output, 0);
-SVEXTERN float glui_smoke3d_extinct, glui_smoke3d_extinct_save;
+SVEXTERN float SVDECL(glui_smoke3d_extinct,8700.0), SVDECL(glui_smoke3d_extinct_save,8700.0);
 SVEXTERN float glui_smoke3d_extinct_default;
 SVEXTERN int SVDECL(force_alpha_opaque, 0);
 SVEXTERN int SVDECL(max_colorbar_label_width, 0);
