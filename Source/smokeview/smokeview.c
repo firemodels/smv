@@ -229,11 +229,6 @@ void DisplayVersionInfo(char *progname){
     PRINTF("Global ini       : not found\n");
   }
   FREEMEMORY(global_ini_path);
-  char *user_ini_path = GetUserIniPath();
-  if(user_ini_path != NULL && FileExistsOrig(user_ini_path) == 1){
-    PRINTF("User ini         : %s\n", user_ini_path);
-  }
-  FREEMEMORY(user_ini_path);
 
   char *objectfile = GetSmvRootFile("objects.svo");
   if(objectfile != NULL && FileExistsOrig(objectfile) == 1){
