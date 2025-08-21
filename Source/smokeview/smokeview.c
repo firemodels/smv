@@ -230,15 +230,6 @@ void DisplayVersionInfo(char *progname){
   }
   FREEMEMORY(global_ini_path);
 
-  char *objectfile = GetSmvRootFile("objects.svo");
-  if(objectfile != NULL && FileExistsOrig(objectfile) == 1){
-    PRINTF("objects.svo      : %s\n", objectfile);
-  }
-  else{
-    PRINTF("objects.svo      : not found\n");
-  }
-  FREEMEMORY(objectfile);
-
   char fullini_filename[256];
   strcpy(fullini_filename, "");
   char *smokeview_scratchdir = GetUserConfigDir();
@@ -267,6 +258,16 @@ void DisplayVersionInfo(char *progname){
       PRINTF("Casename ini     : not found\n");
     }
   }
+
+  char *objectfile = GetSmvRootFile("objects.svo");
+  if(objectfile != NULL && FileExistsOrig(objectfile) == 1){
+    PRINTF("objects.svo      : %s\n", objectfile);
+  }
+  else{
+    PRINTF("objects.svo      : not found\n");
+  }
+  FREEMEMORY(objectfile);
+
   FREEMEMORY(smv_progname);
   FREEMEMORY(smv_bindir);
 }
