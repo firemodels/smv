@@ -1557,7 +1557,7 @@ void DrawHorizontalColorbarRegLabels(void){
       }
       horiz_position = MIX2(global_colorbar_index, 255, hcolorbar_right_pos, hcolorbar_left_pos);
       iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
-      OutputBarText(0.0,horiz_position, red_color, boundary_colorlabel_ptr);
+      OutputBarText(horiz_position, 0.0, red_color, boundary_colorlabel_ptr);
     }
     for(i = 0; i < global_scase.nrgb - 1; i++){
       char boundary_colorlabel[256];
