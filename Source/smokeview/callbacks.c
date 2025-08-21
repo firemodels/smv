@@ -710,14 +710,30 @@ void CheckTimeBound(void){
 /* ------------------ GetColorbarIndex ------------------------ */
 
 int GetColorbarIndex(int x, int y){
-  if(vcolorbar_left_pos<=x&&x<=vcolorbar_right_pos){
+  if(visColorbarVertical == 1) {
+    if(vcolorbar_left_pos <= x && x <= vcolorbar_right_pos) {
       y = screenHeight - y;
-      if(vcolorbar_down_pos<=y&&y<=vcolorbar_top_pos){
+      if(vcolorbar_down_pos <= y && y <= vcolorbar_top_pos){
         int index;
-        index = CLAMP(255*(float)(y-vcolorbar_down_pos)/(float)(vcolorbar_top_pos - vcolorbar_down_pos),0,255);
+        index = CLAMP(255*(float)(y - vcolorbar_down_pos)/(float)(vcolorbar_top_pos-vcolorbar_down_pos),
+                      0, 255);
         return index;
       }
       return CB_SELECT_STOP;
+    }
+  }
+  else if(visColorbarHorizontal == 1) {
+    y = screenHeight - y;
+    if(hcolorbar_down_pos <= y && y <= hcolorbar_top_pos) {
+      if(hcolorbar_left_pos <= x && x <= hcolorbar_right_pos) {
+        int index;
+        index = CLAMP(255 * (float)(x - hcolorbar_left_pos) /
+                          (float)(hcolorbar_right_pos - hcolorbar_left_pos),
+                      0, 255);
+        return index;
+      }
+      return CB_SELECT_STOP;
+    }
   }
   return CB_SELECT_CONTINUE;
 }
@@ -1074,10 +1090,12 @@ void MouseCBWorker(int button, int state, int xm, int ym){
       if(select_geom!=GEOM_PROP_NONE)MouseSelectGeom(xm, ym);
       if(select_part == 1 && npartloaded>0)MouseSelectPart(xm, ym);
     }
-    if( showtime==1 || showplot3d==1){
-      if(ColorbarClick(xm, ym) == 1){
-        glutPostRedisplay();
-        return;
+    if(visColorbarVertical == 1 || visColorbarHorizontal == 1){
+      if(showtime == 1 || showplot3d == 1){
+        if(ColorbarClick(xm, ym) == 1){
+          glutPostRedisplay();
+          return;
+        }
       }
     }
     if(visTimebar==1&&showtime==1){
