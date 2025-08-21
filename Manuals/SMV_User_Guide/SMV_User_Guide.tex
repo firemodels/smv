@@ -6272,7 +6272,6 @@ B_BOUNDARY
  global_min percentile_min percentile_max global_max data_type
 \end{lstlisting}
 
-
 %---------------------------------------------------------------------------------
 %---------------------------------------------------------------------------------
 \section{Smokeview Configuration File Format (.ini files)}
@@ -6280,32 +6279,30 @@ B_BOUNDARY
 \label{appendixini}
 % --------------------CONFIGURATION FILES -----------------------
 
-Smokeview uses configuration files (.ini files) to set input parameters not
-settable using menus or the keyboard and to save the visualization state.
-Smokeview looks for configuration files in the installation directory
-(directory where the Smokeview program is located), a directory named .smokeview
-in your home directory and the directory containing the case you are running.
-The configuration file is named smokeview.ini in the installation
-and  home/.smokeview directories and casename.ini in the case directory where casename is the name of the case.
+Smokeview uses configuration or .ini files to save the visualization state.
+Smokeview looks for these files in:
+\begin{enumerate}
+\item smokeview.ini in the installation directory.  On a PC this is typically at\\
+{\tt C:\textbackslash Program~Files\textbackslash firemodels\textbackslash SMV6\textbackslash smokeview.ini}~.
+The installation directory may be
+overridden by using the -bindir command line option.
+\item casename.ini in the current directory, the directory where the case is located.
+\item casename.ini in \$HOME/.smokeview if the current directory is not writable.
+This could occur if one does not {\em own}\ the directory containing the case.
+\end{enumerate}
 
-The \svini\ file found in the home/.smokeview directory may be created by typing:
-{\tt smokeview -ini}\
-from the command line or by selecting the {{\tt Save settings(all cases)}\ menu item.
-Likewise the casename.ini file may be created by selecting the {\tt Save settings(this case)}\ menu item.
-
-Smokeview reads the installation .ini file first followed by the home/.smokeview .ini file followed by the .ini file in your case directory.
-The global \svini\ file is used to
-customize parameters for all Smokeview runs. The {\tt casename.ini}\ file is
-used to customize parameters for only those Smokeview runs with
-the prefix casename.
+The {\tt casename.ini}\ file is created by selecting the {\tt Save settings to casename.ini}\ menu item.
+The smokeview.ini file is created by typing {\tt smokeview -ini}\ in a command shell.
+This file may be used to change default smokeview settings by copying it
+to the installation directory.
 
 All configuration file parameters unless otherwise noted consist of a {\tt KEYWORD}
 followed by a value, as in:
 \begin{lstlisting}
 KEYWORD
-value
+ value
 \end{lstlisting}
-Descriptions of many of the .ini keywords follow.
+\ Keywords begin in the first column.  Each data line that follow is preprended by at least one space. Descriptions of many of the .ini keywords follow.
 
 %%\subsection{Miscellaneous Settings}
 \hiteminiN{CACHE_DATA}

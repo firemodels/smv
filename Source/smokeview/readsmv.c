@@ -6974,18 +6974,13 @@ int ReadBinIni(void){
 /* ------------------ ReadIni ------------------------ */
 
 int ReadIni(char *inifile){
-  // There are 7 places to retrieve configuration file from:
+  // There are 3 places to retrieve configuration files:
   //
-  //   1. A file within the same directory as the smokeview executable named
-  //      "smokeview.ini".
-  //   2. A file in the user's config directory named "smokeview.ini".
-  //   3. A file in the current directory named "smokeview.ini".
-  //   4. A file in the current directory named "${fdsprefix}.ini".
-  //   5. A file in the scratch directory named "${fdsprefix}.ini".
-  //   6. A file pointed to by SMOKEVIEW_CONFIG_PATH.
-  //   7. A file pointed to be envar SMOKEVIEW_CONFIG.
-  //
-  // Last definition wins.
+  //   1. A file named smokeview.ini in the installation directory
+  //   2. A file named casename.ini in the current directory where casename
+  //      is the name of the case specified by the CHID parameter in the input file
+  //   3. A file named casename.ini in $HOME/.smokeview if the current directory
+  //      is not writable
 
   global_scase.ntickinfo=global_scase.ntickinfo_smv;
 
@@ -7612,7 +7607,7 @@ void WriteIni(int flag,char *filename){
   FILE *fileout=NULL;
   int i;
   char *outfilename=NULL, *outfiledir=NULL;
-  char *smokeviewini_filename = GetSystemIniPath();
+  char *smokeviewini_filename = CombinePaths(".","smokeview.ini");
   char *smokeview_scratchdir = GetUserConfigDir();
   char *caseini_filename = CasePathCaseIni(&global_scase);
 
@@ -7646,17 +7641,20 @@ void WriteIni(int flag,char *filename){
   if(fileout==NULL){
     if(outfilename!=NULL){
       fprintf(stderr,"*** Error: unable to open %s for writing ",outfilename);
-      return;
     }
     else{
       fprintf(stderr,"*** Error: unable to open ini file for output ");
     }
     if(outfiledir==NULL){
-      printf("in current directory\n");
+      printf("in the current directory\n");
     }
     else{
-      printf("in directory %s\n", outfiledir);
+      printf("in the directory %s\n", outfiledir);
     }
+    return;
+  }
+  if(outfilename != NULL){
+    printf("Settings output to %s\n", outfilename);
   }
   FREEMEMORY(smokeviewini_filename);
 
