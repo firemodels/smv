@@ -3000,7 +3000,7 @@ void ScriptSetCbar(scriptdata *scripti){
 /* ------------------ ScriptSmokeprop ------------------------ */
 
 void ScriptSmokeprop(scriptdata *scripti) {
-  glui_smoke3d_extinct = scripti->fval;
+  glui_mass_extinct = scripti->fval;
   GLUISmoke3dCB(SMOKE_EXTINCT);
 }
 
