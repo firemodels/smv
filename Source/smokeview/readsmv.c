@@ -1097,7 +1097,7 @@ void UpdateSmoke3DTypes(void){
       ext = smoke3di->extinct;
       if(ext > 0.0){
         SOOT_index = i;
-        glui_smoke3d_extinct = global_scase.smoke3dcoll.smoke3dtypes[i].extinction;
+        glui_mass_extinct = global_scase.smoke3dcoll.smoke3dtypes[i].extinction;
         continue;
       }
       if(Match(label, "hrrpuv") == 1){
@@ -3795,15 +3795,17 @@ int ReadIni2(const char *inifile, int localfile){
       sscanf(buffer, "%i %i %i %i %i",
         &glui_compress_volsmoke, &use_multi_threading, &load_at_rendertimes, &volbw, &show_volsmoke_moving);
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%f %f %f %f %f %f %f",
-        &global_scase.temp_min, &global_temp_cb_min_default, &global_temp_cb_max_default, &fire_opacity_factor, &mass_extinct, &gpu_vol_factor, &nongpu_vol_factor);
+      sscanf(buffer, "%f %f %f %f %f %f %f", &global_scase.temp_min,
+             &global_temp_cb_min_default, &global_temp_cb_max_default,
+             &fire_opacity_factor, &glui_mass_extinct, &gpu_vol_factor,
+             &nongpu_vol_factor);
       global_temp_cb_min = global_temp_cb_min_default;
       global_temp_cb_max = global_temp_cb_max_default;
       ONEORZERO(glui_compress_volsmoke);
       ONEORZERO(use_multi_threading);
       ONEORZERO(load_at_rendertimes);
       fire_opacity_factor = CLAMP(fire_opacity_factor, 1.0, 10.0);
-      mass_extinct = CLAMP(mass_extinct, 100.0, 100000.0);
+      glui_mass_extinct = CLAMP(glui_mass_extinct, 100.0, 100000.0);
       InitVolRenderSurface(NOT_FIRSTCALL);
       continue;
     }
@@ -6100,8 +6102,8 @@ int ReadIni2(const char *inifile, int localfile){
       }
       if(MatchINI(buffer, "SMOKEPROP")==1){
         if(fgets(buffer, 255, stream)==NULL)break;
-        sscanf(buffer, "%f", &glui_smoke3d_extinct);
-        glui_smoke3d_extinct_default = glui_smoke3d_extinct;
+        sscanf(buffer, "%f", &glui_mass_extinct);
+        glui_mass_extinct_default = glui_mass_extinct;
         continue;
       }
       if(MatchINI(buffer, "FIRECOLOR") == 1){
@@ -8363,8 +8365,8 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, " %i %i\n", use_opacity_depth, use_opacity_multiplier);
   }
   fprintf(fileout, "SMOKEPROP\n");
-  fprintf(fileout, " %f\n", glui_smoke3d_extinct);
-  glui_smoke3d_extinct_default = glui_smoke3d_extinct;
+  fprintf(fileout, " %f\n", glui_mass_extinct);
+  glui_mass_extinct_default = glui_mass_extinct;
   fprintf(fileout, "SMOKESKIP\n");
   fprintf(fileout," %i %i %i %i %i\n", smoke3d_frame_inc-1,smoke3d_skip, smoke3d_skipx, smoke3d_skipy, smoke3d_skipz);
 #ifdef pp_GPU
@@ -8374,8 +8376,9 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "VOLSMOKE\n");
   fprintf(fileout, " %i %i %i %i %i\n",
     glui_compress_volsmoke, use_multi_threading, load_at_rendertimes, volbw, show_volsmoke_moving);
-  fprintf(fileout, " %f %f %f %f %f %f %f\n",
-    global_scase.temp_min, global_temp_cb_min, global_temp_cb_max, fire_opacity_factor, mass_extinct, gpu_vol_factor, nongpu_vol_factor);
+  fprintf(fileout, " %f %f %f %f %f %f %f\n", global_scase.temp_min,
+          global_temp_cb_min, global_temp_cb_max, fire_opacity_factor,
+          glui_mass_extinct, gpu_vol_factor, nongpu_vol_factor);
 
   fprintf(fileout, "\n *** ZONE FIRE PARAMETRES ***\n\n");
 

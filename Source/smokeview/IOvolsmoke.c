@@ -671,7 +671,7 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
   *smoke_tran = 1.0;
   if(smokedata_local!=NULL){
     INTERP3D(smokedata_local, soot_density);
-    *smoke_tran = exp(-mass_extinct*soot_density*dlength);
+    *smoke_tran = exp(-glui_mass_extinct*soot_density*dlength);
     if(firedata_local!=NULL&&temperature<=global_temp_cb_min){
       memcpy(fire_emission, black, 3*sizeof(float));
     }
@@ -2407,7 +2407,7 @@ void DrawSmoke3DGPUVol(void){
   glUniform1f(GPUvol_xyzmaxdiff,xyzmaxdiff);
   glUniform1f(GPUvol_gpu_vol_factor,gpu_vol_factor);
   glUniform1f(GPUvol_fire_opacity_factor,fire_opacity_factor);
-  glUniform1f(GPUvol_mass_extinct,mass_extinct);
+  glUniform1f(GPUvol_mass_extinct, glui_mass_extinct);
   glUniform1i(GPUvol_volbw,volbw);
   glUniform1f(GPUvol_temperature_min, global_scase.temp_min);
   glUniform1f(GPUvol_temperature_cutoff, global_temp_cb_min);

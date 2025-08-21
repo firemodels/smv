@@ -173,8 +173,8 @@ SVEXTERN int SVDECL(texture_showall, 0);
 SVEXTERN int SVDECL(texture_hideall, 0);
 SVEXTERN int SVDECL(force_gray_smoke, 1);
 SVEXTERN int SVDECL(verbose_output, 0);
-SVEXTERN float glui_smoke3d_extinct, glui_smoke3d_extinct_save;
-SVEXTERN float glui_smoke3d_extinct_default;
+SVEXTERN float SVDECL(glui_mass_extinct,8700.0), SVDECL(glui_mass_extinct_save,8700.0);
+SVEXTERN float glui_mass_extinct_default;
 SVEXTERN int SVDECL(force_alpha_opaque, 0);
 SVEXTERN int SVDECL(max_colorbar_label_width, 0);
 SVEXTERN char SVDECL(**colorbar_labels,  NULL);
@@ -1938,7 +1938,7 @@ SVEXTERN int SVDECL(device_sphere_segments,6);
 SVEXTERN int SVDECL(nlat_hsphere, 20), SVDECL(nlong_hsphere, 40);
 SVEXTERN int ntexturestack;
 
-SVEXTERN float SVDECL(fire_opacity_factor,3.0),SVDECL(mass_extinct,8700.0);
+SVEXTERN float SVDECL(fire_opacity_factor,3.0);
 
 SVEXTERN float SVDECL(global_temp_cb_min, 600.0),          SVDECL(global_temp_cb_max,2000.0);
 SVEXTERN float SVDECL(global_temp_cb_min_default, 600.0),  SVDECL(global_temp_cb_max_default, 2000.0);
