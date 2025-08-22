@@ -50,9 +50,24 @@ if [ "$FED" == "" ]; then
   fi
 fi
 
+# define BASEDIR if it doesn't exist
 if [ "$BASEDIR" == "" ]; then
   BASEDIR=`pwd`
 fi
+
+#define SMV if it doesn't exist
+CURDIR=`pwd`
+if [ "$SMV" == "" ]; then
+  if [ -e ../../Build/smokeview/intel_linux_64 ]; then
+    cd ../../Build/smokeview/intel_linux_64
+    SMV=`pwd`/smokeview_linux_64
+    cd $CURDIR
+    if [ ! -e $SMV ]; then
+      SMV=
+    fi
+  fi
+fi
+
 fulldir=$BASEDIR/$dir
 echo ""
 echo "--- generating images for: $in.smv, `date`"
