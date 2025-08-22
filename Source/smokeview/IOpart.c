@@ -1208,8 +1208,8 @@ void *SortAllPartTags(void *arg){
     SortPartTags(parti);
   }
   PRINT_TIMER(timer_sortparttags, "SortPartTags");
-  THREAD_EXIT(sorttags_threads);
   sorting_tags = 0;
+  THREAD_EXIT(sorttags_threads);
 }
 
 /* ------------------ GetPartData ------------------------ */
