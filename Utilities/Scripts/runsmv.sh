@@ -67,6 +67,14 @@ if [ "$SMV" == "" ]; then
     fi
   fi
 fi
+#define SMVBINDIR if it doesn't exist
+if [ "$SMVBINDIR" == "" ]; then
+  if [ -e ../../Build/for_bundle ]; then
+    cd ../../Build/for_bundle
+    SMVBINDIR=`pwd`
+    cd $CURDIR
+  fi
+fi
 
 fulldir=$BASEDIR/$dir
 echo ""
