@@ -58,8 +58,9 @@ fi
 #define SMV if it doesn't exist
 CURDIR=`pwd`
 if [ "$SMV" == "" ]; then
-  if [ -e ../../Build/smokeview/intel_linux_64 ]; then
-    cd ../../Build/smokeview/intel_linux_64
+  SMV=../../Build/smokeview/intel_linux_64
+  if [ -e $SMV ]; then
+    cd $SMV
     SMV=`pwd`/smokeview_linux_64
     cd $CURDIR
     if [ ! -e $SMV ]; then
@@ -67,10 +68,12 @@ if [ "$SMV" == "" ]; then
     fi
   fi
 fi
+
 #define SMVBINDIR if it doesn't exist
 if [ "$SMVBINDIR" == "" ]; then
-  if [ -e ../../Build/for_bundle ]; then
-    cd ../../Build/for_bundle
+  SMVBINDIR=../../Build/for_bundle
+  if [ -e $SMVBINDIR ]; then
+    cd $SMVBINDIR
     SMVBINDIR=`pwd`
     cd $CURDIR
   fi
