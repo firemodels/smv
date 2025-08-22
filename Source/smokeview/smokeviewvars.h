@@ -60,11 +60,7 @@ SVEXTERN int SVDECL(n_iso_threads, 1), SVDECL(use_iso_threads, 0), SVDECL(use_is
 
 //*** part
 SVEXTERN int SVDECL(n_partload_threads, 2);
-#ifdef pp_PART_SINGLE
-SVEXTERN int SVDECL(use_partload_threads, 0);
-#else
 SVEXTERN int SVDECL(use_partload_threads, 1);
-#endif
 SVEXTERN threaderdata SVDECL(*partload_threads,         NULL);
 
 //*** sorttags
