@@ -50,6 +50,9 @@ if [ "$FED" == "" ]; then
   fi
 fi
 
+if [ "$BASEDIR" == "" ]; then
+  BASEDIR=`pwd`
+fi
 fulldir=$BASEDIR/$dir
 echo ""
 echo "--- generating images for: $in.smv, `date`"
