@@ -2802,6 +2802,7 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
 
   if(sorttags_threads == NULL){
+    if(runscript==1)use_sorttags_threads = 0;
     sorttags_threads = THREADinit(&n_sorttags_threads, &use_sorttags_threads, SortAllPartTags);
   }
 
