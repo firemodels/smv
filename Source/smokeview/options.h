@@ -7,6 +7,13 @@
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading
 #define pp_PART_SINGLE      // load particles using a single thread
+#define pp_PART_TAGS_SINGLE // sort particles tags using a single thread
+
+#ifdef pp_PART_SINGLE
+#ifndef pp_PART_TAGS_SINGLE
+#define PART_TAGS_SINGLE     // force define if pp_PART_SINGLE is defined
+#endif
+#endif
 
 //*** options: windows
 
