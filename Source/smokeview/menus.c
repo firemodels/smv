@@ -4120,6 +4120,9 @@ void LoadAllPartFilesMT(int partnum){
 
   INIT_PRINT_TIMER(part_load_timer);
   if(partload_threads == NULL){
+#ifdef pp_PART_SINGLE
+    use_partload_threads = 0;
+#endif
     partload_threads = THREADinit(&n_partload_threads, &use_partload_threads, MtLoadAllPartFiles);
   }
   int partnuminfo[1];
