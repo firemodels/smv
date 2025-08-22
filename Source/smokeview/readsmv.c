@@ -2808,6 +2808,8 @@ int ReadSMV_Configure(){
   if(sorttags_threads == NULL){
 #ifdef pp_PART_TAGS_SINGLE
     use_sorttags_threads = 0;
+#else
+    if(runscript==1)use_sorttags_threads = 0;
 #endif
     sorttags_threads = THREADinit(&n_sorttags_threads, &use_sorttags_threads, SortAllPartTags);
   }
