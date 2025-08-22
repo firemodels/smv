@@ -2723,7 +2723,11 @@ int ReadSMV_Configure(){
     }
   }
   if(global_scase.npartinfo>=64){
+#ifdef pp_PART_SINGLE
+    use_partload_threads = 0;
+#else
     use_partload_threads = 1;
+#endif
     partfast = 1;
   }
 
@@ -5799,6 +5803,9 @@ int ReadIni2(const char *inifile, int localfile){
       fgets(buffer, 255, stream);
       if(current_script_command==NULL){
         sscanf(buffer, "%i %i %i", &partfast, &use_partload_threads, &n_partload_threads);
+#ifdef pp_PART_SINGLE
+        use_partload_threads = 0;
+#endif
       }
       continue;
     }
