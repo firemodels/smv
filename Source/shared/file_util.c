@@ -391,7 +391,7 @@ int Writable(char *dir){
     char tempfile[tempfile_length+1];
     RandStr(tempfile, tempfile_length);
     char *temp_path = CombinePaths(dir, tempfile);
-    FILE *stream = FOPEN(temp_path, "w");
+    FILE *stream = fopen(temp_path, "w");
     FREEMEMORY(temp_path);
     if(stream == NULL) {
       UNLINK(temp_path);
