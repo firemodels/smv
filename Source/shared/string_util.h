@@ -84,6 +84,10 @@ typedef struct {
 #endif
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+#if defined(_WIN32) && defined(UNICODE_PATHS)
+EXTERNCPP wchar_t *convert_utf8_to_utf16(const char *path);
+EXTERNCPP char *convert_utf16_to_utf8(const wchar_t *path);
+#endif
 EXTERNCPP char          *ConcatLabels(char *label1, char *label2, char *label3, char *label);
 EXTERNCPP char          *GetCharPtr(char *label);
 EXTERNCPP char          *GetStringPtr(char *buffer);

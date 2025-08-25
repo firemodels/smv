@@ -20,6 +20,7 @@
 #undef S_ISREG
 #endif
 #include <dirent_win.h>
+#include <windows.h>
 #else
 #include <dirent.h>
 #endif
@@ -35,6 +36,80 @@
 
 
 unsigned int *random_ints, nrandom_ints;
+
+#if defined(_WIN32) && defined(UNICODE_PATHS)
+/// @brief Given a UTF-8 (or ASCII) string, convert it to Windows UTF-16.
+/// @param string a UTF-8 (or ASCII) string
+/// @return a UTF-16 string or NULL on error
+wchar_t *convert_utf8_to_utf16(const char *input_string) {
+  int r;
+  r = MultiByteToWideChar(CP_UTF8, 0, input_string, -1, NULL, 0);
+  if(r == 0) goto err;
+  LPWSTR output_string;
+  NEWMEMORY(output_string, r * sizeof(WCHAR));
+  r = MultiByteToWideChar(CP_UTF8, 0, input_string, -1, output_string, r);
+  if(r == 0) goto err;
+  return output_string;
+err:
+  // There was an error converting this string to utf-16. Produce a suitable
+  // error message and return NULL.
+  DWORD dw = GetLastError();
+  switch(dw) {
+  case ERROR_INSUFFICIENT_BUFFER:
+    fprintf(stderr, "A supplied buffer size was not large enough, or it was "
+                    "incorrectly set to NULL.\n");
+    break;
+  case ERROR_INVALID_FLAGS:
+    fprintf(stderr, "The values supplied for flags were not valid.\n");
+    break;
+  case ERROR_INVALID_PARAMETER:
+    fprintf(stderr, "Any of the parameter values was invalid.\n");
+    break;
+  case ERROR_NO_UNICODE_TRANSLATION:
+    fprintf(stderr, "Invalid Unicode was found in a string.\n");
+    break;
+  default:
+    break;
+  }
+  return NULL;
+}
+
+/// @brief Given a (Windows) UTF-16 string, convert to UTF-8.
+/// @param string a (Windows) UTF-16 string
+/// @return a UTF-8 string or NULL on error
+char *convert_utf16_to_utf8(const wchar_t *input_string) {
+  int r;
+  r = WideCharToMultiByte(CP_UTF8, 0, input_string, -1, NULL, 0, NULL, NULL);
+  if(r == 0) goto err;
+  char *output_string;
+  NEWMEMORY(output_string, r * sizeof(char));
+  r = WideCharToMultiByte(CP_UTF8, 0, input_string, -1, output_string, r, NULL, NULL);
+  if(r == 0) goto err;
+  return output_string;
+err:
+  // There was an error converting this string to utf-8. Produce a suitable
+  // error message and return NULL.
+  DWORD dw = GetLastError();
+  switch(dw) {
+  case ERROR_INSUFFICIENT_BUFFER:
+    fprintf(stderr, "A supplied buffer size was not large enough, or it was "
+                    "incorrectly set to NULL.\n");
+    break;
+  case ERROR_INVALID_FLAGS:
+    fprintf(stderr, "The values supplied for flags were not valid.\n");
+    break;
+  case ERROR_INVALID_PARAMETER:
+    fprintf(stderr, "Any of the parameter values was invalid.\n");
+    break;
+  case ERROR_NO_UNICODE_TRANSLATION:
+    fprintf(stderr, "Invalid Unicode was found in a string.\n");
+    break;
+  default:
+    break;
+  }
+  return NULL;
+}
+#endif
 
 /* ------------------ ConcatLabels ------------------------ */
 

@@ -25,6 +25,15 @@
 #include <dirent_win.h>
 #include <shlwapi.h>
 #pragma comment(lib, "shlwapi.lib")
+
+#include <windows.h>
+#include <pathcch.h>
+#include <tchar.h>
+#include <stdio.h>
+#include <strsafe.h>
+#pragma comment(lib, "User32.lib")
+#pragma comment(lib, "PathCch.lib")
+
 #else
 #include <dirent.h>
 #include <libgen.h>
@@ -35,6 +44,102 @@
 #include "threader.h"
 
 FILE *alt_stdout=NULL;
+
+/* ------------------ FOPEN  ------------------------ */
+
+FILE *FOPEN(const char *file, const char *mode) {
+#if defined(_WIN32) && defined(UNICODE_PATHS)
+  wchar_t *path = convert_utf8_to_utf16(file);
+  wchar_t *wmode = convert_utf8_to_utf16(mode);
+  FILE *stream = _wfsopen(path, wmode, _SH_DENYNO);
+  FREEMEMORY(path);
+  FREEMEMORY(wmode);
+  return stream;
+#elif defined(_WIN32)
+  return _fsopen(file, mode, _SH_DENYNO);
+#else
+  return fopen(file, mode);
+#endif
+}
+
+/* ------------------ MKDIR  ------------------------ */
+
+int MKDIR(const char *file) {
+#if defined(_WIN32) && defined(UNICODE_PATHS)
+  wchar_t *path = convert_utf8_to_utf16(file);
+  int r = CreateDirectoryW(path, NULL);
+  FREEMEMORY(path);
+  return r;
+#elif defined(_WIN32)
+  return CreateDirectoryA(file, NULL);
+#else
+  return mkdir(file, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+#endif
+}
+
+/* ------------------ ACCESS  ------------------------ */
+
+int ACCESS(const char *file, int mode) {
+#if defined(_WIN32) && defined(UNICODE_PATHS)
+  wchar_t *path = convert_utf8_to_utf16(file);
+  int r = _waccess(path, mode);
+  FREEMEMORY(path);
+  return r;
+#elif defined(_WIN32)
+  return _access(file, mode);
+#else
+  return access(file, mode);
+#endif
+}
+
+/* ------------------ STAT  ------------------------ */
+
+int STAT(const char *file, STRUCTSTAT *buffer) {
+#if defined(_WIN32) && defined(UNICODE_PATHS)
+  wchar_t *path = convert_utf8_to_utf16(file);
+  int r = _wstat64(path, buffer);
+  FREEMEMORY(path);
+  return r;
+#elif defined(_WIN32)
+  return _stat64(file, buffer);
+#else
+#ifdef X64
+  return _stat64(file, buffer);
+#else
+  return stat(file, buffer);
+#endif
+#endif
+}
+
+/* ------------------ CHDIR  ------------------------ */
+
+int CHDIR(const char *file) {
+#if defined(_WIN32) && defined(UNICODE_PATHS)
+  wchar_t *path = convert_utf8_to_utf16(file);
+  int r = SetCurrentDirectoryW(path);
+  FREEMEMORY(path);
+  return r;
+#elif defined(_WIN32)
+  return SetCurrentDirectoryA(file);
+#else
+  return chdir(file);
+#endif
+}
+
+/* ------------------ UNLINK  ----------------------- */
+
+int UNLINK(const char *file) {
+#if defined(_WIN32) && defined(UNICODE_PATHS)
+  wchar_t *path = convert_utf8_to_utf16(file);
+  int r = _wunlink(path);
+  FREEMEMORY(path);
+  return r;
+#elif defined(_WIN32)
+  return _unlink(file);
+#else
+  return unlink(file);
+#endif
+}
 
 /* ------------------ TestWrite ------------------------ */
 
@@ -805,6 +910,7 @@ void FreeFileList(filelistdata *filelist, int *nfilelist){
 
 /* ------------------ GetFileListSize ------------------------ */
 
+#if !(defined(_WIN32) && defined(UNICODE_PATHS))
 int GetFileListSize(const char *path, char *filter, int mode){
   struct dirent *entry;
   DIR *dp;
@@ -825,6 +931,7 @@ int GetFileListSize(const char *path, char *filter, int mode){
   closedir(dp);
   return maxfiles;
 }
+#endif
 
 /* ------------------ fopen_indir  ------------------------ */
 
@@ -994,6 +1101,137 @@ filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles, filelis
   return entry;
 }
 
+#if defined(_WIN32) && defined(UNICODE_PATHS)
+
+/// @brief Print an error from the windows API to stderr
+/// @param lpszFunction
+void DisplayErrorBox(LPTSTR lpszFunction) {
+  WCHAR *lpMsgBuf = NULL;
+  WCHAR *lpDisplayBuf = NULL;
+  DWORD dw = GetLastError();
+  FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+                     FORMAT_MESSAGE_IGNORE_INSERTS,
+                 NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), lpMsgBuf,
+                 0, NULL);
+  lpDisplayBuf =
+      (LPVOID)LocalAlloc(LMEM_ZEROINIT, (lstrlen((LPCTSTR)lpMsgBuf) +
+                                         lstrlen((LPCTSTR)lpszFunction) + 40) *
+                                            sizeof(WCHAR));
+  StringCchPrintfW((LPWSTR)lpDisplayBuf,
+                   LocalSize(lpDisplayBuf) / sizeof(WCHAR),
+                   L"%s failed with error %d: %s", lpszFunction, dw, lpMsgBuf);
+  fwprintf(stderr, L"%s", lpDisplayBuf);
+
+  LocalFree(lpMsgBuf);
+  LocalFree(lpDisplayBuf);
+}
+
+int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files,
+                  filelistdata **filelist, int mode) {
+  int nfiles = 0;
+  filelistdata *flist;
+
+  if(maxfiles == 0 || path == NULL || filter == NULL) {
+    *filelist = NULL;
+    return 0;
+  }
+
+  wchar_t *pathw = convert_utf8_to_utf16(path);
+
+  WIN32_FIND_DATAW ffd;
+  WCHAR szDir[MAX_PATH];
+  size_t length_of_arg;
+  HANDLE hFind = INVALID_HANDLE_VALUE;
+  StringCchLengthW(pathw, MAX_PATH, &length_of_arg);
+  if(length_of_arg > (MAX_PATH - 3)) {
+    fprintf(stderr, "Directory path is too long.\n");
+    return (-1);
+  }
+  StringCchCopyW(szDir, MAX_PATH, pathw);
+  StringCchCatW(szDir, MAX_PATH, L"\\*");
+  FREEMEMORY(pathw);
+
+  hFind = FindFirstFileW(szDir, &ffd);
+
+  if(INVALID_HANDLE_VALUE == hFind) {
+    fwprintf(stderr, L"Unable to open path %s\n", szDir);
+    return (0);
+  }
+  if(maxfiles > 0) {
+    *filelist = NULL;
+    // If maxfiles is less than zero we're only in count mode and don't need to
+    // allocate an array.
+    NewMemory((void **)&flist, maxfiles * sizeof(filelistdata));
+  }
+  do {
+    int is_dir = (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY);
+    int rel_type =
+        (mode == DIR_MODE && is_dir) || (mode == FILE_MODE && !is_dir);
+    if(wcsncmp(ffd.cFileName, L".", 4) == 0 ||
+       wcsncmp(ffd.cFileName, L"..", 4) == 0)
+      continue;
+    char *fileNameA = convert_utf16_to_utf8(ffd.cFileName);
+    int cRes = MatchWild(fileNameA, filter);
+    if(rel_type && cRes == 1) {
+      LPWSTR file;
+      filelistdata *flisti;
+      if(maxfiles > 0) {
+        // If maxfiles is less than zero we're only in count mode and don't need
+        // to record file names
+        flisti = flist + nfiles;
+        if(mode == DIR_MODE) {
+          size_t l1 = wcslen(szDir);
+          size_t l2 = wcslen(ffd.cFileName);
+#ifdef UNICODE_PATHS
+          NEWMEMORY(file, l1 * sizeof(WCHAR) + l2 * sizeof(WCHAR) + 4);
+#else
+          NEWMEMORY(file, l1 + l2 + 2);
+#endif
+#pragma warning(suppress : 4995)
+          PathCombineW(file, szDir, ffd.cFileName);
+        }
+        else {
+          size_t l;
+          StringCchLengthW(ffd.cFileName, MAX_PATH, &l);
+          NEWMEMORY(file, l * sizeof(WCHAR) + 4);
+#pragma warning(suppress : 4995)
+          PathCombineW(file, NULL, ffd.cFileName);
+        }
+#if UNICODE_PATHS
+        flisti->file = convert_utf16_to_utf8(file);
+#else
+        flisti->file = file;
+#endif
+        flisti->type = 0;
+        FREEMEMORY(file);
+      }
+      nfiles++;
+    }
+    FREEMEMORY(fileNameA);
+  } while(FindNextFileW(hFind, &ffd) != 0);
+  DWORD dwError = 0;
+  dwError = GetLastError();
+  if(dwError != ERROR_NO_MORE_FILES) {
+    DisplayErrorBox(TEXT("FindFirstFile"));
+  }
+  FindClose(hFind);
+  if(sort_files == YES && nfiles > 0) {
+    qsort((filelistdata *)flist, (size_t)nfiles, sizeof(filelistdata),
+          CompareFileList);
+  }
+  if(maxfiles > 0) {
+    // If maxfiles is less than zero we're only in count mode and don't need
+    // to record file names
+    *filelist = flist;
+  }
+  return nfiles;
+}
+
+int GetFileListSize(const char *dir, char *filter, int mode) {
+  return MakeFileList(dir, filter, -1, 0, NULL, mode);
+}
+#else
+
 /* ------------------ MakeFileList ------------------------ */
 
 int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, filelistdata **filelist, int mode){
@@ -1047,6 +1285,8 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, f
   *filelist=flist;
   return nfiles;
 }
+
+#endif
 
 /* ------------------ GetFileSizeLabel ------------------------ */
 
@@ -1144,6 +1384,7 @@ char *CombinePaths(const char *path_a, const char *path_b){
   NEWMEMORY(path_out, sizeof(char) * MAX_PATH);
   // NB: This uses on older function in order to support "char *".
   // PathAllocCombine would be better but requires switching to "wchar *".
+#pragma warning(suppress : 4995)
   char *result = PathCombineA(path_out, path_a, path_b);
   if(result == NULL) FREEMEMORY(path_out);
   return result;
@@ -1242,6 +1483,7 @@ char *GetBinDir(){
   // NB: This uses on older function in order to support "char *".
   // PathCchRemoveFileSpec would be better but requires switching to "wchar *".
   PathRemoveFileSpecA(buffer);
+  #pragma warning(suppress : 4995)
   PathAddBackslashA(buffer);
   return buffer;
 }
