@@ -2872,11 +2872,7 @@ void Keyboard(unsigned char key, int flag){
       partfast = 1 - partfast;
       if(current_script_command==NULL){
         if(global_scase.npartinfo>1){
-#ifdef pp_PART_SINGLE
-          use_partload_threads = 0;
-#else
           use_partload_threads = partfast;
-#endif
         }
         else{
           use_partload_threads = 0;

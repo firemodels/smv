@@ -151,6 +151,11 @@ int GetTagIndex(const partdata *partin_arg, part5data **datain_arg, int tagval_a
   part5data *data_local;
   int i;
 
+  assert(sorting_tags == 0);
+  if(sorting_tags == 1){
+    printf("***error: particle tags accessed while being sorted\n");
+    SMV_EXIT(1);
+  }
   if(flag==LOADING&&partfast==YES)return -1;
 
   for(i = -1; i < global_scase.npartinfo; i++){
@@ -1208,8 +1213,8 @@ void *SortAllPartTags(void *arg){
     SortPartTags(parti);
   }
   PRINT_TIMER(timer_sortparttags, "SortPartTags");
-  THREAD_EXIT(sorttags_threads);
   sorting_tags = 0;
+  THREAD_EXIT(sorttags_threads);
 }
 
 /* ------------------ GetPartData ------------------------ */

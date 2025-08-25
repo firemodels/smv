@@ -162,65 +162,6 @@ void InitMisc(void){
   UpdateShow();
 }
 
-/* ------------------ ReadBoundINI ------------------------ */
-
-void ReadBoundINI(void){
-  FILE *stream = NULL;
-  char *fullfilename = NULL;
-
-  if(fullfilename != NULL)stream = fopen(fullfilename, "r");
-  if(stream == NULL || IsFileNewer(smv_filename, fullfilename) == 1){
-    if(stream != NULL)fclose(stream);
-    FREEMEMORY(fullfilename);
-    return;
-  }
-  if(verbose_output==1){
-    PRINTF("%s", _("reading: "));
-    PRINTF("%s\n", fullfilename);
-  }
-
-  while(!feof(stream)){
-    char buffer[255], buffer2[255];
-
-    CheckMemory;
-    if(fgets(buffer, 255, stream) == NULL)break;
-
-    if(Match(buffer, "B_BOUNDARY") == 1){
-      float gmin, gmax;
-      float pmin, pmax;
-      int filetype;
-      char *buffer2ptr;
-      int lenbuffer2;
-      int i;
-
-      fgets(buffer, 255, stream);
-      strcpy(buffer2, "");
-      sscanf(buffer, "%f %f %f %f %i %s", &gmin, &pmin, &pmax, &gmax, &filetype, buffer2);
-      TrimBack(buffer2);
-      buffer2ptr = TrimFront(buffer2);
-      lenbuffer2 = strlen(buffer2ptr);
-      for(i = 0; i < global_scase.npatchinfo; i++){
-        patchdata *patchi;
-
-        patchi = global_scase.patchinfo + i;
-        if(lenbuffer2 != 0 &&
-          strcmp(patchi->label.shortlabel, buffer2ptr) == 0 &&
-          patchi->patch_filetype == filetype){
-          bounddata *boundi;
-
-          boundi = &patchi->bounds;
-          boundi->defined = 1;
-          boundi->global_min = gmin;
-          boundi->global_max = gmax;
-        }
-      }
-      continue;
-    }
-  }
-  FREEMEMORY(fullfilename);
-  return;
-}
-
 /* ------------------ SetupCase ------------------------ */
 
 int SetupCase(char *filename){
@@ -325,10 +266,6 @@ int SetupCase(char *filename){
   readini_output = 0;
   ReadIni(NULL);
   readini_output = 1;
-  PRINT_TIMER(timer_start, "init ReadINI");
-
-  ReadBoundINI();
-  PRINT_TIMER(timer_start, "ReadBoundINI");
 
   UpdateRGBColors(colorbar_select_index);
   PRINT_TIMER(timer_start, "UpdateRGBColors");

@@ -2723,11 +2723,7 @@ int ReadSMV_Configure(){
     }
   }
   if(global_scase.npartinfo>=64){
-#ifdef pp_PART_SINGLE
-    use_partload_threads = 0;
-#else
     use_partload_threads = 1;
-#endif
     partfast = 1;
   }
 
@@ -2806,9 +2802,7 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
 
   if(sorttags_threads == NULL){
-#ifdef pp_PART_SINGLE
-    use_sorttags_threads = 0;
-#endif
+    if(runscript==1)use_sorttags_threads = 0;
     sorttags_threads = THREADinit(&n_sorttags_threads, &use_sorttags_threads, SortAllPartTags);
   }
 
@@ -5808,9 +5802,6 @@ int ReadIni2(const char *inifile, int localfile){
       fgets(buffer, 255, stream);
       if(current_script_command==NULL){
         sscanf(buffer, "%i %i %i", &partfast, &use_partload_threads, &n_partload_threads);
-#ifdef pp_PART_SINGLE
-        use_partload_threads = 0;
-#endif
       }
       continue;
     }
