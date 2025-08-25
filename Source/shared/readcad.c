@@ -107,7 +107,7 @@ void ReadCAD2Geom(cadgeomdata *cd, GLfloat block_shininess) {
   int iquad;
   int have_textures = 0;
 
-  if((stream = fopen(cd->file, "r")) == NULL) {
+  if((stream = FOPEN(cd->file, "r")) == NULL) {
     return;
   }
 
@@ -320,7 +320,7 @@ int ReadCADGeom(cadgeomdata *cd, const char *file, GLfloat block_shininess) {
   if(NewMemory((void **)&cd->file, (unsigned int)(strlen(file) + 1)) == 0)
     return 2;
   STRCPY(cd->file, file);
-  stream = fopen(cd->file, "r");
+  stream = FOPEN(cd->file, "r");
   if(stream == NULL) return 1;
 
   if(fgets(buffer, 255, stream) == NULL) {

@@ -4360,7 +4360,7 @@ void ReadSMVOrig(smv_case *scase){
   FILE *stream=NULL;
 
   char *smv_orig_filename = CasePathSmvOrig(scase);
-  stream = fopen(smv_orig_filename, "r");
+  stream = FOPEN(smv_orig_filename, "r");
   if(stream == NULL) {
     FREEMEMORY(smv_orig_filename);
     return;

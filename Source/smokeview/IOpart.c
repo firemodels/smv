@@ -1050,7 +1050,7 @@ void CreatePartSizeFile(partdata *parti){
   LINT header_offset_local;
   char *smokeview_scratchdir = GetUserConfigDir();
 
-  if(parti->reg_file!=NULL)stream_local = fopen(parti->reg_file, "rb");
+  if(parti->reg_file!=NULL)stream_local = FOPEN(parti->reg_file, "rb");
   if(parti->reg_file==NULL||stream_local==NULL)return;
   fclose(stream_local);
   header_offset_local =GetPartHeaderOffset(parti);

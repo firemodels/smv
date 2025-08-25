@@ -50,7 +50,7 @@ int ParseLang(char *file, trdata **trinfoptr, int *ntrinfoptr){
 
   ntrinfo_local=0;
   if(file==NULL)return 0;
-  stream=fopen(file,"r");
+  stream=FOPEN(file,"r");
   if(stream==NULL)return 0;
 
   while(!feof(stream)){
@@ -157,7 +157,7 @@ void InitTranslate(char *bindir, char *tr_name){
     STRCAT(smokeview_lang,lang);
     STRCAT(smokeview_lang,".po");
 
-    stream=fopen(smokeview_lang,"r");
+    stream=FOPEN(smokeview_lang,"r");
     if(stream!=NULL){
       fclose(stream);
       tr_otherlang=1;

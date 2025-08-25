@@ -54,7 +54,7 @@ int MemoryLoad(void){
 #endif
 #ifdef pp_LINUX
 int MemoryLoad(void){
-  FILE *fp = fopen("/proc/meminfo", "r");
+  FILE *fp = FOPEN("/proc/meminfo", "r");
   if(fp == NULL)return -1;
 
   long memTotal = 0, memAvailable = 0;
