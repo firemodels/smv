@@ -1,6 +1,8 @@
 #include <string.h>
 #include "getdata.h"
 
+/* ------------------ color2rgb ------------------------ */
+
 // Translate character string of a color name to RGB value
 void color2rgb(int rgb[3], const char *color){
 
