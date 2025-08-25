@@ -916,6 +916,7 @@ FILE *fopen_3dir(char *file, char *mode, char *dir1, char *dir2, char *dir3){
 #else
     stream = fopen(buffer, mode);
 #endif
+    if(stream != NULL) return stream;
   }
   if(dir3 != NULL){
     strcpy(buffer, dir3);
