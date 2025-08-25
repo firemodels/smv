@@ -33,9 +33,7 @@
 #undef pp_OSX_HIGHRES
 #ifdef pp_OSX
 #define pp_REFRESH      // refresh glui dialogs when they change size
-#ifndef pp_OSX_LOWRES
 #define pp_OSX_HIGHRES
-#endif
 #endif
 
 //*** options: for debugging

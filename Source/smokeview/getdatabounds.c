@@ -708,20 +708,6 @@ void BoundsGlobalBounds2Gbnd(int file_type){
   FILE *stream = NULL;
   globalboundsdata *globalboundsinfo;
 
-#ifdef pp_BOUND_DEBUG
-  char label1[32];
-
-  strcpy(label1, "");
-  if(file_type == BOUND_SLICE){
-    strcat(label1, "SLICE");
-  }
-  else if(file_type == BOUND_PATCH){
-    strcat(label1, "PATCH");
-  }
-  else if(file_type == BOUND_PLOT3D){
-    strcat(label1, "PLOT3D");
-  }
-#endif
   ninfo = GetNinfo(file_type);
   globalboundsinfo = GetGlobalBoundsinfo(file_type);
   int changed = 0;
@@ -749,7 +735,15 @@ void BoundsGlobalBounds2Gbnd(int file_type){
   }
   if(changed == 0)return;
 #ifdef pp_BOUND_DEBUG
-  printf("BoundsGlobalBounds2Gbnd(%s)\n", label1);
+  if(file_type == BOUND_SLICE){
+    printf("BoundsGlobalBounds2Gbnd(%s)\n", "SLICE");
+  }
+  else if(file_type == BOUND_PATCH){
+    printf("BoundsGlobalBounds2Gbnd(%s)\n", "PATCH");
+  }
+  else if(file_type == BOUND_PLOT3D){
+    printf("BoundsGlobalBounds2Gbnd(%s)\n", "PLOT3D");
+  }
 #endif
   for(i = 0; i < ninfo; i++){
     globalboundsdata *fi;
