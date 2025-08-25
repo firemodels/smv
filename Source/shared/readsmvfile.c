@@ -106,6 +106,9 @@ int GetTokensBlank(char *buffer, char **tokens, int lenbuffer){
 /// @param scase The case
 /// @param hoc A pointer in which to store the heat of combustion value
 /// @param name A pointer to a pre-allocated buffer in which to store the name of the species
+
+/* ----------------------- GetHoc ----------------------------- */
+
 void GetHoc(smv_case *scase, float *hoc, char *name){
   char outfile[256], buffer[255];
   FILE *stream;
@@ -1831,7 +1834,6 @@ void ReadSMVDynamic(smv_case *scase, char *file){
   FCLOSE(stream);
 }
 
-
 /* ------------------ GetLabels ------------------------ */
 
 void GetLabels(char *buffer, char **label1, char **label2){
@@ -1858,6 +1860,8 @@ void GetLabels(char *buffer, char **label1, char **label2){
   }
   if(label1 != NULL)*label1 = tok1;
 }
+
+/* ------------------ GetPropID ------------------------ */
 
 /// @brief Given a case, find the first instance of propdata that has the given
 /// prop_id.
@@ -2291,6 +2295,8 @@ int GetInpf(smv_case *scase, bufferstreamdata *stream_in){
   return 0;
 }
 
+/* ------------------ IsDupTexture ------------------------ */
+
 /// @brief Given a pointer to texturedata, determine if there is another
 /// *loaded* texturedata in the case that has the same filename. If there is a
 /// duplicate, set the name and loaded status of texti to that duplicate.
@@ -2317,6 +2323,8 @@ int IsDupTexture(smv_case *scase, texturedata *texti) {
   return dup_texture;
 }
 
+/* ------------------ IsTerrainTexture ------------------------ */
+
 /// @brief Given a pointer to texturedata, determine if this texture is a terrain texture
 /// @param[in] scase The case
 /// @param[in] texti A pointer to the texture data
@@ -2335,6 +2343,8 @@ int IsTerrainTexture(smv_case *scase, texturedata *texti){
   }
   return is_terrain_texture;
 }
+
+/* ------------------ GetSmoke3DType ------------------------ */
 
 /// @brief Given a case, find the first instance of smoke3dtype that has the
 /// given label.
@@ -2436,6 +2446,8 @@ int CreateNullLabel(flowlabels *flowlabel){
   STRCPY(flowlabel->unit, buffer);
   return 0;
 }
+
+/* ------------------ GetSurface ------------------------ */
 
 /// @brief Given a case, find the first instance of a surface that has that
 /// label.
@@ -2697,7 +2709,6 @@ void UpdateSortedSurfIdList(surf_collection *surfcoll){
     surfcoll->inv_sorted_surfidlist[surfcoll->sorted_surfidlist[i]] = i;
   }
 }
-
 
 /* ------------------ ParseSurfs ------------------------ */
 
@@ -2971,6 +2982,8 @@ void ReadZVentData(smv_case *scase, zventdata *zvi, char *buffer, int flag){
   zvi->area_fraction = area_fraction;
 }
 
+/* ------------------ MakeFileLists ------------------------ */
+
 /// @brief Set the file lists of a case. That is, lists of files associated with the given case.
 /// @param[inout] scase The case
 void MakeFileLists(smv_case *scase){
@@ -3185,7 +3198,7 @@ int ParseCHIDProcess(smv_case *scase, bufferstreamdata *stream, int option){
   return RETURN_CONTINUE;
 }
 
-/* ------------------ ParsePRTCount ------------------------ */
+/* ------------------ ParsePRT5Count ------------------------ */
 
 void ParsePRT5Count(smv_case *scase){
   if(parse_opts.setup_only==1||parse_opts.smoke3d_only==1)return;
@@ -4233,6 +4246,8 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   return RETURN_PROCEED;
 }
 
+/* ------------------ FreeSliceData ------------------------ */
+
 /// @brief Free all of the slice data associated with a case. This includes both
 /// scalar and vectors slices. After this nsliceinfo, nmultisliceinfo,
 /// nvsliceinfo, and nmultivsliceinfo are all zero.
@@ -4470,6 +4485,8 @@ void ReadSMVOrig(smv_case *scase){
   fclose(stream);
 }
 
+/* ------------------ InitCSV ------------------------ */
+
 /// @brief Initialize a CSV file definition.
 /// @param[out] csvi The previously allocated csvfiledata
 /// @param[in] file The filename of the CSV file
@@ -4494,6 +4511,8 @@ void InitCSV(csvfiledata *csvi, const char *file, const char *type, int format){
   }
   strcpy(csvi->c_type, type);
 }
+
+/* ------------------ AddCfastCsvfi ------------------------ */
 
 /// @brief Add the definition of a CSV file to case.
 /// @param[inout] scase The case to add the CSV file defintion to.
