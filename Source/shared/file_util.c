@@ -387,20 +387,18 @@ int Writable(char *dir){
   }
 #else
   {
-    char tempfullfile[100], tempfile[40];
-    FILE *stream;
-
-    strcpy(tempfullfile,dir);
-    strcat(tempfullfile,dirseparator);
-    RandStr(tempfile,35);
-    strcat(tempfullfile,tempfile);
-    stream = fopen(tempfullfile,"w");
-    if(stream==NULL){
-      UNLINK(tempfullfile);
+#define tempfile_length 35
+    char tempfile[tempfile_length+1];
+    RandStr(tempfile, tempfile_length);
+    char *temp_path = CombinePaths(dir, tempfile);
+    FILE *stream = fopen(temp_path, "w");
+    FREEMEMORY(temp_path);
+    if(stream == NULL) {
+      UNLINK(temp_path);
       return NO;
     }
     fclose(stream);
-    UNLINK(tempfullfile);
+    UNLINK(temp_path);
     return YES;
   }
 #endif
