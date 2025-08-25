@@ -103,51 +103,6 @@ void GetBoundaryColors(float *t, int nt, unsigned char *it,
   Num2String(&labels[nlevel-1][0],tval);
 }
 
-/* ------------------ WriteBoundIni ------------------------ */
-
-void WriteBoundIni(void){
-  FILE *stream = NULL;
-  char *fullfilename = NULL;
-  int i;
-
-  if(fullfilename == NULL)return;
-
-  for(i = 0; i < global_scase.npatchinfo; i++){
-    bounddata *boundi;
-    patchdata *patchi;
-    int skipi;
-    int j;
-
-    skipi = 0;
-    patchi = global_scase.patchinfo + i;
-    if(patchi->bounds.defined == 0)continue;
-    for(j = 0; j < i - 1; j++){
-      patchdata *patchj;
-
-      patchj = global_scase.patchinfo + j;
-      if(patchi->shortlabel_index == patchj->shortlabel_index&&patchi->patch_filetype == patchj->patch_filetype){
-        skipi = 1;
-        break;
-      }
-    }
-    if(skipi == 1)continue;
-
-    boundi = &patchi->bounds;
-    if(stream == NULL){
-      stream = fopen(fullfilename, "w");
-      if(stream == NULL){
-        FREEMEMORY(fullfilename);
-        return;
-      }
-    }
-    float dummy = 0.0;
-    fprintf(stream, "B_BOUNDARY\n");
-    fprintf(stream, " %f %f %f %f %i %s\n", boundi->global_min, dummy, dummy, boundi->global_max, patchi->patch_filetype, patchi->label.shortlabel);
-  }
-  if(stream != NULL)fclose(stream);
-  FREEMEMORY(fullfilename);
-}
-
 /* ------------------ GetBoundaryColors3 ------------------------ */
 
 void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned char *it,
