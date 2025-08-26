@@ -58,6 +58,7 @@ void LoadSkyTexture(char *filebase, texturedata *texti){
   texti->loaded=1;
   return;
 }
+
 /* ------------------ FreeSkybox ------------------------ */
 
 void FreeSkybox(void){

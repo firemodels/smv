@@ -1633,6 +1633,8 @@ void InitVars(void){
   }
 }
 
+/* ------------------ FreeVars ------------------------ */
+
 void FreeVars(void){
   ClearObjectCollection(&global_scase.objectscoll);
 }
