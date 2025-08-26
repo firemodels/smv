@@ -6106,7 +6106,6 @@ void ShowInternalBlockages(void){
   if(show == 0){
     outline_state=OUTLINE_NONE;
     solid_state=visBLOCKHide;
-    GeometryMenu(17 + TERRAIN_HIDDEN);
   }
   else{
     if(update_showblock_ini == 1){
@@ -6120,7 +6119,9 @@ void ShowInternalBlockages(void){
       solid_state = visBLOCKNormal;
       outline_state = OUTLINE_NONE;
     }
-    GeometryMenu(17 + TERRAIN_SURFACE);
+#ifdef pp_TERRAIN_HIDE
+    GeometryMenu(17 + TERRAIN_HIDDEN);
+#endif
   }
   updatemenu = 1;
   global_scase.updatefaces = 1;
