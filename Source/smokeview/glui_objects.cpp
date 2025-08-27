@@ -2023,13 +2023,13 @@ extern "C" void GLUIDeviceSetup(int main_window){
     glui_device->close();
     glui_device=NULL;
   }
-  glui_device = GLUI_Master.create_glui("Devices/Objects/2D plots",0,dialogX0,dialogY0);
+  glui_device = GLUI_Master.create_glui("Devices/Objects",0,dialogX0,dialogY0);
   glui_device->hide();
 
   if(global_scase.devicecoll.ndeviceinfo>0){
     int i;
 
-    PANEL_objects = glui_device->add_panel("Devices/Objects/2D plots", false);
+    PANEL_objects = glui_device->add_panel("Devices/Objects", false);
 
     ROLLOUT_smvobjects = glui_device->add_rollout_to_panel(PANEL_objects, _("Objects"), false, OBJECTS_ROLLOUT, Device_Rollout_CB);
     TOGGLE_ROLLOUT(deviceprocinfo, ndeviceprocinfo, ROLLOUT_smvobjects, OBJECTS_ROLLOUT, glui_device);
