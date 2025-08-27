@@ -2082,7 +2082,7 @@ extern "C" void GLUIDeviceSetup(int main_window){
         CHECKBOX_vis_ztree = glui_device->add_checkbox_to_panel(ROLLOUT_trees, _A(_("Show"), " z"), &vis_ztree);
       }
 
-      ROLLOUT_windrose = glui_device->add_rollout_to_panel(PANEL_objects, "Windrose", false, WINDROSE_ROLLOUT, Device_Rollout_CB);
+      ROLLOUT_windrose = glui_device->add_rollout_to_panel(PANEL_objects, "Wind rose", false, WINDROSE_ROLLOUT, Device_Rollout_CB);
       TOGGLE_ROLLOUT(deviceprocinfo, ndeviceprocinfo, ROLLOUT_windrose, WINDROSE_ROLLOUT, glui_device);
 
       glui_device->add_checkbox_to_panel(ROLLOUT_windrose, _("show"), &viswindrose, DEVICE_WINDROSE_UPDATE, GLUIDeviceCB);
