@@ -86,6 +86,7 @@ float     part_load_time;
 
 #define MENU_READCASEINI       -1
 #define MENU_READINI            1
+#define MENU_WRITE_SMOKEVIEWINI 2
 #define MENU_WRITE_CASEINI      3
 #define MENU_READSVO            4
 #define MENU_CONFIG_SETTINGS    5
@@ -2765,6 +2766,9 @@ void SmokeviewIniMenu(int value){
     break;
   case MENU_REVERT_WRITEINI:
     ReadBinIni();
+    break;
+  case MENU_WRITE_SMOKEVIEWINI:
+    WriteIni(GLOBAL_INI,NULL);
     break;
   case MENU_WRITE_CASEINI:
     WriteIni(LOCAL_INI,NULL);
@@ -6115,7 +6119,9 @@ void ShowInternalBlockages(void){
       solid_state = visBLOCKNormal;
       outline_state = OUTLINE_NONE;
     }
+#ifdef pp_TERRAIN_HIDE
     GeometryMenu(17 + TERRAIN_HIDDEN);
+#endif
   }
   updatemenu = 1;
   global_scase.updatefaces = 1;
@@ -12744,6 +12750,7 @@ static int menu_count=0;
     if(global_scase.devicecoll.ndeviceinfo>0){
       glutAddMenuEntry(_("Read .svo files"),MENU_READSVO);
     }
+    glutAddMenuEntry("Save settings to smokeview.ini", MENU_WRITE_SMOKEVIEWINI);
     glutAddMenuEntry("Revert settings to installation defaults", MENU_REVERT_WRITEINI);
     glutAddMenuEntry(_("Settings..."), MENU_CONFIG_SETTINGS);
 
