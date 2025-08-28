@@ -166,7 +166,8 @@ char *GetCharPointer(char *buffer_arg){
   char *cval=NULL, *buffptr;
   int len;
 
-  buffptr = RemoveComment(buffer_arg);
+  RemoveComment(buffer_arg);
+  buffptr = TrimFront(buffer_arg);
   len = strlen(buffptr);
   if(len>0){
     NewMemory((void **)&cval,len+1);
