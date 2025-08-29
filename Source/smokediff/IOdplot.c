@@ -106,17 +106,17 @@ void DiffPlot3Ds(FILE *stream_out){
     FullFile(fullfile1,sourcedir1,file1);
     FullFile(fullfile2,sourcedir2,file2);
 
-    stream=fopen(fullfile1,"r");
+    stream=FOPEN(fullfile1,"r");
     if(stream==NULL)continue;
     fclose(stream);
 
-    stream=fopen(fullfile2,"r");
+    stream=FOPEN(fullfile2,"r");
     if(stream==NULL)continue;
     fclose(stream);
 
     MakeOutFile(outfile,destdir,file1,".q");
     if(strlen(outfile)==0)continue;
-    stream=fopen(outfile,"w");
+    stream=FOPEN(outfile,"w");
     if(stream==NULL)continue;
     fclose(stream);
 

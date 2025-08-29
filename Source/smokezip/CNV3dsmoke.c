@@ -55,7 +55,7 @@ void Convert3DSmoke(smoke3d *smoke3di, int *thread_index){
     fprintf(stderr,"*** Warning:  %s does not exist\n",smoke3dfile);
     return;
   }
-  SMOKE3DFILE=fopen(smoke3dfile,"rb");
+  SMOKE3DFILE=FOPEN(smoke3dfile,"rb");
   if(SMOKE3DFILE==NULL){
     fprintf(stderr,"*** Warning:  %s could not be opened\n",smoke3dfile);
     return;
@@ -86,7 +86,7 @@ void Convert3DSmoke(smoke3d *smoke3di, int *thread_index){
   // remove files if clean option is set
 
   if(GLOBcleanfiles==1){
-    smoke3dstream=fopen(smoke3dfile_svz,"rb");
+    smoke3dstream=FOPEN(smoke3dfile_svz,"rb");
     if(smoke3dstream!=NULL){
       fclose(smoke3dstream);
       PRINTF("  Removing %s\n",smoke3dfile_svz);
@@ -95,7 +95,7 @@ void Convert3DSmoke(smoke3d *smoke3di, int *thread_index){
       GLOBfilesremoved++;
       UNLOCK_COMPRESS;
     }
-    smoke3dsizestream=fopen(smoke3dsizefile_svz,"r");
+    smoke3dsizestream=FOPEN(smoke3dsizefile_svz,"r");
     if(smoke3dsizestream!=NULL){
       fclose(smoke3dsizestream);
       PRINTF("  Removing %s\n",smoke3dsizefile_svz);
@@ -109,7 +109,7 @@ void Convert3DSmoke(smoke3d *smoke3di, int *thread_index){
   }
 
   if(GLOBoverwrite_s==0){
-    smoke3dstream=fopen(smoke3dfile_svz,"rb");
+    smoke3dstream=FOPEN(smoke3dfile_svz,"rb");
     if(smoke3dstream!=NULL){
       fclose(smoke3dstream);
       fprintf(stderr,"*** Warning:  %s exists.\n",smoke3dfile_svz);
@@ -119,8 +119,8 @@ void Convert3DSmoke(smoke3d *smoke3di, int *thread_index){
     }
   }
 
-  smoke3dsizestream=fopen(smoke3dsizefile_svz,"w");
-  smoke3dstream=fopen(smoke3dfile_svz,"wb");
+  smoke3dsizestream=FOPEN(smoke3dsizefile_svz,"w");
+  smoke3dstream=FOPEN(smoke3dfile_svz,"wb");
   if(smoke3dstream==NULL||smoke3dsizestream==NULL
     ){
     if(smoke3dstream==NULL){

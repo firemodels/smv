@@ -137,7 +137,7 @@ int ConvertVolSlice(slicedata *slicei, int *thread_index){
     return 0;
   }
 
-  SLICEFILE=fopen(slice_file,"rb");
+  SLICEFILE=FOPEN(slice_file,"rb");
   if(SLICEFILE==NULL){
     fprintf(stderr,"*** Warning: The file %s could not be opened\n",slice_file);
     return 0;
@@ -156,7 +156,7 @@ int ConvertVolSlice(slicedata *slicei, int *thread_index){
   if(strlen(slicefile_svz)>4)strcat(slicefile_svz,".svv");
 
   if(GLOBcleanfiles==1){
-    slicestream=fopen(slicefile_svz,"rb");
+    slicestream=FOPEN(slicefile_svz,"rb");
     if(slicestream!=NULL){
       fclose(slicestream);
       PRINTF("  Removing %s\n",slicefile_svz);
@@ -170,7 +170,7 @@ int ConvertVolSlice(slicedata *slicei, int *thread_index){
   }
 
   if(GLOBoverwrite_slice==0){
-    slicestream=fopen(slicefile_svz,"rb");
+    slicestream=FOPEN(slicefile_svz,"rb");
     if(slicestream!=NULL){
       fclose(slicestream);
       fprintf(stderr,"*** Warning: The file %s exists.\n",slicefile_svz);
@@ -180,7 +180,7 @@ int ConvertVolSlice(slicedata *slicei, int *thread_index){
     }
   }
 
-  slicestream=fopen(slicefile_svz,"wb");
+  slicestream=FOPEN(slicefile_svz,"wb");
   if(slicestream==NULL){
     fprintf(stderr,"*** Warning: The file %s could not be opened for writing\n",slicefile_svz);
     fclose(SLICEFILE);
@@ -417,7 +417,7 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
     return 0;
   }
 
-  SLICEFILE=fopen(slice_file,"rb");
+  SLICEFILE=FOPEN(slice_file,"rb");
   if(SLICEFILE==NULL){
     fprintf(stderr,"*** Warning: The file %s could not be opened\n",slice_file);
     return 0;
@@ -430,7 +430,7 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
   MakeSliceFile(slicesizefile_svz, slicei, ".sz");
 
   if(GLOBcleanfiles==1){
-    slicestream=fopen(slicefile_svz,"rb");
+    slicestream=FOPEN(slicefile_svz,"rb");
     if(slicestream!=NULL){
       fclose(slicestream);
       PRINTF("  Removing %s\n",slicefile_svz);
@@ -439,7 +439,7 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
       GLOBfilesremoved++;
       UNLOCK_COMPRESS;
     }
-    slicestream=fopen(slicefile_svv,"rb");
+    slicestream=FOPEN(slicefile_svv,"rb");
     if(slicestream!=NULL){
       fclose(slicestream);
       PRINTF("  Removing %s\n",slicefile_svv);
@@ -448,7 +448,7 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
       GLOBfilesremoved++;
       UNLOCK_COMPRESS;
     }
-    slicesizestream=fopen(slicesizefile_svz,"rb");
+    slicesizestream=FOPEN(slicesizefile_svz,"rb");
     if(slicesizestream!=NULL){
       fclose(slicesizestream);
       PRINTF("  Removing %s\n",slicesizefile_svz);
@@ -462,7 +462,7 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
   }
 
   if(GLOBoverwrite_slice==0){
-    slicestream=fopen(slicefile_svz,"rb");
+    slicestream=FOPEN(slicefile_svz,"rb");
     if(slicestream!=NULL){
       fclose(slicestream);
       fprintf(stderr,"*** Warning:  %s exists.\n",slicefile_svz);
@@ -472,8 +472,8 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
     }
   }
 
-  slicestream=fopen(slicefile_svz,"wb");
-  slicesizestream=fopen(slicesizefile_svz,"w");
+  slicestream=FOPEN(slicefile_svz,"wb");
+  slicesizestream=FOPEN(slicesizefile_svz,"w");
   if(slicestream==NULL||slicesizestream==NULL){
     if(slicestream==NULL){
       fprintf(stderr,"*** Warning: The file %s could not be opened for writing\n",slicefile_svz);
@@ -819,7 +819,7 @@ void GetGlobalSliceBounds(char *label){
 
     slicej = sliceinfo+j;
     if(strcmp(label, slicej->label.shortlabel)!=0)continue;
-    stream = fopen(slicej->boundfile, "r");
+    stream = FOPEN(slicej->boundfile, "r");
     if(stream==NULL)continue;
     while(!feof(stream)){
       char buffer[255];
@@ -927,7 +927,7 @@ void GetSliceParmsC(char *file, int *ni, int *nj, int *nk){
     *nj=0;
     *nk=0;
 
-    stream=fopen(file,"rb");
+    stream=FOPEN(file,"rb");
     if(stream==NULL)return;
 
     skip = 3*(4+30+4);  // skip over 3 records each containing a 30 byte FORTRAN character string

@@ -1022,7 +1022,7 @@ void OutputSlicePlot(char *file){
   FILE *stream = NULL;
 
   if(file == NULL||strlen(file)==0)return;
-  stream = fopen(file, "w");
+  stream = FOPEN(file, "w");
   if(stream == NULL){
     printf("***error: %s not able to be opened for writing\n", file);
     return;

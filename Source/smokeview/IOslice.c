@@ -38,7 +38,7 @@
     4*CLAMP(sd->slicecomplevel[cell_index],0,255) \
     )
 
-#define FOPEN_SLICE(a,b)         fopen(a,b)
+#define FOPEN_SLICE(a,b)         FOPEN(a,b)
 #ifdef X64
 #define FSEEK_SLICE(a,b,c)       _fseeki64(a,b,c)
 #define FTELL_SLICE(a)           _ftelli64(a)
@@ -64,12 +64,6 @@ float gslice_valmin, gslice_valmax, *gslicedata;
 meshdata *gslice_valmesh;
 slicedata *gslice_u, *gslice_v, *gslice_w;
 slicedata *gslice;
-
-#ifdef WIN32
-#define FOPEN(file,mode) _fsopen(file,mode,_SH_DENYNO)
-#else
-#define FOPEN(file,mode) fopen(file,mode)
-#endif
 
 #define FORTRLESLICEREAD(var,size) FSEEK(RLESLICEFILE,4,SEEK_CUR);\
                            returncode=fread(var,4,size,RLESLICEFILE);\
@@ -2267,7 +2261,7 @@ void GetSliceParams(sliceparmdata *sp){
     }
     else if(sd->compression_type!=UNCOMPRESSED){
       int return_code;
-      
+
       is1 = 0;is2 = 0;js1 = 0;js2 = 0;ks1 = 0;ks2 = 0;
       error=0;
       return_code = GetSliceHeader0(sd->comp_file,sd->size_file,sd->compression_type,&is1,&is2,&js1,&js2,&ks1,&ks2, &sd->volslice);
@@ -3704,7 +3698,7 @@ int GetNSliceFrames(char *file, float *stime_min, float *stime_max){
   int nframes = (file_size-header_size)/frame_size;
 
   if(*stime_min > *stime_max&&nframes>0){
-    FILE *stream = fopen(file, "rb");
+    FILE *stream = FOPEN(file, "rb");
     if(stream!=NULL){
       fseek(stream, header_size, SEEK_SET);
       fseek(stream, 4, SEEK_CUR); fread(stime_min, sizeof(float), 1, stream); fseek(stream, 4, SEEK_CUR);
@@ -3767,7 +3761,7 @@ void GetSliceTimes(char *file, float *times, int ntimes){
   int i;
   char buffer[256];
 
-  stream = fopen(file, "r");
+  stream = FOPEN(file, "r");
   if(stream == NULL){
     for(i = 0; i<ntimes; i++){
       times[i] = (float)i;
@@ -8691,7 +8685,7 @@ void InitSliceData(void){
     strcat(datafile, "_sf_");
     strcat(datafile, flabel);
     strcat(datafile, ".csv");
-    fileout = fopen(datafile, "w");
+    fileout = FOPEN(datafile, "w");
     if(fileout == NULL)continue;
     fprintf(fileout, "%s\n", sd->label.longlabel);
     fprintf(fileout, "%s\n", sd->label.unit);
@@ -8850,7 +8844,7 @@ void GenerateSliceMenu(int option){
   if(option==1){
     int max1 = 0, max2 = 0, max3 = 0, max4 = 0;
 
-    stream = fopen(slicemenu_filename, "w");
+    stream = FOPEN(slicemenu_filename, "w");
     if(stream==NULL){
       FREEMEMORY(slicemenu_filename);
       return;

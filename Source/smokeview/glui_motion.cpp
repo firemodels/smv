@@ -225,7 +225,7 @@ void MakeMovieBashScript(void){
     return;
   }
 
-  stream = fopen(movie_bash_script, "w");
+  stream = FOPEN(movie_bash_script, "w");
   if(stream==NULL)return;
 
   fprintf(stream, "#/bin/bash\n");
@@ -285,7 +285,7 @@ void MakeMovieSMVScript(void){
   slicedata *slicei;
   slicemenudata *slicemi;
 
-  stream = fopen(movie_ssf_script, "w");
+  stream = FOPEN(movie_ssf_script, "w");
   if(stream==NULL)return;
   slicemi = slicemenu_sorted[movie_slice_index];
   slicei = slicemi->sliceinfo;

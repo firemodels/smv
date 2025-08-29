@@ -19,7 +19,7 @@ unsigned char *ReadJPEG(const char *filename,int *width, int *height, int *is_tr
   unsigned int intrgb;
   int WIDTH, HEIGHT;
 
-  file = fopen(filename, "rb");
+  file = FOPEN(filename, "rb");
   if(file == NULL)return NULL;
   image = gdImageCreateFromJpeg(file);
   fclose(file);
@@ -64,7 +64,7 @@ unsigned char *ReadPNG(const char *filename,int *width, int *height, int *is_tra
   int i,j;
   unsigned int intrgb;
 
-  file = fopen(filename, "rb");
+  file = FOPEN(filename, "rb");
   if(file == NULL)return NULL;
   image = gdImageCreateFromPng(file);
   fclose(file);
@@ -127,7 +127,7 @@ unsigned char *ReadPicture(char *texturedir, char *filename, int *width, int *he
       strcpy(filebuffer,texturedir);
       strcat(filebuffer,dirseparator);
       strcat(filebuffer,filename);
-      stream=fopen(filebuffer,"rb");
+      stream=FOPEN(filebuffer,"rb");
       if(stream==NULL){
         if(printflag==1){
           fprintf(stderr,"*** Error: texture file: %s unavailable\n",filebuffer);

@@ -633,7 +633,7 @@ void GetBoundaryHeader(char *file, int *npatches, float *ppatchmin, float *ppatc
   FILE *stream;
   float minmax[2];
 
-  stream = fopen(file, "rb");
+  stream = FOPEN(file, "rb");
 
   if(stream==NULL)return;
 
@@ -679,7 +679,7 @@ void GetBoundaryHeader2(char *file, patchfacedata *patchfaceinfo, int nmeshes_ar
   // compressed size of frame
   // compressed buffer
 
-  stream = fopen(file, "rb");
+  stream = FOPEN(file, "rb");
 
   if(stream==NULL)return;
 
@@ -748,7 +748,7 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
     strcpy(sizefile, patchi->size_file);
     strcat(sizefile, ".sz");
 
-    stream = fopen(patchi->file, "rb");
+    stream = FOPEN(patchi->file, "rb");
     if(stream==NULL){
       if(streamsize!=NULL)fclose(streamsize);
       return;
@@ -889,7 +889,7 @@ int GetPatchNTimes(char *file){
   FILE *stream;
 
   if(file == NULL) return 0;
-  stream = fopen(file, "r");
+  stream = FOPEN(file, "r");
   if(stream == NULL) return 0;
 
   int count = 0;
@@ -2005,7 +2005,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
             if(
               vi->imin >= pfi->ib[0] && vi->imax <= pfi->ib[1] &&
               vi->jmin >= pfi->ib[2] && vi->jmax <= pfi->ib[3] &&
-              vi->kmin >= pfi->ib[4] && vi->kmax <= pfi->ib[5] 
+              vi->kmin >= pfi->ib[4] && vi->kmax <= pfi->ib[5]
               ){
               vi->patch_index = n;
             }

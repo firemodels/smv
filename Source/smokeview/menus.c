@@ -2861,7 +2861,7 @@ void ScriptMenu(int value){
       GLUIUpdateScriptStart();
       GetNewScriptFileName(newscriptfilename);
       script_recording = InsertScriptFile(newscriptfilename);
-      scriptoutstream=fopen(newscriptfilename,"w");
+      scriptoutstream=FOPEN(newscriptfilename,"w");
       if(scriptoutstream!=NULL){
         PRINTF("Script recorder on\n");
         script_recording->recording=1;
@@ -3018,7 +3018,7 @@ void MemoryTest(void){
 
     diskread = 0;
     diskwrite = 0;
-    stream = fopen("test.bin", "wb");
+    stream = FOPEN("test.bin", "wb");
     if(stream != NULL){
       diskwrite = 1;
       START_TIMER(diskwrite_timer);
@@ -3027,7 +3027,7 @@ void MemoryTest(void){
       }
       STOP_TIMER(diskwrite_timer);
       fclose(stream);
-      stream = fopen("test.bin", "rb");
+      stream = FOPEN("test.bin", "rb");
       if(stream != NULL){
         diskread = 1;
         START_TIMER(diskread_timer);
@@ -3047,7 +3047,7 @@ void MemoryTest(void){
     }
     if(stream!=NULL){
       fclose(stream);
-      stream = fopen("test.bin", "wb");
+      stream = FOPEN("test.bin", "wb");
       if(stream != NULL){
         fwrite(buffer1, 1, 1, stream);
         fclose(stream);
@@ -3616,7 +3616,7 @@ void LoadUnloadMenu(int value){
     }
     if(redirect==1){
       char *log_filename = CasePathLogFile(&global_scase);
-      LOG_FILENAME=fopen(log_filename,"w");
+      LOG_FILENAME=FOPEN(log_filename,"w");
       FREEMEMORY(log_filename);
       if(LOG_FILENAME==NULL)redirect=0;
     }

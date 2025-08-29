@@ -217,7 +217,7 @@ int main(int argc, char **argv){
   }
   else{
     strcpy(in_file,argin);
-    stream_in=fopen(in_file,"r");
+    stream_in=FOPEN(in_file,"r");
   }
   if(stream_in==NULL){
     fprintf(stderr,"*** Error: The file %s could not be opened for input\n",in_file);
@@ -240,7 +240,7 @@ int main(int argc, char **argv){
     strcpy(out_file, argout);
   }
 
-  stream_out=fopen(out_file,"w");
+  stream_out=FOPEN(out_file,"w");
   if(stream_out==NULL){
     fprintf(stderr,"*** Error: The file %s could not be opened for output\n",out_file);
     if(stream_in!=NULL&&stream_in!=stdin)fclose(stream_in);

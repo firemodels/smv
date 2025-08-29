@@ -341,7 +341,7 @@ void Colorbar2File(colorbardata *cbi, char *file, char *label){
 
   // values consistent with http://colormine.org/convert/rgb-to-lab
 
-  if(file != NULL && strlen(file) > 0 && label != NULL && strlen(label) > 0)stream = fopen(file, "w");
+  if(file != NULL && strlen(file) > 0 && label != NULL && strlen(label) > 0)stream = FOPEN(file, "w");
   if(stream == NULL)return;
   fprintf(stream, "name,%s\n", label);
   for(i = 0;i < 256;i++){

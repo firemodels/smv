@@ -16,7 +16,7 @@ int ReadSMV(char *smvfile){
 #define BUFFERSIZE 255
   char buffer[BUFFERSIZE];
 
-  stream=fopen(smvfile,"r");
+  stream=FOPEN(smvfile,"r");
   if(stream==NULL){
     PRINTF("The file: %s could not be opened\n",smvfile);
     return 1;
@@ -309,7 +309,7 @@ void MakeFEDSmv(char *file){
   FILE *stream;
 
   if(nfedinfo == 0||fedinfo==NULL)return;
-  stream = fopen(file, "w");
+  stream = FOPEN(file, "w");
   if(stream == NULL)return;
 
   nfedisos = 0;
@@ -373,8 +373,8 @@ void GetSliceInfo(slicedata *slicei){
   int ijk[6];
   int ip1, ip2, jp1, jp2, kp1, kp2;
   int nxsp, nysp, nzsp;
-  
-  stream = fopen(slicei->file, "rb");
+
+  stream = FOPEN(slicei->file, "rb");
   if(stream == NULL)return;
 
   headersize = 3*(4+30+4);
@@ -422,7 +422,7 @@ void ReadSlice(slicedata *slicei){
   FREEMEMORY(slicei->vals);
   FREEMEMORY(slicei->times);
   GetSliceInfo(slicei);
-  STREAM = fopen(slicei->file, "rb");
+  STREAM = FOPEN(slicei->file, "rb");
   if(STREAM == NULL)return;
   FSEEK(STREAM, slicei->headersize, SEEK_CUR);
   for(i = 0; i < slicei->nframes; i++){
@@ -452,7 +452,7 @@ void FreeFEDData(feddata *fedi){
 /* ------------------ OutputFEDSlice ------------------------ */
 
 void OutputFEDSlice(feddata *fedi){
-  writeslicedata(fedi->sf_file, 
+  writeslicedata(fedi->sf_file,
     fedi->fed->is1, fedi->fed->is2,
     fedi->fed->js1, fedi->fed->js2,
     fedi->fed->ks1, fedi->fed->ks2,
@@ -575,7 +575,7 @@ void MakeFEDSlice(feddata *fedi){
     }
     FILE *stream;
 
-    stream = fopen(fedi->bndfile, "w");
+    stream = FOPEN(fedi->bndfile, "w");
     fprintf(stream, "%f %f %f\n", 0.0, valmin, valmax);
     OutputFEDSlice(fedi);
   }

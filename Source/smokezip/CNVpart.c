@@ -59,7 +59,7 @@ void *ConvertParts2Iso(void *arg){
       FILE *stream;
       int j;
 
-      stream=fopen(GLOBsmvisofile,"rb");
+      stream=FOPEN(GLOBsmvisofile,"rb");
       if(stream!=NULL){
         fclose(stream);
         PRINTF("  Removing %s\n",GLOBsmvisofile);
@@ -85,7 +85,7 @@ void *ConvertParts2Iso(void *arg){
           strcat(isofilename,labels->shortlabel);
           strcat(isofilename,".tiso");
 
-          stream=fopen(isofilename,"rb");
+          stream=FOPEN(isofilename,"rb");
           if(stream!=NULL){
             fclose(stream);
             PRINTF("  Removing %s\n",isofilename);
@@ -260,10 +260,10 @@ void Part2Iso(part *parti, int *thread_index){
   LOCK_PART2ISO;
   if(GLOBfirst_part2iso_smvopen==1){
     GLOBfirst_part2iso_smvopen=0;
-    SMVISOFILE=fopen(GLOBsmvisofile,"w");
+    SMVISOFILE=FOPEN(GLOBsmvisofile,"w");
   }
   else{
-    SMVISOFILE=fopen(GLOBsmvisofile,"a");
+    SMVISOFILE=FOPEN(GLOBsmvisofile,"a");
   }
 
   fprintf(SMVISOFILE,"ISOF %i\n",blocknumber);
@@ -614,10 +614,10 @@ void Part2Object(part *parti, int *thread_index){
   LOCK_PART2ISO;
   if(GLOBfirst_part2iso_smvopen==1){
     GLOBfirst_part2iso_smvopen=0;
-    SMVISOFILE=fopen(GLOBsmvisofile,"w");
+    SMVISOFILE=FOPEN(GLOBsmvisofile,"w");
   }
   else{
-    SMVISOFILE=fopen(GLOBsmvisofile,"a");
+    SMVISOFILE=FOPEN(GLOBsmvisofile,"a");
   }
 
   fprintf(SMVISOFILE,"ISOF %i\n",blocknumber);

@@ -588,7 +588,7 @@ void ReadGeomFile2(geomdata *geomi){
   int ntris, *tris;
 
   if(geomi->file2 == NULL) return;
-  stream = fopen(geomi->file2, "rb");
+  stream = FOPEN(geomi->file2, "rb");
   if(stream == NULL) return;
   FSEEK(stream, 4, SEEK_CUR);
   fread(&ntris, 4, 1, stream);
@@ -757,7 +757,7 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
   // surf_1, ..., surf_ntris
   // texture_1, ..., texture_ntris
 
-  stream = fopen(geomi->file, "rb");
+  stream = FOPEN(geomi->file, "rb");
   if(stream == NULL){
     *ntimes_local = -1;
     return;
@@ -853,7 +853,7 @@ void GetGeomDataHeader(char *file, int *ntimes_local, int *nvals){
   int nt, nv;
   int returncode = 0;
 
-  stream = fopen(file, "r");
+  stream = FOPEN(file, "r");
   if(stream == NULL){
     *ntimes_local = -1;
     return;

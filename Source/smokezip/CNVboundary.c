@@ -35,7 +35,7 @@ int CleanBoundary(patchdata *patchi){
   if(strlen(shortlabel)>0)strcat(filetype,shortlabel);
   TrimBack(filetype);
 
-  BOUNDARYFILE=fopen(boundary_file,"rb");
+  BOUNDARYFILE=FOPEN(boundary_file,"rb");
   if(BOUNDARYFILE==NULL){
     return 0;
   }
@@ -61,7 +61,7 @@ int CleanBoundary(patchdata *patchi){
   }
   strcat(boundarysizefile_svz,".szz");
 
-  boundarystream=fopen(boundaryfile_svz,"rb");
+  boundarystream=FOPEN(boundaryfile_svz,"rb");
   if(boundarystream!=NULL){
     fclose(boundarystream);
     PRINTF("  Removing %s\n",boundaryfile_svz);
@@ -70,7 +70,7 @@ int CleanBoundary(patchdata *patchi){
     GLOBfilesremoved++;
     UNLOCK_COMPRESS;
   }
-  boundarysizestream=fopen(boundarysizefile_svz,"rb");
+  boundarysizestream=FOPEN(boundarysizefile_svz,"rb");
   if(boundarysizestream!=NULL){
     fclose(boundarysizestream);
     PRINTF("  Removing %s\n",boundarysizefile_svz);
@@ -119,7 +119,7 @@ int ConvertBoundaryGEOM(patchdata *patchi, int *thread_index){
     return 0;
   }
 
-  BOUNDARYFILE = fopen(boundary_file, "rb");
+  BOUNDARYFILE = FOPEN(boundary_file, "rb");
   if(BOUNDARYFILE == NULL){
     fprintf(stderr, "*** Warning: The file %s could not be opened\n", boundary_file);
     return 0;
@@ -146,7 +146,7 @@ int ConvertBoundaryGEOM(patchdata *patchi, int *thread_index){
   strcat(boundarysizefile_svz, ".szz");
 
   if(GLOBoverwrite_b == 0){
-    boundarystream = fopen(boundaryfile_svz, "rb");
+    boundarystream = FOPEN(boundaryfile_svz, "rb");
     if(boundarystream != NULL){
       if(boundarystream != NULL){
         fclose(boundarystream);
@@ -158,8 +158,8 @@ int ConvertBoundaryGEOM(patchdata *patchi, int *thread_index){
     }
   }
 
-  boundarystream = fopen(boundaryfile_svz, "wb");
-  boundarysizestream = fopen(boundarysizefile_svz, "w");
+  boundarystream = FOPEN(boundaryfile_svz, "wb");
+  boundarysizestream = FOPEN(boundarysizefile_svz, "w");
   if(boundarystream == NULL || boundarysizestream == NULL){
     if(boundarystream == NULL){
       fprintf(stderr, "*** Warning: The file %s could not be opened for writing\n", boundaryfile_svz);
@@ -250,7 +250,7 @@ int ConvertBoundaryGEOM(patchdata *patchi, int *thread_index){
     PRINTF(" ");
 #endif
     int MAXVALS = 0;
-    int MAXCOMPRESSEDVALS;    
+    int MAXCOMPRESSEDVALS;
     while(feof(BOUNDARYFILE) == 0){
       int nvals[4], offset[4];
 
@@ -415,7 +415,7 @@ int ConvertBoundaryBNDF(patchdata *patchi, int *thread_index){
     return 0;
   }
 
-  BOUNDARYFILE=fopen(boundary_file,"rb");
+  BOUNDARYFILE=FOPEN(boundary_file,"rb");
   if(BOUNDARYFILE==NULL){
     fprintf(stderr,"*** Warning: The file %s could not be opened\n",boundary_file);
     return 0;
@@ -442,8 +442,8 @@ int ConvertBoundaryBNDF(patchdata *patchi, int *thread_index){
   strcat(boundarysizefile_svz,".szz");
 
   if(GLOBoverwrite_b==0){
-    boundarystream=fopen(boundaryfile_svz,"rb");
-    boundarysizestream=fopen(boundarysizefile_svz,"r");
+    boundarystream=FOPEN(boundaryfile_svz,"rb");
+    boundarysizestream=FOPEN(boundarysizefile_svz,"r");
     if(boundarystream!=NULL||boundarysizestream!=NULL){
       if(boundarystream!=NULL){
         fclose(boundarystream);
@@ -455,8 +455,8 @@ int ConvertBoundaryBNDF(patchdata *patchi, int *thread_index){
     }
   }
 
-  boundarystream=fopen(boundaryfile_svz,"wb");
-  boundarysizestream=fopen(boundarysizefile_svz,"w");
+  boundarystream=FOPEN(boundaryfile_svz,"wb");
+  boundarysizestream=FOPEN(boundarysizefile_svz,"w");
   if(boundarystream==NULL||boundarysizestream==NULL){
     if(boundarystream==NULL){
       fprintf(stderr,"*** Warning: The file %s could not be opened for writing\n",boundaryfile_svz);

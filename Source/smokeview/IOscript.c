@@ -446,7 +446,7 @@ int CheckScript(char *file){
   int nparams = 0, return_val, reset;
   keyworddata *kw, *kw_last;
 
-  stream = fopen(file, "r");
+  stream = FOPEN(file, "r");
   if(stream == NULL){
     fprintf(stderr, "*** Error: scriptfile, %s, could not be opened for input\n", file);
     return 1;
@@ -727,7 +727,7 @@ int CompileScript(char *scriptfile){
    ************************************************************************
  */
 
-  stream = fopen(scriptfile, "r");
+  stream = FOPEN(scriptfile, "r");
   if(stream == NULL){
     fprintf(stderr, "*** Error: scriptfile, %s, could not be opened for input\n", scriptfile);
     return 1;
@@ -843,7 +843,7 @@ int CompileScript(char *scriptfile){
         SETival;
         scripti->ival = CLAMP(scripti->ival, 0, 5);
         break;
-        
+
 // SMOKEPROP
       case SCRIPT_SMOKEPROP:
         SETfval;
@@ -2373,7 +2373,7 @@ void SetSliceGlobalBounds(char *type){
       slicei = global_scase.slicecoll.sliceinfo+i;
       slice_type = slicei->label.shortlabel;
       if(strcmp(type, slice_type)!=0)continue;
-      stream = fopen(slicei->bound_file, "r");
+      stream = FOPEN(slicei->bound_file, "r");
       if(stream==NULL)continue;
       for(;;){
         char buffer[255];
@@ -3069,7 +3069,7 @@ void ScriptOutputSmokeSensors(void){
     NewMemory((void **)&file_smokesensors,strlen(global_scase.fdsprefix)+17+1);
     strcpy(file_smokesensors,global_scase.fdsprefix);
     strcat(file_smokesensors,"_ss.csv");
-    stream_smokesensors = fopen(file_smokesensors, "w");
+    stream_smokesensors = FOPEN(file_smokesensors, "w");
 
     fprintf(stream_smokesensors, "s,");
     for(i = 1;i < nsmokesensors-1;i++){
@@ -3095,7 +3095,7 @@ void ScriptOutputSmokeSensors(void){
     }
   }
   else{
-    stream_smokesensors = fopen(file_smokesensors, "a");
+    stream_smokesensors = FOPEN(file_smokesensors, "a");
   }
 
   if(global_times!=NULL&&itimes>=0&&itimes<nglobal_times){

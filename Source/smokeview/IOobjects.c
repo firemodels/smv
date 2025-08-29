@@ -5227,7 +5227,7 @@ void SetupZoneDevs(void){
     if(zonei->csv!=1)continue;
     file = zonei->file;
 
-    stream=fopen(file,"r");
+    stream=FOPEN(file,"r");
     if(stream==NULL)continue;
     buffer_len=GetRowCols(stream,&nrows,&ncols);
     buffer_len += ncols;
@@ -5356,7 +5356,7 @@ FILE_SIZE ReadDeviceData(char *file, int filetype, int loadstatus){
 
   // find number of rows and columns
 
-  stream=fopen(file,"r");
+  stream=FOPEN(file,"r");
   if(stream==NULL)return 0;
   RewindDeviceFile(stream);
   buffer_len=GetRowCols(stream,&nrows,&ncols);

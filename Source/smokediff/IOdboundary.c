@@ -173,17 +173,17 @@ void DiffBoundarYes(FILE *stream_out){
     NewMemory((void **)&p3k2,npatches3*sizeof(int));
     NewMemory((void **)&patchdir3,npatches3*sizeof(int));
 
-    stream=fopen(fullfile1,"r");
+    stream=FOPEN(fullfile1,"r");
     if(stream==NULL)continue;
     fclose(stream);
 
-    stream=fopen(fullfile2,"r");
+    stream=FOPEN(fullfile2,"r");
     if(stream==NULL)continue;
     fclose(stream);
 
     MakeOutFile(outfile,destdir,file1,".bf");
     if(strlen(outfile)==0)continue;
-    stream=fopen(outfile,"w");
+    stream=FOPEN(outfile,"w");
     if(stream==NULL)continue;
     fclose(stream);
     MakeOutFile(outfile2,NULL,boundary1->file,".bf");

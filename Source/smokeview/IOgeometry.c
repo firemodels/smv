@@ -2019,7 +2019,7 @@ void UpdateTriangles(int flag,int update){
       geomi = geominfoptrs[j];
       if(geomi->geomtype!=GEOM_ISO||geomi->cache_defined==1)continue;
 
-      stream = fopen(geomi->topo_file, "wb");
+      stream = FOPEN(geomi->topo_file, "wb");
       if(stream==NULL)continue;
       for(ii = 0; ii<geomi->ntimes; ii++){
         geomlistdata *geomlisti;
@@ -3241,7 +3241,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
 
   ReadGeomHeader(geomi,NULL,&ntimes_local);
   if(ntimes_local<0)return 0;
-  stream = fopen(geomi->file,"rb");
+  stream = FOPEN(geomi->file,"rb");
   if(stream==NULL)return 0;
 
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
@@ -4956,7 +4956,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
           isurf = tri->geomsurf - global_scase.surfcoll.surfinfo - global_scase.surfcoll.nsurfinfo - 1;
           tri->geomlisti = geomlisti;
           if(
-            (geomi->geomtype==GEOM_ISO&&showlevels != NULL&&showlevels[isurf] == 0) || 
+            (geomi->geomtype==GEOM_ISO&&showlevels != NULL&&showlevels[isurf] == 0) ||
             (tri->geomsurf!=NULL&&tri->geomsurf->transparent_level <= 0.0)
             ){
             continue;

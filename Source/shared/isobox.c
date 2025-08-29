@@ -15,6 +15,7 @@
 #define IN_ISOBOX
 #include "isobox.h"
 #include "datadefs.h"
+#include "file_util.h"
 
 #define GAS 1
 #define SOLID 0
@@ -1663,7 +1664,7 @@ void CCIsoHeader(char *isofile,
 
 
   *error=-1;
-  isostream=fopen(isofile,"wb");
+  isostream=FOPEN(isofile,"wb");
   if(isostream==NULL)return;
 
   len[0]=strlen(isolonglabel)+1;
@@ -1695,7 +1696,7 @@ void CCTIsoHeader(char *isofile,
 
 
   *error=-1;
-  isostream=fopen(isofile,"wb");
+  isostream=FOPEN(isofile,"wb");
   if(isostream==NULL)return;
 
   len[0]=strlen(isolonglabel)+1;
@@ -1789,7 +1790,7 @@ void CCIsoSurface2File(char *isofile, float *t, float *data, char *iblank,
   FILE *isostream=NULL;
 
   PrintMemoryInfo;
-  isostream = fopen(isofile, "ab");
+  isostream = FOPEN(isofile, "ab");
   *error=-1;
   if(isostream==NULL)return;
   *error = 0;
@@ -1846,7 +1847,7 @@ void CCIsoSurfaceT2File(char *isofile, float *t, float *data, int *data2flag, fl
 
 
   PrintMemoryInfo;
-  isostream = fopen(isofile, "ab");
+  isostream = FOPEN(isofile, "ab");
   *error=-1;
   if(isostream==NULL)return;
   *error = 0;

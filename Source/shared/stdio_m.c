@@ -11,7 +11,7 @@
 int GetFileBuffer(char *file, FILE_SIZE offset, unsigned char *buffer, size_t nbuffer){
   FILE *stream = NULL;
 
-  stream = fopen(file, "rb");
+  stream = FOPEN(file, "rb");
   if(stream==NULL)return 0;
   fseek(stream, offset, SEEK_SET);
   fread(buffer, (size_t)1, (size_t)nbuffer, stream);
@@ -46,7 +46,7 @@ FILE_m *fopen_mo(char *file, FILE_SIZE offset, FILE_SIZE size, char *mode){
   stream_m->stream = NULL;
 
   if(strcmp(mode, "rb")==0){    // not mode rbm so use regular IO
-    stream = fopen(file, "rb");
+    stream = FOPEN(file, "rb");
     if(stream==NULL)return NULL;
     stream_m->stream = stream;
     return stream_m;
@@ -56,7 +56,7 @@ FILE_m *fopen_mo(char *file, FILE_SIZE offset, FILE_SIZE size, char *mode){
     nbuffer = size;
   }
   else{
-    stream = fopen(file, "rb");
+    stream = FOPEN(file, "rb");
     if(stream==NULL)return NULL;
     fseek(stream, 0L, SEEK_END);
     nbuffer = FTELL(stream);
@@ -71,7 +71,7 @@ FILE_m *fopen_mo(char *file, FILE_SIZE offset, FILE_SIZE size, char *mode){
   }
 
   if(NewMemory((void **)&buffer, nbuffer)==0){ // allocation of memory buffer failed so revert to regular IO
-    stream = fopen(file, "rb");
+    stream = FOPEN(file, "rb");
     if(stream==NULL)return NULL;
     stream_m->stream = stream;
     return stream_m;
@@ -118,7 +118,7 @@ FILE_m *fopen_b(char *file, unsigned char *buffer, size_t nbuffer, char *mode){
   if(buffer != NULL)stream_m->buffer_end = buffer + nbuffer;
   stream_m->file       = m_file;
   if(buffer == NULL){
-    stream_m->stream = fopen(file, mode);
+    stream_m->stream = FOPEN(file, mode);
     if(stream_m->stream == NULL){
       FREEMEMORY(stream_m);
       FREEMEMORY(m_file);

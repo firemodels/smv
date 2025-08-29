@@ -991,7 +991,7 @@ void ConvertSsf(void){
   char *template = "tempssf";
 
   if(ssf_from==NULL||ssf_to==NULL)return;
-  stream_from = fopen(ssf_from, "r");
+  stream_from = FOPEN(ssf_from, "r");
   if(stream_from==NULL)return;
 
   if(strcmp(ssf_from, ssf_to)==0){
@@ -1000,11 +1000,11 @@ void ConvertSsf(void){
       fclose(stream_from);
       return;
     }
-    stream_to = fopen(tempfile, "w");
+    stream_to = FOPEN(tempfile, "w");
     outeqin = 1;
   }
   else{
-    stream_to = fopen(ssf_to, "w");
+    stream_to = FOPEN(ssf_to, "w");
   }
   if(stream_to==NULL){
     fclose(stream_from);

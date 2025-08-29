@@ -19,22 +19,6 @@
 #define STDCALLF extern void
 #endif
 
-#ifdef X64
-#ifndef STRUCTSTAT
-#define STRUCTSTAT struct __stat64
-#endif
-#ifndef STAT
-#define STAT _stat64
-#endif
-#else
-#ifndef STRUCTSTAT
-#define STRUCTSTAT struct stat
-#endif
-#ifndef STAT
-#define STAT stat
-#endif
-#endif
-
 #ifndef FILE_SIZE
 #define FILE_SIZE unsigned long long
 #endif

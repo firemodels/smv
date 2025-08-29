@@ -1191,7 +1191,7 @@ int GetTerrainData(char *file, terraindata *terri){
 #ifdef _DEBUG
   printf("reading terrain data mesh: %i\n", (int)(terri-global_scase.terraininfo));
 #endif
-  WUIFILE = fopen(file, "rb");
+  WUIFILE = FOPEN(file, "rb");
   if(WUIFILE==NULL)return 1;
 
 //    WRITE(LU_TERRAIN(NM)) REAL(M%ZS-1._EB, FB)
@@ -1804,7 +1804,7 @@ int GetTerrainSize(char *file, float *xmin, float *xmax, int *nx, float *ymin, f
   int nchanges;
   int nt = 0;
 
-  WUIFILE = fopen(file, "rb");
+  WUIFILE = FOPEN(file, "rb");
   if(WUIFILE == NULL)return 1;
 
   FSEEK(WUIFILE, 4, SEEK_CUR);fread(&one, 4, 1, WUIFILE);FSEEK(WUIFILE, 4, SEEK_CUR);

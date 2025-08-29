@@ -1259,7 +1259,7 @@ int GetVolsmokeNFrames(volrenderdata *vr){
 
   smokeslice = vr->smokeslice;
   if(load_volcompressed==1&&vr->smokeslice->vol_file!=NULL){
-    volstream = fopen(vr->smokeslice->vol_file, "rb");
+    volstream = FOPEN(vr->smokeslice->vol_file, "rb");
   }
   if(volstream==NULL){
     framesize = smokeslice->nslicei*smokeslice->nslicej*smokeslice->nslicek;
@@ -2612,7 +2612,7 @@ float GetVolsmokeFrameTime(volrenderdata *vr, int framenum){
   skip_local += framenum*(HEADER_SIZE +4        +TRAILER_SIZE); // framenum time's
   skip_local += (LINT)framenum*(LINT)(HEADER_SIZE +4*framesize+TRAILER_SIZE); // framenum slice data's
 
-  SLICEFILE=fopen(smokeslice->reg_file,"rb");
+  SLICEFILE=FOPEN(smokeslice->reg_file,"rb");
   if(SLICEFILE==NULL)return time_local;
 
   FSEEK(SLICEFILE,skip_local,SEEK_SET); // skip from beginning of file
@@ -2629,7 +2629,7 @@ void GetVolsmokeAllTimes(volrenderdata *vr){
   FILE *volstream=NULL;
 
   if(load_volcompressed==1&&vr->smokeslice->vol_file!=NULL){
-    volstream=fopen(vr->smokeslice->vol_file,"rb");
+    volstream=FOPEN(vr->smokeslice->vol_file,"rb");
   }
 
   if(volstream==NULL){
@@ -2662,7 +2662,7 @@ void GetVolsmokeAllTimes(volrenderdata *vr){
 // fire positions
 
     volstream=NULL;
-    if(vr->fireslice->vol_file!=NULL)volstream=fopen(vr->fireslice->vol_file,"rb");
+    if(vr->fireslice->vol_file!=NULL)volstream=FOPEN(vr->fireslice->vol_file,"rb");
     if(volstream!=NULL){
       FSEEK(volstream,12,SEEK_SET);
       for(ii=0;ii<vr->ntimes;ii++){
@@ -2751,7 +2751,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
   }
 
   if(load_volcompressed==1&&vr->smokeslice->vol_file!=NULL){
-    volstream=fopen(vr->smokeslice->vol_file,"rb");
+    volstream=FOPEN(vr->smokeslice->vol_file,"rb");
   }
 
   skip_local = (HEADER_SIZE + 30 + TRAILER_SIZE); // long label
@@ -2761,7 +2761,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
   skip_local += framenum * (HEADER_SIZE + 4 + TRAILER_SIZE); // framenum time's
   skip_local += ( LINT )framenum * ( LINT )(HEADER_SIZE + 4 * framesize + TRAILER_SIZE); // framenum slice data's
   if(volstream==NULL){
-    SLICEFILE=fopen(smokeslice->reg_file,"rb");
+    SLICEFILE=FOPEN(smokeslice->reg_file,"rb");
     if(SLICEFILE==NULL)return;
 
     FSEEK(SLICEFILE,skip_local,SEEK_SET); // skip from beginning of file
@@ -2823,10 +2823,10 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
 
   if(fireslice!=NULL){
     if(load_volcompressed==1&&vr->fireslice->vol_file!=NULL){
-      volstream=fopen(vr->fireslice->vol_file,"rb");
+      volstream=FOPEN(vr->fireslice->vol_file,"rb");
     }
     if(volstream==NULL){
-      SLICEFILE=fopen(fireslice->reg_file,"rb");
+      SLICEFILE=FOPEN(fireslice->reg_file,"rb");
       if(SLICEFILE!=NULL){
         FSEEK(SLICEFILE,skip_local,SEEK_SET); // skip from beginning of file
 

@@ -5286,7 +5286,7 @@ void GetObstLabels(const char *filein){
   int i;
 
   if(filein==NULL)return;
-  stream_in = fopen(filein,"r");
+  stream_in = FOPEN(filein,"r");
   if(stream_in==NULL)return;
 
   while(!feof(stream_in)){

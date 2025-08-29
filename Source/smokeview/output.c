@@ -362,7 +362,7 @@ void WriteLabels(labels_collection *labelscoll_arg){
 
   if(event_file_exists==0)return;
   char *event_filename = CasePathEvent(&global_scase);
-  stream = fopen(event_filename, "w");
+  stream = FOPEN(event_filename, "w");
   FREEMEMORY(event_filename);
   if(stream==NULL)return;
 

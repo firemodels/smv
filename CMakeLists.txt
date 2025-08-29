@@ -62,6 +62,7 @@ option(BETA "Include beta functionality" OFF)
 option(STRICT_CHECKS "Run additional strict checks" OFF)
 option(VENDORED_UI_LIBS "Use the vendored GLUT" ON)
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
+option(UNICODE "Enable Unicode on Windows" ON)
 
 # Ensure all files are in the right place to run the tests
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
@@ -78,6 +79,11 @@ endif()
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_WIN32)
     add_compile_definitions(PTW32_BUILD PTW32_STATIC_LIB   X64 _WIN32 WIN32 _CONSOLE)
+    if (UNICODE)
+        # We only define UNICODE_PATHS (which is specific to SMV) and not
+        # _UNICODE as the vendored version of GLUT doesn't support Unicode
+        add_compile_definitions(UNICODE_PATHS)
+    endif()
 endif()
 # Set flags for Linux
 if (LINUX)
