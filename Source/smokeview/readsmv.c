@@ -6484,8 +6484,12 @@ int ReadIni2(const char *inifile, int localfile){
         continue;
       }
       if(MatchINI(buffer, "SCRIPTFILE") == 1){
+        char *front;
+
         if(fgets(buffer2, 255, stream) == NULL)break;
-        InsertScriptFile(RemoveComment(buffer2));
+        RemoveComment(buffer2);
+        front = TrimFront(buffer2);
+        InsertScriptFile(front);
         updatemenu = 1;
         continue;
       }
