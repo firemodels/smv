@@ -1344,7 +1344,9 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file){
       objecti = objecti->next;
     }
   }
+#ifdef _DEBUG
   PRINTF("%d object definitions read from %s\n", ndevices, file);
+#endif
   return ndevices;
 }
 
