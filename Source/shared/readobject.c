@@ -289,7 +289,6 @@ void GetIndepVarIndices(sv_object *smv_object, char **var_indep_strings,
 char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
                        FILE *stream, int *eof, sv_object_frame *frame){
   char buffer[1024];
-  strcpy(buffer, buffer_in);
 
   char object_buffer[10 * BUFFER_SIZE];
   int ntokens;
@@ -300,6 +299,7 @@ char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
   int ntextures_local = 0;
   int last_command_index = 0;
 
+  strcpy(buffer, buffer_in);
   *eof = 0;
 
   frame->error = 0;
@@ -310,7 +310,8 @@ char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
       *eof = 1;
       break;
     }
-    buffer2 = RemoveComment(buffer);
+    RemoveComment(buffer);
+    buffer2 = TrimFront(buffer);
     if(Match(buffer2, "OBJECTDEF") == 1 || Match(buffer2, "AVATARDEF") == 1 ||
         Match(buffer2, "NEWFRAME") == 1){
       buffer_ptr = buffer2;
@@ -1188,7 +1189,8 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file){
       if(eof == 1 || fgets(buffer, 255, stream) == NULL) break;
       buffer_ptr = buffer;
     }
-    trim_buffer = RemoveComment(buffer_ptr);
+    RemoveComment(buffer_ptr);
+    trim_buffer = TrimFront(buffer_ptr);
     lenbuffer = strlen(buffer_ptr);
     if(lenbuffer < 1){
       buffer_ptr = NULL;
@@ -1207,7 +1209,8 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file){
       }
       ndevices++;
       if(fgets(buffer, 255, stream) == NULL) break;
-      label = RemoveComment(buffer);
+      RemoveComment(buffer);
+      label = TrimFront(buffer);
       temp_object = GetSmvObject(objectscoll, label);
       if(temp_object != NULL){
         FreeObject(temp_object);

@@ -130,7 +130,7 @@ EXTERNCPP void           StripQuotes(char *buffer);
 EXTERNCPP void           StripCommas(char *buffer);
 EXTERNCPP int            GetRowCols(FILE *stream, int *nrows, int *ncols);
 
-EXTERNCPP char          *RemoveComment(char *buffer);
+EXTERNCPP void           RemoveComment(char *buffer);
 EXTERNCPP void           TrimBack(char *line);
 EXTERNCPP void           TrimCommas(char *line);
 EXTERNCPP char          *TrimFront(char *line);

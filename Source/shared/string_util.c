@@ -1425,13 +1425,12 @@ int MatchWild(char *pTameText, char *pWildText){
 
 /* ----------------------- RemoveComment ----------------------------- */
 
-char *RemoveComment(char *buffer){
+void RemoveComment(char *buffer){
   char *comment;
 
   comment = strstr(buffer,"//");
   if(comment!=NULL)comment[0]=0;
   TrimBack(buffer);
-  return TrimFront(buffer);
 }
 
 /* ------------------ SetLabelsIso ------------------------ */
