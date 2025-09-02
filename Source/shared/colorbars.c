@@ -496,7 +496,7 @@ int ReadCSVColorbar(colorbardata *colorbar, const char *filepath,
   int have_name = 0;
 
   // Open the file
-  FILE *stream = fopen(filepath, "r");
+  FILE *stream = FOPEN(filepath, "r");
   if(stream == NULL) return 1;
   if(fgets(buffer, 255, stream) == NULL){
     fclose(stream);

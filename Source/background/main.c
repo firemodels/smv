@@ -223,7 +223,7 @@ int main(int argc, char **argv){
 #ifdef pp_LINUX
   nhostinfo=0;
   if(hostlistfile!=NULL){
-    stream=fopen(hostlistfile,"r");
+    stream=FOPEN(hostlistfile,"r");
   }
   if(hostlistfile!=NULL&&stream!=NULL){
     char buffer[255];
@@ -379,7 +379,7 @@ int getnprocs(char *command){
 
   system("tasklist > process.out");
 
-  stream = fopen("process.out","r");
+  stream = FOPEN("process.out","r");
   if(stream==NULL)return 0;
 
   strcpy(com_copy, command);
@@ -489,7 +489,7 @@ void get_sysctl(char *host, char *var, int *ivar, float *fvar){
   strcat(command,sysctl_file);
   system(command);
 
-  stream=fopen(sysctl_file,"r");
+  stream=FOPEN(sysctl_file,"r");
   if(stream!=NULL){
     char buffer[255];
 
@@ -553,7 +553,7 @@ int get_ncores(void){
   int ncores=0;
   char buffer[255];
 
-  stream=fopen("/proc/cpuinfo","r");
+  stream=FOPEN("/proc/cpuinfo","r");
   if(stream==NULL)return 1;
   while(!feof(stream)){
     if(fgets(buffer,255,stream)==NULL)break;
@@ -587,7 +587,7 @@ int get_host_ncores(char *hosta){
 
   system(command);
 
-  stream=fopen(localfile,"r");
+  stream=FOPEN(localfile,"r");
   if(stream==NULL){
     printf("unable to open %s\n",localfile);
     return 1;
@@ -628,7 +628,7 @@ float get_host_load(char *host_arg){
 
   system(command);
 
-  stream=fopen(localfile,"r");
+  stream=FOPEN(localfile,"r");
   if(stream==NULL)return 1.0;
   if(fgets(buffer,255,stream)==NULL){
     fclose(stream);
@@ -647,7 +647,7 @@ float get_load(void){
   char buffer[255];
   float load1;
 
-  stream=fopen("/proc/loadavg","r");
+  stream=FOPEN("/proc/loadavg","r");
   if(stream==NULL)return 1.0;
   if(fgets(buffer,255,stream)==NULL){
     fclose(stream);

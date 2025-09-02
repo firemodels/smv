@@ -145,7 +145,7 @@ void MakeMovie(void){
         FILE *stream_ffmpeg=NULL;
 
         char *ffmpeg_command_filename = CasePathFfmpegCommand(&global_scase);
-        stream_ffmpeg = fopen(ffmpeg_command_filename,"w");
+        stream_ffmpeg = FOPEN(ffmpeg_command_filename,"w");
         FREEMEMORY(ffmpeg_command_filename);
         if(stream_ffmpeg!=NULL){
 #ifdef WIN32
@@ -442,7 +442,7 @@ void OutputSliceData(void){
     strcat(datafile, "_sf_");
     strcat(datafile, flabel);
     strcat(datafile, ".csv");
-    fileout = fopen(datafile, "a");
+    fileout = FOPEN(datafile, "a");
     if(fileout == NULL)continue;
     if(global_times != NULL)fprintf(fileout, "%f\n", global_times[itimes]);
     switch(sd->idir){
@@ -569,7 +569,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
   }
   strcat(renderfullfile,renderfile);
 
-  RENDERfile = fopen(renderfullfile, "wb");
+  RENDERfile = FOPEN(renderfullfile, "wb");
   if(RENDERfile == NULL){
     fprintf(stderr, "*** Error: unable to render screen image to %s", renderfullfile);
     return 1;
@@ -1001,7 +1001,7 @@ int MergeRenderScreenBuffers360(void){
   }
   strcat(renderfullfile,renderfile);
 
-  RENDERfile = fopen(renderfullfile, "wb");
+  RENDERfile = FOPEN(renderfullfile, "wb");
   if(RENDERfile == NULL){
     fprintf(stderr, "*** Error: unable to render screen image to %s", renderfullfile);
     return 1;
@@ -1179,7 +1179,7 @@ int SmokeviewImage2File(char *directory, char *RENDERfilename, int rendertype, i
     fprintf(stderr,"*** Error: unable to render screen image to %s", RENDERfilename);
     return 1;
   }
-  RENDERfile = fopen(renderfile, "wb");
+  RENDERfile = FOPEN(renderfile, "wb");
   if(RENDERfile == NULL){
     fprintf(stderr,"*** Error: unable to render screen image to %s", renderfile);
     return 1;

@@ -1003,7 +1003,7 @@ char *GetChid(char *file, char *buffer){
   int found1st, found2nd;
 
   if(file==NULL)return NULL;
-  stream=fopen(file,"r");
+  stream=FOPEN(file,"r");
   if(stream==NULL)return NULL;
 
   found1st=0;
@@ -1792,7 +1792,7 @@ unsigned char *GetHashSHA1(char *file){
   FILE *stream = NULL;
 
   if(file==NULL)return NULL;
-  stream = fopen(file, "rb");
+  stream = FOPEN(file, "rb");
   if(stream==NULL){
     char *pathentry, fullpath[1024];
 
@@ -1814,7 +1814,7 @@ unsigned char *GetHashSHA1(char *file){
     }
 #endif
 
-    stream = fopen(fullpath, "rb");
+    stream = FOPEN(fullpath, "rb");
     if(stream==NULL)return NULL;
   }
 
@@ -1855,7 +1855,7 @@ unsigned char *GetHashMD5(char *file){
   size_t len_data;
 
   if(file==NULL)return NULL;
-  stream = fopen(file, "rb");
+  stream = FOPEN(file, "rb");
   if(stream == NULL){
     char *pathentry, fullpath[1024];
 
@@ -1877,7 +1877,7 @@ unsigned char *GetHashMD5(char *file){
     }
 #endif
 
-    stream = fopen(fullpath, "rb");
+    stream = FOPEN(fullpath, "rb");
     if(stream == NULL)return NULL;
   }
 
@@ -1909,7 +1909,7 @@ unsigned char *GetHashSHA256(char *file){
   size_t len_data;
 
   if(file==NULL)return NULL;
-  stream = fopen(file, "rb");
+  stream = FOPEN(file, "rb");
   if(stream==NULL){
     char *pathentry, fullpath[1024];
 
@@ -1931,7 +1931,7 @@ unsigned char *GetHashSHA256(char *file){
     }
 #endif
 
-    stream = fopen(fullpath, "rb");
+    stream = FOPEN(fullpath, "rb");
     if(stream==NULL)return NULL;
   }
 

@@ -21,7 +21,7 @@ void GetIsoLevels(const char *isofile, int dataflag, float **levelsptr, float **
   int i;
   float **colorlevels=NULL;
 
-  isostreamptr=fopen(isofile,"rb");
+  isostreamptr=FOPEN(isofile,"rb");
 
   fread(&one,4,1,isostreamptr);
   if(dataflag!=0){
@@ -62,7 +62,7 @@ void GetIsoSizes(const char *isofile, int dataflag, FILE **isostreamptr, int *nv
   int skip_local;
   float ttmin, ttmax;
 
-  *isostreamptr=fopen(isofile,"rb");
+  *isostreamptr=FOPEN(isofile,"rb");
 
   *tmin_local=1000000000.;
   *tmax_local=-1000000000.;
@@ -274,7 +274,7 @@ void OutputIsoBounds(isodata *isoi){
   geomi = isoi->geominfo;
   strcpy(file, geomi->file);
   strcat(file, ".csv");
-  stream = fopen(file, "w");
+  stream = FOPEN(file, "w");
   if(stream == NULL)return;
   if(geomi->ntimes <= 0){
     fclose(stream);

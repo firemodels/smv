@@ -462,7 +462,7 @@ char *ProcessCommandLine(CommandlineArgs *args){
     }
     if(args->redirect){
       char *log_filename = CasePathLogFile(&global_scase);
-      LOG_FILENAME = fopen(log_filename, "w");
+      LOG_FILENAME = FOPEN(log_filename, "w");
       FREEMEMORY(log_filename);
       if(LOG_FILENAME != NULL){
         redirect = 1;
@@ -591,7 +591,7 @@ int CheckSMVFile(char *file, char *subdir){
   else{
     casedirptr = subdir;
   }
-  stream = fopen(casename, "r");
+  stream = FOPEN(casename, "r");
   if(stream==NULL){
     stream = fopen_indir(casedirptr, casename, "r");
     if(stream==NULL){

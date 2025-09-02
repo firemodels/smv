@@ -84,7 +84,7 @@ int ReadSMV(char *smvfile){
   char buffer[BUFFERSIZE];
 
   ipdim=0;
-  stream=fopen(smvfile,"r");
+  stream=FOPEN(smvfile,"r");
   if(stream==NULL){
     PRINTF("The file: %s could not be opened\n",smvfile);
     return 1;
@@ -809,7 +809,7 @@ void ReadINI2(char *inifile){
   char *type_buffer;
   FILE *stream;
 
-  stream=fopen(inifile,"r");
+  stream=FOPEN(inifile,"r");
   if(stream==NULL)return;
 
   while(!feof(stream)){
@@ -901,7 +901,7 @@ void ReadINI2(char *inifile){
       partpropdata *partpropi;
       int type=1;
 
-      
+
       if(Match(buffer,"V2_PARTICLES")==1)type = 1;
       fgets(buffer,BUFFERSIZE,stream);
       strcpy(buffer2,"");

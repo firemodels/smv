@@ -95,22 +95,6 @@
 
 #define FILE_SIZE unsigned long long
 
-#ifdef X64
-  #define STRUCTSTAT struct __stat64
-  #define STAT _stat64
-
-  #ifdef WIN32
-    #define LINT __int64
-  #else
-    #define LINT long long int
-  #endif
-#else
-  #define STRUCTSTAT struct stat
-  #define STAT stat
-
-  #define LINT long int
-#endif
-
 #ifdef CPP
 #define CCC "C"
 #define EXTERNCPP extern "C"

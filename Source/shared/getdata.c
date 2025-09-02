@@ -32,20 +32,6 @@ _Static_assert(sizeof(float) == 4, "getdata.c assumes that float is 4 bytes");
 #endif
 #endif
 
-/* ------------------ FOPEN  ------------------------ */
-
-#ifdef WIN32
-FILE* FOPEN(const char* file, const char* mode){
-  FILE* stream;
-  stream = _fsopen(file, mode, _SH_DENYNO);
-  return stream;
-}
-#else
-FILE* FOPEN(const char* file, const char* mode){
-  return fopen(file, mode);
-}
-#endif
-
 //  ------------------ fortread ------------------------
 
 int fortread(void *ptr, size_t size, size_t count, FILE *file){

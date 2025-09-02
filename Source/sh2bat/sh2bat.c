@@ -76,8 +76,8 @@ int main(int argc, char **argv){
     Usage(HELP_ALL);
     exit(1);
   }
-  streamin=fopen(filein,"r");
-  streamout=fopen(fileout,"w");
+  streamin=FOPEN(filein,"r");
+  streamout=FOPEN(fileout,"w");
 
   if(streamin==NULL||streamout==NULL){
     if(streamin==NULL){

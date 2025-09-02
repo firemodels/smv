@@ -45,12 +45,12 @@ void backup_path(char *path_type_local, char *pathbuffer){
     else{
       sprintf(file,"%s_%03i.txt",filebase,i);
     }
-    stream=fopen(file,"r");
+    stream=FOPEN(file,"r");
     if(stream==NULL)break;
     fclose(stream);
   }
 
-  stream=fopen(file,"w");
+  stream=FOPEN(file,"w");
   if(stream!=NULL){
     fprintf(stream,"%s Path\n",path_type_local);
     fprintf(stream,"%s\n",pathbuffer);
