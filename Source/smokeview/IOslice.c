@@ -30,7 +30,7 @@
     valmin + (valmax-valmin)*(float)sd->slicecomplevel[ IJK_SLICE((i), (j),  (k))]/255.0 \
     )
 
-#define SLICETEXTURE(val) ( (val-valmin)/(valmax-valmin) )
+#define SLICETEXTURE(val) ( CLAMP((val-valmin)/(valmax-valmin),0.001,0.999) )
 
 #define SLICECOLOR(cell_index) \
     (sd->compression_type==UNCOMPRESSED ? \
