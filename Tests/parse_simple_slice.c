@@ -4,6 +4,11 @@
 #include "dmalloc.h"
 #include <stdlib.h>
 
+int show_help;
+int hash_option;
+int show_version;
+char append_string[1024];
+
 int main(int argc, char **argv) {
   initMALLOC();
   FILE *file;

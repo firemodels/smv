@@ -2877,7 +2877,7 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
     printf("          and was not able to create a new size file: %s\n", smoke_sizefilename);
     return NULL;  // can't write size file in temp directory so give up
   }
-  SMOKE3DFILE = fopen(smokefile, "rb");
+  SMOKE3DFILE = FOPEN(smokefile, "rb");
   if(SMOKE3DFILE == NULL){
     fclose(SMOKE_SIZE);
     return NULL;
@@ -3236,10 +3236,10 @@ int GetSmoke3DVersion2(smoke3ddata *smoke3di){
   if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0)fortran_skip = 4;
 
   file = smoke3di->comp_file;
-  if(file!=NULL)SMOKE3D_COMPFILE = fopen(file, "rb");
+  if(file!=NULL)SMOKE3D_COMPFILE = FOPEN(file, "rb");
   if(SMOKE3D_COMPFILE==NULL){
     file = smoke3di->reg_file;
-    SMOKE3D_REGFILE = fopen(file, "rb");
+    SMOKE3D_REGFILE = FOPEN(file, "rb");
   }
   if(SMOKE3D_REGFILE==NULL&&SMOKE3D_COMPFILE==NULL)return -1;
   if(SMOKE3D_COMPFILE!=NULL)SMOKE3DFILE = SMOKE3D_COMPFILE;
@@ -3622,7 +3622,7 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   char *file;
   file = smoke3di->file;
   if(load_smoke_density == 1 && smoke3di->is_smoke_density == 1)file = smoke3di->smoke_density_file;
-  SMOKE3DFILE=fopen(file,"rb");
+  SMOKE3DFILE=FOPEN(file,"rb");
   if(SMOKE3DFILE==NULL){
     SetupSmoke3D(smoke3di,UNLOAD, time_frame, &error_local);
     *errorcode_arg =1;

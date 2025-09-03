@@ -105,11 +105,11 @@ void DiffSlices(FILE *stream_out){
     FullFile(fullfile1,sourcedir1,file1);
     FullFile(fullfile2,sourcedir2,file2);
 
-    stream=fopen(fullfile1,"r");
+    stream=FOPEN(fullfile1,"r");
     if(stream==NULL)continue;
     fclose(stream);
 
-    stream=fopen(fullfile2,"r");
+    stream=FOPEN(fullfile2,"r");
     if(stream==NULL)continue;
     fclose(stream);
 
@@ -118,7 +118,7 @@ void DiffSlices(FILE *stream_out){
     strcpy(outfile_bnd, outfile);
     strcat(outfile_bnd, ".bnd");
 
-    stream=fopen(outfile,"w");
+    stream=FOPEN(outfile,"w");
     if(stream==NULL)continue;
     fclose(stream);
 
@@ -257,7 +257,7 @@ void DiffSlices(FILE *stream_out){
     {
       FILE *stream_bnd=NULL;
 
-      stream_bnd = fopen(outfile_bnd, "w");
+      stream_bnd = FOPEN(outfile_bnd, "w");
       if(stream_bnd!=NULL){
         fprintf(stream_bnd, "%f %f %f", 0.0, valmin, valmax);
         fclose(stream_bnd);

@@ -11,7 +11,7 @@ int GetFileBounds(char *file, float *valmin, float *valmax){
   char buffer[255];
   float t, vmin, vmax;
 
-  stream = fopen(file, "r");
+  stream = FOPEN(file, "r");
   if(stream == NULL || fgets(buffer, 255, stream) == NULL){
     *valmin = 1.0;
     *valmax = 0.0;

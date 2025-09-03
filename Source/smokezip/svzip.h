@@ -38,23 +38,6 @@
 #define GETINDEX(xval,xmin,dx,nx) CLAMP(((xval)-(xmin))/(dx),0,(nx)-1)
 #endif
 
-
-#ifdef X64
-#ifndef STRUCTSTAT
-#define STRUCTSTAT struct __stat64
-#endif
-#ifndef STAT
-#define STAT _stat64
-#endif
-#else
-#ifndef STRUCTSTAT
-#define STRUCTSTAT struct stat
-#endif
-#ifndef STAT
-#define STAT stat
-#endif
-#endif
-
 #ifndef C_FILE
 #define C_FILE 0
 #endif

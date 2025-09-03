@@ -216,7 +216,7 @@ FILE_SIZE freadptr_buffer(void **ptr, FILE_SIZE size, FILE_SIZE count, filedata 
 void ReadBufferi(readbufferdata *readbufferi){
   FILE *stream;
 
-  stream = fopen(readbufferi->filename, "rb");
+  stream = FOPEN(readbufferi->filename, "rb");
   if(stream==NULL){
     readbufferi->returnval = 0;
     return;

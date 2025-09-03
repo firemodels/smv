@@ -232,7 +232,7 @@ int main(int argc, char **argv){
     if(destdir!=NULL)strcat(svdlogfile,destdir);
     if(smv1!=NULL)strcat(svdlogfile,smv1);
     strcat(svdlogfile,"_diff.svdlog");
-    LOG_FILENAME=fopen(svdlogfile,"w");
+    LOG_FILENAME=FOPEN(svdlogfile,"w");
     if(LOG_FILENAME!=NULL){
       SetStdOut(LOG_FILENAME);
     }
@@ -248,15 +248,15 @@ int main(int argc, char **argv){
   }
   MakeOutFile(smv_out,destdir,smv1_out,".smv");
 
-  stream_out=fopen(smv_out,"w");
+  stream_out=FOPEN(smv_out,"w");
   if(stream_out==NULL){
     fprintf(stderr,"*** Error The .smv file, %s, could not be opened for output.\n",smv_out);
   }
-  stream_in1=fopen(smoke1,"r");
+  stream_in1=FOPEN(smoke1,"r");
   if(stream_in1==NULL){
     fprintf(stderr,"*** Error The .smv file, %s, could not be opened for input\n",smoke1);
   }
-  stream_in2=fopen(smoke2,"r");
+  stream_in2=FOPEN(smoke2,"r");
   if(stream_in2==NULL){
     fprintf(stderr,"*** Error The .smv file, %s, could not be opened for input.\n",smoke2);
   }

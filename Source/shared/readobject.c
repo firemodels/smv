@@ -1178,7 +1178,7 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file){
   int ndevices = 0;
   int eof = 0;
 
-  stream = fopen(file, "r");
+  stream = FOPEN(file, "r");
   if(stream == NULL) return 0;
 
   firstdef = -1;
@@ -1690,7 +1690,7 @@ int GetNDevices(char *file){
   int buffer_len = BUFFER_LEN, nd = 0;
 
   if(file == NULL) return 0;
-  stream = fopen(file, "r");
+  stream = FOPEN(file, "r");
   if(stream == NULL) return 0;
   fgets(buffer, buffer_len, stream);
   comma = strchr(buffer, ',');

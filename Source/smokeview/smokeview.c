@@ -187,7 +187,7 @@ void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int ski
 
   sfd = InsertScriptFile(volrender_scriptname);
   if(sfd!=NULL)default_script=sfd;
-  script_stream=fopen(volrender_scriptname,"w");
+  script_stream=FOPEN(volrender_scriptname,"w");
   if(script_stream!=NULL){
     fprintf(script_stream,"RENDERDIR\n");
     fprintf(script_stream," .\n");
