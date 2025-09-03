@@ -48,7 +48,7 @@ FILE *alt_stdout=NULL;
 /* ------------------ FOPEN  ------------------------ */
 
 FILE *FOPEN(const char *file, const char *mode) {
-#if defined(_WIN32) && defined(UNICODE_PATHS)
+#if defined(_WIN32) && defined(pp_UNICODE_PATHS)
   wchar_t *path = convert_utf8_to_utf16(file);
   wchar_t *wmode = convert_utf8_to_utf16(mode);
   FILE *stream = _wfsopen(path, wmode, _SH_DENYNO);
@@ -65,7 +65,7 @@ FILE *FOPEN(const char *file, const char *mode) {
 /* ------------------ MKDIR  ------------------------ */
 
 int MKDIR(const char *file) {
-#if defined(_WIN32) && defined(UNICODE_PATHS)
+#if defined(_WIN32) && defined(pp_UNICODE_PATHS)
   wchar_t *path = convert_utf8_to_utf16(file);
   int r = CreateDirectoryW(path, NULL);
   FREEMEMORY(path);
@@ -80,7 +80,7 @@ int MKDIR(const char *file) {
 /* ------------------ ACCESS  ------------------------ */
 
 int ACCESS(const char *file, int mode) {
-#if defined(_WIN32) && defined(UNICODE_PATHS)
+#if defined(_WIN32) && defined(pp_UNICODE_PATHS)
   wchar_t *path = convert_utf8_to_utf16(file);
   int r = _waccess(path, mode);
   FREEMEMORY(path);
@@ -95,7 +95,7 @@ int ACCESS(const char *file, int mode) {
 /* ------------------ STAT  ------------------------ */
 
 int STAT(const char *file, STRUCTSTAT *buffer) {
-#if defined(_WIN32) && defined(UNICODE_PATHS)
+#if defined(_WIN32) && defined(pp_UNICODE_PATHS)
   wchar_t *path = convert_utf8_to_utf16(file);
   int r = _wstat64(path, buffer);
   FREEMEMORY(path);
@@ -114,7 +114,7 @@ int STAT(const char *file, STRUCTSTAT *buffer) {
 /* ------------------ CHDIR  ------------------------ */
 
 int CHDIR(const char *file) {
-#if defined(_WIN32) && defined(UNICODE_PATHS)
+#if defined(_WIN32) && defined(pp_UNICODE_PATHS)
   wchar_t *path = convert_utf8_to_utf16(file);
   int r = SetCurrentDirectoryW(path);
   FREEMEMORY(path);
@@ -129,7 +129,7 @@ int CHDIR(const char *file) {
 /* ------------------ UNLINK  ----------------------- */
 
 int UNLINK(const char *file) {
-#if defined(_WIN32) && defined(UNICODE_PATHS)
+#if defined(_WIN32) && defined(pp_UNICODE_PATHS)
   wchar_t *path = convert_utf8_to_utf16(file);
   int r = _wunlink(path);
   FREEMEMORY(path);
@@ -906,7 +906,7 @@ void FreeFileList(filelistdata *filelist, int *nfilelist){
 
 /* ------------------ GetFileListSize ------------------------ */
 
-#if !(defined(_WIN32) && defined(UNICODE_PATHS))
+#if !(defined(_WIN32) && defined(pp_UNICODE_PATHS))
 int GetFileListSize(const char *path, char *filter, int mode){
   struct dirent *entry;
   DIR *dp;
@@ -1073,7 +1073,7 @@ filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles, filelis
   return entry;
 }
 
-#if defined(_WIN32) && defined(UNICODE_PATHS)
+#if defined(_WIN32) && defined(pp_UNICODE_PATHS)
 
 /// @brief Print an error from the windows API to stderr
 /// @param lpszFunction
@@ -1154,7 +1154,7 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files,
         if(mode == DIR_MODE) {
           size_t l1 = wcslen(szDir);
           size_t l2 = wcslen(ffd.cFileName);
-#ifdef UNICODE_PATHS
+#ifdef pp_UNICODE_PATHS
           NEWMEMORY(file, l1 * sizeof(WCHAR) + l2 * sizeof(WCHAR) + 4);
 #else
           NEWMEMORY(file, l1 + l2 + 2);
@@ -1169,7 +1169,7 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files,
 #pragma warning(suppress : 4995)
           PathCombineW(file, NULL, ffd.cFileName);
         }
-#if UNICODE_PATHS
+#if pp_UNICODE_PATHS
         flisti->file = convert_utf16_to_utf8(file);
 #else
         flisti->file = file;

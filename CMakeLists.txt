@@ -80,9 +80,9 @@ if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_WIN32)
     add_compile_definitions(PTW32_BUILD PTW32_STATIC_LIB   X64 _WIN32 WIN32 _CONSOLE)
     if (UNICODE)
-        # We only define UNICODE_PATHS (which is specific to SMV) and not
+        # We only define pp_UNICODE_PATHS (which is specific to SMV) and not
         # _UNICODE as the vendored version of GLUT doesn't support Unicode
-        add_compile_definitions(UNICODE_PATHS)
+        add_compile_definitions(pp_UNICODE_PATHS)
     endif()
 endif()
 # Set flags for Linux

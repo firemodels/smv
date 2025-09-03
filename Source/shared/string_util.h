@@ -84,7 +84,7 @@ typedef struct {
 #endif
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-#if defined(_WIN32) && defined(UNICODE_PATHS)
+#if defined(_WIN32) && defined(pp_UNICODE_PATHS)
 EXTERNCPP wchar_t *convert_utf8_to_utf16(const char *path);
 EXTERNCPP char *convert_utf16_to_utf8(const wchar_t *path);
 #endif
