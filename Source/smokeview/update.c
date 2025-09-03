@@ -2808,7 +2808,9 @@ void UpdateDisplay(void){
       }
       ntotal_obsts += meshi->nbptrs;
     }
+#ifdef _DEBUG
     if(nhidden_faces > 0)printf("%i blockage faces out of %i hidden\n", nhidden_faces, 6*ntotal_obsts);
+#endif
     PRINT_TIMER(timer_hidden_blockages, "SetHiddenBlockages");
     update_make_iblank = 0;
     update_setvents    = 1;
