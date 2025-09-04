@@ -211,7 +211,7 @@ void DisplayVersionInfo(char *progname){
     PRINTF("FDS Build        : %s\n",global_scase.fds_githash);
   }
   char *smv_progname = GetBinPath();
-  PRINTF("Smokeview path   : %s\n",smv_progname);
+  PRINTF("Smokeview        : %s\n",smv_progname);
   FREEMEMORY(smv_progname);
   if(verbose_output == 1){
     if(smokezippath!=NULL)PRINTF("Smokezip path    : %s\n",smokezippath);
@@ -261,10 +261,10 @@ void DisplayVersionInfo(char *progname){
 
   char *objectfile = GetSmvRootFile("objects.svo");
   if(objectfile != NULL && FileExistsOrig(objectfile) == 1){
-    PRINTF("objects.svo      : %s\n", objectfile);
+    PRINTF("Object defs      : %s\n", objectfile);
   }
   else{
-    PRINTF("objects.svo      : not found\n");
+    PRINTF("Object defs      : not found\n");
   }
   FREEMEMORY(objectfile);
 
