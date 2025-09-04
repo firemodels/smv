@@ -18,7 +18,7 @@ LOADFILE
 SETTIMEVAL
  5.0
 RENDERONCE
- geom2_temp_05
+ geom2_temp_05a
 
 // render boundary files
 
@@ -36,7 +36,7 @@ LOADINIFILE
 SETTIMEVAL
  5.0
 RENDERONCE
- geom2_bound_05
+ geom2_bound_05a
 
 // render 3D smoke files
 
@@ -56,5 +56,5 @@ LOADFILE
 SETTIMEVAL
  5.0
 RENDERONCE
- geom2_smoke_05
+ geom2_smoke_05a
 
