@@ -90,7 +90,7 @@ if (LINUX)
     add_definitions(-Dpp_LINUX)
 endif()
 
-# add_compile_definitions(pp_CMAKE)
+add_compile_definitions(GL_SILENCE_DEPRECATION)
 
 find_package(OpenGL REQUIRED)
 if (VENDORED_UI_LIBS)

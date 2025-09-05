@@ -28,7 +28,9 @@
 
 #ifdef pp_OSX
 #define pp_SMOKE3D_FORCE        // always have at least one smoke3d entry to prevent crash when unloading slices
+#ifndef GL_SILENCE_DEPRECATION
 #define GL_SILENCE_DEPRECATION
+#endif
 #endif
 
 #undef pp_OSX_HIGHRES
