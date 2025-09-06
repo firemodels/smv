@@ -89,7 +89,7 @@ endif()
 # build.
 if (MACOSX)
     add_definitions(-Dpp_NOQUARTZ)
-    target_link_libraries(smokeview PRIVATE "-framework OpenGL" "-framework GLUT")
+    target_link_libraries(smokeview PRIVATE "-framework OpenGL" "-framework GLUT" "-lc++")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 elseif (GLUT_FOUND)
     target_link_libraries(smokeview PRIVATE GLUT::GLUT)

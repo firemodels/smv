@@ -45,6 +45,9 @@ endif()
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif ()
+if (MACOSX)
+  add_compile_options($<$<CXX_COMPILER_ID:Clang>:-Wno-deprecated-declarations>)
+endif()
 
 # Warnings for everything except MSVC
 target_compile_options(glui_static PRIVATE $<$<NOT:$<C_COMPILER_ID:MSVC>>: -Wno-write-strings>)

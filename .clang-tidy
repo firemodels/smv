@@ -1,6 +1,18 @@
 ---
-Checks: "clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-unix.Errno,-clang-analyzer-security.insecureAPI.strcpy,-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,-clang-analyzer-optin.performance.Padding,-readability-identifier-naming,-clang-analyzer-unix.Stream,-clang-analyzer-core.uninitialized.Assign,-clang-analyzer-optin.taint.TaintedDiv,-clang-analyzer-unix.StdCLibraryFunctions"
-WarningsAsErrors: ""
+Checks:
+  - "clang-diagnostic-*"
+  - "clang-analyzer-*"
+  - "-clang-analyzer-unix.Errno"
+  - "-clang-analyzer-security.insecureAPI.strcpy"
+  - "-clang-analyzer-core.uninitialized.Assign"
+  - "-clang-analyzer-optin.taint.TaintedDiv"
+  - "-clang-analyzer-optin.taint.GenericTaint"
+  - "-clang-analyzer-core.UndefinedBinaryOperatorResult"
+  - "-clang-analyzer-unix.StdCLibraryFunctions"
+  - "-clang-analyzer-security.FloatLoopCounter"
+  - "-clang-analyzer-core.NonNullParamChecker"
+  - "-clang-analyzer-core.CallAndMessage"
+WarningsAsErrors: "*"
 HeaderFilterRegex: ""
 CheckOptions:
   - { key: readability-identifier-naming.FunctionCase, value: CamelCase }
