@@ -6,7 +6,7 @@ env:
 jobs:
   build_unix_gcc:
     # Set the name of this build, variable depending on the OS
-    name: build ${{ matrix.os }} - gcc
+    name: build ${{ matrix.os }} - ${{ matrix.compiler }}
     strategy:
       fail-fast: false
       # The matrix sets all the different combinations of builds, e.g. platforms
@@ -15,6 +15,9 @@ jobs:
         os:
           - ubuntu-24.04
           - macos-14
+        compiler:
+          - gcc
+          - clang
     # Set the platform to build on
     runs-on: ${{ matrix.os }}
     steps:
@@ -31,26 +34,39 @@ jobs:
       # If we are building on macos configure the environment to use gcc-14 as
       # the compiler
       - name: set macos gcc
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && matrix.compiler == 'gcc'
         shell: bash
         run: |
           echo "CC=gcc-14" >> $GITHUB_ENV
           echo "CXX=g++-14" >> $GITHUB_ENV
           brew install glew gd zlib json-c
+      - name: set macos gcc
+        if: runner.os == 'macOS' && matrix.compiler == 'clang'
+        shell: bash
+        run: |
+          echo "CC=clang" >> $GITHUB_ENV
+          echo "CXX=clang" >> $GITHUB_ENV
+          brew install glew gd zlib json-c
       # If we are building on linux configure the environment to use gcc as the
       # compiler
       - name: set linux gcc
-        if: runner.os == 'Linux'
+        if: runner.os == 'Linux' && matrix.compiler == 'gcc'
         shell: bash
         run: |
           echo "CC=gcc" >> $GITHUB_ENV
           echo "CXX=g++" >> $GITHUB_ENV
+      - name: set linux gcc
+        if: runner.os == 'Linux' && matrix.compiler == 'clang'
+        shell: bash
+        run: |
+          echo "CC=clang" >> $GITHUB_ENV
+          echo "CXX=clang" >> $GITHUB_ENV
       # Run cmake to build smokeview
       - name: Build
         shell: bash
         run: |
           cmake -B ${{github.workspace}}/cbuild -DSTRICT_CHECKS=ON -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-          cmake --build ${{github.workspace}}/cbuild -j4
+          cmake --build ${{github.workspace}}/cbuild -j4 -v
           cp ${{github.workspace}}/cbuild/smokeview smokeview
       # Run the CMake-based tests on MacOS
       - name: Test
@@ -68,7 +84,7 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: smokeview-${{ runner.os }}
+          name: smokeview-${{ runner.os }}-${{ matrix.compiler }}
           path: smokeview
   build_windows_msvc:
     name: build ${{ matrix.os }} - msvc
