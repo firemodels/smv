@@ -169,6 +169,12 @@ EXTERNCPP void           PRINTversion(char *progname, int hash_option);
 EXTERNCPP void           PRINTversion(char *progname);
 #endif
 
+
+// option == "r" replace
+// option == "a" append
+EXTERNCPP void           EncodeData(unsigned char *buffer, int nbuffer,
+                                    char *data, int ndata, char *option);
+
 // vvvvvvvvvvvvvvvvvvvvvvvv variables vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 #ifdef pp_HASH

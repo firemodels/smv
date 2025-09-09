@@ -2166,3 +2166,99 @@ void PRINTversion(char *progname){
 #endif
   FREEMEMORY(progfullpath);
 }
+
+/* ------------------ CharData2Mask ------------------------ */
+
+unsigned char *CharData2Mask(char *cdata, int ndata){
+  unsigned char *cmask;
+  int i;
+
+  if(ndata <= 0)return NULL;
+  NewMemory((void **)&cmask, 8*ndata);
+  for(i=0; i<ndata; i++){
+    int j;
+    char *c;
+
+    c = cdata + i;
+    for(j=0; j<8; j++){
+      unsigned char bitmask, *co;
+
+      co       = cmask + 32*i + j;
+      bitmask  = (*c >> j) & 1;    // shift right, mask last bit
+      bitmask |= 0xFE;
+      *co      = bitmask;
+    }
+  }
+  return cmask;
+}
+
+/* ------------------ MaskIntData ------------------------ */
+
+unsigned char *IntData2Mask(int *data, int ndata){
+  unsigned char *cmask=NULL;
+  int i;
+
+  if(ndata <= 0)return NULL;
+  NewMemory((void **)&cmask, 32*ndata);
+  for(i=0; i<ndata; i++){
+    int j;
+    int *dataptr;
+
+    dataptr = data + i;
+    for(j=0; j<32; j++){
+      unsigned char bitmask, *co;
+
+      co       = cmask + 8*i + j;
+      bitmask  = (*dataptr >> j) & 1;    // shift right, mask last bit
+      bitmask |= 254;
+      *co++    = bitmask;
+    }
+  }
+  return cmask;
+}
+
+/* ------------------ Mask2IntData ------------------------ */
+
+int Mask2IntData(unsigned char *maskdata, int nmaskdata, int offset){
+  int i;
+  unsigned int val = 0;
+
+  if(offset == 0  && nmaskdata < 32)return 0;
+  if(offset == 32 && nmaskdata < 64)return 0;
+  maskdata += offset;
+  for(i=0; i<32; i++){
+    unsigned char *co;
+    unsigned char bitmask;
+
+    co = maskdata + i;
+    bitmask = (*co >> i) & 1;
+    if(bitmask == 1)val |= (bitmask << i);
+  }
+  return val;
+}
+
+/* ------------------ EncodeData ------------------------ */
+
+void EncodeData(unsigned char *buffer, int nbuffer, char *data, int ndata, char *option){
+  int key = 314159, i, offset = 0;
+  unsigned char *ckey;
+
+  ckey = IntData2Mask(&key, 1);
+  for(i = 0;i < 32;i++){
+    unsigned char *c;
+
+    c = buffer + i;
+    *c &= ckey[i];
+  }
+  FREEMEMORY(ckey);
+  offset += 32;
+  ckey = CharData2Mask(data, ndata);
+  for(i = 0;i < 8*ndata;i++){
+    unsigned char *c;
+
+    c   = buffer + offset + i;
+    *c &= ckey[i];
+  }
+  FREEMEMORY(ckey);
+}
+
