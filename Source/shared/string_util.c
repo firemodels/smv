@@ -2278,9 +2278,9 @@ void TestEncode(void){
   int ndata;
 
   NewMemory(( void ** )&buffer, nbuffer);
-  strcpy(data, "FDS a.b.c Smokeview x.y.z");
+  strcpy((char *)data, "FDS a.b.c Smokeview x.y.z");
   printf("before encoding: %s\n", data);
-  ndata = strlen(data);
+  ndata = strlen((char *)data);
   for(i = 0; i < nbuffer; i++){
     buffer[i] = i % 255;
   }
