@@ -2172,7 +2172,7 @@ void PRINTversion(char *progname){
 
 /* ------------------ DecodeData ------------------------ */
 
-unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr){
+unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr, int skip){
   int i, signature_base = 314159, signature=0, ndata=0;
   unsigned char *dataptr = NULL;
 
@@ -2181,7 +2181,7 @@ unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr){
   for(i = 0; i < 32; i++){
     unsigned char *c, bitval;
 
-    c = buffer + i;
+    c = buffer + skip*i+skip-1;
     bitval = GETBIT(*c, 0);
     SETBIT(signature, bitval, i);
   }
@@ -2189,11 +2189,11 @@ unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr){
 
   // decode ndata
 
-  buffer += 32;
+  buffer += 32*skip;
   for(i = 0; i < 32; i++){
     unsigned char *c, bitval;
 
-    c = buffer + i;
+    c = buffer + skip*i+skip-1;
     bitval = GETBIT(*c, 0);
     SETBIT(ndata, bitval, i);
   }
@@ -2206,7 +2206,7 @@ unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr){
     return NULL;
   }
 
-  buffer += 32;
+  buffer += 32*skip;
   for(i = 0; i < ndata; i++){
     int j;
     unsigned char *data;
@@ -2216,7 +2216,7 @@ unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr){
     for(j = 0; j < 8; j++){
       unsigned char *c, bitval;
 
-      c = buffer + 8*i + j;
+      c = buffer + skip*(8*i + j)+skip-1;
       bitval = GETBIT(*c, 0);
       SETBIT(*data, bitval, j);
     }
@@ -2227,7 +2227,7 @@ unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr){
 
   /* ------------------ EncodeData ------------------------ */
 
-void EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int ndata){
+void EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int ndata, int skip){
   int signature = 314159, i;
 
   // encode signature
@@ -2235,25 +2235,25 @@ void EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int nda
   for(i = 0;i < 32;i++){
     unsigned char *c;
 
-    c = buffer + i;
+    c = buffer + skip*i + skip - 1;
     *c &= 0xFE;
     *c |= GETBIT(signature,i);
   }
 
   // encode ndata
 
-  buffer += 32;
+  buffer += 32*skip;
   for(i = 0; i < 32; i++){
     unsigned char *c;
 
-    c = buffer + i;
+    c = buffer + skip*i+skip-1;
     *c &= 0xFE;
     *c |= GETBIT(ndata, i);
   }
 
   // encode data
 
-  buffer += 32;
+  buffer += 32*skip;
   for(i = 0; i < ndata; i++){
     int j;
     unsigned char *dataptr;
@@ -2262,7 +2262,7 @@ void EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int nda
     for(j = 0; j < 8; j++){
       unsigned char *c;
 
-      c = buffer + 8*i + j;
+      c = buffer + skip*(8*i + j)+skip-1;
       *c &= 0xFE;
       *c |= GETBIT(*dataptr, j);
     }
@@ -2284,10 +2284,10 @@ void TestEncode(void){
   for(i = 0; i < nbuffer; i++){
     buffer[i] = i % 255;
   }
-  EncodeData(buffer, nbuffer, data, ndata);
+  EncodeData(buffer, nbuffer, data, ndata,3);
   unsigned char *buffptr;
   int ndata2;
-  buffptr = DecodeData(buffer, nbuffer, &ndata2);
+  buffptr = DecodeData(buffer, nbuffer, &ndata2,3);
   printf("after encoding: %s\n", buffptr);
   printf("\n");
   FREEMEMORY(buffptr);
