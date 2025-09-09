@@ -2167,98 +2167,129 @@ void PRINTversion(char *progname){
   FREEMEMORY(progfullpath);
 }
 
-/* ------------------ CharData2Mask ------------------------ */
+#define GETBIT(val, ibit)         (((val) >> (ibit)) &1)
+#define SETBIT(val, bitval, ibit) (val |= ((bitval) << (ibit)))
 
-unsigned char *CharData2Mask(char *cdata, int ndata){
-  unsigned char *cmask;
-  int i;
+/* ------------------ DecodeData ------------------------ */
 
+unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr){
+  int i, signature_base = 314159, signature=0, ndata=0;
+  unsigned char *dataptr = NULL;
+
+  // decode signature
+
+  for(i = 0; i < 32; i++){
+    unsigned char *c, bitval;
+
+    c = buffer + i;
+    bitval = GETBIT(*c, 0);
+    SETBIT(signature, bitval, i);
+  }
+  if(signature != signature_base)return NULL;
+
+  // decode ndata
+
+  buffer += 32;
+  for(i = 0; i < 32; i++){
+    unsigned char *c, bitval;
+
+    c = buffer + i;
+    bitval = GETBIT(*c, 0);
+    SETBIT(ndata, bitval, i);
+  }
   if(ndata <= 0)return NULL;
-  NewMemory((void **)&cmask, 8*ndata);
-  for(i=0; i<ndata; i++){
+
+  // decode data
+
+  *ndataptr = ndata;
+  if(NewMemory(( void ** )&dataptr, ndata+1) == 0){
+    return NULL;
+  }
+
+  buffer += 32;
+  for(i = 0; i < ndata; i++){
     int j;
-    char *c;
+    unsigned char *data;
 
-    c = cdata + i;
-    for(j=0; j<8; j++){
-      unsigned char bitmask, *co;
+    data = dataptr + i;
+    *data = 0;
+    for(j = 0; j < 8; j++){
+      unsigned char *c, bitval;
 
-      co       = cmask + 32*i + j;
-      bitmask  = (*c >> j) & 1;    // shift right, mask last bit
-      bitmask |= 0xFE;
-      *co      = bitmask;
+      c = buffer + 8*i + j;
+      bitval = GETBIT(*c, 0);
+      SETBIT(*data, bitval, j);
     }
   }
-  return cmask;
+  dataptr[ndata] = 0;
+  return dataptr;
 }
 
-/* ------------------ MaskIntData ------------------------ */
+  /* ------------------ EncodeData ------------------------ */
 
-unsigned char *IntData2Mask(int *data, int ndata){
-  unsigned char *cmask=NULL;
-  int i;
+void EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int ndata){
+  int signature = 314159, i;
 
-  if(ndata <= 0)return NULL;
-  NewMemory((void **)&cmask, 32*ndata);
-  for(i=0; i<ndata; i++){
-    int j;
-    int *dataptr;
+  // encode signature
 
-    dataptr = data + i;
-    for(j=0; j<32; j++){
-      unsigned char bitmask, *co;
-
-      co       = cmask + 8*i + j;
-      bitmask  = (*dataptr >> j) & 1;    // shift right, mask last bit
-      bitmask |= 254;
-      *co++    = bitmask;
-    }
-  }
-  return cmask;
-}
-
-/* ------------------ Mask2IntData ------------------------ */
-
-int Mask2IntData(unsigned char *maskdata, int nmaskdata, int offset){
-  int i;
-  unsigned int val = 0;
-
-  if(offset == 0  && nmaskdata < 32)return 0;
-  if(offset == 32 && nmaskdata < 64)return 0;
-  maskdata += offset;
-  for(i=0; i<32; i++){
-    unsigned char *co;
-    unsigned char bitmask;
-
-    co = maskdata + i;
-    bitmask = (*co >> i) & 1;
-    if(bitmask == 1)val |= (bitmask << i);
-  }
-  return val;
-}
-
-/* ------------------ EncodeData ------------------------ */
-
-void EncodeData(unsigned char *buffer, int nbuffer, char *data, int ndata, char *option){
-  int key = 314159, i, offset = 0;
-  unsigned char *ckey;
-
-  ckey = IntData2Mask(&key, 1);
   for(i = 0;i < 32;i++){
     unsigned char *c;
 
     c = buffer + i;
-    *c &= ckey[i];
+    *c &= 0xFE;
+    *c |= GETBIT(signature,i);
   }
-  FREEMEMORY(ckey);
-  offset += 32;
-  ckey = CharData2Mask(data, ndata);
-  for(i = 0;i < 8*ndata;i++){
+
+  // encode ndata
+
+  buffer += 32;
+  for(i = 0; i < 32; i++){
     unsigned char *c;
 
-    c   = buffer + offset + i;
-    *c &= ckey[i];
+    c = buffer + i;
+    *c &= 0xFE;
+    *c |= GETBIT(ndata, i);
   }
-  FREEMEMORY(ckey);
+
+  // encode data
+
+  buffer += 32;
+  for(i = 0; i < ndata; i++){
+    int j;
+    unsigned char *dataptr;
+
+    dataptr = data + i;
+    for(j = 0; j < 8; j++){
+      unsigned char *c;
+
+      c = buffer + 8*i + j;
+      *c &= 0xFE;
+      *c |= GETBIT(*dataptr, j);
+    }
+  }
+}
+
+/* ------------------ TestEncode ------------------------ */
+
+void TestEncode(void){
+  unsigned char *buffer;
+  int i, nbuffer = 10000;
+  unsigned char data[1000];
+  int ndata;
+
+  NewMemory(( void ** )&buffer, nbuffer);
+  strcpy(data, "FDS a.b.c Smokeview x.y.z");
+  printf("before encoding: %s\n", data);
+  ndata = strlen(data);
+  for(i = 0; i < nbuffer; i++){
+    buffer[i] = i % 255;
+  }
+  EncodeData(buffer, nbuffer, data, ndata);
+  unsigned char *buffptr;
+  int ndata2;
+  buffptr = DecodeData(buffer, nbuffer, &ndata2);
+  printf("after encoding: %s\n", buffptr);
+  printf("\n");
+  FREEMEMORY(buffptr);
 }
 

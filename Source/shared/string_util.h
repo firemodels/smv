@@ -168,12 +168,11 @@ EXTERNCPP void           PRINTversion(char *progname, int hash_option);
 #else
 EXTERNCPP void           PRINTversion(char *progname);
 #endif
-
-
-// option == "r" replace
-// option == "a" append
-EXTERNCPP void           EncodeData(unsigned char *buffer, int nbuffer,
-                                    char *data, int ndata, char *option);
+EXTERNCPP void           EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int ndata);
+EXTERNCPP                unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr);
+#ifdef pp_TEST_ENCODER
+EXTERNCPP                void TestEncode(void);
+#endif
 
 // vvvvvvvvvvvvvvvvvvvvvvvv variables vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
