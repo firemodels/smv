@@ -621,6 +621,56 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
             continue;
       }
 
+#ifdef ENCODER
+      if(nfactor == 1 && encode_png == 1 &&
+        clip_rendered_scene == 0 && render_filetype == PNG){
+        unsigned char *rgb_locals=NULL;
+        int nrgb_locals, count = 0;
+
+        nrgb_locals = (imax + 1 - imin) * (jmax + 1 - jmin);
+        if(nrgb_locals > 0){
+          NewMemory(( void ** )&rgb_locals, 3*nrgb_locals);
+          for(i = imin; i < imax; i++){
+            for(j = jmin; j < jmax; j++){
+              r = *p++; g = *p++; b = *p++;
+              rgb_locals[count++] = r;
+              rgb_locals[count++] = g;
+              rgb_locals[count++] = b;
+            }
+          }
+        }
+        char infobuffer[100];
+        int ninfobuffer;
+
+        sprintf(infobuffer, "%s %s", global_scase.fds_githash, smv_githash);
+        ninfobuffer = strlen(infobuffer);
+        EncodeData(rgb_locals, nrgb_locals, infobuffer, ninfobuffer, 3);
+        count = 0;
+        for(i = imin; i < imax; i++){
+          for(j = jmin; j < jmax; j++){
+            r = rgb_locals[count++];
+            g = rgb_locals[count++];
+            b = rgb_locals[count++];
+            rgb_local = (r << 16) | (g << 8) | b;
+            gdImageSetPixel(RENDERimage, j - clip_left_hat, clip_top_hat - i, rgb_local);
+          }
+        }
+        FREEMEMORY(rgb_locals);
+      }
+      else{
+        for(i = imin; i < imax; i++){
+          for(j = jmin; j < jmax; j++){
+            r = *p++; g = *p++; b = *p++;
+            if(clip_rendered_scene == 0 ||
+              ( clip_left_hat <= j && j <= clip_right_hat &&
+                clip_bottom_hat <= i && i <= clip_top_hat)){
+              rgb_local = (r << 16) | (g << 8) | b;
+              gdImageSetPixel(RENDERimage, j - clip_left_hat, clip_top_hat - i, rgb_local);
+            }
+          }
+        }
+      }
+#else
       for(i=imin; i<imax; i++){
         for(j=jmin; j<jmax; j++){
           r=*p++; g=*p++; b=*p++;
@@ -631,6 +681,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
           }
         }
       }
+#endif
     }
   }
 

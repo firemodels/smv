@@ -1471,6 +1471,10 @@ extern "C" void GLUIMotionSetup(int main_window){
   RADIOBUTTON_1f = glui_motion->add_radiobutton_to_group(RADIO_render_label, "frame number");
   RADIOBUTTON_1g = glui_motion->add_radiobutton_to_group(RADIO_render_label, "time (s)");
 
+#ifdef pp_ENCODE
+  glui_motion->add_checkbox_to_panel(PANEL_render_file, "embed FDS/Smokeview version info", &encode_png);
+#endif
+
   glui_motion->add_column_to_panel(PANEL_render_file, false);
 
   PANEL_file_type = glui_motion->add_panel_to_panel(PANEL_render_file, "type:", true);
@@ -1505,6 +1509,8 @@ extern "C" void GLUIMotionSetup(int main_window){
   SPINNER_resolution_multiplier = glui_motion->add_spinner_to_panel(ROLLOUT_image_size, "multiplier:", GLUI_SPINNER_INT, &glui_resolution_multiplier, RENDER_MULTIPLIER, RenderCB);
   SPINNER_resolution_multiplier->set_int_limits(2, 10);
   RenderCB(RENDER_MULTIPLIER);
+
+
 
   PANEL_360 = glui_motion->add_panel_to_panel(ROLLOUT_image_size, (char *)deg360, true);
   SPINNER_window_height360 = glui_motion->add_spinner_to_panel(PANEL_360, "height", GLUI_SPINNER_INT, &nheight360, RENDER_360CB, RenderCB);
