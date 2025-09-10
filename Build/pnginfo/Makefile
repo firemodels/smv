@@ -2,7 +2,14 @@
 # pnginfo makefile
 
 SOURCE_DIR = ../../../Source
-INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $SOURCE_DIR)/png-1.6.48 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/pnginfo
+BUILD_DIR = ../../../Build
+LIB_DIR = $(BUILD_DIR)/LIBS
+
+INC_DIR = -I $(SOURCE_DIR)/pthreads  -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/zlib128 -I $SOURCE_DIR)/png-1.6.48 -I $(SOURCE_DIR)/shared  -I $(SOURCE_DIR)/pnginfo
+
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
+
 FILTERC =
 FILTERF =
 
@@ -23,7 +30,7 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 # Definition of the object variables
 
-obj = dmalloc.o main.o md5.o sha1.o sha256.o\
+obj = dmalloc.o main.o md5.o sha1.o sha256.o readimage.o \
       file_util.o string_util.o stdio_buffer.o
 objwin = $(obj:.o=.obj)
 
@@ -52,13 +59,13 @@ intel_win_64_db : $(objwin)
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = /O2 /nologo -I $(SOURCE_DIR)/pthreads -D X64 -D WIN32 $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = /O2 /nologo -D X64 -D WIN32 $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : CPP       = $(I_CC)
 intel_win_64 : exe       = pnginfo_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin)
+	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
 # ------------- gnu win 64 ----------------
 

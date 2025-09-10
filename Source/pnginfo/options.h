@@ -7,6 +7,4 @@
 //#undef pp_BETA
 //#define pp_BETA
 
-//*** define env2mod title
-
 #endif

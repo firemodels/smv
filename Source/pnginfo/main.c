@@ -8,6 +8,7 @@
 #endif
 #include "string_util.h"
 #include "dmalloc.h"
+#include "readimage.h"
 
 /* ------------------ Usage ------------------------ */
 
@@ -20,11 +21,9 @@ void Usage(int option){
   PRINTF("\n");
   PRINTF("pnginfo [options] image_file\n");
   PRINTF("%s - %s\n\n", githash, __DATE__);
-  PRINTF("add/get FDS and Smokeview repo revisions to/from an image file\n\n");
+  PRINTF("get FDS and Smokeview repo revisions from an image file\n\n");
   PRINTF("options:\n");
-  PRINTF("-g - get FDS/Smokeview revisions from image file\n");
   PRINTF("-h - display this message\n");
-  PRINTF("-p - put FDS/Smokeview revisions into image file\n");
 
   UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL){
@@ -36,8 +35,8 @@ void Usage(int option){
 
 int main(int argc, char **argv){
   int i;
-  char *filebase=NULL;
-  int put_revisions = 1;
+  char *file=NULL;
+  int get_revisions = 1;
 
   initMALLOC();
   SetStdOut(stdout);
@@ -54,27 +53,39 @@ int main(int argc, char **argv){
     lenarg=strlen(arg);
     if(arg[0] == '-' && lenarg>1){
       switch(arg[1]){
-      case 'g':
-        put_revisions = 0;
-        break;
       case 'h':
         Usage(HELP_ALL);
         return 1;
-      case 'p':
-        put_revisions = 1;
-        break;
       default:
         Usage(HELP_ALL);
         return 1;
       }
     }
     else{
-      if(filebase==NULL){
-        filebase=argv[i];
+      if(file==NULL){
+        file=argv[i];
       }
     }
   }
-  if(filebase!=NULL)printf("filebase=%s\n",filebase);
+  if(file==NULL)return 1;
+  FILE *stream;
 
+  stream = fopen(file, "rb");
+  if(stream == NULL)return 1;
+  fclose(stream);
+
+  unsigned char *image_buffer, *revision_data;
+  int width, height, is_transparent, nrevision_data, nimage_buffer;
+  
+  image_buffer =  ReadPNG(file, &width, &height, &is_transparent);
+  nimage_buffer = width*height;
+
+  revision_data = DecodeData(image_buffer, nimage_buffer, &nrevision_data, 3);
+  if(revision_data == NULL){
+    printf("unknown\n");
+  }
+  else{
+    printf("%s\n", revision_data);
+  }
   return 0;
 }
