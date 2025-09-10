@@ -621,7 +621,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
             continue;
       }
 
-#ifdef ENCODER
+#ifdef pp_ENCODER
       if(nfactor == 1 && encode_png == 1 &&
         clip_rendered_scene == 0 && render_filetype == PNG){
         unsigned char *rgb_locals=NULL;
