@@ -2172,7 +2172,7 @@ void PRINTversion(char *progname){
 
 /* ------------------ DecodeData ------------------------ */
 
-unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr, int skip){
+unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr, int skip, int channel){
   int i, signature_base = 314159, signature=0, ndata=0;
   unsigned char *dataptr = NULL;
 
@@ -2181,7 +2181,7 @@ unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr, int
   for(i = 0; i < 32; i++){
     unsigned char *c, bitval;
 
-    c = buffer + skip*i+skip-2;
+    c = buffer + skip*i+channel;
     bitval = GETBIT(*c, 0);
     SETBIT(signature, bitval, i);
   }
@@ -2193,7 +2193,7 @@ unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr, int
   for(i = 0; i < 32; i++){
     unsigned char *c, bitval;
 
-    c = buffer + skip*i+skip-2;
+    c = buffer + skip*i+channel;
     bitval = GETBIT(*c, 0);
     SETBIT(ndata, bitval, i);
   }
@@ -2216,7 +2216,7 @@ unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr, int
     for(j = 0; j < 8; j++){
       unsigned char *c, bitval;
 
-      c = buffer + skip*(8*i + j)+skip-2;
+      c = buffer + skip*(8*i + j)+channel;
       bitval = GETBIT(*c, 0);
       SETBIT(*data, bitval, j);
     }
@@ -2227,7 +2227,7 @@ unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr, int
 
   /* ------------------ EncodeData ------------------------ */
 
-void EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int ndata, int skip){
+void EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int ndata, int skip, int channel){
   int signature = 314159, i;
 
   // encode signature
@@ -2235,7 +2235,7 @@ void EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int nda
   for(i = 0;i < 32;i++){
     unsigned char *c;
 
-    c = buffer + skip*i + skip - 2;
+    c = buffer + skip*i + channel;
     *c &= 0xFE;
     *c |= GETBIT(signature,i);
   }
@@ -2246,7 +2246,7 @@ void EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int nda
   for(i = 0; i < 32; i++){
     unsigned char *c;
 
-    c = buffer + skip*i+skip-2;
+    c = buffer + skip*i+channel;
     *c &= 0xFE;
     *c |= GETBIT(ndata, i);
   }
@@ -2262,7 +2262,7 @@ void EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int nda
     for(j = 0; j < 8; j++){
       unsigned char *c;
 
-      c = buffer + skip*(8*i + j)+skip-2;
+      c = buffer + skip*(8*i + j)+channel;
       *c &= 0xFE;
       *c |= GETBIT(*dataptr, j);
     }
@@ -2276,6 +2276,7 @@ void TestEncode(void){
   int i, nbuffer = 10000;
   unsigned char data[1000];
   int ndata;
+  int skip=3, channel=2;
 
   NewMemory(( void ** )&buffer, nbuffer);
   strcpy((char *)data, "FDS a.b.c Smokeview x.y.z");
@@ -2284,10 +2285,10 @@ void TestEncode(void){
   for(i = 0; i < nbuffer; i++){
     buffer[i] = i % 255;
   }
-  EncodeData(buffer, nbuffer, data, ndata,4);
+  EncodeData(buffer, nbuffer, data, ndata, skip, channel);
   unsigned char *buffptr;
   int ndata2;
-  buffptr = DecodeData(buffer, nbuffer, &ndata2,4);
+  buffptr = DecodeData(buffer, nbuffer, &ndata2, skip, channel);
   printf("after encoding: %s\n", buffptr);
   printf("\n");
   FREEMEMORY(buffptr);

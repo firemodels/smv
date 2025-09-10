@@ -641,10 +641,11 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
         }
         char infobuffer[100];
         int ninfobuffer;
+        int skip=3, channel=2;
 
         sprintf(infobuffer, "%s %s", global_scase.fds_githash, smv_githash);
         ninfobuffer = strlen(infobuffer);
-        EncodeData(rgb_locals, nrgb_locals, infobuffer, ninfobuffer, 4);
+        EncodeData(rgb_locals, nrgb_locals, infobuffer, ninfobuffer, skip, channel);
         count = 0;
         for(i = imin; i < imax; i++){
           for(j = jmin; j < jmax; j++){

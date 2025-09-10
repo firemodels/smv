@@ -76,11 +76,12 @@ int main(int argc, char **argv){
 
   unsigned char *image_buffer, *revision_data;
   int width, height, is_transparent, nrevision_data, nimage_buffer;
+  int skip=4, channel=2;
   
   image_buffer =  ReadPNG(file, &width, &height, &is_transparent);
   nimage_buffer = width*height;
 
-  revision_data = DecodeData(image_buffer, nimage_buffer, &nrevision_data, 4);
+  revision_data = DecodeData(image_buffer, nimage_buffer, &nrevision_data, skip, channel);
   if(revision_data == NULL){
     printf("unknown\n");
   }
