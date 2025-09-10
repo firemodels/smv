@@ -80,7 +80,7 @@ int main(int argc, char **argv){
   image_buffer =  ReadPNG(file, &width, &height, &is_transparent);
   nimage_buffer = width*height;
 
-  revision_data = DecodeData(image_buffer, nimage_buffer, &nrevision_data, 3);
+  revision_data = DecodeData(image_buffer, nimage_buffer, &nrevision_data, 4);
   if(revision_data == NULL){
     printf("unknown\n");
   }

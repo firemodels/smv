@@ -2181,7 +2181,7 @@ unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr, int
   for(i = 0; i < 32; i++){
     unsigned char *c, bitval;
 
-    c = buffer + skip*i+skip-1;
+    c = buffer + skip*i+skip-2;
     bitval = GETBIT(*c, 0);
     SETBIT(signature, bitval, i);
   }
@@ -2193,7 +2193,7 @@ unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr, int
   for(i = 0; i < 32; i++){
     unsigned char *c, bitval;
 
-    c = buffer + skip*i+skip-1;
+    c = buffer + skip*i+skip-2;
     bitval = GETBIT(*c, 0);
     SETBIT(ndata, bitval, i);
   }
@@ -2216,7 +2216,7 @@ unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr, int
     for(j = 0; j < 8; j++){
       unsigned char *c, bitval;
 
-      c = buffer + skip*(8*i + j)+skip-1;
+      c = buffer + skip*(8*i + j)+skip-2;
       bitval = GETBIT(*c, 0);
       SETBIT(*data, bitval, j);
     }
@@ -2235,7 +2235,7 @@ void EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int nda
   for(i = 0;i < 32;i++){
     unsigned char *c;
 
-    c = buffer + skip*i + skip - 1;
+    c = buffer + skip*i + skip - 2;
     *c &= 0xFE;
     *c |= GETBIT(signature,i);
   }
@@ -2246,7 +2246,7 @@ void EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int nda
   for(i = 0; i < 32; i++){
     unsigned char *c;
 
-    c = buffer + skip*i+skip-1;
+    c = buffer + skip*i+skip-2;
     *c &= 0xFE;
     *c |= GETBIT(ndata, i);
   }
@@ -2262,7 +2262,7 @@ void EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int nda
     for(j = 0; j < 8; j++){
       unsigned char *c;
 
-      c = buffer + skip*(8*i + j)+skip-1;
+      c = buffer + skip*(8*i + j)+skip-2;
       *c &= 0xFE;
       *c |= GETBIT(*dataptr, j);
     }
@@ -2284,10 +2284,10 @@ void TestEncode(void){
   for(i = 0; i < nbuffer; i++){
     buffer[i] = i % 255;
   }
-  EncodeData(buffer, nbuffer, data, ndata,3);
+  EncodeData(buffer, nbuffer, data, ndata,4);
   unsigned char *buffptr;
   int ndata2;
-  buffptr = DecodeData(buffer, nbuffer, &ndata2,3);
+  buffptr = DecodeData(buffer, nbuffer, &ndata2,4);
   printf("after encoding: %s\n", buffptr);
   printf("\n");
   FREEMEMORY(buffptr);
