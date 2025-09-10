@@ -1,10 +1,5 @@
 
 include(CTest)
-add_test(NAME "Execute smokediff" COMMAND smokediff)
-add_test(NAME "Execute smokeview" COMMAND smokeview -v)
-add_test(NAME "Execute smokezip" COMMAND smokezip)
-
-
 set(FIG_COMMIT "513dc046131f5dfdda47ff485efc2db7243f06b1")
 
 FetchContent_Declare(
@@ -14,6 +9,20 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(test_data)
 set(FIG_DIR ${test_data_SOURCE_DIR})
+set(TEST_SMALL_SMV ${FIG_DIR}/smv/Tests/test_model_small/test_model_small.smv)
+
+add_test(NAME "Execute smokediff" COMMAND smokediff)
+add_test(NAME "Execute smokeview" COMMAND smokeview -v)
+add_test(NAME "Execute smokezip" COMMAND smokezip)
+
+add_test(NAME "Execute background" COMMAND background)
+add_test(NAME "Execute background help" COMMAND background -help)
+add_test(NAME "Execute background help_all" COMMAND background -help_all)
+
+add_test(NAME "Execute smokeview help" COMMAND smokeview -help)
+add_test(NAME "Execute smokeview help_all" COMMAND smokeview -help_all)
+add_test(NAME "Execute smokeview sizes" COMMAND smokeview -sizes ${TEST_SMALL_SMV})
+add_test(NAME "Execute smokeview info" COMMAND smokeview -info ${TEST_SMALL_SMV})
 
 # parse_simple_slice
 add_executable(parse_simple_slice parse_simple_slice.c)
