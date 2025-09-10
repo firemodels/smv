@@ -5,7 +5,7 @@ SOURCE_DIR = ../../../Source
 BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
 
-INC_DIR = -I $(SOURCE_DIR)/pthreads  -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/zlib128 -I $SOURCE_DIR)/png-1.6.48 -I $(SOURCE_DIR)/shared  -I $(SOURCE_DIR)/pnginfo
+INC_DIR = -I $(SOURCE_DIR)/pthreads  -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/png-1.6.48 -I $(SOURCE_DIR)/shared  -I $(SOURCE_DIR)/pnginfo
 
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
@@ -16,7 +16,7 @@ FILTERF =
 # Intel compiler definitions
 include ../../scripts/intel_compiler.mak
 
-VPATH = $(SOURCE_DIR)/pnginfo ../../../../FDS/Source $(SOURCE_DIR)/shared $(SOURCE_DIR)/smokeview
+VPATH = $(SOURCE_DIR)/pnginfo ../../../../FDS/Source $(SOURCE_DIR)/shared
 bin = .
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
