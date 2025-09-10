@@ -36,7 +36,6 @@ void Usage(int option){
 int main(int argc, char **argv){
   int i;
   char *file=NULL;
-  int get_revisions = 1;
 
   initMALLOC();
   SetStdOut(stdout);
