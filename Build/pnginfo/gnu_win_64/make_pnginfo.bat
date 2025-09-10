@@ -1,7 +1,7 @@
 @echo off
 set arg1=%1
 
-Title Building smokediff for 64 bit Windows
+Title Building pnginfo for 64 bit Windows
 
 erase *.o *.obj *.mod
 make SHELL="%ComSpec%" -f ..\Makefile gnu_win_64
