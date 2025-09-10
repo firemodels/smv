@@ -10,8 +10,8 @@ INC_DIR = -I $(SOURCE_DIR)/pthreads  -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
 
-SMV_LIBS_LINUX = -lgd -ljpeg -lpng -lz
-SYSTEM_LIBS_LINUX = -lpthread
+PNG_LIBS = -lgd -ljpeg -lpng -lz
+SYSTEM_LIBS = -lpthread
 
 FILTERC =
 FILTERF =
@@ -84,7 +84,7 @@ gnu_win_64 : $(obj)
 # ------------- gnu linux 64 ----------------
 
 gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
-gnu_linux_64 : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_linux_64 $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX) -lm
+gnu_linux_64 : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_linux_64 $(PNG_LIBS) $(SYSTEM_LIBS) -lm
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = pnginfo_linux_64
 
@@ -94,7 +94,7 @@ gnu_linux_64 : $(obj)
 # ------------- gnu linux 64 ----------------
 
 gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
-gnu_linux_64_db : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_linux_64 $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX) -lm
+gnu_linux_64_db : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_linux_64 $(PNG_LIBS) $(SYSTEM_LIBS) -lm
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : exe       = pnginfo_linux_64_db
 
@@ -105,7 +105,7 @@ gnu_linux_64_db : $(obj)
 # ------------- gnu osx 64 ----------------
 
 gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
-gnu_osx_64 : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread
+gnu_osx_64 : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 $(PNG_LIBS) $(SYSTEM_LIBS)
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : exe       = pnginfo_osx_64
 
@@ -115,7 +115,7 @@ gnu_osx_64 : $(obj)
 # ------------- gnu osx 64 db ----------------
 
 gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
-gnu_osx_64_db : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread
+gnu_osx_64_db : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 $(PNG_LIBS) $(SYSTEM_LIBS)
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : exe       = smokezip_osx_64_db
 
@@ -126,7 +126,7 @@ gnu_osx_64_db : $(obj)
 
 # ------------- intel linux 64 ----------------
 intel_linux_64 : CFLAGS    = -O2 -m64 $(INC_DIR) -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
-intel_linux_64 : LFLAGS    = -L $(LIB_DIR)/intel_linux_64 $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)  -static-intel
+intel_linux_64 : LFLAGS    = -L $(LIB_DIR)/intel_linux_64 $(PNG_LIBS) $(SYSTEM_LIBS)  -static-intel
 intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = pnginfo_linux_64
 
@@ -136,7 +136,7 @@ intel_linux_64 : $(obj)
 intel_linux_64_db : CFLAGS    = -O2 -m64 $(INC_DIR) -Wall -Wextra -Wuninitialized -Wunused-function \
                                 -Wunused-variable -Wno-sign-compare -Wno-unused-parameter -Wno-string-concatenation -D pp_LINUX \
                                 $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
-intel_linux_64_db : LFLAGS    = -L $(LIB_DIR)/intel_linux_64 $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX) -static-intel
+intel_linux_64_db : LFLAGS    = -L $(LIB_DIR)/intel_linux_64 $(PNG_LIBS) $(SYSTEM_LIBS) -static-intel
 intel_linux_64_db : CC        = $(I_ICC)
 intel_linux_64_db : exe       = pnginfo_linux_64_db
 
