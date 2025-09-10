@@ -58,7 +58,7 @@ intel_win_64_db : CPP       = $(I_CC)
 intel_win_64_db : exe       = pnginfo_win_64_db.exe
 
 intel_win_64_db : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin)
+	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
 # ------------- intel win 64 ----------------
 
