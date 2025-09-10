@@ -3524,6 +3524,7 @@ void LoadUnloadMenu(int value){
 
       smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
       if(smoke3di->request_load==1){
+        ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
         ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
       }
     }
