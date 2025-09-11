@@ -1,6 +1,6 @@
 #ifndef READSMOKE_H_DEFINED
 #define READSMOKE_H_DEFINED
-#include "options.h"
+#include "options_common.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -12,7 +12,6 @@
 #include "histogram.h"
 #include "isobox.h"
 #include "shared_structures.h"
-#include "smokeviewdefs.h"
 #include "string_util.h"
 
 #include "readobject.h"

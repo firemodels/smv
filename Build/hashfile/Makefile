@@ -25,7 +25,7 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 # Definition of the object variables
 
-obj =    dmalloc.o file_util.o string_util.o sha1.o md5.o sha256.o stdio_buffer.o main.o
+obj =    dmalloc.o file_util.o string_util.o sha1.o md5.o sha256.o stdio_buffer.o main.o threader.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***

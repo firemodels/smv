@@ -2,7 +2,7 @@
 #ifndef COLORBARS_H_DEFINED
 #define COLORBARS_H_DEFINED
 
-#include "options.h"
+#include "options_common.h"
 #if defined(_WIN32)
 #include <windows.h>
 #endif
@@ -103,7 +103,7 @@ EXTERNCPP colorbardata *NewColorbar(colorbar_collection *colorbars);
  * @return 0 on success, non-zero on failure.
  */
 EXTERNCPP int ReadCSVColorbar(colorbardata *colorbar, const char *filepath,
-                     const char *colorbar_type, int type);
+                              const char *colorbar_type, int type);
 /**
  * @brief Initialize the default colorbars. This includes:
  *    - Initializing the colorbars which are hardcoded.

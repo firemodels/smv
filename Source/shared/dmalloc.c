@@ -1,4 +1,4 @@
-#include "options.h"
+#include "options_common.h"
 #define INDMALLOC
 #include <assert.h>
 #include <stdlib.h>

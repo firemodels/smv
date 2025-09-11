@@ -12,10 +12,6 @@ extern int show_timings;
 #include <stdio.h>
 #include "options_common.h"
 #include <time.h>
-#ifdef __MINGW32__
-#include "options.h"
-#include <stdio.h>
-#endif
 #ifdef __GNU__
 #include <unistd.h>
 #endif

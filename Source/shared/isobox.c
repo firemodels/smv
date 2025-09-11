@@ -1,4 +1,4 @@
-#include "options.h"
+#include "options_common.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,7 +19,6 @@
 
 #define GAS 1
 #define SOLID 0
-#define UNCOMPRESSED 0
 
 /* ------------------ VolTetra ------------------------ */
 

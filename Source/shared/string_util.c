@@ -1,5 +1,5 @@
 #define IN_STRING_UTIL
-#include "options.h"
+#include "options_common.h"
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>

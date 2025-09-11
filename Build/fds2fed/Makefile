@@ -25,7 +25,7 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 # Definition of the object variables
 
-csrc = main.c fds2fed.c getdata.c string_util.c dmalloc.c file_util.c sha1.c sha256.c md5.c stdio_buffer.c isobox.c
+csrc = main.c fds2fed.c getdata.c string_util.c dmalloc.c file_util.c sha1.c sha256.c md5.c stdio_buffer.c isobox.c threader.o
 obj = $(csrc:.c=.o)
 
 objwin = $(obj:.o=.obj)

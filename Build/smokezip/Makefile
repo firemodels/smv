@@ -83,7 +83,7 @@ no_target:
 
 # ------------- linux_osx_check ----------------
 
-linux_osx_check : CFLAGS    = $(SMV_TESTFLAG)
+linux_osx_check : CFLAGS    =  $(SMV_TESTFLAG)
 linux_osx_check : $(linux_osx_chk)
 	$(CLANGSUMMARY) smokezip.summary
 

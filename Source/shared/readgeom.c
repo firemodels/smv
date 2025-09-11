@@ -1,10 +1,9 @@
-#include "options.h"
+#include "options_common.h"
 #include "dmalloc.h"
 #include "string_util.h"
 #include <math.h>
 
 #include <string.h>
-#include "smokeviewdefs.h"
 #include "isobox.h"
 #include "histogram.h"
 #include "datadefs.h"

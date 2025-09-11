@@ -1,7 +1,7 @@
 #ifndef READGEOM_H_DEFINED
 #define READGEOM_H_DEFINED
 #include "dmalloc.h"
-#include "options.h"
+#include "options_common.h"
 #include "string_util.h"
 
 #include "shared_structures.h"

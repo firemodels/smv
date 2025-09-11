@@ -1,7 +1,7 @@
 #ifndef READTOUR_H_DEFINED
 #define READTOUR_H_DEFINED
 #include "dmalloc.h"
-#include "options.h"
+#include "options_common.h"
 #include "shared_structures.h"
 
 // clang-format off
