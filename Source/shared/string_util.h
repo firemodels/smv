@@ -94,7 +94,7 @@ EXTERNCPP char          *GetStringPtr(char *buffer);
 EXTERNCPP char          *GetStringPtr(char *buffer);
 EXTERNCPP char          *GetFloatLabel(float val, char *label);
 EXTERNCPP char          *GetIntLabel(int val, char *label);
-EXTERNCPP char          *AppendString(char *S1, char *S2);
+EXTERNCPP char          *AppendString(const char *S1, const char *S2);
 EXTERNCPP void           UsageCommon(int option);
 EXTERNCPP int            ParseCommonOptions(int argc, char **argv);
 EXTERNCPP void           InitRandAB(int size);
@@ -180,7 +180,6 @@ EXTERNCPP                void TestEncode(void);
 SVEXTERN int SVDECL(hash_option, HASH_SHA1);
 #endif
 SVEXTERN int SVDECL(show_version, 0), SVDECL(show_help, 0);
-SVEXTERN char append_string[1024];
 
 #ifdef WIN32
 STREXTERN char STRDECL(dirseparator[],"\\");

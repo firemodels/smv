@@ -13,7 +13,6 @@
 int show_help;
 int hash_option;
 int show_version;
-char append_string[1024];
 
 static char *test_file_name_unicode = "test_файл_O’S.txt";
 static char *test_file_name_unicode_new = "test_файл_O’S_new.txt";
