@@ -9,6 +9,7 @@
 #include "smokeviewvars.h"
 #include "glui_bounds.h"
 #include "getdata.h"
+#include "readsmvfile.h"
 
 /* ------------------ GetIsoLevels ------------------------ */
 

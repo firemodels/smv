@@ -20,6 +20,13 @@ int STRCMP(const char *s1, const char *s2);
 void Rgb2Lab(unsigned char *rgb_arg, float *lab);
 void Rgbf2Lab(float *rgbf_arg, float *lab);
 
+// Defines a number of readonly color defaults.
+float mat_ambient_orig[4] = {0.5f, 0.5f, 0.2f, 1.0f};
+float mat_specular_orig[4] = {0.5f, 0.5f, 0.2f, 1.0f};
+float ventcolor_orig[4] = {1.0, 0.0, 1.0, 1.0};
+float block_ambient_orig[4] = {1.0, 0.8, 0.4, 1.0};
+float block_specular_orig[4] = {0.0, 0.0, 0.0, 1.0};
+
 /* ------------------ GetColorbar ------------------------ */
 
 colorbardata *GetColorbar(colorbar_collection *colorbars, const char *menu_label){

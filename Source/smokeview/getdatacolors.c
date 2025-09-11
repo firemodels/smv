@@ -7,6 +7,7 @@
 
 #include "smokeviewvars.h"
 #include "glui_bounds.h"
+#include "readsmvfile.h"
 
 #define EXPMIN -1
 #define EXPMAX 3
