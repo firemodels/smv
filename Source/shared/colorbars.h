@@ -21,20 +21,12 @@
 #define INTERP_RGB 0
 #define INTERP_LAB 1
 
-// Define a number of readonly color defaults.
-#ifdef INMAIN
-SVEXTERN float mat_ambient_orig[4] = {0.5f, 0.5f, 0.2f, 1.0f};
-SVEXTERN float mat_specular_orig[4] = {0.5f, 0.5f, 0.2f, 1.0f};
-SVEXTERN float ventcolor_orig[4] = {1.0, 0.0, 1.0, 1.0};
-SVEXTERN float block_ambient_orig[4] = {1.0, 0.8, 0.4, 1.0};
-SVEXTERN float block_specular_orig[4] = {0.0, 0.0, 0.0, 1.0};
-#else
-SVEXTERN float mat_ambient_orig[4];
-SVEXTERN float mat_specular_orig[4];
-SVEXTERN float ventcolor_orig[4];
-SVEXTERN float block_ambient_orig[4];
-SVEXTERN float block_specular_orig[4];
-#endif
+// Declares a number of readonly color defaults.
+extern CCC float mat_ambient_orig[4];
+extern CCC float mat_specular_orig[4];
+extern CCC float ventcolor_orig[4];
+extern CCC float block_ambient_orig[4];
+extern CCC float block_specular_orig[4];
 
 /* --------------------------  colordata ------------------------------------ */
 
