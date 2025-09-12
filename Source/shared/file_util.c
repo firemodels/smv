@@ -1350,18 +1350,6 @@ char *GetFloatFileSizeLabel(float size, char *sizelabel){
   return sizelabel;
 }
 
-#ifdef _WIN32
-char *CombinePaths(const char *path_a, const char *path_b){
-  char *path_out;
-  NEWMEMORY(path_out, sizeof(char) * MAX_PATH);
-  // NB: This uses on older function in order to support "char *".
-  // PathAllocCombine would be better but requires switching to "wchar *".
-#pragma warning(suppress : 4995)
-  char *result = PathCombineA(path_out, path_a, path_b);
-  if(result == NULL) FREEMEMORY(path_out);
-  return result;
-}
-#else
 char *CombinePaths(const char *path_a, const char *path_b) {
   char *path_out;
   size_t path_a_len = strlen(path_a);
@@ -1369,13 +1357,12 @@ char *CombinePaths(const char *path_a, const char *path_b) {
   size_t new_len = path_a_len + 1 + path_b_len;
   NEWMEMORY(path_out, sizeof(char) * (new_len + 1));
   STRCPY(path_out, path_a);
-  path_out[path_a_len] = '/';
-  path_out[path_a_len+1] = '\0';
+  STRCAT(path_out, dirseparator);
+  path_out[path_a_len + 1] = '\0';
   STRCAT(path_out, path_b);
   path_out[new_len] = '\0';
   return path_out;
 }
-#endif
 
 /* ------------------ GetBinPath ------------------------ */
 #ifdef _WIN32
