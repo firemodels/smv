@@ -31,6 +31,38 @@ int main(int argc, char **argv) {
 #endif
   }
   {
+    char *path = CombinePaths("1234/../efg", "hij/klm");
+#ifdef _WIN32
+    assert(strcmp(path, "1234/../efg\\hij/klm") == 0);
+#else
+    assert(strcmp(path, "1234/../efg/hij/klm") == 0);
+#endif
+  }
+  {
+    char *path = CombinePaths("../../1234/abc/efg", "hij/klm");
+#ifdef _WIN32
+    assert(strcmp(path, "../../1234/abc/efg\\hij/klm") == 0);
+#else
+    assert(strcmp(path, "../../1234/abc/efg/hij/klm") == 0);
+#endif
+  }
+  {
+    char *path = CombinePaths("../1234/abc/efg", "hij/klm");
+#ifdef _WIN32
+    assert(strcmp(path, "../1234/abc/efg\\hij/klm") == 0);
+#else
+    assert(strcmp(path, "../1234/abc/efg/hij/klm") == 0);
+#endif
+  }
+  {
+    char *path = CombinePaths("..\\1234\\abc\\efg", "hij\\klm");
+#ifdef _WIN32
+    assert(strcmp(path, "..\\1234\\abc\\efg\\hij\\klm") == 0);
+#else
+    assert(strcmp(path, "..\\1234\\abc\\efg/hij\\klm") == 0);
+#endif
+  }
+  {
     char *filename = "objects.svo";
     char *path = GetSmvRootFile(filename);
     assert(strcmp(LastName(path), filename) == 0);
