@@ -205,8 +205,8 @@ void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int ski
 
 /* ------------------ DisplayVersionInfo ------------------------ */
 
-void DisplayVersionInfo(char *progname){
-  PRINTVERSION(progname);
+void DisplayVersionInfo(char *progname, common_opts *opts){
+  PRINTVERSION(progname, opts);
   if(global_scase.fds_version!=NULL){
     PRINTF("FDS Build        : %s\n",global_scase.fds_githash);
   }
@@ -250,7 +250,7 @@ void DisplayVersionInfo(char *progname){
   }
   FREEMEMORY(caseini_filename);
   FREEMEMORY(smokeview_scratchdir);
-  if(smv_filename != NULL || show_version == 0){
+  if(smv_filename != NULL || opts->show_version == 0){
     if(strlen(fullini_filename) > 0){
       PRINTF("Casename ini     : %s\n", fullini_filename);
     }

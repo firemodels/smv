@@ -95,13 +95,13 @@ int main(int argc, char **argv){
   SetStdOut(stdout);
   initMALLOC();
 
-  ParseCommonOptions(argc, argv);
-  if(show_help!=0){
-    Usage(show_help);
+  common_opts opts = ParseCommonOptions(argc, argv);
+  if(opts.show_help!=0){
+    Usage(opts.show_help);
     return 1;
   }
-  if(show_version==1){
-    PRINTVERSION("wind2fds");
+  if(opts.show_version==1){
+    PRINTVERSION("wind2fds", &opts);
     return 1;
   }
 
@@ -109,7 +109,7 @@ int main(int argc, char **argv){
   strcpy(prefix,"");
 
   if(argc==1){
-    PRINTVERSION("wind2fds ");
+    PRINTVERSION("wind2fds ", &opts);
    return 1;
   }
 

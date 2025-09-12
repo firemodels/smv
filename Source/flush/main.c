@@ -30,7 +30,7 @@ void Usage(int option){
 
   GetGitInfo(githash,gitdate);    // get githash
 
-  
+
   fprintf(stdout, "\nflush [options]\n");
   fprintf(stdout, "%s %s\n\n", githash, __DATE__);
   fprintf(stdout, "flush the cache\n\n");
@@ -76,13 +76,13 @@ int main(int argc, char **argv){
   initMALLOC();
   SetStdOut(stdout);
 
-  ParseCommonOptions(argc, argv);
-  if(show_help!=0){
-    Usage(show_help);
+  common_opts opts = ParseCommonOptions(argc, argv);
+  if(opts.show_help!=0){
+    Usage(opts.show_help);
     return 1;
   }
-  if(show_version==1){
-    PRINTVERSION("flushcache");
+  if(opts.show_version==1){
+    PRINTVERSION("flushcache", &opts);
     return 1;
   }
 

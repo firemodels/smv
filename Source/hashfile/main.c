@@ -39,13 +39,13 @@ int main(int argc, char **argv){
   SetStdOut(stdout);
   initMALLOC();
 
-  ParseCommonOptions(argc, argv);
-  if(show_help!=0){
-    Usage(show_help);
+  common_opts opts = ParseCommonOptions(argc, argv);
+  if(opts.show_help!=0){
+    Usage(opts.show_help);
     return 1;
   }
-  if(show_version==1){
-    PRINTVERSION("hashfile");
+  if(opts.show_version==1){
+    PRINTVERSION("hashfile", &opts);
     return 1;
   }
   casename = argv[argc-1];
@@ -61,7 +61,7 @@ int main(int argc, char **argv){
 
   // output MD5 hash
 
-  if(hash_option==HASH_MD5||hash_option==HASH_ALL){
+  if(opts.hash_option==HASH_MD5||opts.hash_option==HASH_ALL){
     hash = GetHashMD5(casename);
     if(hash==NULL){
       printf("***error: MD5 computation of %s failed\n", casename);
@@ -73,7 +73,7 @@ int main(int argc, char **argv){
 
   // output SHA1 hash
 
-  if(hash_option==HASH_SHA1||hash_option==HASH_ALL){
+  if(opts.hash_option==HASH_SHA1||opts.hash_option==HASH_ALL){
     hash = GetHashSHA1(casename);
     if(hash==NULL){
       printf("***error: SHA1 computation of %s failed\n", casename);
@@ -85,7 +85,7 @@ int main(int argc, char **argv){
 
   // output SHA256 hash
 
-  if(hash_option==HASH_SHA256||hash_option==HASH_ALL){
+  if(opts.hash_option==HASH_SHA256||opts.hash_option==HASH_ALL){
     hash = GetHashSHA256(casename);
     if(hash==NULL){
       printf("***error: SHA256 computation of %s failed\n", casename);

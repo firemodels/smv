@@ -10,10 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-int show_help;
-int hash_option;
-int show_version;
-
 static char *test_file_name_unicode = "test_файл_O’S.txt";
 static char *test_file_name_unicode_new = "test_файл_O’S_new.txt";
 static char *test_file_content_unicode = "test_file_content_unicode";

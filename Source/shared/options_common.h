@@ -7,7 +7,8 @@
 #define _DEFAULT_SOURCE
 #endif
 #ifndef _DEBUG
-#define pp_HASH   // md5, sha1 and sha255 hashing
+// md5, sha1 and sha255 hashing
+#define pp_HASH
 #endif
 
 #ifdef __INTEL_COMPILER
@@ -88,9 +89,9 @@
 //*** hash output
 
 #ifdef pp_HASH
-#define PRINTVERSION(a) PRINTversion(a,hash_option)
+#define PRINTVERSION(a,opts) PRINTversion(a,(opts)->hash_option)
 #else
-#define PRINTVERSION(a) PRINTversion(a)
+#define PRINTVERSION(a,opts) PRINTversion(a)
 #endif
 
 #define FILE_SIZE unsigned long long

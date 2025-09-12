@@ -123,17 +123,24 @@ int main(int argc, char **argv){
 #endif
 
   if(argc==1){
-    PRINTVERSION("background ");
+    common_opts opts = {
+#ifdef pp_HASH
+        .hash_option = HASH_SHA1,
+#else
+        0
+#endif
+    };
+    PRINTVERSION("background ", &opts);
     return 1;
   }
 
-  ParseCommonOptions(argc, argv);
-  if(show_help!=0){
-    Usage(show_help);
+  common_opts opts = ParseCommonOptions(argc, argv);
+  if(opts.show_help!=0){
+    Usage(opts.show_help);
     return 1;
   }
-  if(show_version==1){
-    PRINTVERSION("background");
+  if(opts.show_version==1){
+    PRINTVERSION("background", &opts);
     return 1;
   }
 

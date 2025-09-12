@@ -10,10 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-int show_help;
-int hash_option;
-int show_version;
-
 int main(int argc, char **argv) {
   int mode = FILE_MODE;
   initMALLOC();

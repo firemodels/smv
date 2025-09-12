@@ -799,7 +799,7 @@ EXTERNCPP void LoadSkyTexture(char *filebase, texturedata *texti);
 
 EXTERNCPP void AntiAliasLine(int flag);
 EXTERNCPP int BuildGbndFile(int file_type);
-EXTERNCPP void DisplayVersionInfo(char *progname);
+EXTERNCPP void DisplayVersionInfo(char *progname, common_opts *opts);
 EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int skipframe);
 EXTERNCPP int IsFDSRunning(FILE_SIZE *last_size);
 EXTERNCPP void SetViewPoint(int option);

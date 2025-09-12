@@ -77,13 +77,13 @@ int main(int argc, char **argv){
 #endif
   strcpy(pp,"%");
 
-  ParseCommonOptions(argc, argv);
-  if(show_help!=0){
-    Usage(show_help);
+  common_opts opts = ParseCommonOptions(argc, argv);
+  if(opts.show_help!=0){
+    Usage(opts.show_help);
     return 0;
   }
-  if(show_version==1){
-    PRINTVERSION("smokediff");
+  if(opts.show_version==1){
+    PRINTVERSION("smokediff", &opts);
     return 0;
   }
 
@@ -98,7 +98,7 @@ int main(int argc, char **argv){
   strcpy(type_label,"");
 
   if(argc==1){
-    PRINTVERSION("Smokediff ");
+    PRINTVERSION("Smokediff ", &opts);
     return 0;
   }
 

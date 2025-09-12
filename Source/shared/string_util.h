@@ -83,6 +83,15 @@ typedef struct {
 #endif
 #endif
 
+typedef struct {
+  int show_help;
+  int show_version;
+  int first_arg;
+#ifdef pp_HASH
+  int hash_option;
+#endif
+} common_opts;
+
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 #if defined(_WIN32) && defined(pp_UNICODE_PATHS)
 EXTERNCPP wchar_t *convert_utf8_to_utf16(const char *path);
@@ -96,7 +105,7 @@ EXTERNCPP char          *GetFloatLabel(float val, char *label);
 EXTERNCPP char          *GetIntLabel(int val, char *label);
 EXTERNCPP char          *AppendString(const char *S1, const char *S2);
 EXTERNCPP void           UsageCommon(int option);
-EXTERNCPP int            ParseCommonOptions(int argc, char **argv);
+EXTERNCPP common_opts    ParseCommonOptions(int argc, char **argv);
 EXTERNCPP void           InitRandAB(int size);
 EXTERNCPP float          RandAB(int seed, float minval, float maxval);
 EXTERNCPP void           ToLower(char *string);
@@ -170,11 +179,6 @@ EXTERNCPP void           PRINTversion(char *progname);
 #endif
 
 // vvvvvvvvvvvvvvvvvvvvvvvv variables vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-
-#ifdef pp_HASH
-SVEXTERN int SVDECL(hash_option, HASH_SHA1);
-#endif
-SVEXTERN int SVDECL(show_version, 0), SVDECL(show_help, 0);
 
 #ifdef WIN32
 STREXTERN char STRDECL(dirseparator[],"\\");
