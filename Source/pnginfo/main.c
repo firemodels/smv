@@ -82,7 +82,7 @@ int main(int argc, char **argv){
 
   revision_data = DecodeData(image_buffer, nimage_buffer, &nrevision_data, skip, channel);
   if(revision_data == NULL){
-    printf("unknown\n");
+    printf("revisions unavailable\n");
   }
   else{
     printf("%s\n", revision_data);
