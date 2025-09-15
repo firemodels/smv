@@ -37,16 +37,13 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 csrc = dmalloc.c main.c md5.c sha1.c sha256.c readimage.c \
       file_util.c string_util.c stdio_buffer.c
 
-src = $(csrc)
-
-cobj = $(csrc:.c=.o)
-obj = $(cobj)
+obj = $(csrc:.c=.o)
 objwin = $(obj:.o=.obj)
 
-# setup for analyzing pnginfo source code using clang
+# setup for analyzing source code using clang
 
 linux_osx_c_chk    = $(csrc:.c=.chk)
-linux_osx_chk      = $(linux_osx_c_chk) $(linux_osx_cpp_chk)
+linux_osx_chk      = $(linux_osx_c_chk)
 
 win_c_chk   = $(csrc:.c=.winchk)
 win_chk     = $(win_c_chk)
@@ -69,23 +66,19 @@ no_target:
 .c.o:
 	$(CC) -c $(CFLAGS) $(FILTERC) $(INC_DIR) $<
 
-# linux and osx clang checks
+# ------------- linux and osx clang checks ----------------
+
 .c.chk:
 	$(CLANGANALYZE) $(CFLAGS) $(INC_DIR) $< 2> $@
 
-# windows clang checks
+# ------------- windows clang checks ----------------
+
 .c.winchk:
 	$(CLANGANALYZE) $(CFLAGS) $(INC_DIR) $< 2> $@
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   check source   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-
-# ------------- gnu_linux_64_check ----------------
-
-gnu_linux_64_check : CFLAGS    = -O2 -m64 -Wall
-gnu_linux_64_check : $(src)
-	clang-tidy $^ --  $(CFLAGS) $(INC)
 
 # ------------- linux_osx_check ----------------
 
@@ -96,6 +89,7 @@ linux_osx_check : $(linux_osx_chk)
 # ------------- win_check ----------------
 
 win_check : CFLAGS    = -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
+win_check : INC_DIR += -I $(SOURCE_DIR)/pthreads
 win_check : $(win_chk)
 	$(CLANGWINSUMMARY) pnginfo.summary
 
