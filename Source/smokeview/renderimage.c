@@ -649,7 +649,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
         strcpy(fds_label, global_scase.fds_githash);
         if(strcmp(fds_label, "unknown") == 0)strcpy(fds_label, "FDS revision: unknown");
         strcpy(smv_label, smv_githash);
-        if(strcmp(smv_githash, "unknown") == 0)strcpy(fds_label, "SMV revision: unknown");
+        if(strcmp(smv_githash, "unknown") == 0)strcpy(smv_label, "SMV revision: unknown");
 
         sprintf(infobuffer, "<br>%s<br>%s", fds_label, smv_label);
         ninfobuffer = strlen(infobuffer);
