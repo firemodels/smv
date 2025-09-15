@@ -20,7 +20,7 @@ FILTERF =
 # Intel compiler definitions
 include ../../scripts/intel_compiler.mak
 
-VPATH = $(SOURCE_DIR)/pnginfo ../../../../FDS/Source $(SOURCE_DIR)/shared
+VPATH = $(SOURCE_DIR)/pnginfo $(SOURCE_DIR)/shared
 bin = .
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
@@ -37,21 +37,19 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 csrc = dmalloc.c main.c md5.c sha1.c sha256.c readimage.c \
       file_util.c string_util.c stdio_buffer.c
 
-src = $(csrc) $(cppsrc)
+src = $(csrc)
 
 cobj = $(csrc:.c=.o)
-cppobj = $(cppsrc:.cpp=.o)
-obj = $(cobj) $(cppobj)
+obj = $(cobj)
+objwin = $(obj:.o=.obj)
 
-# setup for analyzing smokeview source code using clang
+# setup for analyzing pnginfo source code using clang
 
 linux_osx_c_chk    = $(csrc:.c=.chk)
-linux_osx_cpp_chk  = $(cppsrc:.cpp=.chk)
 linux_osx_chk      = $(linux_osx_c_chk) $(linux_osx_cpp_chk)
 
 win_c_chk   = $(csrc:.c=.winchk)
-win_cpp_chk = $(cppsrc:.cpp=.winchk)
-win_chk     = $(win_c_chk) $(win_cpp_chk)
+win_chk     = $(win_c_chk)
 
 #CLANGANALYZE=clang --analyze -Xanalyzer -analyzer-checker=core,deadcode
 CLANGANALYZE=clang --analyze
@@ -64,7 +62,7 @@ no_target:
 	@echo \******** You did not specify a make target \********
 	@echo Use one of targets found in the Makefile
 
-.SUFFIXES: .c .obj .o .cpp .chk .winchk
+.SUFFIXES: .c .obj .o .chk .winchk
 
 .c.obj:
 	$(CC) -c $(CFLAGS) $(FILTERC) $(INC_DIR) $<
@@ -74,13 +72,9 @@ no_target:
 # linux and osx clang checks
 .c.chk:
 	$(CLANGANALYZE) $(CFLAGS) $(INC_DIR) $< 2> $@
-.cpp.chk:
-	$(CLANGANALYZE) $(CFLAGS) $(INC_DIR) $< 2> $@
 
 # windows clang checks
 .c.winchk:
-	$(CLANGANALYZE) $(CFLAGS) $(INC_DIR) $< 2> $@
-.cpp.winchk:
 	$(CLANGANALYZE) $(CFLAGS) $(INC_DIR) $< 2> $@
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
@@ -97,42 +91,38 @@ gnu_linux_64_check : $(src)
 
 linux_osx_check : CFLAGS    = $(SMV_TESTFLAG)
 linux_osx_check : $(linux_osx_chk)
-	$(CLANGSUMMARY) smokeview.summary
+	$(CLANGSUMMARY) pnginfo.summary
 
 # ------------- win_check ----------------
 
 win_check : CFLAGS    = -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
-win_check : INC += $(WININC)
 win_check : $(win_chk)
-	$(CLANGWINSUMMARY) smokeview.summary
+	$(CLANGWINSUMMARY) pnginfo.summary
 
 
 # ------------- intel winx 64 db ----------------
 
 intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -I $(SOURCE_DIR)/pthreads -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64_db : CC        = $(I_CC)
-intel_win_64_db : CPP       = $(I_CC)
 intel_win_64_db : exe       = pnginfo_win_64_db.exe
 
 intel_win_64_db : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
 # ------------- intel win 64 ----------------
 
 intel_win_64 : CFLAGS    = /O2 /nologo -D X64 -D WIN32 $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
-intel_win_64 : CPP       = $(I_CC)
 intel_win_64 : exe       = pnginfo_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
 # ------------- gnu win 64 ----------------
 
 gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
 gnu_win_64 : LFLAGS    = -m64
 gnu_win_64 : CC        = gcc
-gnu_win_64 : CPP       = g++
 gnu_win_64 : exe       = pnginfo_win_64.exe
 
 gnu_win_64 : $(obj)
