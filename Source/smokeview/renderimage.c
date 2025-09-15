@@ -647,7 +647,14 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
           char fds_label[256], smv_label[256];
 
           strcpy(fds_label, global_scase.fds_githash);
-          if(strcmp(fds_label, "unknown") == 0)strcpy(fds_label, "FDS revision: unknown");
+          if(strcmp(fds_label, "unknown") == 0){
+            if(global_scase.nzoneinfo == 0){
+              strcpy(fds_label, "FDS revision: unknown");
+            }
+            else{
+              strcpy(fds_label, "CFAST revision: unknown");
+            }
+          }
           strcpy(smv_label, smv_githash);
           if(strcmp(smv_githash, "unknown") == 0)strcpy(smv_label, "SMV revision: unknown");
 
