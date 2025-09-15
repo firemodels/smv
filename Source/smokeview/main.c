@@ -708,7 +708,6 @@ int main(int argc, char **argv){
     return 1;
   }
 
-
   smv_filename = ParseCommandline(n_args, utf8_args);
   if(smv_filename == NULL || show_version == 1) {
     InitStartupDirs();
