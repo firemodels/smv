@@ -690,7 +690,6 @@ int main(int argc, char **argv){
   TestEncode();
 #endif
 
-
   // The number of commandline arguments
   int n_args = 0;
   // The commandline arguments in an array of UTF-8 encoded strings (length
