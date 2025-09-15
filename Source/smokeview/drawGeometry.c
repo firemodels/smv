@@ -11,6 +11,7 @@
 #include "readimage.h"
 #include "readcad.h"
 #include "readobject.h"
+#include "readsmvfile.h"
 
 #define DRAW_OBSTS_AND_VENTS 0
 #define DRAW_OBSTS           1

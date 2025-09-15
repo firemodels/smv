@@ -11,7 +11,7 @@ void InitSurface(surfdata *surf, float *color);
 int show_help;
 int hash_option;
 int show_version;
-char append_string[1024];
+
 #define N_SURFS 3
 int main(int argc, char **argv) {
   initMALLOC();

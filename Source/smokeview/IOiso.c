@@ -9,6 +9,7 @@
 #include "smokeviewvars.h"
 #include "glui_bounds.h"
 #include "getdata.h"
+#include "readsmvfile.h"
 
 /* ------------------ GetIsoLevels ------------------------ */
 
@@ -1036,7 +1037,7 @@ FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, 
 
     isoi = global_scase.isoinfo+ifile;
     if(flag == UNLOAD && isoi->loaded == 0)return 0;
-    if(flag==LOAD)PRINTF("Loading %s(%s)", file,isoi->surface_label.shortlabel);
+    if(flag==LOAD)PRINTF("Loading %s(%s)\n", file,isoi->surface_label.shortlabel);
       if(isoi->geomflag==1){
         return_filesize=ReadIsoGeom(ifile,flag,geom_frame_index,errorcode);
       }

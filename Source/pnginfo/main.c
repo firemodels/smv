@@ -36,7 +36,6 @@ void Usage(int option){
 int main(int argc, char **argv){
   int i;
   char *file=NULL;
-  int get_revisions = 1;
 
   initMALLOC();
   SetStdOut(stdout);
@@ -83,7 +82,7 @@ int main(int argc, char **argv){
 
   revision_data = DecodeData(image_buffer, nimage_buffer, &nrevision_data, skip, channel);
   if(revision_data == NULL){
-    printf("unknown\n");
+    printf("<br>FDS revision unavailable<br>SMV revision unavailable\n");
   }
   else{
     printf("%s\n", revision_data);
