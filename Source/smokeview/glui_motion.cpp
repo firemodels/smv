@@ -1471,6 +1471,10 @@ extern "C" void GLUIMotionSetup(int main_window){
   RADIOBUTTON_1f = glui_motion->add_radiobutton_to_group(RADIO_render_label, "frame number");
   RADIOBUTTON_1g = glui_motion->add_radiobutton_to_group(RADIO_render_label, "time (s)");
 
+#ifdef pp_ENCODER
+  glui_motion->add_checkbox_to_panel(PANEL_render_file, "embed FDS/Smokeview version info", &encode_png);
+#endif
+
   glui_motion->add_column_to_panel(PANEL_render_file, false);
 
   PANEL_file_type = glui_motion->add_panel_to_panel(PANEL_render_file, "type:", true);

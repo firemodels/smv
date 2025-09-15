@@ -686,6 +686,10 @@ int main(int argc, char **argv){
   InitRandAB(1000000);
   InitVars();
 
+#ifdef pp_TEST_ENCODER
+  TestEncode();
+#endif
+
   // The number of commandline arguments
   int n_args = 0;
   // The commandline arguments in an array of UTF-8 encoded strings (length
@@ -702,7 +706,6 @@ int main(int argc, char **argv){
     Usage(HELP_ALL);
     return 1;
   }
-
 
   smv_filename = ParseCommandline(n_args, utf8_args);
   if(smv_filename == NULL || show_version == 1) {

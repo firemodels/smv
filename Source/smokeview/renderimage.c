@@ -621,6 +621,69 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
             continue;
       }
 
+#ifdef pp_ENCODER
+      if(nfactor == 1 && encode_png == 1 && render_filetype == PNG){
+        unsigned char *rgb_locals=NULL;
+        int nrgb_locals, count = 0;
+
+        nrgb_locals = (imax + 1 - imin) * (jmax + 1 - jmin);
+        if(nrgb_locals > 0){
+          NewMemory(( void ** )&rgb_locals, 3*nrgb_locals);
+          for(i = imin; i < imax; i++){
+            for(j = jmin; j < jmax; j++){
+              r = *p++; g = *p++; b = *p++;
+              if(clip_rendered_scene==0 ||
+                (clip_left_hat<=j&&j<=clip_right_hat&&clip_bottom_hat<=i&&i<=clip_top_hat)){
+                rgb_locals[count++] = r;
+                rgb_locals[count++] = g;
+                rgb_locals[count++] = b;
+              }
+            }
+          }
+
+          char infobuffer[100];
+          int ninfobuffer;
+          int skip=3, channel=2;
+          char fds_label[256], smv_label[256];
+
+          strcpy(fds_label, global_scase.fds_githash);
+          if(strcmp(fds_label, "unknown") == 0)strcpy(fds_label, "FDS revision: unknown");
+          strcpy(smv_label, smv_githash);
+          if(strcmp(smv_githash, "unknown") == 0)strcpy(smv_label, "SMV revision: unknown");
+
+          sprintf(infobuffer, "<br>%s<br>%s", fds_label, smv_label);
+          ninfobuffer = strlen(infobuffer);
+          EncodeData(rgb_locals, nrgb_locals, (unsigned char *)infobuffer, ninfobuffer, skip, channel);
+          count = 0;
+          for(i = imin; i < imax; i++){
+            for(j = jmin; j < jmax; j++){
+              if(clip_rendered_scene==0 ||
+                 (clip_left_hat<=j&&j<=clip_right_hat&&clip_bottom_hat<=i&&i<=clip_top_hat)){
+                r = rgb_locals[count++];
+                g = rgb_locals[count++];
+                b = rgb_locals[count++];
+                rgb_local = (r << 16) | (g << 8) | b;
+                gdImageSetPixel(RENDERimage, j - clip_left_hat, clip_top_hat - i, rgb_local);
+              }
+            }
+          }
+          FREEMEMORY(rgb_locals);
+        }
+      }
+      else{
+        for(i = imin; i < imax; i++){
+          for(j = jmin; j < jmax; j++){
+            r = *p++; g = *p++; b = *p++;
+            if(clip_rendered_scene == 0 ||
+              ( clip_left_hat <= j && j <= clip_right_hat &&
+                clip_bottom_hat <= i && i <= clip_top_hat)){
+              rgb_local = (r << 16) | (g << 8) | b;
+              gdImageSetPixel(RENDERimage, j - clip_left_hat, clip_top_hat - i, rgb_local);
+            }
+          }
+        }
+      }
+#else
       for(i=imin; i<imax; i++){
         for(j=jmin; j<jmax; j++){
           r=*p++; g=*p++; b=*p++;
@@ -631,6 +694,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
           }
         }
       }
+#endif
     }
   }
 
