@@ -40,9 +40,14 @@ int main(int argc, char **argv){
   initMALLOC();
   SetStdOut(stdout);
 
-  if(argc == 1){
-    Usage(HELP_ALL);
-    return 1;
+  ParseCommonOptions(argc, argv);
+  if(show_help!=0){
+    Usage(show_help);
+    return 0;
+  }
+  if(show_version==1){
+    PRINTVERSION("pnginfo");
+    return 0;
   }
   for(i=1;i<argc;i++){
     size_t lenarg;
