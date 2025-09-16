@@ -177,6 +177,8 @@ EXTERNCPP void           PRINTversion(char *progname, int hash_option);
 #else
 EXTERNCPP void           PRINTversion(char *progname);
 #endif
+EXTERNCPP void           EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int ndata, int skip, int channel);
+EXTERNCPP                unsigned char *DecodeData(unsigned char *buffer, int nbuffer, int *ndataptr, int skip, int channel);
 
 // vvvvvvvvvvvvvvvvvvvvvvvv variables vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 

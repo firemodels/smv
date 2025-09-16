@@ -5,7 +5,7 @@ Created on Wed Mar 12 11:20:18 2025
 @author: jhodges
 """
 
-import os, subprocess, platform, argparse, glob, sys
+import os, subprocess, platform
 
 def sortWhitelist(firemodels):
     whitelist = os.path.join(firemodels, 'fds','Manuals','Bibliography')+ os.sep + 'whitelist.txt'
@@ -87,38 +87,43 @@ def check_disallowed_commands(txt, file):
                 outtxt = outtxt + "ERROR, %s %s located at line %d\n"%(file, cmd, line_count)
     return outtxt
 
-args = sys.argv
-parser = argparse.ArgumentParser(prog='check_manuals',
-                                 description='checks latex manuals for alignment with FDS developer guidelines')
-parser.add_argument('call')
-parser.add_argument('--file', help='filename to analyze', default='')
-parser.add_argument('--datafile', help='filename containing list of files', default='')
-parser.add_argument('--globfile', help='glob search for files', default='')
-parser.add_argument('--outdir', help='directory to store output', default='')
-parser.add_argument('--outname', help='output filename', default='check_output.err')
-parser.add_argument('--suppressconsole', help='boolean flag specifying whether findings are printed to console', action='store_true')
-
-cmdargs = parser.parse_args(args)
-suppressconsole = cmdargs.suppressconsole
-if cmdargs.file != '':
-    texfiles = [cmdargs.file]
-elif cmdargs.datafile != '':
-    with open(cmdargs.datafile, 'r') as f:
-        texfiles = f.readlines()
-    texfiles = [x.replace('\n','') for x in texfiles]
-elif cmdargs.globfile != '':
-    texfiles = glob.glob(cmdargs.globfile)
-else:
-    if not suppressconsole:
-        print("Warning, one of --file, --datafile, or --globfile is expected. Checking tex files in current directory")
-    texfiles = glob.glob('*.tex')
-
-if not suppressconsole:
-    print("Files to check:")
-    for file in texfiles:
-        print(file)
-outdir = cmdargs.outdir
-outname = cmdargs.outname
+texfiles = ['../FDS_Verification_Guide/FDS_Verification_Guide.tex',
+            '../FDS_User_Guide/FDS_User_Guide.tex',
+            '../FDS_Technical_Reference_Guide/FDS_Technical_Reference_Guide.tex',
+            '../FDS_Technical_Reference_Guide/Aerosol_Chapter.tex',
+            '../FDS_Technical_Reference_Guide/Device_Chapter.tex',
+            '../FDS_Technical_Reference_Guide/Introduction_Chapter.tex',
+            '../FDS_Technical_Reference_Guide/Radiation_Chapter.tex',
+            '../FDS_Technical_Reference_Guide/Appendices.tex',
+            '../FDS_Technical_Reference_Guide/Equation_Chapter.tex',
+            '../FDS_Technical_Reference_Guide/Mass_Chapter.tex',
+            '../FDS_Technical_Reference_Guide/Combustion_Chapter.tex',
+            '../FDS_Technical_Reference_Guide/Momentum_Chapter.tex',
+            '../FDS_Technical_Reference_Guide/Solid_Chapter.tex',
+            '../FDS_Technical_Reference_Guide/Complex_Geometry_Chapter.tex',
+            '../FDS_Technical_Reference_Guide/HVAC_Chapter.tex',
+            '../FDS_Technical_Reference_Guide/Particle_Chapter.tex',
+            '../FDS_Technical_Reference_Guide/Time_Chapter.tex',
+            '../FDS_Validation_Guide/FDS_Validation_Guide.tex',
+            '../FDS_Validation_Guide/Appendix_Graphs.tex',
+            '../FDS_Validation_Guide/Experiment_Chapter.tex',
+            '../FDS_Validation_Guide/Overview_Chapter.tex',
+            '../FDS_Validation_Guide/Surface_Temperature_Chapter.tex',
+            '../FDS_Validation_Guide/Appendix_Only.tex',
+            '../FDS_Validation_Guide/FDS_Validation_Guide.tex',
+            '../FDS_Validation_Guide/Plume_Chapter.tex',
+            '../FDS_Validation_Guide/Survey_Chapter.tex',
+            '../FDS_Validation_Guide/Burning_Rate_Chapter.tex',
+            '../FDS_Validation_Guide/Heat_Flux_Chapter.tex',
+            '../FDS_Validation_Guide/Pressure_Chapter.tex',
+            '../FDS_Validation_Guide/Velocity_Chapter.tex',
+            '../FDS_Validation_Guide/Ceiling_Jet_Chapter.tex',
+            '../FDS_Validation_Guide/HGL_Chapter.tex',
+            '../FDS_Validation_Guide/Species_Chapter.tex',
+            '../FDS_Validation_Guide/Wind_Chapter.tex',
+            '../FDS_Validation_Guide/Error_Chapter.tex',
+            '../FDS_Validation_Guide/HVAC_Chapter.tex',
+            '../FDS_Validation_Guide/Suppression_Chapter.tex']
 
 firemodels = os.path.join(os.path.dirname(__file__),'..','..','..')
 
@@ -161,14 +166,11 @@ for i in range(0, len(texfiles)):
         txt_list.sort()
         #while '\n\n' in txt:
         #    txt = txt.replace('\n\n','\n')
-        #outtxt = outtxt + '\n\nMisspelt Words in %s:\n'%(file) + '\n'.join(txt_list) + '\n\n'
-        for j in range(0, len(txt_list)):
-            outtxt = outtxt + '\n\nMisspelt Words in %s: %s\n'%(file,txt_list[j])
+        outtxt = outtxt + '\n\nMisspelt Words in %s:\n'%(file) + '\n'.join(txt_list) + '\n\n'
 
-if len(outtxt) > 1 and not suppressconsole:
+if len(outtxt) > 1:
     print("Warnings identified in the manual check:")
     print(outtxt)
 
-if outdir != '': outname = outdir + os.sep + outname
-with open(outname, 'w') as f:
+with open('check_output.txt', 'w') as f:
     f.write(outtxt)

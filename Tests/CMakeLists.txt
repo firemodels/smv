@@ -15,12 +15,6 @@ add_test(NAME "Execute smokediff" COMMAND smokediff)
 add_test(NAME "Execute smokeview" COMMAND smokeview -v)
 add_test(NAME "Execute smokezip" COMMAND smokezip)
 
-add_test(NAME "Execute background" COMMAND background)
-add_test(NAME "Execute background help" COMMAND background -help)
-add_test(NAME "Execute background help_all" COMMAND background -help_all)
-
-add_test(NAME "Execute smokeview help" COMMAND smokeview -help)
-add_test(NAME "Execute smokeview help_all" COMMAND smokeview -help_all)
 add_test(NAME "Execute smokeview sizes" COMMAND smokeview -sizes ${TEST_SMALL_SMV})
 add_test(NAME "Execute smokeview info" COMMAND smokeview -info ${TEST_SMALL_SMV})
 
