@@ -184,6 +184,12 @@ intel_linux_64_db : exe       = pnginfo_linux_64_db
 intel_linux_64_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
+#-------------- Clean Target to remove Object and Module files -----------
+
+.PHONY : clean
+clean:
+	rm -f *.o *.mod *.dll *.so
+
 #-------------- compile sring_util.c so revision strings are updated -----------
 
 string_util.o:  .FORCE
