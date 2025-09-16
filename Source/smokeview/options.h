@@ -7,7 +7,6 @@
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading
 //#define pp_TERRAIN_HIDE     // hide terrain when hiding internal blockages
-//#define pp_TEST_ENCODER  // call routine to test image encoding and decoding
 
 //*** options: windows
 
