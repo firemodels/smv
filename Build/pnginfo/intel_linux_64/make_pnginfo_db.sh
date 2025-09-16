@@ -1,3 +1,14 @@
 #!/bin/bash
-rm -f *.o convert_linux_64
+
+curdir=`pwd`
+LIBDIR=../../LIBS/intel_linux_64/
+if [ "$BUILD_LIBS" == "1" ]; then
+  cd $LIBDIR
+  ./make_LIBS.sh
+  cd $curdir
+else
+  eval make -C ${LIBDIR} ${SMV_MAKE_OPTS} -f make_LIBS.make all
+fi
+
+rm -f *.o pnginfo_linux_64
 make -f ../Makefile intel_linux_64_db
