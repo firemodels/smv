@@ -621,7 +621,6 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
             continue;
       }
 
-#ifdef pp_ENCODER
       if(nfactor == 1 && encode_png == 1 && render_filetype == PNG){
         unsigned char *rgb_locals=NULL;
         int nrgb_locals, count = 0;
@@ -690,18 +689,6 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
           }
         }
       }
-#else
-      for(i=imin; i<imax; i++){
-        for(j=jmin; j<jmax; j++){
-          r=*p++; g=*p++; b=*p++;
-          if(clip_rendered_scene==0||
-            (clip_left_hat<=j&&j<=clip_right_hat&&clip_bottom_hat<=i&&i<=clip_top_hat)){
-            rgb_local = (r<<16)|(g<<8)|b;
-            gdImageSetPixel(RENDERimage,j-clip_left_hat,clip_top_hat - i,rgb_local);
-          }
-        }
-      }
-#endif
     }
   }
 
