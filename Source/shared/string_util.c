@@ -2270,29 +2270,3 @@ void EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int nda
     }
   }
 }
-
-/* ------------------ TestEncode ------------------------ */
-
-void TestEncode(void){
-  unsigned char *buffer;
-  int i, nbuffer = 10000;
-  unsigned char data[1000];
-  int ndata;
-  int skip=3, channel=2;
-
-  NewMemory(( void ** )&buffer, nbuffer);
-  strcpy((char *)data, "FDS a.b.c Smokeview x.y.z");
-  printf("before encoding: %s\n", data);
-  ndata = strlen((char *)data);
-  for(i = 0; i < nbuffer; i++){
-    buffer[i] = i % 255;
-  }
-  EncodeData(buffer, nbuffer, data, ndata, skip, channel);
-  unsigned char *buffptr;
-  int ndata2;
-  buffptr = DecodeData(buffer, nbuffer, &ndata2, skip, channel);
-  printf("after encoding: %s\n", buffptr);
-  printf("\n");
-  FREEMEMORY(buffptr);
-}
-
