@@ -24,10 +24,6 @@
 
 #include "readhvac.h"
 
-int show_help;
-int hash_option;
-int show_version;
-
 void init_vals(hvacdatacollection *hvaccoll, const char *file) {
   NewMemory((void **)&(hvaccoll->hvacductvalsinfo), sizeof(hvacvalsdata));
   hvaccoll->hvacductvalsinfo->times = NULL;

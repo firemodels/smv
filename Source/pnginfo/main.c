@@ -40,13 +40,13 @@ int main(int argc, char **argv){
   initMALLOC();
   SetStdOut(stdout);
 
-  ParseCommonOptions(argc, argv);
-  if(show_help!=0){
-    Usage(show_help);
+  common_opts opts = ParseCommonOptions(argc, argv);
+  if(opts.show_help!=0){
+    Usage(opts.show_help);
     return 0;
   }
-  if(show_version==1){
-    PRINTVERSION("pnginfo");
+  if(opts.show_version==1){
+    PRINTVERSION("pnginfo", &opts);
     return 0;
   }
   for(i=1;i<argc;i++){
@@ -74,14 +74,14 @@ int main(int argc, char **argv){
   if(file==NULL)return 1;
   FILE *stream;
 
-  stream = fopen(file, "rb");
+  stream = FOPEN(file, "rb");
   if(stream == NULL)return 1;
   fclose(stream);
 
   unsigned char *image_buffer, *revision_data;
   int width, height, is_transparent, nrevision_data, nimage_buffer;
   int skip=4, channel=2;
-  
+
   image_buffer =  ReadPNG(file, &width, &height, &is_transparent);
   nimage_buffer = width*height;
 

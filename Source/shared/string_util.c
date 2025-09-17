@@ -2051,8 +2051,15 @@ void UsageCommon(int option){
 
 /* ------------------ ParseCommonOptions ------------------------ */
 
-int ParseCommonOptions(int argc, char **argv){
+common_opts ParseCommonOptions(int argc, char **argv){
   int i, no_minus,first_arg=0;
+  common_opts opts = {
+#ifdef pp_HASH
+    .hash_option = HASH_SHA1,
+#else
+    0
+#endif
+  };
 
   no_minus = 0;
   for(i = 1; i<argc; i++){
@@ -2061,48 +2068,48 @@ int ParseCommonOptions(int argc, char **argv){
     argi = argv[i];
     if(argi==NULL||argi[0]!='-'){
       if(first_arg==0){
-        first_arg = i;
-        return first_arg;
+        opts.first_arg = i;
+        return opts;
       }
       no_minus = 1;
       continue;
     }
     if(STRCMP("-help", argi)==0||(STRCMP("-h", argi)==0&&STRCMP("-help_all",argi)!=0)){
-      show_help = 1;
+      opts.show_help = 1;
       continue;
     }
     if(STRCMP("-help_all", argi) == 0){
-      show_help = 2;
+      opts.show_help = 2;
       continue;
     }
     if(STRCMP("-version", argi)==0||STRCMP("-v", argi)==0){
-      if(no_minus==0)show_version = 1;
+      if(no_minus==0)opts.show_version = 1;
       continue;
     }
 #ifdef pp_HASH
     if(STRCMP("-sha256", argi)==0){
-      hash_option = HASH_SHA256;
+      opts.hash_option = HASH_SHA256;
       continue;
     }
     if(STRCMP("-sha1", argi)==0){
-      hash_option = HASH_SHA1;
+      opts.hash_option = HASH_SHA1;
       continue;
     }
     if(STRCMP("-md5", argi)==0){
-      hash_option = HASH_MD5;
+      opts.hash_option = HASH_MD5;
       continue;
     }
     if(STRCMP("-hash_all", argi)==0){
-      hash_option = HASH_ALL;
+      opts.hash_option = HASH_ALL;
       continue;
     }
     if(STRCMP("-hash_none", argi)==0){
-      hash_option = HASH_NONE;
+      opts.hash_option = HASH_NONE;
       continue;
     }
 #endif
   }
-  return first_arg;
+  return opts;
 }
 
 /* ------------------ version ------------------------ */
