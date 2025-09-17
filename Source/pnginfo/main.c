@@ -103,7 +103,6 @@ int main(int argc, char **argv){
     if(use_html == 1){
       int i;
 
-      printf("<br>");
       for(i = 0; i < strlen(revision_data); i++){
         if(revision_data[i] == '\n'){
           printf("<br>");
@@ -112,7 +111,6 @@ int main(int argc, char **argv){
           printf("%c", revision_data[i]);
         }
       }
-      printf("<br>\n");
     }
     else{
       printf("%s\n", revision_data);
