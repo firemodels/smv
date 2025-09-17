@@ -18,7 +18,7 @@ jobs:
           - flush
           - makepo
           - mergepo
-          # - pnginfo
+          - pnginfo
           - smokediff
           - smokeview
           - smokezip
