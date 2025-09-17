@@ -11,10 +11,6 @@
 
 #include "readlabel.h"
 
-int show_help;
-int hash_option;
-int show_version;
-
 int main(int argc, char **argv) {
   initMALLOC();
   SetStdOut(stdout);

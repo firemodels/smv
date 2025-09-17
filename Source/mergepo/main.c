@@ -41,13 +41,13 @@ int main(int argc, char **argv){
   SetStdOut(stdout);
 
   prog=argv[0];
-  ParseCommonOptions(argc, argv);
-  if(show_help!=0){
-    Usage("makepo",show_help);
+  common_opts opts = ParseCommonOptions(argc, argv);
+  if(opts.show_help!=0){
+    Usage("makepo",opts.show_help);
     return 1;
   }
-  if(show_version==1){
-    PRINTVERSION("makepo");
+  if(opts.show_version==1){
+    PRINTVERSION("makepo", &opts);
     return 1;
   }
   for(i=1;i<argc;i++){

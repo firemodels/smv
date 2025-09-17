@@ -44,25 +44,25 @@ void Usage(char *prog, int option){
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
-  int i, nargs;
+  int i;
   char command_line[1000];
   float cpu_time=0.0;
 
   initMALLOC();
   SetStdOut(stdout);
 
-  nargs=ParseCommonOptions(argc, argv);
-  if(show_help!=0){
-    Usage("timep",show_help);
+  common_opts opts = ParseCommonOptions(argc, argv);
+  if(opts.show_help!=0){
+    Usage("timep",opts.show_help);
     return 1;
   }
-  if(show_version==1){
-    PRINTVERSION("timep");
+  if(opts.show_version==1){
+    PRINTVERSION("timep", &opts);
     return 1;
   }
-  if(nargs<argc){
+  if(opts.first_arg<argc){
     strcpy(command_line,"");
-    for(i = nargs; i<argc; i++){
+    for(i = opts.first_arg; i<argc; i++){
       strcat(command_line, argv[i]);
       strcat(command_line, " ");
     }

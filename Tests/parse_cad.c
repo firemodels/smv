@@ -6,10 +6,6 @@
 
 #include <assert.h>
 
-int show_help;
-int hash_option;
-int show_version;
-
 int main(int argc, char **argv) {
   if(argc < 2) {
     fprintf(stderr, "error: insufficient arguments");
