@@ -101,9 +101,12 @@ int main(int argc, char **argv){
   }
   else{
     if(use_html == 1){
-      int i;
+      int i,ibeg=0;
 
-      for(i = 0; i < strlen(revision_data); i++){
+      if(strlen(revision_data)>=4){
+        if(strncmp(revision_data,"<br>",4)==0)ibeg=4;
+      }
+      for(i = ibeg; i < strlen(revision_data); i++){
         if(revision_data[i] == '\n'){
           printf("<br>");
         }
