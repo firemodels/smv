@@ -26,7 +26,9 @@ extern int show_timings;
 #endif
 
 #ifdef WIN32
+#ifndef __MINGW32__
 #define PATH_MAX MAX_PATH
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #elif defined(__linux__)

@@ -114,7 +114,7 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu win 64 ----------------
 
-gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
+gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D pp_GCC -D __MINGW32__ 
 gnu_win_64 : LFLAGS    = -m64
 gnu_win_64 : CC        = gcc
 gnu_win_64 : exe       = pnginfo_win_64.exe
@@ -183,6 +183,12 @@ intel_linux_64_db : exe       = pnginfo_linux_64_db
 
 intel_linux_64_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+#-------------- Clean Target to remove Object and Module files -----------
+
+.PHONY : clean
+clean:
+	rm -f *.o *.mod *.dll *.so
 
 #-------------- compile sring_util.c so revision strings are updated -----------
 
