@@ -642,7 +642,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
 
           char infobuffer[100];
           int ninfobuffer;
-          int skip=3, channel=2;
+          int skip=4, channel=2;
           char fds_label[256], smv_label[256];
 
           strcpy(fds_label, global_scase.fds_githash);
