@@ -93,7 +93,7 @@ int main(int argc, char **argv){
   revision_data = DecodeData(image_buffer, nimage_buffer, &nrevision_data, skip, channel);
   if(revision_data == NULL){
     if(use_html == 1){
-      printf("<br>FDS revision unavailable<br>SMV revision unavailable\n");
+      printf("FDS revision unavailable<br>SMV revision unavailable\n");
     }
     else{
       printf("\nFDS revision unavailable\nSMV revision unavailable\n");
