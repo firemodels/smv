@@ -103,10 +103,10 @@ int main(int argc, char **argv){
     if(use_html == 1){
       int i,ibeg=0;
 
-      if(strlen(revision_data)>=4){
-        if(strncmp(revision_data,"<br>",4)==0)ibeg=4;
+      if(strlen((char *)revision_data)>=4){
+        if((char *)strncmp(revision_data,"<br>",4)==0)ibeg=4;
       }
-      for(i = ibeg; i < strlen(revision_data); i++){
+      for(i = ibeg; i < strlen((char *)revision_data); i++){
         if(revision_data[i] == '\n'){
           printf("<br>");
         }
