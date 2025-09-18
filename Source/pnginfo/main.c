@@ -114,6 +114,7 @@ int main(int argc, char **argv){
           printf("%c", revision_data[i]);
         }
       }
+      printf("<br>");
     }
     else{
       printf("%s\n", revision_data);
