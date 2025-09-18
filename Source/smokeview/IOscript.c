@@ -3992,6 +3992,7 @@ int RunScriptCommand(scriptdata *script_command){
         if(Writable(script_dir_path)==NO){
           fprintf(stderr,"*** Error: Cannot write to the RENDERDIR directory: %s\n",script_dir_path);
           if(stderr2!=NULL)fprintf(stderr2, "*** Error: Cannot write to the RENDERDIR directory: %s\n", script_dir_path);
+          SMV_EXIT(2);
         }
         PRINTF("script: setting render path to %s\n",script_dir_path);
       }
@@ -4005,6 +4006,7 @@ int RunScriptCommand(scriptdata *script_command){
         if(Writable(script_htmldir_path)==NO){
           fprintf(stderr, "*** Error: Cannot write to the RENDERHTMLDIR directory: %s\n", script_htmldir_path);
           if(stderr2!=NULL)fprintf(stderr2, "*** Error: Cannot write to the RENDERHTMLDIR directory: %s\n", script_htmldir_path);
+          SMV_EXIT(2);
         }
         PRINTF("script: setting html render path to %s\n", script_htmldir_path);
       }
@@ -4181,6 +4183,7 @@ int RunScriptCommand(scriptdata *script_command){
         dev_index = GetDeviceIndexFromLabel(scripti->cval);
         if(dev_index<0){
           printf("***error: device %s does not exist\n", scripti->cval);
+          SMV_EXIT(2);
           break;
         }
         dev_index += global_scase.devicecoll.ndeviceinfo;                                       // show device
