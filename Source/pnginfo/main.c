@@ -104,19 +104,19 @@ int main(int argc, char **argv){
       int i,ibeg=0;
 
       if(strlen((char *)revision_data)>=4){
-        if((char *)strncmp(revision_data,"<br>",4)==0)ibeg=4;
+        if(strncmp(( char * )revision_data,"<br>",4)==0)ibeg=4;
       }
       for(i = ibeg; i < strlen((char *)revision_data); i++){
-        if(revision_data[i] == '\n'){
+        if((char)revision_data[i] == '\n'){
           printf("<br>");
         }
         else{
-          printf("%c", revision_data[i]);
+          printf("%c", (char)revision_data[i]);
         }
       }
     }
     else{
-      printf("%s\n", revision_data);
+      printf("%s\n", (char *)revision_data);
     }
   }
   return 0;
