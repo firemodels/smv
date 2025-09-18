@@ -4904,6 +4904,12 @@ int ReadIni2(const char *inifile, int localfile){
       sscanf(buffer, "%f %f %f", mscale, mscale + 1, mscale + 2);
       continue;
     }
+    if(MatchINI(buffer, "ENCODEPNG") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &encode_png);
+      encode_png = CLAMP(encode_png, 0, 1);
+      continue;
+    }
     if(MatchINI(buffer, "RENDERCLIP") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i %i %i %i",
@@ -8246,6 +8252,8 @@ void WriteIni(int flag,char *filename){
   }
   fprintf(fileout, "LABELSTARTUPVIEW\n");
   fprintf(fileout, " %s\n", viewpoint_label_startup);
+  fprintf(fileout, "ENCODEPNG\n");
+  fprintf(fileout, " %i\n", encode_png);
   fprintf(fileout, "RENDERCLIP\n");
   fprintf(fileout, " %i %i %i %i %i\n",
     clip_rendered_scene, render_clip_left, render_clip_right, render_clip_bottom, render_clip_top);
