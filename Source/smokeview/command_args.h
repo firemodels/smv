@@ -22,6 +22,8 @@ typedef struct CommandlineArgs {
   bool load_hrrpuv;
   bool load_soot;
   bool load_temp;
+  bool encode_png;
+  bool encode_png_commandline;
   bool no_graphics;
   /// @brief calculate slice file parameters
   bool update_slice;
