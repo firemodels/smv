@@ -63,6 +63,7 @@ option(STRICT_CHECKS "Run additional strict checks" OFF)
 option(VENDORED_UI_LIBS "Use the vendored GLUT" ON)
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 option(UNICODE "Enable Unicode on Windows" ON)
+option(DISPLAY_TESTS "Enable tests which require a display to run" OFF)
 
 # Ensure all files are in the right place to run the tests
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
