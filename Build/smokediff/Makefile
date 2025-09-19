@@ -157,6 +157,26 @@ gnu_osx_64_db : exe       = smokediff_osx_64_db
 gnu_osx_64_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
+# ------------- clang osx 64 ----------------
+
+clang_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG) -Wno-unknown-pragmas
+clang_osx_64 : LFLAGS    = -m64
+clang_osx_64 : CC        = clang
+clang_osx_64 : exe       = smokediff_osx_64
+
+clang_osx_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+# ------------- gnu osx 64 db ----------------
+
+clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
+clang_osx_64_db : LFLAGS    = -m64
+clang_osx_64_db : CC        = clang
+clang_osx_64_db : exe       = smokediff_osx_64_db
+
+clang_osx_64_db : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
