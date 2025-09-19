@@ -225,7 +225,6 @@ int main(int argc, char **argv){
         g = image_buffer[count++];
         b = image_buffer[count++];
         count++;
-        rgb_local = 0;
         rgb_local = (r << 16) | (g << 8) | b;
         gdImageSetPixel(RENDERimage, j, height-i, rgb_local);
       }
