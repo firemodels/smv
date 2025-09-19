@@ -55,6 +55,7 @@ void Usage(int option){
     PRINTF("%s\n", _(" -convert_ini case1.ini case2.ini - update case1.ini to the current format"));
     PRINTF("%s\n", _("                  and save the results into case2.ini"));
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
+    PRINTF("%s\n", _(" -encode_png v  - encode png's with fds and smv repo revisions if v=1, do not encode if v=0"));
     PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time,"));
     PRINTF("%s\n", _("                  don't compute blanking arrays"));
     PRINTF("%s\n", _(" -full          - full startup - check if files exist"));
@@ -311,6 +312,14 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
     if(args->no_graphics){
       use_graphics = 0;
+    }
+    if(args->encode_png_commandline){
+      if(args->encode_png){
+        encode_png = 1;
+      }
+      else{
+        encode_png = 0;
+      }
     }
     if(args->large_case){
       large_case = 1;

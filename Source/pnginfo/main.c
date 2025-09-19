@@ -23,7 +23,8 @@ void Usage(int option){
   PRINTF("%s - %s\n\n", githash, __DATE__);
   PRINTF("get FDS and Smokeview repo revisions from an image file\n\n");
   PRINTF("options:\n");
-  PRINTF("-h - display this message\n");
+  PRINTF("-h    - display this message\n");
+  PRINTF("-html - convert line feeds to <br> html tags\n");
 
   UsageCommon(HELP_SUMMARY);
   if(option == HELP_ALL){
@@ -56,11 +57,14 @@ int main(int argc, char **argv){
     arg=argv[i];
     lenarg=strlen(arg);
     if(arg[0] == '-' && lenarg>1){
-      switch(arg[1]){
-      case 'h':
+      if(strcmp(arg, "-h") == 0 || strcmp(arg, "-help") == 0){
         Usage(HELP_ALL);
         return 1;
-      default:
+      }
+      else if(strcmp(arg, "-html") == 0){
+        use_html = 1;
+      }
+      else{
         Usage(HELP_ALL);
         return 1;
       }
@@ -87,10 +91,32 @@ int main(int argc, char **argv){
 
   revision_data = DecodeData(image_buffer, nimage_buffer, &nrevision_data, skip, channel);
   if(revision_data == NULL){
-    printf("<br>FDS revision unavailable<br>SMV revision unavailable\n");
+    if(use_html == 1){
+      printf("FDS revision unavailable<br>SMV revision unavailable\n");
+    }
+    else{
+      printf("\nFDS revision unavailable\nSMV revision unavailable\n");
+    }
   }
   else{
-    printf("%s\n", revision_data);
+    if(use_html == 1){
+      int i,ibeg=0;
+
+      if(strlen((char *)revision_data)>=4){
+        if(strncmp(( char * )revision_data,"<br>",4)==0)ibeg=4;
+      }
+      for(i = ibeg; i < strlen((char *)revision_data); i++){
+        if((char)revision_data[i] == '\n'){
+          printf("<br>");
+        }
+        else{
+          printf("%c", (char)revision_data[i]);
+        }
+      }
+    }
+    else{
+      printf("%s\n", (char *)revision_data);
+    }
   }
   return 0;
 }

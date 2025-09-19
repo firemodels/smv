@@ -55,6 +55,7 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
   args.x1 = true;
   args.x2 = false;
 #endif
+  args.encode_png_commandline = false;
   for (i = 1; i < argc; i++) {
     if (strcmp(argv[i], "-ini") == 0) {
       args.ini = true;
@@ -351,7 +352,23 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
         *error = CLE_ARGUMENT_EXPECTED;
         return args;
       }
-    } else if (strcmp(argv[i], "-threads") == 0) {
+    }
+    else if(strcmp(argv[i], "-encode_png") == 0) {
+      int encode_png_local = 1;
+
+      ++i;
+      args.encode_png_commandline = true;
+      if(i < argc){
+        sscanf(argv[i],"%i", &encode_png_local);
+      }
+      if(encode_png_local == 1){
+        args.encode_png = true;
+      }
+      else{
+        args.encode_png = false;
+      }
+    }
+    else if(strcmp(argv[i], "-threads") == 0) {
       args.threads_defined = true;
       ++i;
       if (i < argc) {
