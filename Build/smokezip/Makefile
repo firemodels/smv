@@ -156,6 +156,27 @@ gnu_osx_64_db : exe       = smokezip_osx_64_db
 gnu_osx_64_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
+# ------------- clang osx 64 ----------------
+
+clang_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_OSX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+clang_osx_64 : LFLAGS    = -L $(LIB_DIR)/clang_osx_64 -lz -lpthread
+clang_osx_64 : CC        = clang
+clang_osx_64 : exe       = smokezip_osx_64
+
+clang_osx_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+# ------------- clang osx 64 db ----------------
+
+clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
+clang_osx_64_db : LFLAGS    = -L $(LIB_DIR)/clang_osx_64 -lz -lpthread
+clang_osx_64_db : CC        = clang
+clang_osx_64_db : exe       = smokezip_osx_64_db
+
+clang_osx_64_db : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+# ------------- intel linux 64 ----------------
 # ------------- intel linux 64 ----------------
 
 intel_linux_64_db : CFLAGS    = -O2 -m64 ${INC_DIR} -Wall -Wextra -Wuninitialized -Wunused-function \
