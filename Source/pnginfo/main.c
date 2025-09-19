@@ -37,6 +37,7 @@ void Usage(int option){
 int main(int argc, char **argv){
   int i;
   char *file=NULL;
+  int use_html = 0;
 
   initMALLOC();
   SetStdOut(stdout);
