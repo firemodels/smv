@@ -2,7 +2,7 @@
 OPTS="-C $*"
 source ../../scripts/setopts.sh $OPTS
 
-LIBDIR=../../LIBS/gnu_osx_64
+LIBDIR=../../LIBS/clang_osx_64
 
 CURDIR=`pwd`
 cd $LIBDIR
