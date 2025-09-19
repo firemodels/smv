@@ -422,6 +422,42 @@ gnu_osx_64 : exe       = smokeview_osx_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 gnu_osx_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
+# ------------- clang_osx_64_db ----------------
+
+clang_osx_64_db : CFLAGS    = -O0 -ggdb -m64 -D _DEBUG -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
+clang_osx_64_db : C_STANDARD    = -std=gnu99
+clang_osx_64_db : LFLAGS    = -m64 -L$(LIB_DIR)/clang_osx_64 $(SMV_LIBS_OSX) $(GLIBDIROPT) $(SMV_PROFILEFLAG)
+ifeq ($(GLUT),freeglut)
+clang_osx_64_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
+clang_osx_64_db : CFLAGS   += -D FREEGLUT_STATIC
+else
+clang_osx_64_db : LFLAGS   += -framework OpenGL -framework GLUT
+endif
+clang_osx_64_db : CC        = ${COMPILER}
+clang_osx_64_db : CPP       = ${COMPILER2}
+clang_osx_64_db : exe       = smokeview_osx_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
+
+clang_osx_64_db : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+# ------------- clang_osx_64 ----------------
+
+clang_osx_64 : CFLAGS    = -O0 -m64              -D pp_OSX -D pp_GCC -D NDEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
+clang_osx_64 : C_STANDARD    = -std=gnu99
+clang_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/clang_osx_64 $(SMV_LIBS_OSX) $(GLIBDIROPT) $(SMV_PROFILEFLAG)
+ifeq ($(GLUT),freeglut)
+clang_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
+clang_osx_64 : CFLAGS   += -D FREEGLUT_STATIC
+else
+clang_osx_64 : LFLAGS   += -framework OpenGL -framework GLUT
+endif
+clang_osx_64 : CC        = ${COMPILER}
+clang_osx_64 : CPP       = ${COMPILER2}
+clang_osx_64 : exe       = smokeview_osx_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
+
+clang_osx_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
 #-------------- Clean Target to remove Object and Module files -----------
 
 .PHONY : clean
