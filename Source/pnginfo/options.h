@@ -7,4 +7,6 @@
 //#undef pp_BETA
 //#define pp_BETA
 
+//#define pp_ENCODE_FILE  // add option to encode data from a file
+
 #endif
