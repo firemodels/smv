@@ -150,6 +150,24 @@ gnu_osx_64_db : exe       = wind2fds_osx_64_db
 gnu_osx_64_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj)
 
+# ------------- clang osx 64 ----------------
+
+clang_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+clang_osx_64 : CC        = clang
+clang_osx_64 : exe       = wind2fds_osx_64
+
+clang_osx_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
+
+# ------------- gnu osx 64 db ----------------
+
+clang_osx_64_db : CFLAGS    = -O0 -m64 -D pp_OSX -Wall $(GITINFO) $(GNU_COMPINFO)
+clang_osx_64_db : CC        = clang
+clang_osx_64_db : exe       = wind2fds_osx_64_db
+
+clang_osx_64_db : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
+
 #-------------- Clean Target to remove Object and Module files -----------
 
 .PHONY : clean

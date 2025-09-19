@@ -133,6 +133,24 @@ gnu_osx_64 : exe       = stars_osx_64
 gnu_osx_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
+# ------------- clang_osx_64 ----------------
+
+clang_osx_64 : CFLAGS    = -O0 -m64              -D pp_OSX -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings
+clang_osx_64 : C_STANDARD    = -std=gnu99
+clang_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/clang_osx_64
+ifeq ($(GLUT),freeglut)
+clang_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
+clang_osx_64 : CFLAGS   += -D FREEGLUT_STATIC
+else
+clang_osx_64 : LFLAGS   += -framework OpenGL -framework GLUT
+endif
+clang_osx_64 : CC        = clang
+clang_osx_64 : CPP       = clang++
+clang_osx_64 : exe       = stars_osx_64
+
+clang_osx_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
 #-------------- Clean Target to remove Object and Module files -----------
 
 .PHONY : clean

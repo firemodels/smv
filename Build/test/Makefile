@@ -89,3 +89,14 @@ gnu_osx_64 : exe       = test_osx_64
 
 gnu_osx_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+# ------------- clang osx 64 ----------------
+
+clang_osx_64 : CFLAGS    = -O0 -m64
+clang_osx_64 : LFLAGS    = -m64
+clang_osx_64 : CC        = clang
+clang_osx_64 : CPP       = clang++
+clang_osx_64 : exe       = test_osx_64
+
+clang_osx_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)

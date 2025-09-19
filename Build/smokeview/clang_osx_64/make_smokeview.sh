@@ -1,5 +1,5 @@
 #!/bin/bash
-OPTS="-G $*"
+OPTS="-C $*"
 
 source ../../scripts/setopts.sh $OPTS
 

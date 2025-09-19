@@ -116,6 +116,28 @@ gnu_osx_64_db : exe       = convert_osx_64_db
 gnu_osx_64_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
+# ------------- clang osx 64 ----------------
+
+clang_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO) $(GNU_COMPINFO)
+clang_osx_64 : LFLAGS    = -m64
+clang_osx_64 : CC        = clang
+clang_osx_64 : CPP       = clang
+clang_osx_64 : exe       = convert_osx_64
+
+clang_osx_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+# ------------- clang osx 64 db ----------------
+
+clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
+clang_osx_64_db : LFLAGS    = -m64
+clang_osx_64_db : CC        = clang
+clang_osx_64_db : CPP       = clang
+clang_osx_64_db : exe       = convert_osx_64_db
+
+clang_osx_64_db : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
