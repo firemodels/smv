@@ -33,11 +33,15 @@ if [ "$BUILD_ALL" == "1" ]; then
   FULL_BUILD="[default]"
 fi
 TESTOPT=
-while getopts 'AfGhiLmprStT' OPTION
+while getopts 'AfCGhiLmprStT' OPTION
 do
 case $OPTION in
   A)
    BUILD_ALL=1
+  ;;
+  C)
+   COMPILER=clang
+   COMPILER2=clang
   ;;
   f)
    GLUT=freeglut

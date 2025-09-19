@@ -14,9 +14,13 @@ LUA=
 FOREC_g=
 FOREC_i=
 target=all
-while getopts 'fgGhiILlt:T' OPTION
+while getopts 'CfgGhiILlt:T' OPTION
 do
 case $OPTION in
+  C)
+   COMPILER=clang
+   COMPILER2=clang
+  ;;
   f)
    GLUT="freeglut"
   ;;
