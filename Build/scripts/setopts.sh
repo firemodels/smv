@@ -41,7 +41,7 @@ case $OPTION in
   ;;
   C)
    COMPILER=clang
-   COMPILER2=clang
+   COMPILER2=clang++
   ;;
   f)
    GLUT=freeglut
