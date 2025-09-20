@@ -1,6 +1,12 @@
 #ifndef OPTIONS_H_DEFINED
 #define OPTIONS_H_DEFINED
 
+// processing directives defined by compilers to identify platform
+// __linux__
+// __GNUC__
+// defined(__APPLE__) && defined(__MACH__)   (the __MACH__ is to exclude iOS)
+// _WIN32
+
 #include "options_common.h"
 
 //#define pp_SHOW_UPDATE      // show what is being updated in the UpdateShowScene routine
