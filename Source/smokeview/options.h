@@ -2,10 +2,11 @@
 #define OPTIONS_H_DEFINED
 
 // processing directives defined by compilers to identify the platform or compiler
-// __linux__
-// __GNUC__
-// defined(__APPLE__) && defined(__MACH__)   (the __MACH__ is to exclude iOS)
-// _WIN32
+// __linux__   use instead of pp_LINUX
+// __GNUC__    use instead of pp_GCC
+// defined(__APPLE__) && defined(__MACH__)   use instead of pp_OSX
+//       __MACH__ is to exclude iOS
+// _WIN32      use instead of WIN32
 
 #include "options_common.h"
 
