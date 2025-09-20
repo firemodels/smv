@@ -1,7 +1,7 @@
 #ifndef OPTIONS_H_DEFINED
 #define OPTIONS_H_DEFINED
 
-// processing directives defined by compilers to identify platform
+// processing directives defined by compilers to identify the platform or compiler
 // __linux__
 // __GNUC__
 // defined(__APPLE__) && defined(__MACH__)   (the __MACH__ is to exclude iOS)
