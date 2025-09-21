@@ -1,5 +1,5 @@
 #include "options.h"
-#ifdef WIN32
+#ifdef _WIN32
 #ifdef __MINGW32__
 #include <stddef.h>
 #endif

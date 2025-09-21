@@ -37,22 +37,22 @@ default: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
 intel_linux_64: CPP_STANDARD = -std=c++11 -stdlib=libc++
-intel_linux_64: CFLAGS=-m64 $(INCS) $(PLATFORM) $(NOCLOSE) $(CFLAGOPT) -fpermissive 
+intel_linux_64: CFLAGS=-m64 $(INCS) $(PLATFORM) $(NOCLOSE) $(CFLAGOPT) -fpermissive
 intel_linux_64: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
-intel_osx_64: CFLAGS=-m64 -D pp_OSX -stdlib=libc++ $(NOCLOSE) -fpermissive
+intel_osx_64: CFLAGS=-m64 -stdlib=libc++ $(NOCLOSE) -fpermissive
 intel_osx_64: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
-gnu_osx_64: CFLAGS=-m64 -D pp_OSX $(NOCLOSE) -fpermissive 
+gnu_osx_64: CFLAGS=-m64 $(NOCLOSE) -fpermissive
 gnu_osx_64: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
 intel_win_64: CFLAGS= $(NOCLOSE) /Wno-unused_parameter
 intel_win_64 : $(GLUI_OBJSWIN)
-	lib $(GLUI_OBJSWIN) -OUT:libglui.lib 
+	lib $(GLUI_OBJSWIN) -OUT:libglui.lib
 
-gnu_win_64: CFLAGS=$(NOCLOSE) $(INCS) -fpermissive -Wno-write-strings -Wno-int-to-pointer-cast 
+gnu_win_64: CFLAGS=$(NOCLOSE) $(INCS) -fpermissive -Wno-write-strings -Wno-int-to-pointer-cast
 gnu_win_64: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)

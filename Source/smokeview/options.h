@@ -17,7 +17,7 @@
 
 //*** options: windows
 
-#ifdef WIN32
+#ifdef _WIN32
 #define pp_DIALOG_SHORTCUTS // dialog shortcuts
 #ifdef pp_GPU
 #define pp_WINGPU           // only draw 3d slices with the GPU on windows
@@ -26,7 +26,7 @@
 
 //*** options: Linux
 
-#ifdef pp_LINUX
+#ifdef __linux__
 #define pp_REFRESH          // refresh glui dialogs when they change size
 #define pp_DIALOG_SHORTCUTS // dialog shortcuts
 #endif

@@ -1,4 +1,3 @@
-#define CPP
 #include "options.h"
 
 #include <assert.h>
@@ -237,7 +236,7 @@ extern "C" void GLUITourSetup(int main_window){
   CHECKBOX_tour_constant_velocity = glui_tour->add_checkbox_to_panel(PANEL_tour5, _("Constant velocity"),
     &tour_constant_velocity, TOUR_CONSTANT_VELOCITY, TourCB);
 
-  
+
   glui_tour->add_column_to_panel(PANEL_tour6, false);
   PANEL_tour7 = glui_tour->add_panel_to_panel(PANEL_tour6, "");
 

@@ -1,6 +1,10 @@
 #ifndef OPTIONS_COMMON_H_DEFINED
 #define OPTIONS_COMMON_H_DEFINED
 
+#if defined(__APPLE__) && defined(__MACH__)
+#define pp_OSX
+#endif
+
 //*** options: all platforms
 
 #ifndef _DEFAULT_SOURCE
@@ -30,7 +34,7 @@
 
 #ifdef INTEL_COMPILER_ANY
 #define pp_FSEEK
-#ifdef WIN32
+#ifdef _WIN32
 #define HAVE_MSVS
 #define INTEL_WIN_COMPILER
 #endif
@@ -52,7 +56,7 @@
 
 //*** options: windows
 
-#ifdef WIN32
+#ifdef _WIN32
 
 //*** needed when using Windows Intel compilers
 //    to prevent warnings/errors
@@ -96,7 +100,7 @@
 
 #define FILE_SIZE unsigned long long
 
-#ifdef CPP
+#ifdef __cplusplus
 #define CCC "C"
 #define EXTERNCPP extern "C"
 #else

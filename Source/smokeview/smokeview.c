@@ -12,7 +12,7 @@
 #include "IOscript.h"
 #include "paths.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <direct.h>
 #endif
 

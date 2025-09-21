@@ -16,7 +16,7 @@
 #include "IOscript.h"
 #include "IOvolsmoke.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <direct.h>
 #include <windows.h>
 #include <shellapi.h>
@@ -223,7 +223,7 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     strcat(filename_local, ".smv");
   }
   else{
-#ifdef WIN32
+#ifdef _WIN32
     if(opts->show_version == 0){
       int openfile, filelength;
 
@@ -625,7 +625,7 @@ int CheckSMVFile(char *file, char *subdir){
 /// @param[out] n_args The number of arguments in the array
 /// @param[out] utf8_args A pointer to where the new array will be allocated
 void GetArgs(int argc, char **argv, int *n_args, char ***utf8_args) {
-#if defined(WIN32) && defined(pp_UNICODE_PATHS)
+#if defined(_WIN32) && defined(pp_UNICODE_PATHS)
   LPWSTR *utf16_args = CommandLineToArgvW(GetCommandLineW(), n_args);
   if(NULL == utf16_args) {
     fprintf(stderr, "CommandLineToArgvW failed\n");
@@ -648,7 +648,7 @@ void GetArgs(int argc, char **argv, int *n_args, char ***utf8_args) {
 /// @param[in] n_args The length of args
 /// @param[inout] args The array previously allocated by GetArgs
 void FreeArgs(int n_args, char **args) {
-#if defined(WIN32) && defined(pp_UNICODE_PATHS)
+#if defined(_WIN32) && defined(pp_UNICODE_PATHS)
   // We only need to free argument memory on windows as that's the only time we
   // allocate new memory. On other platforms the array returned by GetArgs is
   // readonly.

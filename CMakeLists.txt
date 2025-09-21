@@ -32,11 +32,7 @@ else()
     # etc).
     include(GNUInstallDirs)
 endif()
-# Pass a flag to to the source code. There's no great need for this but allows
-# us to have conditional code based on the build method.
-# add_definitions(-Dpp_CMAKE)
 add_compile_definitions(pp_GITHASH="${PROJECT_VERSION}+sc2")
-
 
 include(InstallRequiredSystemLibraries)
 configure_file(LICENSE.md LICENSE.txt)
@@ -71,24 +67,19 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 # Detect and set flags for Mac
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(MACOSX TRUE)
-    add_definitions(-Dpp_OSX)
 endif()
 if (UNIX AND NOT MACOSX)
     set(LINUX TRUE)
 endif()
 # Set flags for Windows
 if (WIN32)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_WIN32)
-    add_compile_definitions(PTW32_BUILD PTW32_STATIC_LIB   X64 _WIN32 WIN32 _CONSOLE)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+    add_compile_definitions(PTW32_BUILD PTW32_STATIC_LIB X64 _CONSOLE)
     if (UNICODE)
         # We only define pp_UNICODE_PATHS (which is specific to SMV) and not
         # _UNICODE as the vendored version of GLUT doesn't support Unicode
         add_compile_definitions(pp_UNICODE_PATHS)
     endif()
-endif()
-# Set flags for Linux
-if (LINUX)
-    add_definitions(-Dpp_LINUX)
 endif()
 
 add_compile_definitions(GL_SILENCE_DEPRECATION)

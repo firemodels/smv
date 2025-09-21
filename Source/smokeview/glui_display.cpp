@@ -1,4 +1,3 @@
-#define CPP
 #include "options.h"
 #include <assert.h>
 #include <stdio.h>

@@ -1,9 +1,8 @@
-#define CPP
 #include "options.h"
 
 #include <assert.h>
 #include <stdio.h>
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 #include <string.h>

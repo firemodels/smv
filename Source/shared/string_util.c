@@ -10,7 +10,7 @@
 #ifdef pp_OSX
 #include <unistd.h>
 #endif
-#ifdef WIN32
+#ifdef _WIN32
 #ifdef __MINGW32__
 #undef S_IFBLK
 #undef S_ISBLK
@@ -355,7 +355,7 @@ int RandInt(int min, int max){
 
 /* ------------------ RandStr ------------------------ */
 
-#ifdef WIN32
+#ifdef _WIN32
 #define GETPID GetCurrentProcessId
 #else
 #define GETPID getpid
@@ -1355,7 +1355,7 @@ int MatchWild(char *pTameText, char *pWildText){
 //  formatting to be consistent with smokeview coding style)
 
   char cAltTerminator='\0';
-#ifdef WIN32
+#ifdef _WIN32
   int bCaseSensitive=0;
 #else
   int bCaseSensitive=1;
@@ -1882,7 +1882,7 @@ unsigned char *GetHashSHA1(char *file){
       strcpy(fullpath, pathentry);
     }
     strcat(fullpath, file);
-#ifdef WIN32
+#ifdef _WIN32
     {
       const char *ext;
 
@@ -1945,7 +1945,7 @@ unsigned char *GetHashMD5(char *file){
       strcpy(fullpath, pathentry);
     }
     strcat(fullpath, file);
-#ifdef WIN32
+#ifdef _WIN32
     {
       const char *ext;
 
@@ -1999,7 +1999,7 @@ unsigned char *GetHashSHA256(char *file){
       strcpy(fullpath, pathentry);
     }
     strcat(fullpath, file);
-#ifdef WIN32
+#ifdef _WIN32
     {
       const char *ext;
 
@@ -2160,7 +2160,7 @@ void PRINTversion(char *progname){
     FREEMEMORY(hash);
   }
 #endif
-#ifdef WIN32
+#ifdef _WIN32
   PRINTF("Platform         : WIN64 ");
 #ifdef INTEL_COMPILER_ANY
   PRINTF(" (Intel C/C++)");
@@ -2170,7 +2170,7 @@ void PRINTversion(char *progname){
 #ifdef pp_OSX
   PRINTF("Platform         : OSX64\n");
 #endif
-#ifdef pp_LINUX
+#ifdef __linux__
   PRINTF("Platform         : LINUX64\n");
 #endif
   FREEMEMORY(progfullpath);

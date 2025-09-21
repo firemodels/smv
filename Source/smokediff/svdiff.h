@@ -13,7 +13,7 @@
 #include "string_util.h"
 
 
-#ifdef WIN32
+#ifdef _WIN32
 #define STDCALLF extern void _stdcall
 #else
 #define STDCALLF extern void

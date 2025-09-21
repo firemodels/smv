@@ -79,7 +79,7 @@ linux_osx_check : $(linux_osx_chk)
 
 # ------------- win_check ----------------
 
-win_check : CFLAGS    = -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
+win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
 win_check : INC_DIR += -I $(SOURCE_DIR)/pthreads
 win_check : $(win_chk)
 	$(CLANGWINSUMMARY) smokediff.summary
@@ -87,8 +87,8 @@ win_check : $(win_chk)
 # ------------- intel winx 64 db ----------------
 
 intel_win_64_db : INC_DIR   += -I $(SOURCE_DIR)/pthreads
-intel_win_64_db : FFLAGS    = /Od /iface:stdref /fpp -D WIN32 /nologo /debug:full /extend_source:132 /warn:unused /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f18 /fpscomp:general
-intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64_db : FFLAGS    = /Od /iface:stdref /fpp /nologo /debug:full /extend_source:132 /warn:unused /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f18 /fpscomp:general
+intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64_db : CC        = $(I_CC)
 intel_win_64_db : exe       = smokediff_win_64_db.exe
 
@@ -98,8 +98,8 @@ intel_win_64_db : $(objwin)
 # ------------- intel win 64 ----------------
 
 intel_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads
-intel_win_64 : FFLAGS    = /O2 -fpp -D WIN32 /nologo /iface:stdref /stand:f18 /fpscomp:general
-intel_win_64 : CFLAGS    = /O2 /nologo -D X64 -D WIN32 $(GITINFO) $(SMV_TESTFLAG) $(INTEL_COMPINFO)
+intel_win_64 : FFLAGS    = /O2 -fpp /nologo /iface:stdref /stand:f18 /fpscomp:general
+intel_win_64 : CFLAGS    = /O2 /nologo -D X64 $(GITINFO) $(SMV_TESTFLAG) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = smokediff_win_64.exe
 
@@ -108,7 +108,7 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu win 64 ----------------
 
-gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW $(SMV_TESTFLAG)
+gnu_win_64 : CFLAGS    = -O0 -m64 -D GLEW_STATIC -D MINGW $(SMV_TESTFLAG)
 gnu_win_64 : LFLAGS    = -m64
 gnu_win_64 : CC        = gcc
 gnu_win_64 : exe       = smokediff_win_64.exe
@@ -118,7 +118,7 @@ gnu_win_64 : $(obj)
 
 # ------------- gnu linux 64 ----------------
 
-gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+gnu_linux_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
 gnu_linux_64 : LFLAGS    = -m64 -lm
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = smokediff_linux_64
@@ -128,7 +128,7 @@ gnu_linux_64 : $(obj)
 
 # ------------- gnu linux 64 db ----------------
 
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
 gnu_linux_64_db : LFLAGS    = -m64 -lm
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : exe       = smokediff_linux_64_db
@@ -139,7 +139,7 @@ gnu_linux_64_db : $(obj)
 
 # ------------- gnu osx 64 ----------------
 
-gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG) -Wno-unknown-pragmas
+gnu_osx_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG) -Wno-unknown-pragmas
 gnu_osx_64 : LFLAGS    = -m64
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : exe       = smokediff_osx_64
@@ -149,7 +149,7 @@ gnu_osx_64 : $(obj)
 
 # ------------- gnu osx 64 db ----------------
 
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
 gnu_osx_64_db : LFLAGS    = -m64
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : exe       = smokediff_osx_64_db
@@ -159,7 +159,7 @@ gnu_osx_64_db : $(obj)
 
 # ------------- clang osx 64 ----------------
 
-clang_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG) -Wno-unknown-pragmas
+clang_osx_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG) -Wno-unknown-pragmas
 clang_osx_64 : LFLAGS    = -m64
 clang_osx_64 : CC        = clang
 clang_osx_64 : exe       = smokediff_osx_64
@@ -169,7 +169,7 @@ clang_osx_64 : $(obj)
 
 # ------------- gnu osx 64 db ----------------
 
-clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
+clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
 clang_osx_64_db : LFLAGS    = -m64
 clang_osx_64_db : CC        = clang
 clang_osx_64_db : exe       = smokediff_osx_64_db
@@ -179,7 +179,7 @@ clang_osx_64_db : $(obj)
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
+intel_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
 intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = smokediff_linux_64
 
@@ -188,7 +188,7 @@ intel_linux_64 : $(obj)
 
 # ------------- intel linux 64 db ----------------
 
-intel_linux_64_db : CFLAGS    = -O0 -m64 -D pp_LINUX -g -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
+intel_linux_64_db : CFLAGS    = -O0 -m64 -g -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
 intel_linux_64_db : CC        = $(I_ICC)
 intel_linux_64_db : exe       = smokediff_linux_64_db
 

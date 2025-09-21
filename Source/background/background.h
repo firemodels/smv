@@ -6,7 +6,7 @@
 
 char *hostlistfile;
 char *host;
-#ifdef pp_LINUX
+#ifdef __linux__
 char  pid[20];
 #endif
 #ifdef pp_OSX

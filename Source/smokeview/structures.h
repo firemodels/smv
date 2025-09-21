@@ -1,7 +1,7 @@
 #ifndef STRUCTURES_H_DEFINED
 #define STRUCTURES_H_DEFINED
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #include <windows.h>
 #endif
 #include GL_H
@@ -23,7 +23,7 @@ typedef struct _lanlistdata {
 } langlistdata;
 
 /* --------------------------  procdata ------------------------------------ */
-#ifdef CPP
+#ifdef __cplusplus
 typedef struct _procdata {
   GLUI_Rollout *rollout;
   GLUI *dialog;
@@ -74,7 +74,7 @@ typedef struct _inifiledata {
 
 /* --------------------------  rolloutlistdata ------------------------------------ */
 
-#ifdef CPP
+#ifdef __cplusplus
 typedef struct _rolloutlistdata {
   struct _rolloutlistdata *prev, *next;
   GLUI_Rollout *rollout;

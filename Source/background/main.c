@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <process.h>
 #include <windows.h>
 #endif
@@ -16,13 +16,13 @@
 #include "dmalloc.h"
 #include "file_util.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 void GetSystemTimesAddress(void);
 int getnprocs(char *command);
 #endif
 unsigned char cpuusage(void);
 
-#ifdef pp_LINUX
+#ifdef __linux__
 int get_ncores(void);
 float get_load(void);
 float get_host_load(char *host);
@@ -34,7 +34,7 @@ int get_host_ncores(char *host);
 int cpuusage_host(char *host,int ncores);
 #endif
 
-#ifndef WIN32
+#ifndef _WIN32
 
 /* ------------------ Sleep ------------------------ */
 
@@ -63,7 +63,7 @@ void Usage(int option){
   printf("  -d dtime  - wait dtime seconds before running prog in the background\n");
   printf("  -m max    - wait to run prog until memory usage is less than max (25-100%s)\n", pp);
   printf("  -u max    - wait to run prog until cpu usage is less than max (25-100%s)\n", pp);
-#ifdef WIN32
+#ifdef _WIN32
   printf("  -U max    - wait to run prog until number of instances of prog is less than max \n");
 #endif
   UsageCommon(HELP_SUMMARY);
@@ -71,10 +71,10 @@ void Usage(int option){
   printf("  arguments - command line arguments of prog\n\n");
   if(option == HELP_ALL){
     printf("  -debug    - display debug messages\n");
-#ifdef pp_LINUX
+#ifdef __linux__
     printf("  -hosts hostfiles - file containing a list of host names to run jobs on\n");
 #endif
-#ifdef pp_LINUX
+#ifdef __linux__
     printf("  -p path   - specify directory path to change to after ssh'ing to remote host\n");
 #endif
     UsageCommon(HELP_ALL);
@@ -88,7 +88,7 @@ void Usage(int option){
 
 int main(int argc, char **argv){
   int i;
-#ifdef WIN32
+#ifdef _WIN32
   int nprocs;
 #else
   int debug=0;
@@ -100,19 +100,19 @@ int main(int argc, char **argv){
   int cpu_usage, cpu_usage_max=25;
   int mem_usage, mem_usage_max=75;
   int nprocs_max=-1;
-#ifdef pp_LINUX
+#ifdef __linux__
   FILE *stream=NULL;
 #endif
 
   int itime;
   char *arg;
-#ifdef WIN32
+#ifdef _WIN32
   char *command, *base;
 #endif
 
   SetStdOut(stdout);
   initMALLOC();
-#ifdef pp_LINUX
+#ifdef __linux__
   hostlistfile=NULL;
   host=NULL;
   strcpy(user_path,"");
@@ -161,13 +161,13 @@ int main(int argc, char **argv){
                 if(delay_time<0.0)delay_time=0.0;
               }
             }
-#ifndef WIN32
+#ifndef _WIN32
             else{
               debug=1;
             }
 #endif
             break;
-#ifdef pp_LINUX
+#ifdef __linux__
           case 'h':
             if(strcmp(arg,"-hosts")==0){
               i++;
@@ -227,7 +227,7 @@ int main(int argc, char **argv){
 
     }
   }
-#ifdef pp_LINUX
+#ifdef __linux__
   nhostinfo=0;
   if(hostlistfile!=NULL){
     stream=FOPEN(hostlistfile,"r");
@@ -270,7 +270,7 @@ int main(int argc, char **argv){
     Sleep(itime);
   }
 
-#ifdef WIN32
+#ifdef _WIN32
   GetSystemTimesAddress();
   command=argv[argstart];
   base = strrchr(command,'\\');
@@ -356,7 +356,7 @@ int main(int argc, char **argv){
   return 0;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 typedef BOOL ( __stdcall * pfnGetSystemTimes)( LPFILETIME lpIdleTime, LPFILETIME lpKernelTime, LPFILETIME lpUserTime );
 static pfnGetSystemTimes s_pfnGetSystemTimes = NULL;
 
@@ -378,7 +378,7 @@ void GetSystemTimesAddress(){
 
 /* ------------------ getnprocs ------------------------ */
 
-#ifdef WIN32
+#ifdef _WIN32
 int getnprocs(char *command){
   FILE *stream;
   int count=0;
@@ -551,7 +551,7 @@ float get_host_load(char *host){
   return load;
 }
 #endif
-#ifdef pp_LINUX
+#ifdef __linux__
 
 /* ------------------ get_ncores ------------------------ */
 
@@ -666,7 +666,7 @@ float get_load(void){
 }
 #endif
 
-#ifndef WIN32
+#ifndef _WIN32
 
 /* ------------------ cpuusage_host ------------------------ */
 
