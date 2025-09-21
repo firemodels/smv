@@ -74,7 +74,7 @@ endif()
 # Set flags for Windows
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    add_compile_definitions(PTW32_BUILD PTW32_STATIC_LIB X64 _CONSOLE)
+    add_compile_definitions(PTW32_BUILD PTW32_STATIC_LIB _CONSOLE)
     if (UNICODE)
         # We only define pp_UNICODE_PATHS (which is specific to SMV) and not
         # _UNICODE as the vendored version of GLUT doesn't support Unicode

@@ -76,7 +76,7 @@ linux_osx_check : $(linux_osx_chk)
 
 # ------------- win_check ----------------
 
-win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
+win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB
 win_check : INC_DIR += -I $(SOURCE_DIR)/pthreads
 win_check : $(win_chk)
 	$(CLANGWINSUMMARY) background.summary
@@ -85,7 +85,7 @@ win_check : $(win_chk)
 
 # ------------- intel Win 64 ----------------
 
-intel_win_64 : CFLAGS    = -O1 /nologo -D X64 -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/shared $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -O1 /nologo -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/shared $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = background_win_64.exe
 

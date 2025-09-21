@@ -167,7 +167,7 @@ WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 intel_win_64_san : DYNLIB_EXT = .dll
 intel_win_64_san : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
 intel_win_64_san : CFLAGS    = /Od /W4 /Wno-cast-function-type-mismatch /Wno-unused-function /Wno-unused-parameter
-intel_win_64_san : CFLAGS   += /debug:full /Zi  -D pp_INTEL -D _DEBUG -D _CONSOLE -D X64 -D GLEW_STATIC
+intel_win_64_san : CFLAGS   += /debug:full /Zi  -D pp_INTEL -D _DEBUG -D _CONSOLE -D GLEW_STATIC
 intel_win_64_san : CFLAGS   += -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64_san : CFLAGS   += $(SANITIZE_OPTIONS)
 intel_win_64_san : C_STANDARD    = -Qstd=gnu99
@@ -188,7 +188,7 @@ intel_win_64_san : $(objwin)
 
 intel_win_64_db : DYNLIB_EXT = .dll
 intel_win_64_db : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-intel_win_64_db : CFLAGS    = /Od /W4 /Wno-cast-function-type-mismatch /Wno-unused-function /Wno-unused-parameter /debug:full /Zi  -D pp_INTEL -D _DEBUG -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64_db : CFLAGS    = /Od /W4 /Wno-cast-function-type-mismatch /Wno-unused-function /Wno-unused-parameter /debug:full /Zi  -D pp_INTEL -D _DEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(SANITIZE),1)
 intel_win_64_db : CFLAGS   += $(SANITIZE_OPTIONS)
 endif
@@ -213,7 +213,7 @@ intel_win_64_db : $(objwin)
 
 intel_win_64 : DYNLIB_EXT = .dll
 intel_win_64 : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-intel_win_64 : CFLAGS    = -O1 -D pp_INTEL -D NDEBUG -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -O1 -D pp_INTEL -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(SANITIZE),1)
 intel_win_64 : CFLAGS   += $(SANITIZE_OPTIONS) -g
 endif
@@ -371,7 +371,7 @@ linux_osx_check : $(linux_osx_chk)
 
 # ------------- win_check ----------------
 
-win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
+win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB
 win_check : INC += $(WININC)
 win_check : $(win_chk)
 	$(CLANGWINSUMMARY) smokeview.summary

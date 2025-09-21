@@ -80,14 +80,14 @@ linux_osx_check : $(linux_osx_chk)
 
 # ------------- win_check ----------------
 
-win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
+win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB
 win_check : INC_DIR += -I $(SOURCE_DIR)/pthreads
 win_check : $(win_chk)
 	$(CLANGWINSUMMARY) wind2fds.summary
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od /nologo -I $(SOURCE_DIR)/pthreads -D X64 $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -Od /nologo -I $(SOURCE_DIR)/pthreads $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = wind2fds_win_64.exe
 

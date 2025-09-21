@@ -42,7 +42,7 @@ no_target:
 
 # ------------- win 64 ----------------
 
-intel_win_64 : CFLAGS    = -O2 /nologo -D X64 -D PTW32_STATIC_LIB $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -O2 /nologo -D PTW32_STATIC_LIB $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : LFLAGS    =
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = mergepo_win_64.exe

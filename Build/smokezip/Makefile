@@ -89,7 +89,7 @@ linux_osx_check : $(linux_osx_chk)
 
 # ------------- win_check ----------------
 
-win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
+win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB
 win_check : INC_DIR += -I $(SOURCE_DIR)/pthreads
 win_check : $(win_chk)
 	$(CLANGWINSUMMARY) smokezip.summary
@@ -97,7 +97,7 @@ win_check : $(win_chk)
 # ------------- intel win 64 ----------------
 
 intel_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads
-intel_win_64 : CFLAGS    = -Od /nologo -D PTW32_STATIC_LIB -D X64  $(OPT) $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
+intel_win_64 : CFLAGS    = -Od /nologo -D PTW32_STATIC_LIB  $(OPT) $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = smokezip_win_64.exe
 

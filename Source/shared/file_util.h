@@ -72,7 +72,7 @@ typedef struct {
 // vvvvvvvvvvvvvvvvvvvvvvvv preprocessing directives
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-#ifdef X64
+#ifdef _WIN64
 #define FSEEK(a, b, c) _fseeki64(a, b, c)
 #define FTELL(a) _ftelli64(a)
 #else
@@ -106,17 +106,13 @@ typedef struct {
 
 #define BFILE bufferstreamdata
 
-#ifdef X64
-  #ifdef _WIN32
-    #define LINT __int64
-  #else
-    #define LINT long long int
-  #endif
+#ifdef _WIN64
+  #define LINT __int64
 #else
-  #define LINT long int
+  #define LINT long long int
 #endif
 
-#ifdef X64
+#ifdef _WIN64
   #define STRUCTSTAT struct __stat64
 #else
   #define STRUCTSTAT struct stat
