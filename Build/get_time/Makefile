@@ -34,7 +34,7 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od /nologo -D X64
+intel_win_64 : CFLAGS    = -Od /nologo
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : CPP       = $(I_CC)
 intel_win_64 : exe       = get_time_win_64.exe
