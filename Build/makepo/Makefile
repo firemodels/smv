@@ -40,7 +40,7 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -O2 /nologo -I $(SOURCE_DIR)/pthreads -D X64 -D PTW32_STATIC_LIB  $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -O2 /nologo -I $(SOURCE_DIR)/pthreads -D PTW32_STATIC_LIB  $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : LFLAGS    =
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = makepo_win_64.exe

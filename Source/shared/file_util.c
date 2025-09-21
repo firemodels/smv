@@ -100,14 +100,10 @@ int STAT(const char *file, STRUCTSTAT *buffer) {
   int r = _wstat64(path, buffer);
   FREEMEMORY(path);
   return r;
-#elif defined(_WIN32)
-  return _stat64(file, buffer);
-#else
-#ifdef X64
+#elif defined(_WIN64)
   return _stat64(file, buffer);
 #else
   return stat(file, buffer);
-#endif
 #endif
 }
 

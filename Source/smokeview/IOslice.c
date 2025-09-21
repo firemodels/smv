@@ -39,7 +39,7 @@
     )
 
 #define FOPEN_SLICE(a,b)         FOPEN(a,b)
-#ifdef X64
+#ifdef _WIN64
 #define FSEEK_SLICE(a,b,c)       _fseeki64(a,b,c)
 #define FTELL_SLICE(a)           _ftelli64(a)
 #else
