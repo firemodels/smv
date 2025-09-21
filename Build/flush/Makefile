@@ -50,7 +50,7 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od -I $(SOURCE_DIR)/pthreads -D X64 -D WIN32 /nologo $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -Od -I $(SOURCE_DIR)/pthreads -D X64 /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = flush_win_64.exe
 
@@ -59,7 +59,7 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu win 64 ----------------
 
-gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
+gnu_win_64 : CFLAGS    = -O0 -m64 -D GLEW_STATIC -D MINGW
 gnu_win_64 : CC        = gcc
 gnu_win_64 : exe       = flush_win_64.exe
 
@@ -68,7 +68,7 @@ gnu_win_64 : $(obj)
 
 # ------------- gnu linux 64 db ----------------
 
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GNU_COMPINFO) $(GITINFO)
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GNU_COMPINFO) $(GITINFO)
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : exe       = flush_linux_64_db
 
@@ -78,7 +78,7 @@ gnu_linux_64_db: $(obj)
 # ------------- gnu linux 64  ----------------
 
 gnu_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
-gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = flush_linux_64
 
@@ -88,7 +88,7 @@ gnu_linux_64: $(obj)
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = flush_linux_64
 
@@ -97,7 +97,7 @@ intel_linux_64 : $(obj)
 
 # ------------- gnu osx 64 ----------------
 
-gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO)
+gnu_osx_64 : CFLAGS    = -O0 -m64 $(GITINFO)
 gnu_osx_64 : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_osx_64 $(LIBS_OSX)
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : CPP       = g++
@@ -108,7 +108,7 @@ gnu_osx_64 : $(obj)
 
 # ------------- gnu osx 64 db ----------------
 
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D pp_GCC -D  pp_OSX $(GITINFO)
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall $(GITINFO)
 gnu_osx_64_db : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_osx_64 $(LIBS_OSX)
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : CPP       = g++
@@ -119,7 +119,7 @@ gnu_osx_64_db : $(obj)
 
 # ------------- clang osx 64 ----------------
 
-clang_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO)
+clang_osx_64 : CFLAGS    = -O0 -m64 $(GITINFO)
 clang_osx_64 : LFLAGS    = -m64 -L $(LIB_DIR)/clang_osx_64 $(LIBS_OSX)
 clang_osx_64 : CC        = clang
 clang_osx_64 : CPP       = clang
@@ -130,7 +130,7 @@ clang_osx_64 : $(obj)
 
 # ------------- gnu osx 64 db ----------------
 
-clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D pp_GCC -D  pp_OSX $(GITINFO)
+clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall $(GITINFO)
 clang_osx_64_db : LFLAGS    = -m64 -L $(LIB_DIR)/clang_osx_64 $(LIBS_OSX)
 clang_osx_64_db : CC        = clang
 clang_osx_64_db : CPP       = clang

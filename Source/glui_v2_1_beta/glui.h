@@ -1721,7 +1721,7 @@ extern "C" int double_scale;
 #endif
 #endif
 
-#ifdef CPP
+#ifdef __cplusplus
 #define CCCC "C"
 #else
 #define CCCC

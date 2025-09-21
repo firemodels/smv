@@ -42,7 +42,7 @@ no_target:
 
 # ------------- intel winx 64 db ----------------
 
-intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -I $(SOURCE_DIR)/pthreads -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -I $(SOURCE_DIR)/pthreads -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64_db : CC        = $(I_CC)
 intel_win_64_db : CPP       = $(I_CC)
 intel_win_64_db : exe       = convert_win_64_db.exe
@@ -52,7 +52,7 @@ intel_win_64_db : $(objwin)
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = /O2 /nologo -I $(SOURCE_DIR)/pthreads -D X64 -D WIN32 $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = /O2 /nologo -I $(SOURCE_DIR)/pthreads -D X64 $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : CPP       = $(I_CC)
 intel_win_64 : exe       = convert_win_64.exe
@@ -62,7 +62,7 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu win 64 ----------------
 
-gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
+gnu_win_64 : CFLAGS    = -O0 -m64 -D GLEW_STATIC -D MINGW
 gnu_win_64 : LFLAGS    = -m64
 gnu_win_64 : CC        = gcc
 gnu_win_64 : CPP       = g++
@@ -73,7 +73,7 @@ gnu_win_64 : $(obj)
 
 # ------------- gnu linux 64 ----------------
 
-gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64 : LFLAGS    = -m64
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : CPP       = g++
@@ -84,7 +84,7 @@ gnu_linux_64 : $(obj)
 
 # ------------- gnu linux 64 db ----------------
 
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64_db : LFLAGS    = -m64
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : CPP       = g++
@@ -96,7 +96,7 @@ gnu_linux_64_db : $(obj)
 
 # ------------- gnu osx 64 ----------------
 
-gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO) $(GNU_COMPINFO)
+gnu_osx_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
 gnu_osx_64 : LFLAGS    = -m64
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : CPP       = g++
@@ -107,7 +107,7 @@ gnu_osx_64 : $(obj)
 
 # ------------- gnu osx 64 db ----------------
 
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
 gnu_osx_64_db : LFLAGS    = -m64
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : CPP       = g++
@@ -118,7 +118,7 @@ gnu_osx_64_db : $(obj)
 
 # ------------- clang osx 64 ----------------
 
-clang_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO) $(GNU_COMPINFO)
+clang_osx_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
 clang_osx_64 : LFLAGS    = -m64
 clang_osx_64 : CC        = clang
 clang_osx_64 : CPP       = clang
@@ -129,7 +129,7 @@ clang_osx_64 : $(obj)
 
 # ------------- clang osx 64 db ----------------
 
-clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
+clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
 clang_osx_64_db : LFLAGS    = -m64
 clang_osx_64_db : CC        = clang
 clang_osx_64_db : CPP       = clang
@@ -140,7 +140,7 @@ clang_osx_64_db : $(obj)
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = convert_linux_64
 
@@ -149,7 +149,7 @@ intel_linux_64 : $(obj)
 
 # ------------- intel linux 64 db ----------------
 
-intel_linux_64_db : CFLAGS    = -O0 -m64 -D pp_LINUX -g -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64_db : CFLAGS    = -O0 -m64 -g -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64_db : CC        = $(I_ICC)
 intel_linux_64_db : exe       = convert_linux_64_db
 

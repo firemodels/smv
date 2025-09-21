@@ -22,7 +22,7 @@ void *PlayMovie(void *arg){
   if(FILE_EXISTS(GetMovieFilePath(moviefile_path)) == YES){
     strcpy(command_line, "ffplay ");
     strcat(command_line, moviefile_path);
-#ifdef WIN32
+#ifdef _WIN32
     strcat(command_line, " 2>Nul ");
 #else
     strcat(command_line, " 2>/dev/null ");
@@ -42,7 +42,7 @@ void *PlayMovie(void *arg){
 void *SetupFF(void *arg){
   int have_ffmpeg_local, have_ffplay_local;
 
-#ifdef WIN32
+#ifdef _WIN32
   have_ffmpeg_local = HaveProg("ffmpeg -version> Nul 2>Nul");
   have_ffplay_local = HaveProg("ffplay -version> Nul 2>Nul");
 #else
@@ -148,7 +148,7 @@ void MakeMovie(void){
         stream_ffmpeg = FOPEN(ffmpeg_command_filename,"w");
         FREEMEMORY(ffmpeg_command_filename);
         if(stream_ffmpeg!=NULL){
-#ifdef WIN32
+#ifdef _WIN32
           fprintf(stream_ffmpeg,"@echo off\n");
 #else
           fprintf(stream_ffmpeg,"#!/bin/bash\n");
@@ -497,7 +497,7 @@ void RenderFrame(int view_mode){
   int woffset=0,hoffset=0;
   int screenH;
 
-#ifdef WIN32
+#ifdef _WIN32
   SetThreadExecutionState(ES_DISPLAY_REQUIRED); // reset display idle timer to prevent screen saver from activating
 #endif
 

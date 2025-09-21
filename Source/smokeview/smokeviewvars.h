@@ -2,7 +2,7 @@
 #define SMOKEVIEWVARS_H_DEFINED
 #include <time.h>
 #include "dmalloc.h"
-#ifdef CPP
+#ifdef __cplusplus
 #include "glui.h"
 #endif
 #include "datadefs.h"
@@ -17,7 +17,7 @@
 #include "readobject.h"
 #include "readtour.h"
 #include "readlabel.h"
-#ifndef CPP
+#ifndef __cplusplus
 #include <zlib.h>
 #endif
 #include "smokeheaders.h"
@@ -1825,7 +1825,7 @@ SVEXTERN int SVDECL(overwrite_all,0),SVDECL(erase_all,0);
 SVEXTERN int SVDECL(compress_autoloaded,0);
 SVEXTERN tridata SVDECL(**opaque_triangles,NULL),SVDECL(**transparent_triangles,NULL),SVDECL(**alltriangles,NULL);
 SVEXTERN int SVDECL(nopaque_triangles,0),SVDECL(ntransparent_triangles,0),SVDECL(nalltriangles,0);
-#ifdef WIN32
+#ifdef _WIN32
 SVEXTERN   char openfilebuffer[1024];
 SVEXTERN   int openfileflag;
 #endif

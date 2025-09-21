@@ -663,7 +663,7 @@ EXTERNCPP void LoadVSliceMenu(int value);
 EXTERNCPP FILE_SIZE LoadVSliceMenu2(int val);
 EXTERNCPP void MenuStatusCB(int status, int x, int y);
 EXTERNCPP void *MtLoadAllPartFiles(void *arg);
-#ifdef WIN32
+#ifdef _WIN32
 EXTERNCPP void OpenSMVFile(char *filename,int filenamelength,int *openfile);
 #endif
 EXTERNCPP void ParticlePropShowMenu(int value);

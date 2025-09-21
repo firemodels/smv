@@ -2,7 +2,7 @@
 #include "glew.h"
 #include <assert.h>
 #include <stdio.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <share.h>
 #endif
 #include <stdlib.h>

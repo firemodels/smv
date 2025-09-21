@@ -8,7 +8,7 @@
 #include "string_util.h"
 #include "file_util.h"
 #include "dmalloc.h"
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 

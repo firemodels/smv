@@ -1,6 +1,8 @@
 #ifndef dmalloc_H_DEFINED
 #define dmalloc_H_DEFINED
 
+#include "options_common.h"
+
 #ifdef __MINGW32__
 #include "options.h"
 #endif
@@ -18,7 +20,7 @@
 typedef int mallocflag;
 typedef char bbyte;
 
-#ifdef CPP
+#ifdef __cplusplus
 #define MMCCC "C"
 #else
 #define MMCCC
@@ -98,7 +100,7 @@ int MemoryLoad(void);
 
 #ifdef pp_MEMDEBUG
 void getMemusage(MMsize totalmemory,char *MEMlabel);
-#ifdef CPP
+#ifdef __cplusplus
 extern "C" void _CheckMemory(void);
 #else
 void _CheckMemory(void);

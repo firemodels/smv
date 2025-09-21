@@ -43,7 +43,7 @@ CLANGSUMMARY=../../scripts/clang_summary.sh
 CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
 
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur
-main.obj: CFLAGS = -Od /nologo -D WIN32 -D pp_WIN_INTEL
+main.obj: CFLAGS = -Od /nologo -D pp_WIN_INTEL
 
 #*** General Purpose Rules ***
 
@@ -80,14 +80,14 @@ linux_osx_check : $(linux_osx_chk)
 
 # ------------- win_check ----------------
 
-win_check : CFLAGS    = -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
+win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
 win_check : INC_DIR += -I $(SOURCE_DIR)/pthreads
 win_check : $(win_chk)
 	$(CLANGWINSUMMARY) wind2fds.summary
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od /nologo -I $(SOURCE_DIR)/pthreads -D WIN32 -D X64 $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -Od /nologo -I $(SOURCE_DIR)/pthreads -D X64 $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = wind2fds_win_64.exe
 
@@ -96,7 +96,7 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu win 64 ----------------
 
-gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
+gnu_win_64 : CFLAGS    = -O0 -m64 -D GLEW_STATIC -D MINGW
 gnu_win_64 : CC        = gcc
 gnu_win_64 : exe       = wind2fds_win_64.exe
 
@@ -105,7 +105,7 @@ gnu_win_64 : $(obj)
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = wind2fds_linux_64
 
@@ -114,7 +114,7 @@ intel_linux_64 : $(obj)
 
 # ------------- gnu linux 64 ----------------
 
-gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_GCC -Wall $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64 : CFLAGS    = -O0 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = wind2fds_linux_64
 
@@ -124,8 +124,8 @@ gnu_linux_64 : $(obj)
 
 # ------------- gnu linux 64 db ----------------
 
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -D pp_GCC -Wall $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : exe       = wind2fds_linux_64_db
 
@@ -134,7 +134,7 @@ gnu_linux_64_db : $(obj)
 
 # ------------- gnu osx 64 ----------------
 
-gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+gnu_osx_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : exe       = wind2fds_osx_64
 
@@ -143,7 +143,7 @@ gnu_osx_64 : $(obj)
 
 # ------------- gnu osx 64 db ----------------
 
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -D pp_OSX -Wall $(GITINFO) $(GNU_COMPINFO)
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : exe       = wind2fds_osx_64_db
 
@@ -152,7 +152,7 @@ gnu_osx_64_db : $(obj)
 
 # ------------- clang osx 64 ----------------
 
-clang_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+clang_osx_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
 clang_osx_64 : CC        = clang
 clang_osx_64 : exe       = wind2fds_osx_64
 
@@ -161,7 +161,7 @@ clang_osx_64 : $(obj)
 
 # ------------- gnu osx 64 db ----------------
 
-clang_osx_64_db : CFLAGS    = -O0 -m64 -D pp_OSX -Wall $(GITINFO) $(GNU_COMPINFO)
+clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
 clang_osx_64_db : CC        = clang
 clang_osx_64_db : exe       = wind2fds_osx_64_db
 

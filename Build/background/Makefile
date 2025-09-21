@@ -76,7 +76,7 @@ linux_osx_check : $(linux_osx_chk)
 
 # ------------- win_check ----------------
 
-win_check : CFLAGS    = -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
+win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
 win_check : INC_DIR += -I $(SOURCE_DIR)/pthreads
 win_check : $(win_chk)
 	$(CLANGWINSUMMARY) background.summary
@@ -85,7 +85,7 @@ win_check : $(win_chk)
 
 # ------------- intel Win 64 ----------------
 
-intel_win_64 : CFLAGS    = -O1 /nologo -D X64 -D WIN32 -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/shared $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -O1 /nologo -D X64 -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/shared $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = background_win_64.exe
 
@@ -94,7 +94,7 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu Win 64 ----------------
 
-gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
+gnu_win_64 : CFLAGS    = -O0 -m64 -D GLEW_STATIC -D MINGW
 gnu_win_64 : CC        = gcc
 gnu_win_64 : exe       = background_win_64.exe
 
@@ -103,7 +103,7 @@ gnu_win_64 : $(obj)
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = background_linux_64
 
@@ -112,7 +112,7 @@ intel_linux_64 : $(obj)
 
 # ------------- gnu Linux 64 ----------------
 
-gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = background_linux_64
 
@@ -121,7 +121,7 @@ gnu_linux_64: $(obj)
 
 # ------------- gnu Linux 64 db ----------------
 
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : exe       = background_linux_64
 
@@ -129,7 +129,7 @@ gnu_linux_64_db: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
 
 # ------------- gcc OSX 64 ----------------
-gnu_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+gnu_osx_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : exe       = background_osx_64
 
@@ -138,7 +138,7 @@ gnu_osx_64 : $(obj)
 
 # ------------- gnu OSX debug ----------------
 
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D pp_OSX -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : exe       = background_osx_64_db
 
@@ -146,7 +146,7 @@ gnu_osx_64_db : $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj)  -lm
 
 # ------------- clang OSX 64 ----------------
-clang_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+clang_osx_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 clang_osx_64 : CC        = clang
 clang_osx_64 : exe       = background_osx_64
 
@@ -155,7 +155,7 @@ clang_osx_64 : $(obj)
 
 # ------------- clang OSX debug ----------------
 
-clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D pp_OSX -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
+clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
 clang_osx_64_db : CC        = clang
 clang_osx_64_db : exe       = background_osx_64_db
 

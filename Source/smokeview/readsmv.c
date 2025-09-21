@@ -8469,7 +8469,7 @@ void WriteIni(int flag,char *filename){
 #ifdef pp_OSX
     PRINTF("Platform: OSX64\n");
 #endif
-#ifdef pp_LINUX
+#ifdef __linux__
     fprintf(fileout,"# Platform: LINUX64\n");
 #endif
 

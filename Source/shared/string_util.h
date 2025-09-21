@@ -182,7 +182,7 @@ EXTERNCPP                unsigned char *DecodeData(unsigned char *buffer, int nb
 
 // vvvvvvvvvvvvvvvvvvvvvvvv variables vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-#ifdef WIN32
+#ifdef _WIN32
 STREXTERN char STRDECL(dirseparator[],"\\");
 #else
 STREXTERN char STRDECL(dirseparator[],"/");

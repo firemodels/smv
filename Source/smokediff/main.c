@@ -70,7 +70,7 @@ int main(int argc, char **argv){
   display_warnings=1;
   SetStdOut(stdout);
   initMALLOC();
-#ifdef WIN32
+#ifdef _WIN32
   strcpy(dirseparator,"\\");
 #else
   strcpy(dirseparator,"/");

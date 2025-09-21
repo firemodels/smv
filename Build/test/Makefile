@@ -35,7 +35,7 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od -D WIN32 /nologo
+intel_win_64 : CFLAGS    = -Od /nologo
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = test_win_64.exe
 

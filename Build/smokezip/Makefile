@@ -52,7 +52,7 @@ CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur
 # don't think the following is needed anymore - keeping it around for awhile to make it easier to put
 # back in case it is needed
-#main.obj: CFLAGS = -Od /nologo -D WIN32 -D pp_WIN_INTEL $(OPT)
+#main.obj: CFLAGS = -Od /nologo -D pp_WIN_INTEL $(OPT)
 
 #*** General Purpose Rules ***
 
@@ -89,7 +89,7 @@ linux_osx_check : $(linux_osx_chk)
 
 # ------------- win_check ----------------
 
-win_check : CFLAGS    = -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
+win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB
 win_check : INC_DIR += -I $(SOURCE_DIR)/pthreads
 win_check : $(win_chk)
 	$(CLANGWINSUMMARY) smokezip.summary
@@ -97,7 +97,7 @@ win_check : $(win_chk)
 # ------------- intel win 64 ----------------
 
 intel_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads
-intel_win_64 : CFLAGS    = -Od /nologo -D WIN32 -D PTW32_STATIC_LIB -D X64  $(OPT) $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
+intel_win_64 : CFLAGS    = -Od /nologo -D PTW32_STATIC_LIB -D X64  $(OPT) $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = smokezip_win_64.exe
 
@@ -107,7 +107,7 @@ intel_win_64 : $(objwin)
 # ------------- gnu win 64 ----------------
 
 gnu_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads
-gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW $(SMV_TESTFLAG)
+gnu_win_64 : CFLAGS    = -O0 -m64 -D GLEW_STATIC -D MINGW $(SMV_TESTFLAG)
 gnu_win_64 : LFLAGS    = -m64
 gnu_win_64 : CC        = gcc
 gnu_win_64 : exe       = smokezip_win_64.exe
@@ -117,7 +117,7 @@ gnu_win_64 : $(obj)
 
 # ------------- gnu linux 64 ----------------
 
-gnu_linux_64 : CFLAGS    = -O0 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+gnu_linux_64 : CFLAGS    = -O0 -m64 -Wall $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
 gnu_linux_64 : LFLAGS    = -m64 -lm
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = smokezip_linux_64
@@ -127,7 +127,7 @@ gnu_linux_64 : $(obj)
 
 # ------------- gnu linux 64 ----------------
 
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
 gnu_linux_64_db : LFLAGS    = -m64 -lm
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : exe       = smokezip_linux_64_db
@@ -138,7 +138,7 @@ gnu_linux_64_db : $(obj)
 
 # ------------- gnu osx 64 ----------------
 
-gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_OSX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+gnu_osx_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
 gnu_osx_64 : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : exe       = smokezip_osx_64
@@ -148,7 +148,7 @@ gnu_osx_64 : $(obj)
 
 # ------------- gnu osx 64 db ----------------
 
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
 gnu_osx_64_db : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : exe       = smokezip_osx_64_db
@@ -158,7 +158,7 @@ gnu_osx_64_db : $(obj)
 
 # ------------- clang osx 64 ----------------
 
-clang_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_OSX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+clang_osx_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
 clang_osx_64 : LFLAGS    = -L $(LIB_DIR)/clang_osx_64 -lz -lpthread
 clang_osx_64 : CC        = clang
 clang_osx_64 : exe       = smokezip_osx_64
@@ -168,7 +168,7 @@ clang_osx_64 : $(obj)
 
 # ------------- clang osx 64 db ----------------
 
-clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
+clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
 clang_osx_64_db : LFLAGS    = -L $(LIB_DIR)/clang_osx_64 -lz -lpthread
 clang_osx_64_db : CC        = clang
 clang_osx_64_db : exe       = smokezip_osx_64_db
@@ -180,7 +180,7 @@ clang_osx_64_db : $(obj)
 # ------------- intel linux 64 ----------------
 
 intel_linux_64_db : CFLAGS    = -O2 -m64 ${INC_DIR} -Wall -Wextra -Wuninitialized -Wunused-function \
-                                -Wunused-variable -Wno-sign-compare -Wno-unused-parameter -Wno-string-concatenation -D pp_LINUX \
+                                -Wunused-variable -Wno-sign-compare -Wno-unused-parameter -Wno-string-concatenation \
                                 $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
 intel_linux_64_db : LFLAGS    = -L $(LIB_DIR)/intel_linux_64 -lz -lpthread -static-intel
 intel_linux_64_db : CC        = $(I_ICC)
@@ -190,7 +190,7 @@ intel_linux_64_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- intel linux 64 ----------------
-intel_linux_64 : CFLAGS    = -O2 -m64 ${INC_DIR} -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
+intel_linux_64 : CFLAGS    = -O2 -m64 ${INC_DIR} $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
 intel_linux_64 : LFLAGS    = -L $(LIB_DIR)/intel_linux_64 -lz -lpthread -static-intel
 intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = smokezip_linux_64

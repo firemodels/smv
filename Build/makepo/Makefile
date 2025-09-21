@@ -40,7 +40,7 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -O2 /nologo -I $(SOURCE_DIR)/pthreads -D X64 -D WIN32 -D PTW32_STATIC_LIB  $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -O2 /nologo -I $(SOURCE_DIR)/pthreads -D X64 -D PTW32_STATIC_LIB  $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : LFLAGS    =
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = makepo_win_64.exe
@@ -50,7 +50,7 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu win 64 ----------------
 
-gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
+gnu_win_64 : CFLAGS    = -O0 -m64 -D GLEW_STATIC -D MINGW
 gnu_win_64 : LFLAGS    =
 gnu_win_64 : CC        = gcc
 gnu_win_64 : exe       = makepo_win_64.exe
@@ -60,7 +60,7 @@ gnu_win_64 : $(obj)
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : LFLAGS    = -lpthread
 intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = makepo_linux_64
@@ -70,7 +70,7 @@ intel_linux_64 : $(obj)
 
 # ------------- gnu linux 64 ----------------
 
-gcc_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
+gcc_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 gcc_linux_64 : LFLAGS    = -lm
 gcc_linux_64 : CC        = gcc
 gcc_linux_64 : exe       = makepo_linux_64
@@ -80,7 +80,7 @@ gcc_linux_64 : $(obj)
 
 # ------------- gcc osx 64 ----------------
 
-gcc_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+gcc_osx_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 gcc_osx_64 : CC        = clang
 gcc_osx_64 : exe       = makepo_osx_64
 
@@ -89,7 +89,7 @@ gcc_osx_64 : $(obj)
 
 # ------------- clang osx 64 ----------------
 
-clang_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+clang_osx_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 clang_osx_64 : CC        = gcc
 clang_osx_64 : exe       = makepo_osx_64
 

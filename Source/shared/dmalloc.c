@@ -8,7 +8,7 @@
 #ifdef pp_MEMDEBUG
 static int checkmemoryflag=1;
 #endif
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 #ifdef pp_OSX
@@ -19,7 +19,7 @@ static int checkmemoryflag=1;
 static blockinfo *GetBlockInfo(bbyte *pb);
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 
 /* ------------------ memusage ------------------------ */
 
@@ -44,7 +44,7 @@ int memusage(void){
 
 /* ------------------ MemoryLoad ------------------------ */
 
-#ifdef WIN32
+#ifdef _WIN32
 int MemoryLoad(void){
   MEMORYSTATUS stat;
 
@@ -52,7 +52,7 @@ int MemoryLoad(void){
   return (int)stat.dwMemoryLoad;
 }
 #endif
-#ifdef pp_LINUX
+#ifdef __linux__
 int MemoryLoad(void){
   FILE *fp = fopen("/proc/meminfo", "r");
   if(fp == NULL)return -1;
@@ -400,7 +400,7 @@ mallocflag __NewMemory(void **ppv, size_t size, int memory_id, const char *varna
   const char *varname2;
   const char *file2;
   char ampersand='&';
-#ifdef WIN32
+#ifdef _WIN32
   char dirsep='\\';
 #else
   char dirsep='/';

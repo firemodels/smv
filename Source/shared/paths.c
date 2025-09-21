@@ -180,7 +180,7 @@ char *CasePathEvent(smv_case *scase){
 
 // char *ffmpeg_command_filename;
 char *CasePathFfmpegCommand(smv_case *scase){
-#ifdef WIN32
+#ifdef _WIN32
   return SetupPath(NULL, scase->fdsprefix, "_ffmpeg.bat");
 #else
   return SetupPath(NULL, scase->fdsprefix, "_ffmpeg.sh");
