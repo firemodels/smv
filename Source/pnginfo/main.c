@@ -125,7 +125,7 @@ int main(int argc, char **argv){
   }
   fclose(stream_png_infile);
 
-  unsigned char *image_buffer, *revision_data;
+  unsigned char *image_buffer, *flip_image_buffer, *revision_data;
   int width, height, is_transparent, nrevision_data;
   int skip = 4, channel = 2;
 
@@ -193,6 +193,7 @@ int main(int argc, char **argv){
         printf("***error: file %s could not be opened for input\n", encode_file);
         return 1;
       }
+      fclose(stream);
     }
 
     stream_encode_file = fopen(encode_file, "rb");
@@ -207,7 +208,18 @@ int main(int argc, char **argv){
     NewMemory((void **)&buffer_encode_file, nencode_file+1);
     fread(buffer_encode_file, 1, nencode_file, stream_encode_file);
     fclose(stream_encode_file);
-    EncodeData(image_buffer, width*height, buffer_encode_file, nencode_file, skip, channel);
+    flip_image_buffer = FlipImage(image_buffer, width, height, skip);
+    int nencode_file_max = (width*height - 64)/32;
+    if(nencode_file>nencode_file_max){
+      printf("***warning: maximum number characters that can be encoded in %s is %i\n", png_infile, nencode_file_max);
+      printf("            file %s truncated to %i characters\n", encode_file, nencode_file_max);
+      nencode_file = nencode_file_max;
+    }
+    if(flip_image_buffer != NULL){
+      EncodeData(flip_image_buffer, width * height, buffer_encode_file, nencode_file, skip, channel);
+      FREEMEMORY(image_buffer);
+      image_buffer = FlipImage(flip_image_buffer, width, height, skip);
+    }
 
     gdImagePtr RENDERimage;
 
