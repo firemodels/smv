@@ -659,7 +659,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
 
           sprintf(infobuffer, "%s\n%s", fds_label, smv_label);
           ninfobuffer = strlen(infobuffer);
-          EncodeData(rgb_locals, nrgb_locals, (unsigned char *)infobuffer, ninfobuffer, skip, channel);
+          EncodePNGData(rgb_locals, nrgb_locals, (unsigned char *)infobuffer, ninfobuffer, skip, channel);
           count = 0;
           for(i = imin_height; i < imax_height; i++){
             for(j = jmin_width; j < jmax_width; j++){

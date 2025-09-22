@@ -136,7 +136,7 @@ int main(int argc, char **argv){
   }
 
   if(encode == 0){
-    revision_data = DecodeData(image_buffer, width*height, &nrevision_data, skip, channel);
+    revision_data = DecodePNGData(image_buffer, width*height, &nrevision_data, skip, channel);
     if(revision_data == NULL){
       if(use_html == 1){
         printf("FDS revision unavailable<br>SMV revision unavailable\n");
@@ -214,7 +214,7 @@ int main(int argc, char **argv){
       printf("            file %s truncated to %i characters\n", encode_file, nencode_file_max);
       nencode_file = nencode_file_max;
     }
-    EncodeData(image_buffer, width * height, buffer_encode_file, nencode_file, skip, channel);
+    EncodePNGData(image_buffer, width * height, buffer_encode_file, nencode_file, skip, channel);
 
     gdImagePtr RENDERimage;
 
