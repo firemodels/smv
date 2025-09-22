@@ -23,10 +23,11 @@ void Usage(int option){
   PRINTF("\n");
   PRINTF("pnginfo [options] image_file.png\n");
   PRINTF("%s - %s\n\n", githash, __DATE__);
-  PRINTF("get FDS and Smokeview repo revisions from an image file\n\n");
+  PRINTF("output data encoded in a png file.  By default \n");
+  PRINTF("this data is FDS and Smokeview repo revisions\n\n");
   PRINTF("options:\n");
   PRINTF("-encode file - encode data found in file\n");
-  PRINTF("-out file    - output modified png file to file [default: image_file_mod.png]\n");
+  PRINTF("-out file    - output encoded png data to 'file' [default: image_file_mod.png]\n");
   PRINTF("-h           - display this message\n");
   PRINTF("-html        - convert line feeds to <br> html tags\n");
 
