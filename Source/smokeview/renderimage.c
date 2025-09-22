@@ -13,6 +13,7 @@
 #include "gd.h"
 #include "IOscript.h"
 #include "paths.h"
+#include "readimage.h"
 
 /* ------------------ PlayMovie ------------------------ */
 
