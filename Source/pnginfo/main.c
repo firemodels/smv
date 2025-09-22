@@ -25,10 +25,8 @@ void Usage(int option){
   PRINTF("%s - %s\n\n", githash, __DATE__);
   PRINTF("get FDS and Smokeview repo revisions from an image file\n\n");
   PRINTF("options:\n");
-#ifdef pp_ENCODE_FILE
   PRINTF("-encode file - encode data found in file\n");
   PRINTF("-out file    - output modified png file to file [default: image_file_mod.png]\n");
-#endif
   PRINTF("-h           - display this message\n");
   PRINTF("-html        - convert line feeds to <br> html tags\n");
 
@@ -72,7 +70,6 @@ int main(int argc, char **argv){
       else if(strcmp(arg, "-html") == 0){
         use_html = 1;
       }
-#ifdef pp_ENCODE_FILE
       else if(strcmp(arg, "-encode") == 0){
         int lenfile;
         char *file_arg;
@@ -94,7 +91,6 @@ int main(int argc, char **argv){
         NewMemory((void **)&png_outfile, lenfile);
         strcpy(encode_file, file_arg);
       }
-#endif
       else{
         Usage(HELP_ALL);
         return 1;
