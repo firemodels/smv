@@ -194,6 +194,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define RENDER_START         3
 #define RENDER_START_NORMAL 12
+#define RENDER_START_GIF    21
 #define RENDER_START_360    10
 
 #define RESEARCH_MODE 114
@@ -387,6 +388,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 // render_mode values:
 #define RENDER_NORMAL 0
 #define RENDER_360    1
+#define RENDER_GIF    2
 
 // render_times values:
 #define RENDER_SINGLETIME 0
@@ -827,6 +829,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define RenderStart             990
 #define RenderStartHIGHRES      988
 #define RenderStartORIGRES      987
+#define RenderStartGIF          981
 #define RenderStart360          986
 #define Render360               989
 #define RENDER_CURRENT_SINGLE   998
