@@ -90,7 +90,7 @@ int main(int argc, char **argv){
         file_arg = (char *)argv[i];
         lenfile = strlen(file_arg)+1;
         NewMemory((void **)&png_outfile, lenfile);
-        strcpy(encode_file, file_arg);
+        strcpy(png_outfile, file_arg);
       }
       else{
         Usage(HELP_ALL);
