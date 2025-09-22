@@ -603,21 +603,21 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
   RENDERimage = gdImageCreateTrueColor(width_hat,height_hat);
 
   for(irow=0;irow<nfactor;irow++){
-    int icol, imin, imax;
+    int icol, imin_height, imax_height;
 
-    imin = irow*screenHeight;
-    imax = (irow+1)*screenHeight;
+    imin_height = irow*screenHeight;
+    imax_height = (irow+1)*screenHeight;
 
     for(icol=0;icol<nfactor;icol++){
       GLubyte *p;
-      int jmin, jmax;
+      int jmin_width, jmax_width;
 
-      jmin = icol*screenWidth;
-      jmax = (icol+1)*screenWidth;
+      jmin_width = icol*screenWidth;
+      jmax_width = (icol+1)*screenWidth;
 
       p = *screenbuffers++;
       if(clip_rendered_scene==1&&
-            (jmax<clip_left_hat||jmin>clip_right_hat||imax<clip_bottom_hat||imin>clip_top_hat)){
+            (jmax_width<clip_left_hat|| jmin_width>clip_right_hat|| imax_height<clip_bottom_hat|| imin_height>clip_top_hat)){
             continue;
       }
 
@@ -625,11 +625,11 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
         unsigned char *rgb_locals=NULL;
         int nrgb_locals, count = 0;
 
-        nrgb_locals = (imax + 1 - imin) * (jmax + 1 - jmin);
+        nrgb_locals = (imax_height + 1 - imin_height) * (jmax_width + 1 - jmin_width);
         if(nrgb_locals > 0){
           NewMemory(( void ** )&rgb_locals, 3*nrgb_locals);
-          for(i = imin; i < imax; i++){
-            for(j = jmin; j < jmax; j++){
+          for(i = imin_height; i < imax_height; i++){
+            for(j = jmin_width; j < jmax_width; j++){
               r = *p++; g = *p++; b = *p++;
               if(clip_rendered_scene==0 ||
                 (clip_left_hat<=j&&j<=clip_right_hat&&clip_bottom_hat<=i&&i<=clip_top_hat)){
@@ -661,8 +661,8 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
           ninfobuffer = strlen(infobuffer);
           EncodeData(rgb_locals, nrgb_locals, (unsigned char *)infobuffer, ninfobuffer, skip, channel);
           count = 0;
-          for(i = imin; i < imax; i++){
-            for(j = jmin; j < jmax; j++){
+          for(i = imin_height; i < imax_height; i++){
+            for(j = jmin_width; j < jmax_width; j++){
               if(clip_rendered_scene==0 ||
                  (clip_left_hat<=j&&j<=clip_right_hat&&clip_bottom_hat<=i&&i<=clip_top_hat)){
                 r = rgb_locals[count++];
@@ -677,8 +677,8 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
         }
       }
       else{
-        for(i = imin; i < imax; i++){
-          for(j = jmin; j < jmax; j++){
+        for(i = imin_height; i < imax_height; i++){
+          for(j = jmin_width; j < jmax_width; j++){
             r = *p++; g = *p++; b = *p++;
             if(clip_rendered_scene == 0 ||
               ( clip_left_hat <= j && j <= clip_right_hat &&
