@@ -2277,3 +2277,16 @@ void EncodeData(unsigned char *buffer, int nbuffer, unsigned char *data, int nda
     }
   }
 }
+
+/* ------------------ FlipImage ------------------------ */
+
+unsigned char *FlipImage(unsigned char *image, int width, int height, int skip){
+  unsigned char *flip_image=NULL;
+  int i;
+
+  if(width <= 0 || height <= 0 || NewMemory(( void ** )&flip_image, skip*width*height + 1) == 0)return NULL;
+  for(i = 0; i < height; i++){
+    memcpy(flip_image + i*skip*width, image + (height - 1 - i)*skip*width, skip*width);
+  }
+  return flip_image;
+}
