@@ -115,11 +115,11 @@ void TransparentOff(void){
 /* ------------------ SetViewPoint ------------------------ */
 
 void SetViewPoint(int option){
+  int rotation_type_save;
+  int projection_type_save;
+
   in_external=0;
   switch(option){
-    int rotation_type_save;
-    int projection_type_save;
-
   case RESTORE_EXTERIOR_VIEW_ZOOM:
     break;
   case RESTORE_EXTERIOR_VIEW:

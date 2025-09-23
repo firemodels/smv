@@ -4981,13 +4981,12 @@ void LoadSliceMenu(int value){
     LoadSlicei(SET_SLICECOLOR,value, ALL_FRAMES, NULL);
   }
   else{
+    slicedata *slicei;
+    int submenutype;
+    char *submenulabel;
+    int dir;
+    int last_slice;
     switch(value){
-      slicedata *slicei;
-      int submenutype;
-      char *submenulabel;
-      int dir;
-      int last_slice;
-
       case UNLOAD_ALL:
         for(i=0;i<global_scase.slicecoll.nsliceinfo;i++){
           slicei = global_scase.slicecoll.sliceinfo + i;

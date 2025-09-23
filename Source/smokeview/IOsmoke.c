@@ -494,8 +494,9 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   glUniform1f(GPU_fire_alpha, smoke3di->fire_alpha);
 
   TransparentOn();
+
+  unsigned char *smokealpha_map, *firealpha_map;
   switch(ssmokedir){
-    unsigned char *smokealpha_map, *firealpha_map;
 
     // +++++++++++++++++++++++++++++++++++ DIR 1 +++++++++++++++++++++++++++++++++++++++
 
@@ -1475,9 +1476,9 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
   TransparentOn();
-  switch(ssmokedir){
-    unsigned char *smokealpha_map, *firealpha_map;
 
+  unsigned char *smokealpha_map, *firealpha_map;
+  switch(ssmokedir){
     // +++++++++++++++++++++++++++++++++++ DIR 1 +++++++++++++++++++++++++++++++++++++++
 
   case 1:
@@ -3785,9 +3786,9 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
   iframe_local = smoke3di->ismoke3d_time;
   countin = smoke3di->nchars_compressed_smoke[iframe_local];
   countout=smoke3di->nchars_uncompressed;
-  switch(smoke3di->compression_type){
-    unsigned char *buffer_in;
 
+  unsigned char *buffer_in;
+  switch(smoke3di->compression_type){
   case COMPRESSED_RLE:
     buffer_in = smoke3di->smokeframe_comp_list[iframe_local];
     countout = UnCompressRLE(buffer_in,countin,smoke3di->smokeframe_in);

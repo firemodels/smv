@@ -2064,9 +2064,9 @@ void DrawSmoke3DVol(void){
     if(vr->firedataptr==NULL&&vr->smokedataptr==NULL)continue;
 
     glBegin(GL_TRIANGLES);
-    switch(iwall){
-      float *smokecolor_base;
 
+    float *smokecolor_base;
+    switch(iwall){
       case XWALLMIN:
       case XWALLMAX:
         if(iwall<0){

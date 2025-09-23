@@ -985,9 +985,8 @@ void SetCVentDirs(void){
         boxmax[dir-1]+=0.1;
       }
 
+      int ventdir;
       switch(dir){
-        int ventdir;
-
       case XDIR:
         if(cvi->imin==0){
           orien=1;

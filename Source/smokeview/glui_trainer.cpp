@@ -143,10 +143,9 @@ extern "C" void GLUIUpdateTrainerMoves(void){
 /* ------------------ TrainerCB ------------------------ */
 
 void TrainerCB(int var){
+  int i;
 
   switch(var){
-    int i;
-
   case TRAINER_PAUSE:
     stept = trainer_pause;
     Keyboard('t', FROM_SMOKEVIEW);

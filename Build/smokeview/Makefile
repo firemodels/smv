@@ -353,6 +353,36 @@ gnu_linux_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
 		$(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
 
+# ------------- clang_linux_64_db ----------------
+
+clang_linux_64_db : LIB_DIR_PLAT = $(LIB_DIR)/clang_linux_64
+clang_linux_64_db : CFLAGS    = -O0  -m64 -ggdb -Wall -Wunreachable-code -Wswitch-default -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized -Wno-address -Wno-undef -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(SMV_TESTFLAG) $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
+clang_linux_64_db : C_STANDARD    = -std=gnu99
+clang_linux_64_db : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
+clang_linux_64_db : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
+clang_linux_64_db : CC        = clang
+clang_linux_64_db : CPP       = clang++
+clang_linux_64_db : exe       = smokeview_linux_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
+
+clang_linux_64_db : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
+		$(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
+
+# ------------- clang_linux_64 ----------------
+
+clang_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/clang_linux_64
+clang_linux_64 : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings          $(SMV_TESTFLAG) $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
+clang_linux_64 : C_STANDARD    = -std=gnu99
+clang_linux_64 : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
+clang_linux_64 : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
+clang_linux_64 : CC        = clang
+clang_linux_64 : CPP       = clang++
+clang_linux_64 : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
+
+clang_linux_64 : $(obj)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
+		$(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
+
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   check source   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV

@@ -1069,13 +1069,13 @@ void SetPlot2DShowLabel(void){
 /* ------------------ GLUIGenPlotCB ------------------------ */
 
 void GLUIGenPlotCB(int var){
+  char label[256];
+  int index;
+  curvedata *curve;
+  int curve_id;
+
   GLUTPOSTREDISPLAY;
   switch(var){
-    char label[256];
-    int index;
-    curvedata *curve;
-    int curve_id;
-
     case GENPLOT_RESET_BOUNDS:
       plot2ddata *plot2dii;
       int i;
