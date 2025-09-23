@@ -2102,6 +2102,8 @@ void RenderMenu(int value){
   case RenderStart360:
     RenderCB(RENDER_START_360);
     break;
+
+#if GD_MAJOR_VERSION >= 2 && GD_MINOR_VERSION >= 1
   case RenderStartGIF:
     render_mode = RENDER_GIF;
     resolution_multiplier=1;
@@ -2117,6 +2119,7 @@ void RenderMenu(int value){
     }
     RenderMenu(RenderStart);
     break;
+#endif
   case RenderStartORIGRES:
     render_mode = RENDER_NORMAL;
     resolution_multiplier=1;

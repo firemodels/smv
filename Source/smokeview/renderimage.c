@@ -490,6 +490,7 @@ void OutputSliceData(void){
   }
 }
 
+#if GD_MAJOR_VERSION >= 2 && GD_MINOR_VERSION >= 1
 static gdImagePtr im = NULL;
 static gdImagePtr prev = NULL;
 static FILE *out = NULL;
@@ -553,7 +554,7 @@ int GifAddFrame(int delay) {
   FREEMEMORY(OpenGLimage);
   return 0;
 }
-
+#endif
 
 /* ------------------ RenderFrame ------------------------ */
 
