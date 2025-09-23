@@ -26,63 +26,63 @@ endif()
 
 # parse_simple_slice
 add_executable(parse_simple_slice parse_simple_slice.c)
-target_link_libraries(parse_simple_slice PRIVATE libsmv)
+target_link_libraries(parse_simple_slice PRIVATE smv)
 
 # parse_simple_bndf
 add_executable(parse_simple_bndf parse_simple_bndf.c)
-target_link_libraries(parse_simple_bndf PRIVATE libsmv)
+target_link_libraries(parse_simple_bndf PRIVATE smv)
 
 # parse_simple_part
 add_executable(parse_simple_part parse_simple_part.c)
-target_link_libraries(parse_simple_part PRIVATE libsmv)
+target_link_libraries(parse_simple_part PRIVATE smv)
 
 # parse_simple_pl3d
 add_executable(parse_simple_pl3d parse_simple_pl3d.c)
-target_link_libraries(parse_simple_pl3d PRIVATE libsmv)
+target_link_libraries(parse_simple_pl3d PRIVATE smv)
 
 # parse_cad
 add_executable(parse_cad parse_cad.c)
-target_link_libraries(parse_cad PRIVATE libsmv)
+target_link_libraries(parse_cad PRIVATE smv)
 
 # test_objects
 add_executable(test_objects test_objects.c)
-target_link_libraries(test_objects PRIVATE libsmv)
+target_link_libraries(test_objects PRIVATE smv)
 
 # parse_hvac_vals
 add_executable(parse_hvac_vals parse_hvac_vals.c)
-target_link_libraries(parse_hvac_vals PRIVATE libsmv)
+target_link_libraries(parse_hvac_vals PRIVATE smv)
 
 # test_labels
 add_executable(test_labels test_labels.c)
-target_link_libraries(test_labels PRIVATE libsmv)
+target_link_libraries(test_labels PRIVATE smv)
 
 # parse_objects
 add_executable(parse_objects parse_objects.c)
-target_link_libraries(parse_objects PRIVATE libsmv)
+target_link_libraries(parse_objects PRIVATE smv)
 
 # parse_colorbar
 add_executable(parse_colorbar parse_colorbar.c)
-target_link_libraries(parse_colorbar PRIVATE libsmv)
+target_link_libraries(parse_colorbar PRIVATE smv)
 
 # mem_test
 add_executable(mem_test mem_test.c)
-target_link_libraries(mem_test PRIVATE libsmv)
+target_link_libraries(mem_test PRIVATE smv)
 
 # test_root_dir
 add_executable(test_root_dir test_root_dir.c)
-target_link_libraries(test_root_dir PRIVATE libsmv)
+target_link_libraries(test_root_dir PRIVATE smv)
 
 # test_iter_dir
 add_executable(test_iter_dir test_iter_dir.c)
-target_link_libraries(test_iter_dir PRIVATE libsmv)
+target_link_libraries(test_iter_dir PRIVATE smv)
 
 # test_unicode_paths
 add_executable(test_unicode_paths unicode_paths.c)
-target_link_libraries(test_unicode_paths PRIVATE libsmv)
+target_link_libraries(test_unicode_paths PRIVATE smv)
 
 # sort_surfs
 add_executable(sort_surfs sort_surfs.c)
-target_link_libraries(sort_surfs PRIVATE libsmv)
+target_link_libraries(sort_surfs PRIVATE smv)
 
 
 # Arguments to this tests are <slice path> <number of frames in slice>

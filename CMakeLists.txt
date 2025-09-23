@@ -20,18 +20,9 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 # Requires adherence to this standard
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
-if(WIN32)
-    # Set the folder for executables and libraries as the install directory.
-    # Using the same conventions as  GNUInstallDirs may be better but this
-    # matches the current setup.
-    set(CMAKE_INSTALL_BINDIR ".")
-    set(CMAKE_INSTALL_LIBDIR ".")
-    set(CMAKE_INSTALL_SYSCONFDIR ".")
-else()
-    # GNUInstallDirs is used to set the appropriate paths on linux (/usr/lib64
-    # etc).
-    include(GNUInstallDirs)
-endif()
+# GNUInstallDirs is used to set the appropriate paths for install artefacts.
+# Despite the name it's still useful on Windows.
+include(GNUInstallDirs)
 add_compile_definitions(pp_GITHASH="${PROJECT_VERSION}+sc2")
 
 include(InstallRequiredSystemLibraries)
