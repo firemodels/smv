@@ -196,10 +196,12 @@ int main(int argc, char **argv){
     stream_encode_file = fopen(encode_file, "rb");
     if(stream_encode_file == NULL){
       printf("***error: file %s could not be opened\n", encode_file);
+      return 1;
     }
     nencode_file = GetFileSizeSMV(encode_file);
     if(nencode_file <= 0){
       printf("***error: file %s is empty\n",encode_file);
+      fclose(stream_encode_file);
       return 1;
     }
     NewMemory((void **)&buffer_encode_file, nencode_file+1);

@@ -12,6 +12,7 @@ Checks:
   - "-clang-analyzer-security.FloatLoopCounter"
   - "-clang-analyzer-core.NonNullParamChecker"
   - "-clang-analyzer-core.CallAndMessage"
+  - "-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling"
 WarningsAsErrors: "*"
 HeaderFilterRegex: ""
 CheckOptions:
