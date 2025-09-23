@@ -142,6 +142,26 @@ gnu_linux_64_db : exe       = pnginfo_linux_64_db
 gnu_linux_64_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
+# ------------- clang linux 64 ----------------
+
+clang_linux_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
+clang_linux_64 : LFLAGS    = -m64 -L $(LIB_DIR)/clang_linux_64 $(PNG_LIBS) $(SYSTEM_LIBS) -lm
+clang_linux_64 : CC        = clang
+clang_linux_64 : exe       = pnginfo_linux_64
+
+clang_linux_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+# ------------- gnu linux 64 ----------------
+
+clang_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO)
+clang_linux_64_db : LFLAGS    = -m64 -L $(LIB_DIR)/clang_linux_64 $(PNG_LIBS) $(SYSTEM_LIBS) -lm
+clang_linux_64_db : CC        = clang
+clang_linux_64_db : exe       = pnginfo_linux_64_db
+
+clang_linux_64_db : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
 
 # ------------- gnu osx 64 ----------------
 
