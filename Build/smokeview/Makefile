@@ -356,7 +356,7 @@ gnu_linux_64 : $(obj)
 # ------------- clang_linux_64_db ----------------
 
 clang_linux_64_db : LIB_DIR_PLAT = $(LIB_DIR)/clang_linux_64
-clang_linux_64_db : CFLAGS    = -O0  -m64 -ggdb -Wall -Wunreachable-code -Wswitch-default -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized -Wno-address -Wno-format-overflow -Wno-format-truncation -Wno-undef -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(SMV_TESTFLAG) $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
+clang_linux_64_db : CFLAGS    = -O0  -m64 -ggdb -Wall -Wunreachable-code -Wswitch-default -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized -Wno-address -Wno-undef -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(SMV_TESTFLAG) $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
 clang_linux_64_db : C_STANDARD    = -std=gnu99
 clang_linux_64_db : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 clang_linux_64_db : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
