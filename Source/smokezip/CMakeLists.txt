@@ -10,6 +10,6 @@ add_executable(smokezip
     threaderzip.c
 )
 target_include_directories(smokezip PRIVATE .)
-target_link_libraries(smokezip PRIVATE libsmv)
+target_link_libraries(smokezip PRIVATE smv)
 
 install(TARGETS smokezip)

@@ -5,4 +5,4 @@ add_executable(fds2fed
     fds2fed.c
 )
 target_include_directories(fds2fed PRIVATE .)
-target_link_libraries(fds2fed PRIVATE libsmv)
+target_link_libraries(fds2fed PRIVATE smv)
