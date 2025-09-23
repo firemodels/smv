@@ -135,6 +135,26 @@ gnu_linux_64_db : exe       = smokezip_linux_64_db
 gnu_linux_64_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/gnu_linux_64 -lz -lpthread
 
+# ------------- clang linux 64 ----------------
+
+clang_linux_64 : CFLAGS    = -O0 -m64 -Wall $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+clang_linux_64 : LFLAGS    = -m64 -lm
+clang_linux_64 : CC        = clang
+clang_linux_64 : exe       = smokezip_linux_64
+
+clang_linux_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/clang_linux_64 -lz -lpthread
+
+# ------------- gnu linux 64 ----------------
+
+clang_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+clang_linux_64_db : LFLAGS    = -m64 -lm
+clang_linux_64_db : CC        = clang
+clang_linux_64_db : exe       = smokezip_linux_64_db
+
+clang_linux_64_db : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/clang_linux_64 -lz -lpthread
+
 
 # ------------- gnu osx 64 ----------------
 
