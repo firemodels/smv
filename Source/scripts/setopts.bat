@@ -26,6 +26,9 @@ IF "%1" NEQ "g" SET COMPILER2=%I_CC%
 IF "%1" EQU "m" SET COMPILER=cl
 IF "%1" EQU "m" SET COMPILER2=cl
 
+IF "%1" EQU "c" SET COMPILER=clang-cl
+IF "%1" EQU "c" SET COMPILER2=clang-cl
+
 SET COPYLIB=0
 IF "%2" EQU "-copy" SET COPYLIB=1
 IF "%2" EQU "-copy" SET FROMLIB=%3

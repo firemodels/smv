@@ -53,6 +53,10 @@ intel_win_64: CFLAGS= $(NOCLOSE) /Wno-unused_parameter
 intel_win_64 : $(GLUI_OBJSWIN)
 	lib $(GLUI_OBJSWIN) -OUT:libglui.lib
 
+clang_win_64: CFLAGS= $(NOCLOSE)
+clang_win_64 : $(GLUI_OBJSWIN)
+	lib $(GLUI_OBJSWIN) -OUT:libglui.lib
+
 gnu_win_64: CFLAGS=$(NOCLOSE) $(INCS) -fpermissive -Wno-write-strings -Wno-int-to-pointer-cast
 gnu_win_64: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)

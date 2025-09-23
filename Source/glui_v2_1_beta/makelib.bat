@@ -6,6 +6,7 @@ erase *.o *.obj libglui.a libglui.lib
 
 set target=intel_win_64
 if %COMPILER% == gcc set target=gnu_win_64
+if %COMPILER% == clang-cl set target=clang_win_64
 
 set GLUTTYPE=glut
 if x%glutopt% EQU xfreeglut set GLUTTYPE=freeglut

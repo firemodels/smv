@@ -7,6 +7,7 @@ set target=libpthreads.lib
 set CFLAGS=
 if %COMPILER% == gcc set target=libpthreads.a
 if %COMPILER% == gcc set CFLAGS=
+if %COMPILER% == clang-cl set CFLAGS=
 
 set OPT=
 if  NOT "x%COMPILER%" == "xicl" goto endif2

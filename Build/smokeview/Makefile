@@ -160,6 +160,11 @@ else
 endif
 SMV_LIBS_GNU = $(SMV_GNU_LIBDIR)\glui.a $(GLUT_GNU_LIB) $(SMV_GNU_LIBDIR)\gd.a $(SMV_GNU_LIBDIR)\jpeg.a $(SMV_GNU_LIBDIR)\png.a  $(SMV_GNU_LIBDIR)\zlib.a $(SMV_GNU_LIBDIR)\pthreads.a
 
+#--- clang
+
+SMV_CLANG_LIBDIR = $(LIB_DIR)\clang_win_64
+SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\glui.lib $(SMV_CLANG_LIBDIR)\gd.lib $(SMV_CLANG_LIBDIR)\jpeg.lib $(SMV_CLANG_LIBDIR)\png.lib  $(SMV_CLANG_LIBDIR)\zlib.lib $(SMV_CLANG_LIBDIR)\pthreads.lib $(SMV_CLANG_LIBDIR)\glut32.lib
+
 WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 
 # ------------- intel_win_64_san ----------------
@@ -243,6 +248,19 @@ gnu_win_64 : exe       = smokeview_win_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
 gnu_win_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+# ------------- clang_win_64 ----------------
+
+clang_win_64 : DYNLIB_EXT = .dll
+clang_win_64 : INC       += -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/glui_gl -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
+clang_win_64 : CFLAGS    = -m64 -D GLEW_STATIC -D NDEBUG  -D PTW32_STATIC_LIB  $(GITINFO) $(GNU_COMPINFO) $(SMV_PROFILEFLAG)
+clang_win_64 : LFLAGS    = -m64 $(SMV_LIBS_CLANG) $(SMV_PROFILEFLAG) $(WIN32_LIBS)
+clang_win_64 : CC        = clang-cl
+clang_win_64 : CPP       = clang-cl
+clang_win_64 : exe       = smokeview_win_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
+
+clang_win_64 : $(objwin)
+	$(CPP) -o $(bin)/$(exe) $(objwin) $(LFLAGS)
 
 # ------------- gnu_win_64_db ----------------
 
