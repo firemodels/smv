@@ -58,7 +58,7 @@ target_sources(smokeview PRIVATE
     glui_shooter.cpp
 )
 
-target_link_libraries(smokeview PRIVATE libsmv)
+target_link_libraries(smokeview PRIVATE smv)
 # These include directories are an existing workaround that would be good to
 # remove.Because of this custom code and the potential conflict with native libs
 # this needs to be early in the include order.
@@ -130,6 +130,6 @@ if (MSVC)
     target_compile_options(smokeview PRIVATE /wd4005)
 endif()
 
-target_link_libraries(smokeview PRIVATE libsmv)
+target_link_libraries(smokeview PRIVATE smv)
 
 install(TARGETS smokeview)

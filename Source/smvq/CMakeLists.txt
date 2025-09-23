@@ -2,7 +2,7 @@
 add_executable(smvq smvq.c)
 
 target_include_directories(smvq PRIVATE)
-target_link_libraries(smvq PRIVATE libsmv)
+target_link_libraries(smvq PRIVATE smv)
 
 find_package(json-c CONFIG)
 if (NOT json-c_FOUND)

@@ -8,6 +8,6 @@ add_executable(smokediff
     utilities.c
 )
 target_include_directories(smokediff PRIVATE .)
-target_link_libraries(smokediff PRIVATE libsmv)
+target_link_libraries(smokediff PRIVATE smv)
 
 install(TARGETS smokediff)
