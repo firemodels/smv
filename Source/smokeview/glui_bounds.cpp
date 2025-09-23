@@ -3843,10 +3843,10 @@ void BoundsDlgCB(int var){
 #define HIDE_EDGES 2
 
 extern "C" void GLUIImmersedBoundCB(int var){
+  int i;
+
   updatemenu = 1;
   switch(var){
-    int i;
-
   case IMMERSED_SWITCH_CELLTYPE:
     glui_show_vector_slice   = show_vector_slice[slice_celltype];
     glui_slice_edgetype      = slice_edgetypes[slice_celltype];

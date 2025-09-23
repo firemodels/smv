@@ -471,8 +471,7 @@ int CheckScript(char *file){
         if(nparams > kw_last->nparams)printf("          invalid keyword: %s\n", keyword);
         return_val = 2;
       }
-      fclose(stream);
-      return return_val;
+      break;
     }
     line_number++;
     comment = strstr(param_buffer, "//");
@@ -1346,9 +1345,8 @@ int CompileScript(char *scriptfile){
           }
 
           for(i=0;i<ntokens;i++){
+            char label[100];
             switch(tokens[i]){
-              char label[100];
-
               case KW_QUANTITY:
                 scripti->quantity = ctokens[i];
                 break;

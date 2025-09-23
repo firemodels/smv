@@ -2006,6 +2006,7 @@ void UpdateTriangles(int flag,int update){
 
   // update cache
 
+#ifdef XXXDISABLE
   if(0==1){   // don't execute this code yet
     int nverts_max=0, ntriangles_max=0;
     float *vertnormals=NULL, *trinormals = NULL;
@@ -2085,6 +2086,7 @@ void UpdateTriangles(int flag,int update){
     FREEMEMORY(vertnormals);
     FREEMEMORY(trinormals);
   }
+#endif
   updating_triangles = 0;
 }
 

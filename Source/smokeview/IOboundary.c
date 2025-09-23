@@ -1822,9 +1822,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
   patchi->loaded=1;
   iboundarytype=GetBoundaryType(patchi);
-  switch(loadpatchbysteps){
-    int patchstart, i;
 
+  int patchstart;
+  switch(loadpatchbysteps){
     case UNCOMPRESSED_ALLFRAMES:
 
     patchstart = patchi->ntimes_old*meshi->npatchsize;
@@ -1836,12 +1836,16 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       patchmax_global = -patchmin_global;
       patchval = meshi->patchval;
       if(strcmp(patchi->label.shortlabel, "t_a") == 0){
+        int i;
+
         for(i = 0; i < npatchvals; i++){
           patchmin_global = MIN(patchmin_global, patchval[i]);
           if(patchval[i]<TOA_LIMIT)patchmax_global = MAX(patchmax_global, patchval[i]);
         }
       }
       else{
+        int i;
+
         for(i = 0; i < npatchvals; i++){
           patchmin_global = MIN(patchmin_global, patchval[i]);
           patchmax_global = MAX(patchmax_global, patchval[i]);

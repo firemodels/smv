@@ -555,11 +555,10 @@ char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
 
   for(i = 0; i < ncommands; i++){
     tokendata *toki;
+    int j, if_level;
 
     toki = frame->command_list[i];
     switch(toki->command){
-      int j, if_level;
-
     case SV_IF:
       if_level = 0;
       for(j = i + 1; j < ncommands; j++){
