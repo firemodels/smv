@@ -43,7 +43,7 @@ cd %SRCDIR%\png-1.6.48
 start "building windows png" %WAIT% makelib %OPTS% -copy libpng.lib %LIBDIR%\png.lib
 
 :: GD
-cd %SRCDIR%\gd-2.0.15
+cd %SRCDIR%\gd-2.3.3
 start "building windows gd" %WAIT% call makelib %OPTS% -copy libgd.lib %LIBDIR%\gd.lib
 
 :: GLUT
