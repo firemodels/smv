@@ -2103,7 +2103,7 @@ void RenderMenu(int value){
     RenderCB(RENDER_START_360);
     break;
 
-#if GD_MAJOR_VERSION >= 2 && GD_MINOR_VERSION >= 1
+#if pp_GIF_ANIMATED
   case RenderStartGIF:
     render_mode = RENDER_GIF;
     resolution_multiplier=1;

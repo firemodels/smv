@@ -490,11 +490,17 @@ void OutputSliceData(void){
   }
 }
 
-#if GD_MAJOR_VERSION >= 2 && GD_MINOR_VERSION >= 1
+#if pp_GIF_ANIMATED
 static gdImagePtr im = NULL;
 static gdImagePtr prev = NULL;
 static FILE *out = NULL;
 
+/* ------------------------------- GifStart --------------------------------- */
+
+/// @brief Open a gif file with the same dimensions as the current render window
+/// at a give path.
+/// @param[in] path The path at which to open the file
+/// @return zero on success, non-zero on failure
 int GifStart(const char *path) {
   GLsizei width = screenWidth;
   GLsizei height = screenHeight;
@@ -517,6 +523,11 @@ int GifStart(const char *path) {
   return 0;
 }
 
+/* ------------------------------- GifEnd ----------------------------------- */
+
+/// @brief Finalise a GIF which was started with GifStart and close the
+/// associated file.
+/// @return zero on success, non-zero on failure
 int GifEnd() {
   gdImageGifAnimEnd(out);
   fclose(out);
@@ -525,6 +536,12 @@ int GifEnd() {
   return 0;
 }
 
+/* ------------------------------- GifAddFrame ------------------------------ */
+
+/// @brief Take the current render window and add it to a frame. A GIF must have
+/// already been started using GifStart.
+/// @param[in] delay
+/// @return zero on success, non-zero on failure
 int GifAddFrame(int delay) {
   GLsizei width = screenWidth;
   GLsizei height = screenHeight;

@@ -4164,7 +4164,7 @@ void DoNonStereo(void){
         FREEMEMORY(screeni->screenbuffer);
       }
     }
-#if GD_MAJOR_VERSION >= 2 && GD_MINOR_VERSION >= 1
+#if pp_GIF_ANIMATED
     if(render_mode == RENDER_GIF) {
       int i, ibuffer = 0;
       GLubyte **screenbuffers;
