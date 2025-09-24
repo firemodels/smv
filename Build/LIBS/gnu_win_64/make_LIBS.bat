@@ -39,7 +39,7 @@ cd %SRCDIR%\png-1.6.48
 start %WAIT% makelib %OPTS% -copy libpng.a %LIBDIR%\png.a
 
 :: GD
-cd %SRCDIR%\gd-2.0.15
+cd %SRCDIR%\gd-2.3.3
 start %WAIT% call makelib %OPTS% -copy libgd.a %LIBDIR%\gd.a
 
 :: GLUT
