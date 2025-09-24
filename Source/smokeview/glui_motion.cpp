@@ -1587,9 +1587,11 @@ extern "C" void GLUIMotionSetup(int main_window){
 
   CHECKBOX_clip_rendered_scene = glui_motion->add_checkbox_to_panel(ROLLOUT_scene_clip, "clip rendered scene", &clip_rendered_scene);
 
+#if GD_MAJOR_VERSION >= 2 && GD_MINOR_VERSION >= 1
   ROLLOUT_make_gif = glui_motion->add_rollout("GIF", false, GIF_ROLLOUT, MVRRolloutCB);
   TOGGLE_ROLLOUT(mvrprocinfo,nmvrprocinfo,ROLLOUT_make_gif,GIF_ROLLOUT, glui_motion);
   glui_motion->add_button_to_panel(ROLLOUT_make_gif, _("Render GIF"), RENDER_START_GIF, RenderCB);
+#endif
 
   if(have_slurm==1){
     ROLLOUT_make_movie = glui_motion->add_rollout("Movie(local)", false, MOVIE_ROLLOUT, MVRRolloutCB);
@@ -2810,9 +2812,11 @@ void RenderCB(int var){
     case RENDER_START_NORMAL:
       RenderMenu(RenderStartORIGRES);
       break;
+#if GD_MAJOR_VERSION >= 2 && GD_MINOR_VERSION >= 1
     case RENDER_START_GIF:
       RenderMenu(RenderStartGIF);
       break;
+#endif
     case RENDER_START:
       if(render_mode==RENDER_360){
         RenderMenu(RenderStart360);
