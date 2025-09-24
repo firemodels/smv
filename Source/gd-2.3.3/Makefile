@@ -15,14 +15,14 @@ INCLUDEDIRS=-I. -I../png-1.6.48 -I../jpeg-9b -I../zlib131
 # Update these with each release!
 
 MAJOR_VERSION=2
-VERSION=2.0.4
+VERSION=2.3
 
 COMPILER=gcc -fPIC
 #COMPILER=icc
 #SIZE=-m32
 SIZE=-m64
 
-CC=$(COMPILER) $(SIZE) $(INCLUDEDIRS) -Wno-incompatible-function-pointer-types -Wno-incompatible-pointer-types
+CC=$(COMPILER) $(SIZE) $(INCLUDEDIRS) $(STDINT) -Wno-incompatible-function-pointer-types -Wno-incompatible-pointer-types
 
 .SUFFIXES:      .c .o .obj
 

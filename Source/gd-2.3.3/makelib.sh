@@ -1,5 +1,5 @@
 #!/bin/bash
 source ../scripts/setopts.sh $*
 rm -f *.o
-STDINT="-DHAVE_STDINT_H"
-eval make -j 4 STDINT=${STDINT} COMPILER=${COMPILER} SIZE=${SIZE} libgd.a
+STDINT="-DHAVE_STDINT_H -DNONDLL -DENABLE_FREETYPE=OFF -DBUILD_SHARED_LIBS=OFF"
+eval make STDINT=\"${STDINT}\" COMPILER=${COMPILER} SIZE=${SIZE} libgd.a
