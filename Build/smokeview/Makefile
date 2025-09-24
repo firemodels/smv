@@ -213,7 +213,7 @@ intel_win_64_db : $(objwin)
 
 intel_win_64 : DYNLIB_EXT = .dll
 intel_win_64 : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-intel_win_64 : CFLAGS    = -O1 -D pp_INTEL -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -O1 -D pp_INTEL -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB -D BGDWIN32 -D NONDLL $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(SANITIZE),1)
 intel_win_64 : CFLAGS   += $(SANITIZE_OPTIONS) -g
 endif
