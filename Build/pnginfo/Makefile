@@ -5,7 +5,7 @@ SOURCE_DIR = ../../../Source
 BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
 
-INC_DIR = -I $(SOURCE_DIR)/pthreads  -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/zlib128 \
+INC_DIR = -I $(SOURCE_DIR)/pthreads  -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR)/zlib128 \
           -I $(SOURCE_DIR)/png-1.6.48 -I $(SOURCE_DIR)/shared  -I $(SOURCE_DIR)/pnginfo
 
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
