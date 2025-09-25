@@ -8,7 +8,7 @@ all: libgd.a libglui.a libglut.a libjpeg.a libpng.a libz.a
 # GD
 libgd.a:
 	@echo $(LIBDIR)
-	cd $(SRCDIR)/gd-2.0.15; \
+	cd $(SRCDIR)/gd-2.3.3; \
 		./makelib.sh $(OPTS); \
 		cp libgd.a $(LIBDIR)/.
 
