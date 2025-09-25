@@ -118,13 +118,14 @@ gnu_win_64 : $(obj)
 # ------------- clang win 64 ----------------
 
 clang_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads
-clang_win_64 : CFLAGS    = -O0 -m64 -D GLEW_STATIC $(SMV_TESTFLAG)
+clang_win_64 : CFLAGS    = -m64  -D PTW32_STATIC_LIB -D BGDWIN32 -D GLEW_STATIC $(SMV_TESTFLAG)
 clang_win_64 : LFLAGS    = -m64
 clang_win_64 : CC        = clang-cl
 clang_win_64 : exe       = smokezip_win_64.exe
 
-clang_win_64 : $(obj)
-	$(FC) -o $(bin)/$(exe) $(obj) $(LIB_DIR)/clang_win_64/pthreads.lib $(LIB_DIR)/clang_win_64/zlib.lib
+clang_win_64 : $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(LIB_DIR)\clang_win_64\pthreads.lib $(LIB_DIR)\clang_win_64\zlib.lib $(LIB_DIR)\clang_win_64\pthreads.lib
+
 
 # ------------- gnu linux 64 ----------------
 

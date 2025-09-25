@@ -118,13 +118,13 @@ gnu_win_64 : $(obj)
 
 # ------------- clang win 64 ----------------
 
-clang_win_64 : CFLAGS    = -O0 -m64 -D GLEW_STATIC $(SMV_TESTFLAG)
+clang_win_64 : CFLAGS    = -m64 -D GLEW_STATIC $(SMV_TESTFLAG)
 clang_win_64 : LFLAGS    = -m64
 clang_win_64 : CC        = clang-cl
 clang_win_64 : exe       = smokediff_win_64.exe
 
-clang_win_64 : $(obj)
-	$(FC) -o $(bin)/$(exe) $(LFLAGS) $(obj)
+clang_win_64 : $(objwin)
+	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin)
 
 # ------------- gnu linux 64 ----------------
 
