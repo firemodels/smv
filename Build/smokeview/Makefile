@@ -253,7 +253,7 @@ gnu_win_64 : $(obj)
 
 clang_win_64 : DYNLIB_EXT = .dll
 clang_win_64 : INC       += -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/glui_gl -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-clang_win_64 : CFLAGS    = -m64 -D GLEW_STATIC -D NDEBUG  -D PTW32_STATIC_LIB  $(GITINFO) $(GNU_COMPINFO) $(SMV_PROFILEFLAG)
+clang_win_64 : CFLAGS    = -m64 -D GLEW_STATIC -D NDEBUG  -D BGDWIN32 -D PTW32_STATIC_LIB  $(GITINFO) $(GNU_COMPINFO) $(SMV_PROFILEFLAG)
 clang_win_64 : LFLAGS    = -m64 $(SMV_LIBS_CLANG) $(SMV_PROFILEFLAG) $(WIN32_LIBS)
 clang_win_64 : CC        = clang-cl
 clang_win_64 : CPP       = clang-cl

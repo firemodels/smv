@@ -14,6 +14,11 @@ SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIB
 PNG_LIBS = -lgd -ljpeg -lpng -lz
 SYSTEM_LIBS = -lpthread
 
+#--- clang
+
+SMV_CLANG_LIBDIR = $(LIB_DIR)\clang_win_64
+SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\gd.lib $(SMV_CLANG_LIBDIR)\jpeg.lib $(SMV_CLANG_LIBDIR)\png.lib  $(SMV_CLANG_LIBDIR)\zlib.lib
+
 FILTERC =
 FILTERF =
 
@@ -121,6 +126,16 @@ gnu_win_64 : exe       = pnginfo_win_64.exe
 
 gnu_win_64 : $(obj)
 	$(FC) -o $(bin)/$(exe) $(LFLAGS) $(obj)
+
+# ------------- clang win 64 ----------------
+
+clang_win_64 : CFLAGS    = -m64 -D BGDWIN32 
+clang_win_64 : LFLAGS    = -m64
+clang_win_64 : CC        = clang-cl
+clang_win_64 : exe       = pnginfo_win_64.exe
+
+clang_win_64 : $(objwin)
+	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin)  $(SMV_LIBS_CLANG)
 
 # ------------- gnu linux 64 ----------------
 
