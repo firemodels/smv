@@ -28,7 +28,7 @@ call makelib %OPTS%
 copy libpng.a %LIBDIR%\png.a
 
 :: GD
-cd %SRCDIR%\gd-2.0.15
+cd %SRCDIR%\gd-2.3.3
 call makelib %OPTS% 
 copy libgd.a %LIBDIR%\gd.a
 

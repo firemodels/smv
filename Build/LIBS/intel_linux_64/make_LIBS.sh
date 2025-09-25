@@ -72,7 +72,7 @@ fi
 if [[ "$target" == "all" ]] || [[ "$target" == "gd" ]]; then
 # GD
 echo "********** building gd"
-cd $SRCDIR/gd-2.0.15
+cd $SRCDIR/gd-2.3.3
 ./makelib.sh $OPTS >& $LIBDIR/gd.out
 cp libgd.a $LIBDIR/.
 fi
