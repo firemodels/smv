@@ -96,7 +96,7 @@ win_check : $(win_chk)
 
 # ------------- intel winx 64 db ----------------
 
-intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -I $(SOURCE_DIR)/pthreads -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -I $(SOURCE_DIR)/pthreads -D _CONSOLE -D BGDWIN32 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64_db : CC        = $(I_CC)
 intel_win_64_db : exe       = pnginfo_win_64_db.exe
 
@@ -105,7 +105,7 @@ intel_win_64_db : $(objwin)
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = /O2 /nologo $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = /O2 /nologo -D BGDWIN32 $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = pnginfo_win_64.exe
 
