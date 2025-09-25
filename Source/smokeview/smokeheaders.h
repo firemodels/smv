@@ -769,11 +769,9 @@ EXTERNCPP int  MergeRenderScreenBuffers360(void);
 EXTERNCPP void *PlayMovie(void *arg);
 EXTERNCPP void Render(int view_mode);
 EXTERNCPP void RenderFrame(int view_mode);
-#if pp_GIF_ANIMATED
 EXTERNCPP int  GifStart(const char *path);
 EXTERNCPP int  GifEnd();
 EXTERNCPP int  GifAddFrame(int delay);
-#endif
 EXTERNCPP void ResetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
 EXTERNCPP void *SetupFF(void *arg);
 EXTERNCPP void SetupScreeninfo(void);

@@ -98,10 +98,6 @@
 #define PRINTVERSION(a,opts) PRINTversion(a)
 #endif
 
-#if GD_MAJOR_VERSION >= 2 && GD_MINOR_VERSION >= 1
-#define pp_GIF_ANIMATED
-#endif
-
 #define FILE_SIZE unsigned long long
 
 #ifdef __cplusplus

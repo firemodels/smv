@@ -490,7 +490,6 @@ void OutputSliceData(void){
   }
 }
 
-#if pp_GIF_ANIMATED
 static gdImagePtr im = NULL;
 static gdImagePtr prev = NULL;
 static FILE *out = NULL;
@@ -571,7 +570,6 @@ int GifAddFrame(int delay) {
   FREEMEMORY(OpenGLimage);
   return 0;
 }
-#endif
 
 /* ------------------ RenderFrame ------------------------ */
 
