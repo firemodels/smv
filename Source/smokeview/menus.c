@@ -2102,6 +2102,21 @@ void RenderMenu(int value){
   case RenderStart360:
     RenderCB(RENDER_START_360);
     break;
+  case RenderStartGIF:
+    render_mode = RENDER_GIF;
+    resolution_multiplier=1;
+    {
+      char *gif_filename;
+      NEWMEMORY(gif_filename, strlen(global_scase.chidfilebase) + 4 + 1);
+      strcpy(gif_filename, global_scase.chidfilebase);
+      strcat(gif_filename, ".gif");
+      char *gif_filepath = CombinePaths(".", gif_filename);
+      FREEMEMORY(gif_filename);
+      GifStart(gif_filepath);
+      FREEMEMORY(gif_filepath);
+    }
+    RenderMenu(RenderStart);
+    break;
   case RenderStartORIGRES:
     render_mode = RENDER_NORMAL;
     resolution_multiplier=1;

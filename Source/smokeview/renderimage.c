@@ -490,6 +490,87 @@ void OutputSliceData(void){
   }
 }
 
+static gdImagePtr im = NULL;
+static gdImagePtr prev = NULL;
+static FILE *out = NULL;
+
+/* ------------------------------- GifStart --------------------------------- */
+
+/// @brief Open a gif file with the same dimensions as the current render window
+/// at a give path.
+/// @param[in] path The path at which to open the file
+/// @return zero on success, non-zero on failure
+int GifStart(const char *path) {
+  GLsizei width = screenWidth;
+  GLsizei height = screenHeight;
+
+  prev = NULL;
+  im = gdImageCreate(width, height);
+  if(!im) {
+    fprintf(stderr, "can't create image");
+    return 1;
+  }
+
+  out = fopen(path, "wb");
+  if(!out) {
+    fprintf(stderr, "can't create file %s", path);
+    return 1;
+  }
+
+  gdImageColorAllocate(im, 255, 255, 255); /* allocate white as side effect */
+  gdImageGifAnimBegin(im, out, 1, 0);
+  return 0;
+}
+
+/* ------------------------------- GifEnd ----------------------------------- */
+
+/// @brief Finalise a GIF which was started with GifStart and close the
+/// associated file.
+/// @return zero on success, non-zero on failure
+int GifEnd() {
+  gdImageGifAnimEnd(out);
+  fclose(out);
+  im = NULL;
+  prev = NULL;
+  return 0;
+}
+
+/* ------------------------------- GifAddFrame ------------------------------ */
+
+/// @brief Take the current render window and add it to a frame. A GIF must have
+/// already been started using GifStart.
+/// @param[in] delay
+/// @return zero on success, non-zero on failure
+int GifAddFrame(int delay) {
+  GLsizei width = screenWidth;
+  GLsizei height = screenHeight;
+  gdImagePtr im;
+  GLubyte *OpenGLimage;
+  NewMemory((void **)&OpenGLimage, width * height * sizeof(GLubyte) * 3);
+  im = gdImageCreate(width, height);
+  gdImageColorAllocate(im, 255, 255, 255);
+  glPixelStorei(GL_PACK_ALIGNMENT, 1);
+  glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, OpenGLimage);
+  GLubyte *p = OpenGLimage;
+  unsigned int r, g, b;
+  for(int i = height - 1; i >= 0; i--) {
+    for(int j = 0; j < width; j++) {
+      r = *p++;
+      g = *p++;
+      b = *p++;
+      int col = gdImageColorResolve(im, r, g, b);
+      gdImageSetPixel(im, j, i, col);
+    }
+  }
+  gdImageGifAnimAdd(im, out, 1, 0, 0, delay, gdDisposalNone, prev);
+  if(prev) {
+    gdImageDestroy(prev);
+  }
+  prev = im;
+  FREEMEMORY(OpenGLimage);
+  return 0;
+}
+
 /* ------------------ RenderFrame ------------------------ */
 
 void RenderFrame(int view_mode){

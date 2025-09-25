@@ -13,6 +13,7 @@
 #include "glui_bounds.h"
 #include "glui_smoke.h"
 #include "IOobjects.h"
+#include "gd.h"
 
 #include "IOscript.h"
 
@@ -4162,6 +4163,33 @@ void DoNonStereo(void){
 
         screeni = screeninfo+i;
         FREEMEMORY(screeni->screenbuffer);
+      }
+    }
+    if(render_mode == RENDER_GIF) {
+      int i, ibuffer = 0;
+      GLubyte **screenbuffers;
+
+      NewMemory((void **)&screenbuffers, resolution_multiplier*resolution_multiplier*sizeof(GLubyte *));
+
+      glDrawBuffer(GL_BACK);
+
+      for(i = 0; i<resolution_multiplier; i++){
+        int j;
+
+        for(j = 0; j<resolution_multiplier; j++){
+          ShowScene(DRAWSCENE, VIEW_CENTER, 1, j*screenWidth, i*screenHeight, NULL);
+          screenbuffers[ibuffer++] = GetScreenBuffer();
+          if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
+        }
+      }
+      GifAddFrame(100);
+
+      for(i = 0; i<resolution_multiplier*resolution_multiplier; i++){
+        FREEMEMORY(screenbuffers[i]);
+      }
+      FREEMEMORY(screenbuffers);
+      if (render_status == RENDER_OFF) {
+        GifEnd();
       }
     }
     if(stop_rendering==1||stept==0){

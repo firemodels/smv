@@ -84,6 +84,9 @@ target_link_libraries(test_unicode_paths PRIVATE smv)
 add_executable(sort_surfs sort_surfs.c)
 target_link_libraries(sort_surfs PRIVATE smv)
 
+# # test_gif
+# add_executable(test_gif test_gif.c)
+# target_link_libraries(test_gif PRIVATE libsmv)
 
 # Arguments to this tests are <slice path> <number of frames in slice>
 # Simple slice is a finished slice file with 3 frames
