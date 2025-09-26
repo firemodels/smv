@@ -349,7 +349,8 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define PNG        0
 #define JPEG       1
-#define IMAGE_NONE 2
+#define GIF        2
+#define IMAGE_NONE 3
 
 #define AVI 0
 #define MP4 1
@@ -837,6 +838,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define RENDER_CURRENT_360      991
 #define RenderJPEG              997
 #define RenderPNG               996
+#define RenderGIF               977
 #define Render320               995
 #define Render640               994
 #define RenderWindow            993

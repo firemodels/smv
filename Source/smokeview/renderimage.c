@@ -95,6 +95,9 @@ void MakeMovie(void){
   if(render_filetype==JPEG){
     strcpy(image_ext, ".jpg");
   }
+  else if(render_filetype == GIF){
+    strcpy(image_ext, ".gif");
+  }
   else{
     strcpy(image_ext, ".png");
   }
@@ -394,6 +397,9 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
   case JPEG:
     renderfile_ext = ext_jpg;
     break;
+  case GIF:
+    renderfile_ext = ext_gif;
+    break;
   default:
     render_filetype = PNG;
     renderfile_ext = ext_png;
@@ -637,7 +643,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
   int clip_left_hat, clip_right_hat, clip_bottom_hat, clip_top_hat;
   int width_hat, height_hat;
 
-  if(render_filetype!=PNG&&render_filetype!=JPEG)render_filetype=PNG;
+  if(render_filetype!=PNG&&render_filetype!=JPEG&&render_filetype!=GIF)render_filetype=PNG;
 
   if(GetRenderFileName(VIEW_CENTER, renderfile_dir, renderfile)!=0)return 1;
 
@@ -782,6 +788,9 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
     break;
   case JPEG:
     gdImageJpeg(RENDERimage,RENDERfile,-1);
+    break;
+  case GIF:
+    gdImageGif(RENDERimage, RENDERfile);
     break;
   default:
     assert(FFALSE);
@@ -1127,7 +1136,7 @@ int MergeRenderScreenBuffers360(void){
   int i, j, ijk360;
   int *screenbuffer360;
 
-  if(render_filetype!=PNG&&render_filetype!=JPEG)render_filetype=PNG;
+  if(render_filetype!=PNG&&render_filetype!=JPEG&&render_filetype!=GIF)render_filetype=PNG;
 
   if(GetRenderFileName(VIEW_CENTER, renderfile_dir, renderfile)!=0)return 1;
 
@@ -1230,6 +1239,9 @@ int MergeRenderScreenBuffers360(void){
     break;
   case JPEG:
     gdImageJpeg(RENDERimage, RENDERfile, -1);
+    break;
+  case GIF:
+    gdImageGif(RENDERimage, RENDERfile);
     break;
   default:
     assert(FFALSE);
@@ -1360,6 +1372,9 @@ int SmokeviewImage2File(char *directory, char *RENDERfilename, int rendertype, i
     break;
   case JPEG:
     gdImageJpeg(RENDERimage,RENDERfile,-1);
+    break;
+  case GIF:
+    gdImageGif(RENDERimage, RENDERfile);
     break;
   default:
     assert(FFALSE);

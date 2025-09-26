@@ -1479,6 +1479,7 @@ extern "C" void GLUIMotionSetup(int main_window){
   RADIO_render_type = glui_motion->add_radiogroup_to_panel(PANEL_file_type, &render_filetype, RENDER_TYPE, RenderCB);
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "png");
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "jpg");
+  glui_motion->add_radiobutton_to_group(RADIO_render_type, "gif");
 
   glui_motion->add_button_to_panel(PANEL_render_file, "Render to html", RENDER_HTML, RenderCB);
 
