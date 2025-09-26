@@ -525,6 +525,7 @@ int GifStart(const char *path) {
 
   gdImageColorAllocate(im, 255, 255, 255); /* allocate white as side effect */
   gdImageGifAnimBegin(im, out, 1, 0);
+  gdImageDestroy(im);
   return 0;
 }
 
@@ -536,8 +537,10 @@ int GifStart(const char *path) {
 int GifEnd() {
   gdImageGifAnimEnd(out);
   fclose(out);
-  im = NULL;
-  prev = NULL;
+  if(im != NULL) {
+    gdImageDestroy(im);
+    im = NULL;
+  }
   return 0;
 }
 
