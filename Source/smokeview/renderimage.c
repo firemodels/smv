@@ -550,7 +550,6 @@ int GifEnd() {
 int GifAddFrame(int delay) {
   GLsizei width = screenWidth;
   GLsizei height = screenHeight;
-  gdImagePtr im;
   GLubyte *OpenGLimage;
   NewMemory((void **)&OpenGLimage, width * height * sizeof(GLubyte) * 3);
   im = gdImageCreate(width, height);
