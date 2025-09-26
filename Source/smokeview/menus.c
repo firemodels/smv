@@ -2103,7 +2103,7 @@ void RenderMenu(int value){
     RenderCB(RENDER_START_360);
     break;
   case RenderStartGIF:
-    render_filetype = GIF;
+    render_filetype = RGIF;
     render_mode = RENDER_GIF;
     resolution_multiplier=1;
     {
@@ -2175,7 +2175,7 @@ void RenderMenu(int value){
      updatemenu=1;
      break;
   case RenderGIF:
-    render_filetype = GIF;
+    render_filetype = RGIF;
     updatemenu = 1;
     break;
   default:
@@ -11477,7 +11477,7 @@ static int menu_count=0;
       glutAddMenuEntry(" *JPEG", RenderJPEG);
       glutAddMenuEntry("   GIF", RenderGIF);
     }
-    if(render_filetype == GIF){
+    if(render_filetype == RGIF){
       glutAddMenuEntry("   PNG", RenderPNG);
       glutAddMenuEntry("  JPEG", RenderJPEG);
       glutAddMenuEntry("  *GIF", RenderGIF);

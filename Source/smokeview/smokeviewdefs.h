@@ -349,13 +349,14 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define PNG        0
 #define JPEG       1
-#define GIF        2
+#define RGIF       2
 #define IMAGE_NONE 3
 
-#define AVI 0
-#define MP4 1
-#define WMV 2
-#define MOV 3
+#define AVI  0
+#define MP4  1
+#define WMV  2
+#define MOV  3
+#define MGIF 4
 
 #define EXTERNAL_LIST_ID 1
 
