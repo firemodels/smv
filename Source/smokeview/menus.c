@@ -2103,6 +2103,7 @@ void RenderMenu(int value){
     RenderCB(RENDER_START_360);
     break;
   case RenderStartGIF:
+    render_filetype = GIF;
     render_mode = RENDER_GIF;
     resolution_multiplier=1;
     {
