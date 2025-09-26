@@ -2168,14 +2168,17 @@ void RenderMenu(int value){
     break;
   case RenderPNG:
      render_filetype=PNG;
-     updatemenu=1;
+     UpdateRenderType(render_filetype);
+     updatemenu = 1;
      break;
   case RenderJPEG:
      render_filetype=JPEG;
-     updatemenu=1;
+     UpdateRenderType(render_filetype);
+     updatemenu = 1;
      break;
   case RenderGIF:
     render_filetype = RGIF;
+    UpdateRenderType(render_filetype);
     updatemenu = 1;
     break;
   default:
