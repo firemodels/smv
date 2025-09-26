@@ -25,13 +25,13 @@ unsigned char cpuusage(void);
 #ifdef __linux__
 int get_ncores(void);
 float get_load(void);
-float get_host_load(char *host);
-int cpuusage_host(char *host,int ncores);
+float get_host_load(char *hosta);
+int cpuusage_host(char *hosta,int ncores);
 #endif
-int get_host_ncores(char *host);
+int get_host_ncores(char *hosta);
 
 #ifdef pp_OSX
-int cpuusage_host(char *host,int ncores);
+int cpuusage_host(char *hosta,int ncores);
 #endif
 
 #ifndef _WIN32
@@ -470,7 +470,7 @@ unsigned char cpuusage(){
 
 /* ------------------ get_sysctl ------------------------ */
 
-void get_sysctl(char *host, char *var, int *ivar, float *fvar){
+void get_sysctl(char *hosta, char *var, int *ivar, float *fvar){
   char command[256];
   FILE *stream;
   char sysctl_file[256];
@@ -485,9 +485,9 @@ void get_sysctl(char *host, char *var, int *ivar, float *fvar){
   strcat(sysctl_file,pid);
 
   strcpy(command,"");
-  if(host!=NULL){
+  if(hosta!=NULL){
     strcat(command,"ssh ");
-    strcat(command,host);
+    strcat(command,hosta);
     strcat(command," ");
   }
   strcat(command,"sysctl -n ");
@@ -526,10 +526,10 @@ int get_ncores(void){
 
 /* ------------------ get_host_ncores ------------------------ */
 
-int get_host_ncores(char *host){
+int get_host_ncores(char *hosta){
   int ncores=1;
 
-  get_sysctl(host,"hw.ncpu",&ncores,NULL);
+  get_sysctl(hosta,"hw.ncpu",&ncores,NULL);
   return ncores;
 }
 
@@ -544,10 +544,10 @@ float get_load(void){
 
 /* ------------------ get_host_load ------------------------ */
 
-float get_host_load(char *host){
+float get_host_load(char *hosta){
   float load;
 
-  get_sysctl(host,"vm.loadavg",NULL,&load);
+  get_sysctl(hosta,"vm.loadavg",NULL,&load);
   return load;
 }
 #endif
