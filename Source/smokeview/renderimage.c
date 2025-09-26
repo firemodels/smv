@@ -95,6 +95,9 @@ void MakeMovie(void){
   if(render_filetype==JPEG){
     strcpy(image_ext, ".jpg");
   }
+  else if(render_filetype == GIF){
+    strcpy(image_ext, ".gif");
+  }
   else{
     strcpy(image_ext, ".png");
   }
@@ -394,6 +397,9 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
   case JPEG:
     renderfile_ext = ext_jpg;
     break;
+  case GIF:
+    renderfile_ext = ext_gif;
+    break;
   default:
     render_filetype = PNG;
     renderfile_ext = ext_png;
@@ -490,6 +496,87 @@ void OutputSliceData(void){
   }
 }
 
+static gdImagePtr im = NULL;
+static gdImagePtr prev = NULL;
+static FILE *out = NULL;
+
+/* ------------------------------- GifStart --------------------------------- */
+
+/// @brief Open a gif file with the same dimensions as the current render window
+/// at a give path.
+/// @param[in] path The path at which to open the file
+/// @return zero on success, non-zero on failure
+int GifStart(const char *path) {
+  GLsizei width = screenWidth;
+  GLsizei height = screenHeight;
+
+  prev = NULL;
+  im = gdImageCreate(width, height);
+  if(!im) {
+    fprintf(stderr, "can't create image");
+    return 1;
+  }
+
+  out = fopen(path, "wb");
+  if(!out) {
+    fprintf(stderr, "can't create file %s", path);
+    return 1;
+  }
+
+  gdImageColorAllocate(im, 255, 255, 255); /* allocate white as side effect */
+  gdImageGifAnimBegin(im, out, 1, 0);
+  return 0;
+}
+
+/* ------------------------------- GifEnd ----------------------------------- */
+
+/// @brief Finalise a GIF which was started with GifStart and close the
+/// associated file.
+/// @return zero on success, non-zero on failure
+int GifEnd() {
+  gdImageGifAnimEnd(out);
+  fclose(out);
+  im = NULL;
+  prev = NULL;
+  return 0;
+}
+
+/* ------------------------------- GifAddFrame ------------------------------ */
+
+/// @brief Take the current render window and add it to a frame. A GIF must have
+/// already been started using GifStart.
+/// @param[in] delay
+/// @return zero on success, non-zero on failure
+int GifAddFrame(int delay) {
+  GLsizei width = screenWidth;
+  GLsizei height = screenHeight;
+  gdImagePtr im;
+  GLubyte *OpenGLimage;
+  NewMemory((void **)&OpenGLimage, width * height * sizeof(GLubyte) * 3);
+  im = gdImageCreate(width, height);
+  gdImageColorAllocate(im, 255, 255, 255);
+  glPixelStorei(GL_PACK_ALIGNMENT, 1);
+  glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, OpenGLimage);
+  GLubyte *p = OpenGLimage;
+  unsigned int r, g, b;
+  for(int i = height - 1; i >= 0; i--) {
+    for(int j = 0; j < width; j++) {
+      r = *p++;
+      g = *p++;
+      b = *p++;
+      int col = gdImageColorResolve(im, r, g, b);
+      gdImageSetPixel(im, j, i, col);
+    }
+  }
+  gdImageGifAnimAdd(im, out, 1, 0, 0, delay, gdDisposalNone, prev);
+  if(prev) {
+    gdImageDestroy(prev);
+  }
+  prev = im;
+  FREEMEMORY(OpenGLimage);
+  return 0;
+}
+
 /* ------------------ RenderFrame ------------------------ */
 
 void RenderFrame(int view_mode){
@@ -556,7 +643,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
   int clip_left_hat, clip_right_hat, clip_bottom_hat, clip_top_hat;
   int width_hat, height_hat;
 
-  if(render_filetype!=PNG&&render_filetype!=JPEG)render_filetype=PNG;
+  if(render_filetype!=PNG&&render_filetype!=JPEG&&render_filetype!=GIF)render_filetype=PNG;
 
   if(GetRenderFileName(VIEW_CENTER, renderfile_dir, renderfile)!=0)return 1;
 
@@ -701,6 +788,9 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
     break;
   case JPEG:
     gdImageJpeg(RENDERimage,RENDERfile,-1);
+    break;
+  case GIF:
+    gdImageGif(RENDERimage, RENDERfile);
     break;
   default:
     assert(FFALSE);
@@ -1046,7 +1136,7 @@ int MergeRenderScreenBuffers360(void){
   int i, j, ijk360;
   int *screenbuffer360;
 
-  if(render_filetype!=PNG&&render_filetype!=JPEG)render_filetype=PNG;
+  if(render_filetype!=PNG&&render_filetype!=JPEG&&render_filetype!=GIF)render_filetype=PNG;
 
   if(GetRenderFileName(VIEW_CENTER, renderfile_dir, renderfile)!=0)return 1;
 
@@ -1149,6 +1239,9 @@ int MergeRenderScreenBuffers360(void){
     break;
   case JPEG:
     gdImageJpeg(RENDERimage, RENDERfile, -1);
+    break;
+  case GIF:
+    gdImageGif(RENDERimage, RENDERfile);
     break;
   default:
     assert(FFALSE);
@@ -1279,6 +1372,9 @@ int SmokeviewImage2File(char *directory, char *RENDERfilename, int rendertype, i
     break;
   case JPEG:
     gdImageJpeg(RENDERimage,RENDERfile,-1);
+    break;
+  case GIF:
+    gdImageGif(RENDERimage, RENDERfile);
     break;
   default:
     assert(FFALSE);

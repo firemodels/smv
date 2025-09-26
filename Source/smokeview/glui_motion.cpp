@@ -76,6 +76,7 @@ GLUI_Rollout *ROLLOUT_render=NULL;
 GLUI_Rollout *ROLLOUT_viewpoints=NULL;
 GLUI_Rollout *ROLLOUT_make_movie = NULL;
 GLUI_Rollout *ROLLOUT_make_movie_batch = NULL;
+GLUI_Rollout *ROLLOUT_make_gif = NULL;
 GLUI_Rollout *ROLLOUT_gslice = NULL;
 #ifdef ROTATE_TRANSLATE
 GLUI_Rollout *ROLLOUT_translaterotate=NULL;
@@ -1478,6 +1479,7 @@ extern "C" void GLUIMotionSetup(int main_window){
   RADIO_render_type = glui_motion->add_radiogroup_to_panel(PANEL_file_type, &render_filetype, RENDER_TYPE, RenderCB);
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "png");
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "jpg");
+  glui_motion->add_radiobutton_to_group(RADIO_render_type, "gif");
 
   glui_motion->add_button_to_panel(PANEL_render_file, "Render to html", RENDER_HTML, RenderCB);
 
@@ -1586,6 +1588,11 @@ extern "C" void GLUIMotionSetup(int main_window){
 
   CHECKBOX_clip_rendered_scene = glui_motion->add_checkbox_to_panel(ROLLOUT_scene_clip, "clip rendered scene", &clip_rendered_scene);
 
+#ifdef pp_RENDER_GIF
+  ROLLOUT_make_gif = glui_motion->add_rollout("GIF", false, GIF_ROLLOUT, MVRRolloutCB);
+  TOGGLE_ROLLOUT(mvrprocinfo,nmvrprocinfo,ROLLOUT_make_gif,GIF_ROLLOUT, glui_motion);
+  glui_motion->add_button_to_panel(ROLLOUT_make_gif, _("Render GIF"), RENDER_START_GIF, RenderCB);
+#endif
   if(have_slurm==1){
     ROLLOUT_make_movie = glui_motion->add_rollout("Movie(local)", false, MOVIE_ROLLOUT, MVRRolloutCB);
   }
@@ -2804,6 +2811,9 @@ void RenderCB(int var){
       break;
     case RENDER_START_NORMAL:
       RenderMenu(RenderStartORIGRES);
+      break;
+    case RENDER_START_GIF:
+      RenderMenu(RenderStartGIF);
       break;
     case RENDER_START:
       if(render_mode==RENDER_360){

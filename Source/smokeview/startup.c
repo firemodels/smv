@@ -1508,13 +1508,13 @@ void InitVars(void){
     }
   }
 
-  strcpy(ext_png,".png");
-  strcpy(ext_jpg,".jpg");
+  strcpy(ext_png, ".png");
+  strcpy(ext_jpg, ".jpg");
+  strcpy(ext_gif, ".gif");
   render_filetype=PNG;
 
   strcpy(global_scase.surfacedefaultlabel,"");
   if(streak_index>=0)float_streak5value=streak_rvalue[streak_index];
-
 
   GetTitle("Smokeview ", release_title);
   GetTitle("Smokeview ", plot3d_title);
