@@ -1833,6 +1833,7 @@ SVEXTERN float xyzmaxdiff;
 SVEXTERN float vector_scalelength;
 SVEXTERN char ext_png[5];
 SVEXTERN char ext_jpg[5];
+SVEXTERN char ext_gif[5];
 SVEXTERN int SVDECL(encode_png, 1);
 #ifdef INMAIN
 SVEXTERN float sphere_xyz0[3] = {0.0, 0.0, 0.0}, sphere_dxyz[3] = {0.3, 0.3, 0.3};
