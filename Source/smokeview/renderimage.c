@@ -123,11 +123,11 @@ void MakeMovie(void){
     void RenderCB(int var);
     RenderCB(RENDER_START_GIF);
   }
-  
   if(movie_filetype !=MGIF&&(make_movie_now==1||output_ffmpeg_command==1)){
     char power_label[100];
 // construct name of frames used to make movie
 
+    making_movie = 1;
     strcpy(movie_frames, render_file_base);
     strcat(movie_frames,"_%04d");
     strcat(movie_frames, image_ext);
@@ -169,11 +169,10 @@ void MakeMovie(void){
       output_ffmpeg_command=0;
     }
     if(make_movie_now==1)system(command_line);
+    making_movie = 0;
   }
 
 // enable movie making button
-
-  EnableDisableMakeMovie(ON);
   EnableDisablePlayMovie();
 }
 
@@ -515,6 +514,7 @@ int GifStart(const char *path) {
   GLsizei width = screenWidth;
   GLsizei height = screenHeight;
 
+  making_movie = 1;
   prev = NULL;
   im = gdImageCreate(width, height);
   if(!im) {
@@ -543,6 +543,7 @@ int GifEnd() {
   fclose(out);
   im = NULL;
   prev = NULL;
+  making_movie = 0;
   return 0;
 }
 

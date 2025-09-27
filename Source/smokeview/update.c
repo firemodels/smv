@@ -2072,6 +2072,14 @@ void BoundBoundCB(int var);
     BoundBoundCB(SHOW_EXTERIOR_PATCH_DATA);
     update_patch_vis = 0;
   }
+  if(making_movie==1&&making_movie_enabled==1){
+    making_movie_enabled = 0;
+    EnableDisableMakeMovie(OFF);
+  }
+  if(making_movie == 0 && making_movie_enabled == 0){
+    making_movie_enabled = 1;
+    EnableDisableMakeMovie(ON);
+  }
   if(update_smoke3dmenulabels == 1){
     SHOW_UPDATE(update_smoke3dmenulabels);
     update_smoke3dmenulabels = 0;

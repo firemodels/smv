@@ -206,7 +206,7 @@ GLUI_Listbox *LIST_render_skip=NULL;
 
 rolloutlistdata first_rollout, last_rollout;
 
-procdata motionprocinfo[9], mvrprocinfo[5], subrenderprocinfo[4], screenprocinfo[3];
+procdata motionprocinfo[9], mvrprocinfo[6], subrenderprocinfo[4], screenprocinfo[3];
 int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0, nscreenprocinfo=0;
 
 /* ------------------ MakeMovieBashScript ------------------------ */
@@ -548,9 +548,11 @@ extern "C" void GLUIEnableDisablePlayMovieCPP(void){
 extern "C" void GLUIEnableDisableMakeMovieCPP(int onoff){
   if(BUTTON_make_movie!=NULL){
     if(onoff == ON){
+      making_movie_enabled = 1;
       BUTTON_make_movie->enable();
     }
     else{
+      making_movie_enabled = 0;
       BUTTON_make_movie->disable();
     }
   }
@@ -561,6 +563,7 @@ extern "C" void GLUIEnableDisableMakeMovieCPP(int onoff){
 void UpdateMovieType(int type){
   movie_filetype = type;
   if(RADIO_movie_type!=NULL)RADIO_movie_type->set_int_val(movie_filetype);
+  updatemenu = 1;
 }
 
 /* ------------------ UpdateRenderType ------------------------ */
@@ -568,6 +571,7 @@ void UpdateMovieType(int type){
 void UpdateRenderType(int type){
   render_filetype = type;
   if(RADIO_render_type!=NULL)RADIO_render_type->set_int_val(render_filetype);
+  updatemenu = 1;
 }
 
 /* ------------------ UpdateZaxisAngles ------------------------ */
