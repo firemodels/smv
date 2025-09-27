@@ -525,6 +525,7 @@ int GifStart(const char *path) {
 
   gdImageColorAllocate(im, 255, 255, 255); /* allocate white as side effect */
   gdImageGifAnimBegin(im, out, 1, 0);
+  gdImageDestroy(im);
   return 0;
 }
 
@@ -536,8 +537,10 @@ int GifStart(const char *path) {
 int GifEnd() {
   gdImageGifAnimEnd(out);
   fclose(out);
-  im = NULL;
-  prev = NULL;
+  if(im != NULL) {
+    gdImageDestroy(im);
+    im = NULL;
+  }
   return 0;
 }
 
@@ -550,7 +553,6 @@ int GifEnd() {
 int GifAddFrame(int delay) {
   GLsizei width = screenWidth;
   GLsizei height = screenHeight;
-  gdImagePtr im;
   GLubyte *OpenGLimage;
   NewMemory((void **)&OpenGLimage, width * height * sizeof(GLubyte) * 3);
   im = gdImageCreate(width, height);
