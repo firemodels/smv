@@ -11,6 +11,7 @@
 #include "glui_bounds.h"
 #include "IOobjects.h"
 #include "getdata.h"
+#include "readslice.h"
 
 /* ------------------ GetZoneSizeCSV ------------------------ */
 
