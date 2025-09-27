@@ -2108,7 +2108,7 @@ void RenderMenu(int value){
     UpdateRenderType(render_filetype);
     render_mode = RENDER_GIF;
     resolution_multiplier=1;
-    {
+    if(RenderTime!=0||touring!=0){
       char *gif_filename;
       NEWMEMORY(gif_filename, strlen(global_scase.chidfilebase) + 4 + 1);
       strcpy(gif_filename, global_scase.chidfilebase);
