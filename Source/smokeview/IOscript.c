@@ -903,14 +903,17 @@ int CompileScript(char *scriptfile){
         break;
 
 // MOVIETYPE
-//  jpg, png or wmv  (char)
+//  wmv, mp4, gif or avi  (char)
       case SCRIPT_MOVIETYPE:
         SETcval;
         if(STRCMP(scripti->cval, "WMV") == 0){
           scripti->ival = WMV;
         }
-        if(STRCMP(scripti->cval, "MP4") == 0){
+        else if(STRCMP(scripti->cval, "MP4") == 0){
           scripti->ival = MP4;
+        }
+        else if(STRCMP(scripti->cval, "GIF") == 0){
+          scripti->ival = MGIF;
         }
         else{
           scripti->ival = AVI;

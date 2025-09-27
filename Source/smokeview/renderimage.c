@@ -95,7 +95,7 @@ void MakeMovie(void){
   if(render_filetype==JPEG){
     strcpy(image_ext, ".jpg");
   }
-  else if(render_filetype == GIF){
+  else if(render_filetype == RGIF){
     strcpy(image_ext, ".gif");
   }
   else{
@@ -119,10 +119,15 @@ void MakeMovie(void){
     }
   }
 
-  if(make_movie_now==1||output_ffmpeg_command==1){
+  if(movie_filetype == MGIF){
+    void RenderCB(int var);
+    RenderCB(RENDER_START_GIF);
+  }
+  if(movie_filetype !=MGIF&&(make_movie_now==1||output_ffmpeg_command==1)){
     char power_label[100];
 // construct name of frames used to make movie
 
+    making_movie = 1;
     strcpy(movie_frames, render_file_base);
     strcat(movie_frames,"_%04d");
     strcat(movie_frames, image_ext);
@@ -164,11 +169,10 @@ void MakeMovie(void){
       output_ffmpeg_command=0;
     }
     if(make_movie_now==1)system(command_line);
+    making_movie = 0;
   }
 
 // enable movie making button
-
-  EnableDisableMakeMovie(ON);
   EnableDisablePlayMovie();
 }
 
@@ -397,7 +401,7 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
   case JPEG:
     renderfile_ext = ext_jpg;
     break;
-  case GIF:
+  case RGIF:
     renderfile_ext = ext_gif;
     break;
   default:
@@ -510,6 +514,7 @@ int GifStart(const char *path) {
   GLsizei width = screenWidth;
   GLsizei height = screenHeight;
 
+  making_movie = 1;
   prev = NULL;
   im = gdImageCreate(width, height);
   if(!im) {
@@ -541,6 +546,7 @@ int GifEnd() {
     gdImageDestroy(im);
     im = NULL;
   }
+  making_movie = 0;
   return 0;
 }
 
@@ -645,7 +651,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
   int clip_left_hat, clip_right_hat, clip_bottom_hat, clip_top_hat;
   int width_hat, height_hat;
 
-  if(render_filetype!=PNG&&render_filetype!=JPEG&&render_filetype!=GIF)render_filetype=PNG;
+  if(render_filetype!=PNG&&render_filetype!=JPEG&&render_filetype!=RGIF)render_filetype=PNG;
 
   if(GetRenderFileName(VIEW_CENTER, renderfile_dir, renderfile)!=0)return 1;
 
@@ -791,7 +797,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
   case JPEG:
     gdImageJpeg(RENDERimage,RENDERfile,-1);
     break;
-  case GIF:
+  case RGIF:
     gdImageGif(RENDERimage, RENDERfile);
     break;
   default:
@@ -1138,7 +1144,7 @@ int MergeRenderScreenBuffers360(void){
   int i, j, ijk360;
   int *screenbuffer360;
 
-  if(render_filetype!=PNG&&render_filetype!=JPEG&&render_filetype!=GIF)render_filetype=PNG;
+  if(render_filetype!=PNG&&render_filetype!=JPEG&&render_filetype!=RGIF)render_filetype=PNG;
 
   if(GetRenderFileName(VIEW_CENTER, renderfile_dir, renderfile)!=0)return 1;
 
@@ -1242,7 +1248,7 @@ int MergeRenderScreenBuffers360(void){
   case JPEG:
     gdImageJpeg(RENDERimage, RENDERfile, -1);
     break;
-  case GIF:
+  case RGIF:
     gdImageGif(RENDERimage, RENDERfile);
     break;
   default:
@@ -1375,7 +1381,7 @@ int SmokeviewImage2File(char *directory, char *RENDERfilename, int rendertype, i
   case JPEG:
     gdImageJpeg(RENDERimage,RENDERfile,-1);
     break;
-  case GIF:
+  case RGIF:
     gdImageGif(RENDERimage, RENDERfile);
     break;
   default:

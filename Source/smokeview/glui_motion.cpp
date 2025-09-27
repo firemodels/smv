@@ -164,7 +164,7 @@ GLUI_RadioButton *RADIOBUTTON_render_current = NULL;
 GLUI_RadioButton *RADIOBUTTON_render_high = NULL;
 GLUI_RadioButton *RADIOBUTTON_render_360=NULL;
 
-GLUI_RadioButton *RADIOBUTTON_movie_type[4];
+GLUI_RadioButton *RADIOBUTTON_movie_type[5];
 GLUI_RadioButton *RADIOBUTTON_1a=NULL;
 GLUI_RadioButton *RADIOBUTTON_1b=NULL;
 GLUI_RadioButton *RADIOBUTTON_1c=NULL;
@@ -206,7 +206,7 @@ GLUI_Listbox *LIST_render_skip=NULL;
 
 rolloutlistdata first_rollout, last_rollout;
 
-procdata motionprocinfo[9], mvrprocinfo[5], subrenderprocinfo[4], screenprocinfo[3];
+procdata motionprocinfo[9], mvrprocinfo[6], subrenderprocinfo[4], screenprocinfo[3];
 int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0, nscreenprocinfo=0;
 
 /* ------------------ MakeMovieBashScript ------------------------ */
@@ -548,9 +548,11 @@ extern "C" void GLUIEnableDisablePlayMovieCPP(void){
 extern "C" void GLUIEnableDisableMakeMovieCPP(int onoff){
   if(BUTTON_make_movie!=NULL){
     if(onoff == ON){
+      making_movie_enabled = 1;
       BUTTON_make_movie->enable();
     }
     else{
+      making_movie_enabled = 0;
       BUTTON_make_movie->disable();
     }
   }
@@ -561,6 +563,7 @@ extern "C" void GLUIEnableDisableMakeMovieCPP(int onoff){
 void UpdateMovieType(int type){
   movie_filetype = type;
   if(RADIO_movie_type!=NULL)RADIO_movie_type->set_int_val(movie_filetype);
+  updatemenu = 1;
 }
 
 /* ------------------ UpdateRenderType ------------------------ */
@@ -568,6 +571,7 @@ void UpdateMovieType(int type){
 void UpdateRenderType(int type){
   render_filetype = type;
   if(RADIO_render_type!=NULL)RADIO_render_type->set_int_val(render_filetype);
+  updatemenu = 1;
 }
 
 /* ------------------ UpdateZaxisAngles ------------------------ */
@@ -1616,6 +1620,7 @@ extern "C" void GLUIMotionSetup(int main_window){
   RADIOBUTTON_movie_type[1]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "mp4");
   RADIOBUTTON_movie_type[2]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "wmv");
   RADIOBUTTON_movie_type[3]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "mov");
+  RADIOBUTTON_movie_type[4] = glui_motion->add_radiobutton_to_group(RADIO_movie_type, "gif");
   SPINNER_framerate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "Frame rate", GLUI_SPINNER_INT, &movie_framerate);
   SPINNER_framerate->set_int_limits(1, 100);
   SPINNER_movie_crf = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "quality", GLUI_SPINNER_INT, &movie_crf);
@@ -2727,6 +2732,11 @@ void RenderCB(int var){
         break;
       case MOV:
         strcpy(movie_ext, ".mov");
+        SPINNER_movie_crf->enable();
+        SPINNER_bitrate->disable();
+        break;
+      case MGIF:
+        strcpy(movie_ext, ".gif");
         SPINNER_movie_crf->enable();
         SPINNER_bitrate->disable();
         break;
