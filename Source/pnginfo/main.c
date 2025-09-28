@@ -144,7 +144,7 @@ int main(int argc, char **argv){
     }
     else{
       if(use_html == 1){
-        int i, ibeg = 0;
+        int ibeg = 0;
 
         if(strlen((char *)revision_data) >= 4){
           if(strncmp((char *)revision_data, "<br>", 4) == 0)ibeg = 4;
