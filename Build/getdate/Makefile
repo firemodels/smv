@@ -60,6 +60,15 @@ gnu_win_64 : exe       = getdate_win_64.exe
 gnu_win_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj)
 
+# ------------- clang win 64 ----------------
+
+clang_win_64 : CFLAGS    = -m64 -D GLEW_STATIC -Wno-deprecated-declarations
+clang_win_64 : CC        = clang-cl
+clang_win_64 : exe       = getdate_win_64.exe
+
+clang_win_64 : $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin)
+
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
