@@ -55,15 +55,6 @@ intel_win_64 : exe       = timep_win_64.exe
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin)
 
-# ------------- gnu win 64 ----------------
-
-gnu_win_64 : CFLAGS    = -O0 -m64 -D GLEW_STATIC -D MINGW
-gnu_win_64 : CC        = gcc
-gnu_win_64 : exe       = timep_win_64.exe
-
-gnu_win_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj)
-
 # ------------- gnu linux 64 db ----------------
 
 gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GNU_COMPINFO) $(GITINFO)

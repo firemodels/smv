@@ -148,18 +148,6 @@ else
 endif
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(GLUT_WIN_LIB) $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
 
-#--- gnu
-
-SMV_GNU_LIBDIR = $(LIB_DIR)\gnu_win_64
-ifeq ($(GLUT),freeglut)
-  GLUT_GNU_LIB = $(SMV_GNU_LIBDIR)\freeglut_staticd.a
-  D_FREEGLUT = -D FREEGLUT_STATIC
-else
-  GLUT_GNU_LIB = $(SMV_GNU_LIBDIR)\glut32.a
-  D_FREEGLUT =
-endif
-SMV_LIBS_GNU = $(SMV_GNU_LIBDIR)\glui.a $(GLUT_GNU_LIB) $(SMV_GNU_LIBDIR)\gd.a $(SMV_GNU_LIBDIR)\jpeg.a $(SMV_GNU_LIBDIR)\png.a  $(SMV_GNU_LIBDIR)\zlib.a $(SMV_GNU_LIBDIR)\pthreads.a
-
 #--- clang
 
 SMV_CLANG_LIBDIR = $(LIB_DIR)\clang_win_64
@@ -237,18 +225,6 @@ intel_win_64 : exe       = smokeview_win_$(SMV_TESTSTRING)64
 intel_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(SMV_LIBS_WIN)
 
-# ------------- gnu_win_64 ----------------
-
-gnu_win_64 : INC       += -I $(SOURCE_DIR)/glui_gl -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-gnu_win_64 : CFLAGS    = -O0 -m64 $(D_FREEGLUT) -D GLEW_STATIC -D NDEBUG -D __MINGW32__ -fno-builtin -Wno-write-strings $(GITINFO) $(GNU_COMPINFO) $(SMV_PROFILEFLAG)
-gnu_win_64 : LFLAGS    = -m64 $(SMV_LIBS_GNU) -lm -lopengl32 -lglu32 -lgdi32 -lwinmm -lcomdlg32 -lhid -lquadmath $(SMV_PROFILEFLAG)
-gnu_win_64 : CC        = gcc
-gnu_win_64 : CPP       = g++
-gnu_win_64 : exe       = smokeview_win_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
-
-gnu_win_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
-
 # ------------- clang_win_64 ----------------
 
 clang_win_64 : DYNLIB_EXT = .dll
@@ -261,26 +237,6 @@ clang_win_64 : exe       = smokeview_win_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
 clang_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) $(LFLAGS)
-
-# ------------- gnu_win_64_db ----------------
-
-#-Wunused-function -Wunused-label -Wunused-value -Wunused-variable -Wunused-parameter -Wunused-but-set-parameter
-
-# to profile the windows build of smokeview
-# 1.  cd smv/Build/smokeview/gnu_win_64
-# 2.  type: make_smokeview
-# 2.  run case using smokeview_win_test_db
-# 3.  type: gprof smokeview_application_name > results.out
-
-gnu_win_64_db : INC       += -I $(SOURCE_DIR)/glui_gl -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-gnu_win_64_db : CFLAGS    = -O0 -m64 -g -Wunused-label -Wunused-value -Wunused-variable $(D_FREEGLUT) $(SMV_PROFILEFLAG) -D GLEW_STATIC -D __MINGW32__ -fno-builtin -Wno-write-strings $(GITINFO) $(GNU_COMPINFO)
-gnu_win_64_db : LFLAGS    = -m64 $(SMV_LIBS_GNU) -lm -lopengl32 -lglu32 -lgdi32 -lwinmm -lcomdlg32 -lhid -lquadmath $(SMV_PROFILEFLAG)
-gnu_win_64_db : CC        = gcc
-gnu_win_64_db : CPP       = g++
-gnu_win_64_db : exe       = smokeview_win_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
-
-gnu_win_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV  Linux VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV

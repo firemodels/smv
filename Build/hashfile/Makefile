@@ -54,15 +54,6 @@ intel_win_64 : exe       = hashfile_win_64.exe
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin)
 
-# ------------- gnu win 64 ----------------
-
-gnu_win_64 : CFLAGS    = -O0 -m64 -D GLEW_STATIC -D MINGW
-gnu_win_64 : CC        = gcc
-gnu_win_64 : exe       = hashfile_win_64.exe
-
-gnu_win_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj)
-
 # ------------- clang win 64 ----------------
 
 clang_win_64 : CFLAGS    = -m64
