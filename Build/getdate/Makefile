@@ -62,7 +62,7 @@ gnu_win_64 : $(obj)
 
 # ------------- clang win 64 ----------------
 
-clang_win_64 : CFLAGS    = -m64 -D GLEW_STATIC -Wno-deprecated-declarations
+clang_win_64 : CFLAGS    = -m64 -Wno-deprecated-declarations
 clang_win_64 : CC        = clang-cl
 clang_win_64 : exe       = getdate_win_64.exe
 

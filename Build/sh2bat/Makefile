@@ -63,7 +63,7 @@ gnu_win_64 : $(obj)
 
 # ------------- clang win 64 ----------------
 
-clang_win_64 : CFLAGS    = -O2  $(GITINFO)
+clang_win_64 : CFLAGS    = $(GITINFO)
 clang_win_64 : CC        = clang-cl
 clang_win_64 : CPP       = clang-cl
 clang_win_64 : exe       = sh2bat_win_64.exe

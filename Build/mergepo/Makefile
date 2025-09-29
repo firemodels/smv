@@ -62,7 +62,7 @@ gnu_win_64 : $(obj)
 
 # ------------- clang 64 ----------------
 
-clang_win_64 : CFLAGS    = -m64 -D GLEW_STATIC -D MINGW
+clang_win_64 : CFLAGS    = -m64
 clang_win_64 : LFLAGS    =
 clang_win_64 : CC        = clang-cl
 clang_win_64 : exe       = mergepo_win_64.exe
