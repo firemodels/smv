@@ -3,7 +3,7 @@ set arg1=%1
 
 Title Building pnginfo for 64 bit Windows
 
-erase *.o *.obj *.mod
+erase *.obj *.exe
 make SHELL="%ComSpec%" -f ..\Makefile clang_win_64
 if x%arg1% == xbot goto skip2
 pause

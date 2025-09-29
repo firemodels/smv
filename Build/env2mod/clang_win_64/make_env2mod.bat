@@ -3,7 +3,7 @@ set arg1=%1
 
 Title Building env2mod for 64 bit Windows
 
-erase *.obj *.mod
+erase *.obj *.exe
 make SHELL="%ComSpec%" -f ..\Makefile clang_win_64
 if x%arg1% == xbot goto skip2
 pause

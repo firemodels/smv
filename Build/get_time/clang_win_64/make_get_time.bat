@@ -1,9 +1,9 @@
 @echo off
 set from=%1
 
-Title Building make_time for 64 bit Windows
+Title Building get_time for 64 bit Windows
 
-erase *.o *.exe
+erase *.obj *.exe
 make -f ..\Makefile clang_win_64
 
 if x%from% == xbot goto skip_pause

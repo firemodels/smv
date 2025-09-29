@@ -1,7 +1,7 @@
 @echo off
 set arg1=%1
 
-Title Building flushcache for 64 bit Windows
+Title Building flush for 64 bit Windows
 
 erase *.obj *.exe
 make SHELL="%ComSpec%" -f ..\Makefile clang_win_64
