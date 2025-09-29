@@ -61,6 +61,16 @@ gnu_win_64 : exe       = set_path_win_64.exe
 gnu_win_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj)
 
+# ------------- clang win 64 ----------------
+
+clang_win_64 : CFLAGS    = -m64 -D GLEW_STATIC 
+clang_win_64 : CC        = clang-cl
+clang_win_64 : CPP       = clang-cl
+clang_win_64 : exe       = set_path_win_64.exe
+
+clang_win_64 : $(objwin)
+	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib
+
 #-------------- Clean Target to remove Object and Module files -----------
 
 .PHONY : clean
