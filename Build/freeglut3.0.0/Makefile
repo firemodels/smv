@@ -80,14 +80,13 @@ intel_win_64 : CC=icl
 intel_win_64 : $(OBJSWINS_WIN)
 	lib  $(OBJSWINS_WIN) -OUT:freeglut_staticd.lib
 
-# gnu win 64
+# clang win 64
 
-gnu_win_64 : INC+=-I $(SOURCE_DIR)/mswin 
-gnu_win_64 : FILTERC+=-D __MINGW32__
-gnu_win_64 : CFLAGS=-Wno-shift-count-overflow
-gnu_win_64 : CC=gcc
-gnu_win_64 : $(OBJSWINS)
-	ar rcs freeglut_staticd.a $(OBJSWINS) 
+clang_win_64 : INC+=-I $(SOURCE_DIR)/mswin 
+clang_win_64 : SIZE= 
+clang_win_64 : CC=clang-cl
+clang_win_64 : $(OBJSWINS_WIN)
+	lib  $(OBJSWINS_WIN) -OUT:freeglut_staticd.lib
 
 #-------------- Clean Target to remove Object and Module files -----------
 

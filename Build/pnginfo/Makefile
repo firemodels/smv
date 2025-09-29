@@ -14,6 +14,11 @@ SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIB
 PNG_LIBS = -lgd -ljpeg -lpng -lz
 SYSTEM_LIBS = -lpthread
 
+#--- clang
+
+SMV_CLANG_LIBDIR = $(LIB_DIR)\clang_win_64
+SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\gd.lib $(SMV_CLANG_LIBDIR)\jpeg.lib $(SMV_CLANG_LIBDIR)\png.lib  $(SMV_CLANG_LIBDIR)\zlib.lib
+
 FILTERC =
 FILTERF =
 
@@ -112,15 +117,15 @@ intel_win_64 : exe       = pnginfo_win_64.exe
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
-# ------------- gnu win 64 ----------------
+# ------------- clang win 64 ----------------
 
-gnu_win_64 : CFLAGS    = -O0 -m64 -D __MINGW32__
-gnu_win_64 : LFLAGS    = -m64
-gnu_win_64 : CC        = gcc
-gnu_win_64 : exe       = pnginfo_win_64.exe
+clang_win_64 : CFLAGS    = -m64 -D BGDWIN32 
+clang_win_64 : LFLAGS    = -m64
+clang_win_64 : CC        = clang-cl
+clang_win_64 : exe       = pnginfo_win_64.exe
 
-gnu_win_64 : $(obj)
-	$(FC) -o $(bin)/$(exe) $(LFLAGS) $(obj)
+clang_win_64 : $(objwin)
+	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin)  $(SMV_LIBS_CLANG)
 
 # ------------- gnu linux 64 ----------------
 
@@ -140,6 +145,26 @@ gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : exe       = pnginfo_linux_64_db
 
 gnu_linux_64_db : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+# ------------- clang linux 64 ----------------
+
+clang_linux_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
+clang_linux_64 : LFLAGS    = -m64 -L $(LIB_DIR)/clang_linux_64 $(PNG_LIBS) $(SYSTEM_LIBS) -lm
+clang_linux_64 : CC        = clang
+clang_linux_64 : exe       = pnginfo_linux_64
+
+clang_linux_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+# ------------- gnu linux 64 ----------------
+
+clang_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO)
+clang_linux_64_db : LFLAGS    = -m64 -L $(LIB_DIR)/clang_linux_64 $(PNG_LIBS) $(SYSTEM_LIBS) -lm
+clang_linux_64_db : CC        = clang
+clang_linux_64_db : exe       = pnginfo_linux_64_db
+
+clang_linux_64_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 
