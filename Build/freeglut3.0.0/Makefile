@@ -80,6 +80,14 @@ intel_win_64 : CC=icl
 intel_win_64 : $(OBJSWINS_WIN)
 	lib  $(OBJSWINS_WIN) -OUT:freeglut_staticd.lib
 
+# clang win 64
+
+clang_win_64 : INC+=-I $(SOURCE_DIR)/mswin 
+clang_win_64 : SIZE= 
+clang_win_64 : CC=clang-cl
+clang_win_64 : $(OBJSWINS_WIN)
+	lib  $(OBJSWINS_WIN) -OUT:freeglut_staticd.lib
+
 # gnu win 64
 
 gnu_win_64 : INC+=-I $(SOURCE_DIR)/mswin 
