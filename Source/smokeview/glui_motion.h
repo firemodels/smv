@@ -86,7 +86,6 @@
 #define RENDER_ROLLOUT       2
 #define MOVIE_ROLLOUT        3
 #define MOVIE_ROLLOUT_BATCH  4
-#define GIF_ROLLOUT          5
 
 #define RENDER_FILE_ROLLOUT   0
 #define RENDER_SIZE_ROLLOUT   1
