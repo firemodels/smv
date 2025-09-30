@@ -500,8 +500,6 @@ void OutputSliceData(void){
   }
 }
 
-static gdImagePtr im = NULL;
-static gdImagePtr prev = NULL;
 static FILE *out = NULL;
 
 /* ------------------------------- GifStart --------------------------------- */
@@ -515,8 +513,7 @@ int GifStart(const char *path) {
   GLsizei height = screenHeight;
 
   making_movie = 1;
-  prev = NULL;
-  im = gdImageCreate(width, height);
+  gdImagePtr im = gdImageCreate(width, height);
   if(!im) {
     fprintf(stderr, "can't create image");
     return 1;
@@ -542,10 +539,6 @@ int GifStart(const char *path) {
 int GifEnd() {
   gdImageGifAnimEnd(out);
   fclose(out);
-  if(im != NULL) {
-    gdImageDestroy(im);
-    im = NULL;
-  }
   making_movie = 0;
   return 0;
 }
@@ -561,7 +554,7 @@ int GifAddFrame(int delay) {
   GLsizei height = screenHeight;
   GLubyte *OpenGLimage;
   NewMemory((void **)&OpenGLimage, width * height * sizeof(GLubyte) * 3);
-  im = gdImageCreate(width, height);
+  gdImagePtr im = gdImageCreate(width, height);
   gdImageColorAllocate(im, 255, 255, 255);
   glPixelStorei(GL_PACK_ALIGNMENT, 1);
   glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, OpenGLimage);
@@ -576,11 +569,7 @@ int GifAddFrame(int delay) {
       gdImageSetPixel(im, j, i, col);
     }
   }
-  gdImageGifAnimAdd(im, out, 1, 0, 0, delay, gdDisposalNone, prev);
-  if(prev) {
-    gdImageDestroy(prev);
-  }
-  prev = im;
+  gdImageGifAnimAdd(im, out, 1, 0, 0, delay, gdDisposalNone, NULL);
   FREEMEMORY(OpenGLimage);
   return 0;
 }
