@@ -186,6 +186,7 @@ GLUI_Button *BUTTON_motion_1=NULL;
 GLUI_Button *BUTTON_motion_2=NULL;
 GLUI_Button *BUTTON_make_movie = NULL;
 GLUI_Button *BUTTON_play_movie = NULL;
+GLUI_Button *BUTTON_ouput_ffmpeg_command = NULL;
 #ifdef pp_RENDER360_DEBUG
 GLUI_Button *BUTTON_screen_hideall = NULL;
 GLUI_Button *BUTTON_screen_showall = NULL;
@@ -1621,7 +1622,7 @@ extern "C" void GLUIMotionSetup(int main_window){
   SPINNER_movie_crf->set_int_limits(0,51);
   SPINNER_bitrate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "Bit rate (Kb/s)", GLUI_SPINNER_INT, &movie_bitrate);
   SPINNER_bitrate->set_int_limits(1, 100000);
-  glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Output ffmpeg command", OUTPUT_FFMPEG, RenderCB);
+  BUTTON_ouput_ffmpeg_command = glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Output ffmpeg command", OUTPUT_FFMPEG, RenderCB);
   RenderCB(MOVIE_FILETYPE);
 
   if(have_slurm==1&&nmovie_queues>0){
@@ -2713,26 +2714,31 @@ void RenderCB(int var){
         strcpy(movie_ext, ".avi");
         SPINNER_movie_crf->disable();
         SPINNER_bitrate->enable();
+        BUTTON_ouput_ffmpeg_command->enable();
         break;
       case MP4:
         strcpy(movie_ext, ".mp4");
         SPINNER_movie_crf->enable();
         SPINNER_bitrate->disable();
+        BUTTON_ouput_ffmpeg_command->enable();
         break;
       case WMV:
         strcpy(movie_ext, ".wmv");
         SPINNER_movie_crf->disable();
         SPINNER_bitrate->enable();
+        BUTTON_ouput_ffmpeg_command->enable();
         break;
       case MOV:
         strcpy(movie_ext, ".mov");
         SPINNER_movie_crf->enable();
         SPINNER_bitrate->disable();
+        BUTTON_ouput_ffmpeg_command->enable();
         break;
       case MGIF:
         strcpy(movie_ext, ".gif");
         SPINNER_movie_crf->disable();
         SPINNER_bitrate->disable();
+        BUTTON_ouput_ffmpeg_command->disable();
         break;
       default:
         assert(FFALSE);
