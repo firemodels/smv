@@ -4182,8 +4182,7 @@ void DoNonStereo(void){
           if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
         }
       }
-      int delay = 100/movie_framerate;
-      GifAddFrame(delay);
+      GifAddFrameSpec();
 
       for(i = 0; i<resolution_multiplier*resolution_multiplier; i++){
         FREEMEMORY(screenbuffers[i]);
