@@ -2731,7 +2731,7 @@ void RenderCB(int var){
         break;
       case MGIF:
         strcpy(movie_ext, ".gif");
-        SPINNER_movie_crf->enable();
+        SPINNER_movie_crf->disable();
         SPINNER_bitrate->disable();
         break;
       default:

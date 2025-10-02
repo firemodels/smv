@@ -2107,13 +2107,20 @@ void RenderMenu(int value){
     render_filetype = RGIF;
     UpdateRenderType(render_filetype);
     render_mode = RENDER_GIF;
-    resolution_multiplier=1;
-    if(RenderTime!=0||touring!=0){
+    resolution_multiplier = 1;
+    if(RenderTime != 0 || touring != 0) {
       char *gif_filename;
-      NEWMEMORY(gif_filename, strlen(global_scase.chidfilebase) + 4 + 1);
-      strcpy(gif_filename, global_scase.chidfilebase);
+      NEWMEMORY(gif_filename, strlen(movie_name) + 4 + 1);
+      strcpy(gif_filename, movie_name);
       strcat(gif_filename, ".gif");
-      char *gif_filepath = CombinePaths(".", gif_filename);
+      char *gif_filepath;
+      // By default render animated GIF to current directory
+      char *gif_dir = ".";
+      if(script_dir_path != NULL && strlen(script_dir_path) > 0) {
+        // If script_dir_path render to that directory instead
+        gif_dir = script_dir_path;
+      }
+      gif_filepath = CombinePaths(gif_dir, gif_filename);
       FREEMEMORY(gif_filename);
       GifStart(gif_filepath);
       FREEMEMORY(gif_filepath);
