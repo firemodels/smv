@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <math.h>
+#include <stdbool.h>
 
 #include "smokeviewvars.h"
 
@@ -500,7 +501,73 @@ void OutputSliceData(void){
   }
 }
 
+struct gif_spec_frame {
+  /// @brief The frame number to render.
+  int frame_number;
+  /// @brief Duration of the frame in hundredths of a second.
+  int duration;
+};
+
+struct gif_spec {
+  /// @brief The current capacity of the \ref gif_frames buffer (the capacity).
+  size_t capacity;
+  /// @brief The number of specified frames in the \ref gif_frames buffer (the
+  /// length).
+  size_t n_frames;
+  /// @brief A buffer holding the frame number and duration of each frame.
+  struct gif_spec_frame *gif_frames;
+};
+
+/// @brief The animated GIF file that is currently being created. NULL if there
+/// is no animated GIF creation in process.
 static FILE *out = NULL;
+/// @brief The current animated GIF frame specification. This sets out which
+/// frames are to be rendered, in which order and the duration of each frame.
+/// This is optional, if it is set to NULL all frames will be rendered using the
+/// framerate set by the GUI.
+static struct gif_spec *current_gif_spec = NULL;
+/// @brief The current GIF frame being rendered. This is an offset into the
+/// frames of the GIF frame specification.
+static size_t current_gif_frame = 0;
+
+/* -------------------------- GifSpec_Clear --------------------------------- */
+
+/// @brief Clear the animated GIF frame specification if one exists. Does
+/// nothing if there is no current frame specification.
+void GifSpec_Clear() {
+  if(current_gif_spec != NULL) {
+    if(current_gif_spec->gif_frames != NULL)
+      FREEMEMORY(current_gif_spec->gif_frames);
+    FREEMEMORY(current_gif_spec);
+  }
+  current_gif_frame = 0;
+}
+
+/* -------------------------- GifSpec_PushFrame ----------------------------- */
+
+/// @brief Set the frame specification to be used for animated GIFs. Will clear
+/// the current GIF specification if one already exists.
+/// @param gfs A pointer to a gif_frame spec. This must be allocated with
+/// NEWMEMORY. This pointer will be kept and later needs to be freed by calling
+/// GifSpec_Clear.
+void GifSpec_PushFrame(int frame_number, int duration) {
+  if(current_gif_spec == NULL) {
+    NEWMEMORY(current_gif_spec, sizeof(struct gif_spec));
+    current_gif_spec->n_frames = 0;
+    current_gif_spec->capacity = 2;
+    NEWMEMORY(current_gif_spec->gif_frames,
+              current_gif_spec->capacity * sizeof(struct gif_spec_frame));
+  }
+  if(current_gif_spec->n_frames >= current_gif_spec->capacity) {
+    current_gif_spec->capacity *= 2;
+    RESIZEMEMORY(current_gif_spec->gif_frames,
+                 current_gif_spec->capacity * sizeof(struct gif_spec_frame));
+  }
+  current_gif_spec->gif_frames[current_gif_spec->n_frames].frame_number =
+      frame_number;
+  current_gif_spec->gif_frames[current_gif_spec->n_frames].duration = duration;
+  current_gif_spec->n_frames++;
+}
 
 /* ------------------------------- GifStart --------------------------------- */
 
@@ -553,6 +620,7 @@ int GifAddFrame(int delay) {
   GLsizei width = screenWidth;
   GLsizei height = screenHeight;
   GLubyte *OpenGLimage;
+
   NewMemory((void **)&OpenGLimage, width * height * sizeof(GLubyte) * 3);
   gdImagePtr im = gdImageCreate(width, height);
   gdImageColorAllocate(im, 255, 255, 255);
@@ -571,6 +639,42 @@ int GifAddFrame(int delay) {
   }
   gdImageGifAnimAdd(im, out, 1, 0, 0, delay, gdDisposalNone, NULL);
   FREEMEMORY(OpenGLimage);
+  return 0;
+}
+
+/* ----------------------------- GifAddFrameSpec ---------------------------- */
+
+/// @brief Add a frame to the current animated GIF (which must have been started
+/// with \ref GifStart). This will examine the current options and or
+/// specification to determine whether a frame should be rendered and for how
+/// long.
+/// @return zero on success, non-zero on failure
+int GifAddFrameSpec() {
+  // Should add the current frame? True by default.
+  bool render = true;
+  // How long should this frame be? Set the default based on framerate.
+  int delay = 100 / movie_framerate;
+  if(current_gif_spec != NULL) {
+    // If we've gone beyond the current frame spec, we don't need to render
+    if(current_gif_frame >= current_gif_spec->n_frames) {
+      render = false;
+    }
+    else {
+      struct gif_spec_frame this_frame =
+          current_gif_spec->gif_frames[current_gif_frame];
+      if(this_frame.frame_number == itimes) {
+        render = true;
+        delay = this_frame.duration;
+        current_gif_frame++;
+      }
+      else {
+        render = false;
+      }
+    }
+  }
+  if(render) {
+    GifAddFrame(delay);
+  }
   return 0;
 }
 
