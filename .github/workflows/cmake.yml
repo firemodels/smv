@@ -89,12 +89,15 @@ jobs:
           name: smokeview-${{ runner.os }}-${{ matrix.compiler }}
           path: smokeview
   build_windows_msvc:
-    name: build ${{ matrix.os }} - msvc - ${{ matrix.build }}
+    name: build ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build }}
     strategy:
       fail-fast: false
       matrix:
         os:
           - windows-2022
+        compiler:
+          - cl
+          - clang
         build:
           - Debug
           - Release
@@ -115,7 +118,7 @@ jobs:
         shell: cmd
         run: |
           cmake --version
-          cmake -B ${{github.workspace}}\cbuild -DSTRICT_CHECKS=ON -DCMAKE_BUILD_TYPE=${{ matrix.build }} -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%/scripts/buildsystems/vcpkg.cmake
+          cmake -B ${{github.workspace}}\cbuild -DSTRICT_CHECKS=ON -DCMAKE_BUILD_TYPE=${{ matrix.build }} -DCMAKE_C_COMPILER=${{matrix.compiler }} -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%/scripts/buildsystems/vcpkg.cmake
           cmake --build ${{github.workspace}}\cbuild -j4 --config ${{ matrix.build }}
           copy ${{github.workspace}}\cbuild\${{ matrix.build }}\smokeview.exe smokeview.exe
       - name: Test
@@ -127,5 +130,5 @@ jobs:
         if: matrix.build == 'Release'
         uses: actions/upload-artifact@v4
         with:
-          name: smokeview-windows-msvc
+          name: smokeview-windows-${{ matrix.compiler }}
           path: smokeview.exe

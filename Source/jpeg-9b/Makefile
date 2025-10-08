@@ -22,7 +22,7 @@ CFLAGS= -O2  -I$(srcdir)
 	$(CC) -c $(CFLAGS) $(INC) $(FILTERC) $<
 
 # Link-time cc options:
-LDFLAGS= 
+LDFLAGS=
 
 # Library version ID; libtool uses this for the shared library version number.
 # Note: we suggest this match the macro of the same name in jpeglib.h.
@@ -43,6 +43,7 @@ RM= rm -f
 AR= ar rc
 # second step in .a creation (use "touch" if not needed)
 AR2= ranlib
+LIB=lib
 
 # End of configurable options.
 
@@ -76,4 +77,4 @@ libjpeg.a:  $(LIBOBJECTS)
 	$(AR2) libjpeg.a
 
 libjpeg.lib:  $(LIBOBJECTSWIN)
-	lib   $(LIBOBJECTSWIN) -OUT:libjpeg.lib
+	$(LIB)   $(LIBOBJECTSWIN) -OUT:libjpeg.lib
