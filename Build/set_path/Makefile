@@ -29,7 +29,11 @@ obj = main.o string_util.o dmalloc.o file_util.o  md5.o sha1.o sha256.o stdio_bu
 objwin = $(obj:.o=.obj)
 
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
-SMV_WIN_LIBDIR_CLANG = $(LIB_DIR)/clang_win_64
+SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\pthreads.lib
+
+SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win_64
+SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\pthreads.lib
+
 
 #*** General Purpose Rules ***
 
@@ -54,7 +58,7 @@ intel_win_64 : CPP       = $(I_CC)
 intel_win_64 : exe       = set_path_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib  $(SMV_WIN_LIBDIR)\pthreads.lib
+	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib  $(SMV_LIBS_WIN)
 
 # ------------- clang win 64 ----------------
 
@@ -64,7 +68,7 @@ clang_win_64 : CPP       = clang-cl
 clang_win_64 : exe       = set_path_win_64.exe
 
 clang_win_64 : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib $(SMV_WIN_LIBDIR_CLANG)\pthreads.lib
+	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib $(SMV_LIBS_CLANG)
 
 #-------------- Clean Target to remove Object and Module files -----------
 

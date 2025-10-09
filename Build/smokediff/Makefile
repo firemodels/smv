@@ -8,9 +8,6 @@ INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smok
 FILTERC =
 FILTERF =
 
-SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
-SMV_CLANG_LIBDIR = $(LIB_DIR)\clang_win_64
-
 # Intel compiler definitions
 include ../../scripts/intel_compiler.mak
 
@@ -48,6 +45,13 @@ win_chk     = $(win_c_chk)
 CLANGANALYZE=clang --analyze
 CLANGSUMMARY=../../scripts/clang_summary.sh
 CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
+
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\pthreads.lib
+
+SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win_64
+SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\pthreads.lib
+
 
 #*** General Purpose Rules ***
 
@@ -98,7 +102,7 @@ intel_win_64_db : CC        = $(I_CC)
 intel_win_64_db : exe       = smokediff_win_64_db.exe
 
 intel_win_64_db : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_WIN_LIBDIR)\pthreads.lib
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
 # ------------- intel win 64 ----------------
 
@@ -109,7 +113,7 @@ intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = smokediff_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_WIN_LIBDIR)\pthreads.lib
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
 # ------------- clang win 64 ----------------
 
@@ -120,7 +124,7 @@ clang_win_64 : CC        = clang-cl
 clang_win_64 : exe       = smokediff_win_64.exe
 
 clang_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(SMV_CLANG_LIBDIR)\pthreads.lib
+	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(SMV_LIBS_CLANG)
 
 # ------------- gnu linux 64 ----------------
 

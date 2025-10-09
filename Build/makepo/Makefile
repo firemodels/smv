@@ -26,7 +26,11 @@ obj = main.o file_util.o string_util.o dmalloc.o md5.o sha1.o sha256.o stdio_buf
 objwin = $(obj:.o=.obj)
 
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
-SMV_WIN_LIBDIR_CLANG = $(LIB_DIR)/clang_win_64
+SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\pthreads.lib
+
+SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win_64
+SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\pthreads.lib
+
 
 #*** General Purpose Rules ***
 
@@ -51,7 +55,7 @@ intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = makepo_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin) $(LFLAGS) $(SMV_WIN_LIBDIR)\pthreads.lib
+	$(CC) -o $(bin)/$(exe) $(objwin) $(LFLAGS) $(SMV_LIBS_WIN)
 
 # ------------- clang win 64 ----------------
 
@@ -61,7 +65,7 @@ clang_win_64 : CC        = clang-cl
 clang_win_64 : exe       = clang-cl_win_64.exe
 
 clang_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin) $(LFLAGS) $(SMV_WIN_LIBDIR_CLANG)\pthreads.lib
+	$(CC) -o $(bin)/$(exe) $(objwin) $(LFLAGS) $(SMV_LIBS_CLANG)
 
 # ------------- intel linux 64 ----------------
 

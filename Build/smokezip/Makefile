@@ -56,7 +56,11 @@ CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
 #main.obj: CFLAGS = -Od /nologo -D pp_WIN_INTEL $(OPT)
 
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
-SMV_WIN_LIBDIR_CLANG = $(LIB_DIR)/clang_win_64
+SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\pthreads.lib
+
+SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win_64
+SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\pthreads.lib $(SMV_CLANG_LIBDIR)\pthreads.lib $(SMV_CLANG_LIBDIR)\zlib.lib
+
 
 #*** General Purpose Rules ***
 
@@ -117,7 +121,7 @@ clang_win_64 : CC        = clang-cl
 clang_win_64 : exe       = smokezip_win_64.exe
 
 clang_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_WIN_LIBDIR_CLANG)\pthreads.lib $(LIB_DIR)\clang_win_64\pthreads.lib $(LIB_DIR)\clang_win_64\zlib.lib $(LIB_DIR)\clang_win_64\pthreads.lib
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_CLANG)
 
 
 # ------------- gnu linux 64 ----------------
