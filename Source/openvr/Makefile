@@ -8,7 +8,7 @@ CC=$(COMPILER) $(SIZE)
 INC=-I headers -I vrcommon
 
 # You may need to adjust these cc options:
-CFLAGS= -O2  -I$(srcdir) 
+CFLAGS= -O2  -I$(srcdir)
 WINOPTS= -D _WIN64 -D WIN32 -D _WIN32 -D OPENVR_BUILD_STATIC
 
 .cpp.obj:
@@ -21,7 +21,7 @@ WINOPTS= -D _WIN64 -D WIN32 -D _WIN32 -D OPENVR_BUILD_STATIC
 	$(CC) -c $(CFLAGS) $(INC) $(FILTERC) $<
 
 # Link-time cc options:
-LDFLAGS= 
+LDFLAGS=
 
 # miscellaneous OS-dependent stuff
 SHELL= /bin/sh
@@ -33,6 +33,7 @@ RM= rm -f
 AR= ar rc
 # second step in .a creation (use "touch" if not needed)
 AR2= ranlib
+LIB=lib
 
 # End of configurable options.
 
@@ -49,4 +50,4 @@ libopenvr.a:  $(OBJECTS)
 	$(AR2) libopenvr.a
 
 libopenvr.lib:  $(OBJECTSWIN)
-	lib   $(OBJECTSWIN) -OUT:libopenvr.lib
+	$(LIB)   $(OBJECTSWIN) -OUT:libopenvr.lib
