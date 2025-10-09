@@ -19,6 +19,7 @@ AR = ar
 RANLIB = ranlib
 CP = cp
 RM_F = rm -f
+LIB=lib
 
 # Compiler and linker flags
 NOHWOPT = -DPNG_ARM_NEON_OPT=0 -DPNG_MIPS_MSA_OPT=0 \
@@ -76,7 +77,7 @@ libpng.a: $(OBJS)
 	$(RANLIB) $@
 
 libpng.lib: $(OBJSWIN)
-	lib $(OBJSWIN) -OUT:$@
+	$(LIB) $(OBJSWIN) -OUT:$@
 
 test: pngtest$(EXEEXT)
 	./pngtest$(EXEEXT)

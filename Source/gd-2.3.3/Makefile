@@ -1,5 +1,5 @@
 #If the ar command fails on your system, consult the ar manpage
-#for your system. 
+#for your system.
 AR=ar
 
 CFLAGS=-g -DHAVE_LIBPNG -DHAVE_LIBZ -DHAVE_LIBJPEG -DHAVE_LIBX11
@@ -21,6 +21,7 @@ COMPILER=gcc -fPIC
 #COMPILER=icc
 #SIZE=-m32
 SIZE=-m64
+LIB=lib
 
 CC=$(COMPILER) $(SIZE) $(INCLUDEDIRS) $(STDINT) -Wno-incompatible-function-pointer-types -Wno-incompatible-pointer-types
 
@@ -77,7 +78,7 @@ LIBOBJS=gd.o \
 	gdkanji.o \
 	gdtables.o \
 	gdxpm.o \
-	wbmp.o 
+	wbmp.o
 
 LIBOBJSWIN = $(LIBOBJS:.o=.obj)
 
@@ -87,4 +88,4 @@ libgd.a: ${LIBOBJS}
 	-ranlib libgd.a
 
 libgd.lib: ${LIBOBJSWIN}
-	lib ${LIBOBJSWIN} -OUT:libgd.lib 
+	$(LIB) ${LIBOBJSWIN} -OUT:libgd.lib
