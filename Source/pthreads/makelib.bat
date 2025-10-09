@@ -19,7 +19,7 @@ if  NOT "x%COMPILER%" == "xicx" goto endif3
 set OPT=-DHAVE_STRUCT_TIMESPEC
 
 if exist finished erase finished
-make CFLAGS=%CFLAGS% COMPILER=%COMPILER% SIZE=%SIZE% OPT=%OPT% RM=erase -f ./makefile %target%
+make CFLAGS=%CFLAGS% COMPILER=%COMPILER% LIB=%LIB% SIZE=%SIZE% OPT=%OPT% RM=erase -f ./makefile %target%
 if %COPYLIB% == 1 copy %FROMLIB% %TOLIB%
 echo finished > finished
 if "x%EXIT_SCRIPT%" == "x" goto skip1

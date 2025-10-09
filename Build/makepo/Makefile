@@ -70,21 +70,21 @@ intel_linux_64 : $(obj)
 
 # ------------- gnu linux 64 ----------------
 
-gcc_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
-gcc_linux_64 : LFLAGS    = -lm
-gcc_linux_64 : CC        = gcc
-gcc_linux_64 : exe       = makepo_linux_64
+gnu_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64 : LFLAGS    = -lm
+gnu_linux_64 : CC        = gcc
+gnu_linux_64 : exe       = makepo_linux_64
 
-gcc_linux_64 : $(obj)
+gnu_linux_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- gcc osx 64 ----------------
 
-gcc_osx_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
-gcc_osx_64 : CC        = clang
-gcc_osx_64 : exe       = makepo_osx_64
+gnu_osx_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
+gnu_osx_64 : CC        = clang
+gnu_osx_64 : exe       = makepo_osx_64
 
-gcc_osx_64 : $(obj)
+gnu_osx_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj)
 
 # ------------- clang osx 64 ----------------

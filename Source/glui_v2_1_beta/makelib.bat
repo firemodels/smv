@@ -12,7 +12,7 @@ set GLUTTYPE=glut
 if x%glutopt% EQU xfreeglut set GLUTTYPE=freeglut
 
 if exist finished erase finished
-make GLUT="%GLUTTYPE%" COMPILER=%COMPILER% COMPILER2=%COMPILER2% -f ./makefile %target%
+make GLUT="%GLUTTYPE%" COMPILER=%COMPILER% COMPILER2=%COMPILER2% LIB=%LIB% -f ./makefile %target%
 if %COPYLIB% == 1 copy %FROMLIB% %TOLIB%
 echo finished > finished
 
