@@ -1,6 +1,6 @@
 #ifndef READOBJECT_H_DEFINED
 #define READOBJECT_H_DEFINED
-#include "options.h"
+#include "options_common.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>

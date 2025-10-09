@@ -1,4 +1,5 @@
 @echo off
+set from=%1
 
 call ..\..\scripts\set_smv_opts %*
 
@@ -34,4 +35,3 @@ make -j %NUMBER_OF_PROCESSORS% ICON="%ICON%" GLUT="%GLUT%" SHELL="%ComSpec%" SMV
 if x%from% == xbot goto skip2
 pause
 :skip2
-

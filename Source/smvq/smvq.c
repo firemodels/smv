@@ -1,5 +1,5 @@
 #define INMAIN
-#include "options.h"
+#include "options_common.h"
 #include <ctype.h>
 #include <getopt.h>
 #include <stdbool.h>
@@ -15,7 +15,6 @@
 
 #include "readlabel.h"
 #include "readsmvfile.h"
-#include "smokeviewdefs.h"
 #include "string_util.h"
 #include <math.h>
 

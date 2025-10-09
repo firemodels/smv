@@ -4,7 +4,7 @@
 #define _GNU_SOURCE
 #endif
 
-#include "options.h"
+#include "options_common.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>

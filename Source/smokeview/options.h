@@ -12,17 +12,12 @@
 #include "options_common.h"
 
 //#define pp_SHOW_UPDATE      // show what is being updated in the UpdateShowScene routine
-#define pp_GPU              // support the GPU
-#define pp_THREAD           // turn on multi-threading
 //#define pp_TERRAIN_HIDE     // hide terrain when hiding internal blockages
 
 //*** options: windows
 
 #ifdef _WIN32
 #define pp_DIALOG_SHORTCUTS // dialog shortcuts
-#ifdef pp_GPU
-#define pp_WINGPU           // only draw 3d slices with the GPU on windows
-#endif
 #endif
 
 //*** options: Linux
@@ -35,22 +30,12 @@
 //*** options: OSX
 
 #ifdef pp_OSX
-#define pp_SMOKE3D_FORCE        // always have at least one smoke3d entry to prevent crash when unloading slices
-#ifndef GL_SILENCE_DEPRECATION
-#define GL_SILENCE_DEPRECATION
-#endif
-#endif
-
-#undef pp_OSX_HIGHRES
-#ifdef pp_OSX
 #define pp_REFRESH      // refresh glui dialogs when they change size
-#define pp_OSX_HIGHRES
 #endif
 
 //*** options: for debugging
 
 #ifdef _DEBUG
-//#define pp_MEM_DEBUG_PRINT // output file/line number for each memory allocation call
 #define pp_RECOMPUTE_DEBUG   // output debug message if bounds are recomputed
 #define pp_BOUND_DEBUG       // output debug message in some bound routines
 #define pp_MOVIE_BATCH_DEBUG // allow movei batch dialogs to be defined for testing

@@ -21,24 +21,17 @@ add_library(smv STATIC
     readimage.c
     readcad.c
     readgeom.c
-    colorbars.c
-    colorbar_defs.c
     readhvac.c
     readslice.c
     readsmoke.c
     readobject.c
-    readcad.c
     readlabel.c
     readtour.c
     scontour2d.c
     readsmvfile.c
     "paths.c"
 )
-target_include_directories(smv PUBLIC
-    .
-    #TODO: this is a bit of a hack, it shouldn't really use options.h
-    ../smokeview
-)
+target_include_directories(smv PUBLIC .)
 if(WIN32)
     target_link_libraries(smv PRIVATE PThreads4W::PThreads4W)
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -62,4 +55,3 @@ endif()
 if (SMV_ROOT_OVERRIDE)
     target_compile_definitions(smv PUBLIC SMV_ROOT_OVERRIDE="${SMV_ROOT_OVERRIDE}")
 endif()
-target_link_libraries(smv PUBLIC OpenGL::GL OpenGL::GLU)

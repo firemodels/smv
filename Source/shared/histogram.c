@@ -1,4 +1,4 @@
-#include "options.h"
+#include "options_common.h"
 #include "lint.h"
 
 #include <sys/stat.h>

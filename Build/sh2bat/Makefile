@@ -2,6 +2,8 @@
 # sh2bat makefile
 
 SOURCE_DIR = ../../../Source/
+BUILD_DIR = ../../../Build
+LIB_DIR = $(BUILD_DIR)/LIBS
 INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/sh2bat
 FILTERC =
 FILTERF =
@@ -23,7 +25,7 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 # Definition of the object variables
 
-obj = sh2bat.o string_util.o dmalloc.o file_util.o md5.o sha1.o sha256.o stdio_buffer.o
+obj = sh2bat.o string_util.o dmalloc.o file_util.o md5.o sha1.o sha256.o stdio_buffer.o threader.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
