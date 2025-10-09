@@ -1,7 +1,8 @@
 # smokezip makefile
 
 SOURCE_DIR = ../../../Source/
-LIB_DIR = ../../LIBS
+BUILD_DIR = ../../../Build
+LIB_DIR = $(BUILD_DIR)/LIBS
 INC_DIR =  -I $(SOURCE_DIR)/zlib131 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokezip
 FILTERC =
 FILTERF =
@@ -53,6 +54,9 @@ CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
 # don't think the following is needed anymore - keeping it around for awhile to make it easier to put
 # back in case it is needed
 #main.obj: CFLAGS = -Od /nologo -D pp_WIN_INTEL $(OPT)
+
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_WIN_LIBDIR_CLANG = $(LIB_DIR)/clang_win_64
 
 #*** General Purpose Rules ***
 
@@ -113,7 +117,7 @@ clang_win_64 : CC        = clang-cl
 clang_win_64 : exe       = smokezip_win_64.exe
 
 clang_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin) $(LIB_DIR)\clang_win_64\pthreads.lib $(LIB_DIR)\clang_win_64\zlib.lib $(LIB_DIR)\clang_win_64\pthreads.lib
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_WIN_LIBDIR_CLANG)\pthreads.lib $(LIB_DIR)\clang_win_64\pthreads.lib $(LIB_DIR)\clang_win_64\zlib.lib $(LIB_DIR)\clang_win_64\pthreads.lib
 
 
 # ------------- gnu linux 64 ----------------

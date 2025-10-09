@@ -2,6 +2,8 @@
 # background makefile
 
 SOURCE_DIR = ../../../Source
+BUILD_DIR = ../../../Build
+LIB_DIR = $(BUILD_DIR)/LIBS
 INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/background
 FILTERC =
 FILTERF =
@@ -40,6 +42,9 @@ win_chk     = $(win_c_chk)
 CLANGANALYZE=clang --analyze
 CLANGSUMMARY=../../scripts/clang_summary.sh
 CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
+
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_WIN_LIBDIR_CLANG = $(LIB_DIR)/clang_win_64
 
 #*** General Purpose Rules ***
 
@@ -85,21 +90,21 @@ win_check : $(win_chk)
 
 # ------------- intel Win 64 ----------------
 
-intel_win_64 : CFLAGS    = -O1 /nologo -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/shared $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -O1 /nologo -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/shared $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = background_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_WIN_LIBDIR)\pthreads.lib
 
 # ------------- clang Win 64 ----------------
 
-clang_win_64 : CFLAGS    = -m64
+clang_win_64 : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
 clang_win_64 : CC        = clang-cl
 clang_win_64 : exe       = background_win_64.exe
 
 clang_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_WIN_LIBDIR_CLANG)\pthreads.lib
 
 # ------------- intel linux 64 ----------------
 
@@ -112,7 +117,7 @@ intel_linux_64 : $(obj)
 
 # ------------- gnu Linux 64 ----------------
 
-gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO) $(INC_DIR)
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = background_linux_64
 

@@ -33,6 +33,9 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 obj =    md5.o sha1.o sha256.o dmalloc.o file_util.o string_util.o stdio_buffer.o main.o threader.o
 objwin = $(obj:.o=.obj)
 
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_WIN_LIBDIR_CLANG = $(LIB_DIR)/clang_win_64
+
 #*** General Purpose Rules ***
 
 no_target:
@@ -48,12 +51,12 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od -I $(SOURCE_DIR)/pthreads /nologo $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -Od -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = timep_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_WIN_LIBDIR)\pthreads.lib
 
 # ------------- gnu linux 64 db ----------------
 

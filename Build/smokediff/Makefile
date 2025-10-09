@@ -2,12 +2,12 @@
 # smokediff makefile
 
 SOURCE_DIR = ../../../Source
+BUILD_DIR = ../../../Build
+LIB_DIR = $(BUILD_DIR)/LIBS
 INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokediff
 FILTERC =
 FILTERF =
 
-BUILD_DIR = ../../../Build
-LIB_DIR = $(BUILD_DIR)/LIBS
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
 SMV_CLANG_LIBDIR = $(LIB_DIR)\clang_win_64
 

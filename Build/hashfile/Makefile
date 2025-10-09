@@ -2,7 +2,8 @@
 # hashfile makefile
 
 SOURCE_DIR = ../../../Source/
-BUILD_DIR  = ../../../Build
+BUILD_DIR = ../../../Build
+LIB_DIR = $(BUILD_DIR)/LIBS
 INC_DIR    = -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/hashfile
 
 FILTERC =
@@ -28,6 +29,9 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 obj =    dmalloc.o file_util.o string_util.o sha1.o md5.o sha256.o stdio_buffer.o main.o threader.o
 objwin = $(obj:.o=.obj)
 
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_WIN_LIBDIR_CLANG = $(LIB_DIR)/clang_win_64
+
 #*** General Purpose Rules ***
 
 no_target:
@@ -47,21 +51,21 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od -I $(SOURCE_DIR)/pthreads /nologo $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -Od -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = hashfile_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_WIN_LIBDIR)\pthreads.lib
 
 # ------------- clang win 64 ----------------
 
-clang_win_64 : CFLAGS    = -m64
+clang_win_64 : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
 clang_win_64 : CC        = clang-cl
 clang_win_64 : exe       = hashfile_win_64.exe
 
 clang_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_WIN_LIBDIR_CLANG)\pthreads.lib
 
 # ------------- gnu linux 64 ----------------
 

@@ -2,6 +2,8 @@
 # sh2bat makefile
 
 SOURCE_DIR = ../../../Source/
+BUILD_DIR = ../../../Build
+LIB_DIR = $(BUILD_DIR)/LIBS
 INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/sh2bat
 FILTERC =
 FILTERF =

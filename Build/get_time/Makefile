@@ -1,4 +1,6 @@
 SOURCE_DIR = ..\..\..\Source\get_time
+BUILD_DIR = ../../../Build
+LIB_DIR = $(BUILD_DIR)/LIBS
 INC_DIR =  -I $(SOURCE_DIR)
 FILTERC =
 FILTERF =

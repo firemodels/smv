@@ -11,6 +11,8 @@ INC_DIR = -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR)/zlib128 \
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
 
+SMV_WIN_LIBDIR_CLANG = $(LIB_DIR)/clang_win_64
+
 PNG_LIBS = -lgd -ljpeg -lpng -lz
 SYSTEM_LIBS = -lpthread
 

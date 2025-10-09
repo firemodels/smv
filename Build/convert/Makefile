@@ -2,6 +2,8 @@
 # convert makefile
 
 SOURCE_DIR = ../../../Source
+BUILD_DIR = ../../../Build
+LIB_DIR = $(BUILD_DIR)/LIBS
 INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/convert
 FILTERC =
 FILTERF =
@@ -27,6 +29,9 @@ obj = dmalloc.o main.o md5.o sha1.o sha256.o\
       file_util.o string_util.o stdio_buffer.o threader.o
 objwin = $(obj:.o=.obj)
 
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_WIN_LIBDIR_CLANG = $(LIB_DIR)/clang_win_64
+
 #*** General Purpose Rules ***
 
 no_target:
@@ -42,34 +47,34 @@ no_target:
 
 # ------------- intel winx 64 db ----------------
 
-intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -I $(SOURCE_DIR)/pthreads -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64_db : CC        = $(I_CC)
 intel_win_64_db : CPP       = $(I_CC)
 intel_win_64_db : exe       = convert_win_64_db.exe
 
 intel_win_64_db : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin)
+	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_WIN_LIBDIR)\pthreads.lib
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = /O2 /nologo -I $(SOURCE_DIR)/pthreads $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = /O2 /nologo -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : CPP       = $(I_CC)
 intel_win_64 : exe       = convert_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin)
+	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_WIN_LIBDIR)\pthreads.lib
 
 # ------------- clang win 64 ----------------
 
-clang_win_64 : CFLAGS    = -m64
+clang_win_64 : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
 clang_win_64 : LFLAGS    = -m64
 clang_win_64 : CC        = clang-cl
 clang_win_64 : CPP       = clang-cl
 clang_win_64 : exe       = convert_win_64.exe
 
 clang_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(SMV_WIN_LIBDIR_CLANG)\pthreads.lib
 
 # ------------- gnu linux 64 ----------------
 

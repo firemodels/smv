@@ -2,6 +2,8 @@
 # fds2fed makefile
 
 SOURCE_DIR = ../../../Source
+BUILD_DIR = ../../../Build
+LIB_DIR = $(BUILD_DIR)/LIBS
 INC_DIR = -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/fds2fed
 FILTERC =
 FILTERF =
@@ -42,6 +44,9 @@ win_chk     = $(win_c_chk)
 CLANGANALYZE=clang --analyze
 CLANGSUMMARY=../../scripts/clang_summary.sh
 CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
+
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_WIN_LIBDIR_CLANG = $(LIB_DIR)/clang_win_64
 
 #*** General Purpose Rules ***
 
@@ -90,26 +95,26 @@ intel_win_64_db : CC        = $(I_CC)
 intel_win_64_db : exe       = fds2fed_win_64_db.exe
 
 intel_win_64_db : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_WIN_LIBDIR)\pthreads.lib
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = /O2 /nologo -I $(SOURCE_DIR)/pthreads $(GITINFO) $(SMV_TESTFLAG) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = /O2 /nologo -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads $(GITINFO) $(SMV_TESTFLAG) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = fds2fed_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_WIN_LIBDIR)\pthreads.lib
 
 # ------------- clang win 64 ----------------
 
-clang_win_64 : CFLAGS    = -m64
+clang_win_64 : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
 clang_win_64 : LFLAGS    = -m64
 clang_win_64 : CC        = clang-cl
 clang_win_64 : exe       = fds2fed_win_64.exe
 
 clang_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(SMV_WIN_LIBDIR_CLANG)\pthreads.lib
 
 # ------------- gnu linux 64 ----------------
 

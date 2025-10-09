@@ -1,3 +1,6 @@
+SOURCE_DIR = ../../../Source
+BUILD_DIR = ../../../Build
+LIB_DIR = $(BUILD_DIR)/LIBS
 FILTERC =
 FILTERF =
 
@@ -12,6 +15,9 @@ bin = .
 obj = hashfort.o main.o
 objwin =  hashfort.obj main.obj
 
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_WIN_LIBDIR_CLANG = $(LIB_DIR)/clang_win_64
+
 #*** General Purpose Rules ***
 
 no_target:
@@ -22,12 +28,12 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : FFLAGS    = -O2 /nologo /fpscomp:general /stand:f18
+intel_win_64 : FFLAGS    = -O2 /nologo /fpscomp:general /stand:f18 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
 intel_win_64 : FC        = $(I_IFORT)
 intel_win_64 : exe       = hashfort_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(FC) -o $(bin)/$(exe) $(objwin)
+	$(FC) -o $(bin)/$(exe) $(objwin) $(SMV_WIN_LIBDIR)\pthreads.lib
 
 # ------------- intel linux 64 ----------------
 
