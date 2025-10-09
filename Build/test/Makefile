@@ -3,6 +3,7 @@
 
 SOURCE_DIR = ../../../Source/
 BUILD_DIR = ../../../Build
+LIB_DIR = $(BUILD_DIR)/LIBS
 
 
 FILTERC =

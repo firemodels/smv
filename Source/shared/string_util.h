@@ -13,7 +13,7 @@
 // vvvvvvvvvvvvvvvvvvvvvvvv header files vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 #include <stdio.h>
-#include "options.h"
+#include "options_common.h"
 #include "file_util.h"
 
 // vvvvvvvvvvvvvvvvvvvvvvvv structures vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv

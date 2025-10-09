@@ -24,7 +24,7 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 # Definition of the object variables
 
-csrc =    main.c dmalloc.c string_util.c file_util.c  md5.c sha1.c sha256.c stdio_buffer.c
+csrc =    main.c dmalloc.c string_util.c file_util.c  md5.c sha1.c sha256.c stdio_buffer.c threader.c
 
 obj = $(csrc:.c=.o)
 objwin = $(obj:.o=.obj)
@@ -43,7 +43,13 @@ CLANGSUMMARY=../../scripts/clang_summary.sh
 CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
 
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur
-main.obj: CFLAGS = -Od /nologo -D pp_WIN_INTEL
+main.obj: CFLAGS = -Od /nologo -D pp_WIN_INTEL -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
+
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\pthreads.lib
+
+SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win_64
+SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\pthreads.lib
 
 #*** General Purpose Rules ***
 
@@ -87,21 +93,21 @@ win_check : $(win_chk)
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od /nologo -I $(SOURCE_DIR)/pthreads $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -Od /nologo -D PTW32_STATIC_LIB $(GITINFO) $(INTEL_COMPINFO) -I $(SOURCE_DIR)/pthreads
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = wind2fds_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
 # ------------- clang win 64 ----------------
 
-clang_win_64 : CFLAGS    = -m64
+clang_win_64 : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
 clang_win_64 : CC        = clang-cl
 clang_win_64 : exe       = wind2fds_win_64.exe
 
 clang_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_CLANG)
 
 # ------------- intel linux 64 ----------------
 

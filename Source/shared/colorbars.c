@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "options.h"
+#include "options_common.h"
 
 #include "dmalloc.h"
 #include "colorbars.h"
