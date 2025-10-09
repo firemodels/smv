@@ -1,0 +1,74 @@
+
+// put rendered files in specified directory
+
+LABEL
+  put rendered files in specified directory
+
+RENDERDIR
+ .
+
+// render 3D smoke
+
+LABEL
+  render 3D smoke
+
+UNLOADALL
+LOADINIFILE
+ thouse5_sample.ini
+LOAD3DSMOKE
+ SOOT DENSITY
+LOAD3DSMOKE
+ HRRPUV
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ thouse5_smoke_005
+
+// render slice files
+
+LABEL
+  render slice files
+
+UNLOADALL
+LOADSLCF
+ PBY=1.6 QUANTITY='TEMPERATURE'
+KEYBOARD
+ *
+KEYBOARD
+ y
+SETTIMEVAL
+ 5.000000
+RENDERONCE
+ thouse5_slice_005
+
+LABEL
+  render split slice files
+
+
+// render temperature isosurfaces
+
+LABEL
+  render temperature isosurfaces
+
+UNLOADALL
+LOADISO
+ TEMPERATURE: 30.0, 100.0
+SETTIMEVAL
+ 5.0000000
+RENDERONCE
+ thouse5_iso_005
+
+// render particles
+
+LABEL
+  render particles
+
+UNLOADALL
+LOADPARTICLES
+PARTCLASSCOLOR
+ Uniform color
+SETTIMEVAL
+ 5.000000
+RENDERONCE
+ thouse5_part_005
+
