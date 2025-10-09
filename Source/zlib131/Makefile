@@ -1,6 +1,6 @@
 # Makefile for zlib
 # Copyright (C) 1995-2002 Jean-loup Gailly.
-# For conditions of distribution and use, see copyright notice in zlib.h 
+# For conditions of distribution and use, see copyright notice in zlib.h
 
 # To compile and test, type:
 #   ./configure; make test
@@ -40,4 +40,4 @@ libz.a: $(OBJS)
 	$(RANLIB) $@
 
 libz.lib: $(OBJSWIN)
-	lib $(OBJSWIN) -OUT:$@ 
+	$(LIB) $(OBJSWIN) -OUT:$@

@@ -17,6 +17,7 @@ cd %CURDIR%
 
 set COMPILER=gcc
 set COMPILER2=g++
+set LIB=lib
 
 set MSCOMPILER=X86
 
@@ -28,6 +29,7 @@ IF "%1" EQU "m" SET COMPILER2=cl
 
 IF "%1" EQU "c" SET COMPILER=clang-cl
 IF "%1" EQU "c" SET COMPILER2=clang-cl
+IF "%1" EQU "c" SET LIB=llvm-lib
 
 SET COPYLIB=0
 IF "%2" EQU "-copy" SET COPYLIB=1

@@ -5,12 +5,15 @@ env:
   COMPILER_VERSION: 2022.0.3
 
 jobs:
-  build-linux-gnu:
-    name: gnu_linux_${{ matrix.program }}
+  build-linux:
+    name: ${{ matrix.compiler }}_linux_${{ matrix.program }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
+        compiler:
+          - gnu
+          - clang
         program:
           - background
           - convert
@@ -24,6 +27,24 @@ jobs:
           - smokezip
           - timep
           - wind2fds
+        exclude:
+          # no clang build for following programs
+          - compiler: clang
+            program: background
+          - compiler: clang
+            program: convert
+          - compiler: clang
+            program: env2mod
+          - compiler: clang
+            program: flush
+          - compiler: clang
+            program: makepo
+          - compiler: clang
+            program: mergepo
+          - compiler: clang
+            program: timep
+          - compiler: clang
+            program: wind2fds
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
@@ -33,6 +54,55 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev
-          pushd Build/${{ matrix.program }}/gnu_linux_64 || pushd Build/${{ matrix.program }}/gcc_linux_64
+          pushd Build/${{ matrix.program }}/${{ matrix.compiler }}_linux_64
           ./make_${{ matrix.program }}.sh
+          popd
+  build-windows:
+    name: ${{ matrix.compiler }}_windows_${{ matrix.program }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022]
+        compiler:
+          - clang
+        program:
+          - background
+          - convert
+          - env2mod
+          - flush
+          - makepo
+          - mergepo
+          - pnginfo
+          - smokediff
+          - smokeview
+          - smokezip
+          - timep
+          - wind2fds
+        exclude:
+          # no clang build for following programs
+          - compiler: clang
+            program: background
+          - compiler: clang
+            program: convert
+          - compiler: clang
+            program: env2mod
+          - compiler: clang
+            program: flush
+          - compiler: clang
+            program: makepo
+          - compiler: clang
+            program: mergepo
+          - compiler: clang
+            program: timep
+          - compiler: clang
+            program: wind2fds
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Build
+        shell: cmd
+        run: |
+          pushd Build\${{ matrix.program }}\${{ matrix.compiler }}_win_64
+          call make_${{ matrix.program }}.bat bot
           popd
