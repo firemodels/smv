@@ -1102,7 +1102,7 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files,
   filelistdata *flist;
 
   if(maxfiles == 0 || path == NULL || filter == NULL) {
-    *filelist = NULL;
+    if(filelist != NULL) *filelist = NULL;
     return 0;
   }
 
