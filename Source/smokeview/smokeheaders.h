@@ -804,7 +804,7 @@ EXTERNCPP void DisplayVersionInfo(char *progname, common_opts *opts);
 EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int skipframe);
 EXTERNCPP int IsFDSRunning(FILE_SIZE *last_size);
 EXTERNCPP void SetViewPoint(int option);
-EXTERNCPP void SMV_EXIT(int code);
+EXTERNCPP NORETURN void SMV_EXIT(int code);
 EXTERNCPP void StartTimer(float *timerptr);
 EXTERNCPP void TransparentOff(void);
 EXTERNCPP void TransparentOn(void);
