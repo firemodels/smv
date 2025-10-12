@@ -22,7 +22,9 @@
 #endif
 #include <io.h>
 #include <direct.h>
+#ifndef pp_UNICODE_PATHS
 #include <dirent_win.h>
+#endif
 #include <shlwapi.h>
 #pragma comment(lib, "shlwapi.lib")
 

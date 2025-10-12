@@ -19,7 +19,9 @@
 #undef S_ISCHR
 #undef S_ISREG
 #endif
+#ifndef pp_UNICODE_PATHS
 #include <dirent_win.h>
+#endif
 #include <windows.h>
 #else
 #include <dirent.h>
@@ -2175,4 +2177,3 @@ void PRINTversion(char *progname){
 #endif
   FREEMEMORY(progfullpath);
 }
-
