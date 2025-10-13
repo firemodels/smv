@@ -476,15 +476,18 @@ void BoundsUpdateDoit(int file_type){
     slicedata *slicei;
     plot3ddata *plot3di;
 
-    if(file_type == BOUND_SLICE){
+    if(file_type == BOUND_SLICE) {
+      if(global_scase.slicecoll.sliceinfo == NULL)continue;
       slicei = global_scase.slicecoll.sliceinfo + i;
       if(slicei->loaded == 0)continue;
     }
-    else if(file_type == BOUND_PATCH){
+    else if(file_type == BOUND_PATCH) {
+      if(global_scase.patchinfo == NULL)continue;
       patchi = global_scase.patchinfo + i;
       if(patchi->loaded == 0)continue;
     }
-    else if(file_type == BOUND_PLOT3D){
+    else if(file_type == BOUND_PLOT3D) {
+      if(global_scase.plot3dinfo == NULL)continue;
       plot3di = global_scase.plot3dinfo + i;
       if(plot3di->loaded == 0)continue;
     }
