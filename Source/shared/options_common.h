@@ -158,6 +158,24 @@
 #define PRINT_CUM_TIMER(timer, label) PrintTime(__FILE__, __LINE__, &timer, label, 0)
 #endif
 
+// Define a NORETURN macro that marks a function as never returning. This is
+// needed to mark that SMV_EXIT never returns, otherwise tools like clang-tidy
+// would find spurious issues.
+#ifndef noreturn
+#  if (__STDC_VERSION__ >= 201112L) && !defined(_WIN32)
+     // C11 provides a standard 'noreturn' macro that can be used. Conflicts
+     // means this doesn't work well on windows
+#    include <stdnoreturn.h>
+#    define NORETURN noreturn
+#  elif defined(_WIN32)
+     // noreturn as defined on windows
+#    define NORETURN _declspec(noreturn)
+#  else
+     // noreturn as defined on other platforms
+#    define NORETURN __attribute__((noreturn))
+#  endif
+#endif
+
 #include "lint.h"
 
 #define pp_GPU              // support the GPU
