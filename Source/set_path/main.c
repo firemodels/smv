@@ -64,7 +64,6 @@ int prompt_user(char *path_type_local, char *pathbuffer){
   int answer=0;
   char c_answer[10], *c_answer_ptr;
 
-  c_answer_ptr=c_answer;
   printf("\nSet %s path to:\n",path_type_local);
   printf("%s ?\n",pathbuffer);
   printf("y=yes, n=no\n");
@@ -404,12 +403,7 @@ int reg_path(int setget, int pathtype, char *path){
         printf("Setting %s path to: %s\n",path_type,path);
       }
       else{
-        lRet = RegSetValueEx(hKey,PATH,0,REG_EXPAND_SZ,(LPBYTE)path,strlen(path)+1);
-        lRet=ERROR_SUCCESS;
-        if(lRet!=ERROR_SUCCESS){
-          printf("RegSetValueEx error: %i\n",(int)lRet);
-          return 0;
-        }
+        RegSetValueEx(hKey,PATH,0,REG_EXPAND_SZ,(LPBYTE)path,strlen(path)+1);
       }
       lRet = RegCloseKey( hKey);
       if(lRet!=ERROR_SUCCESS){
