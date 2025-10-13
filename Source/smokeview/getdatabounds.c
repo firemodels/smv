@@ -477,16 +477,19 @@ void BoundsUpdateDoit(int file_type){
     plot3ddata *plot3di;
 
     if(file_type == BOUND_SLICE) {
+      if(global_scase.slicecoll.sliceinfo == NULL)continue;
       slicei = global_scase.slicecoll.sliceinfo + i;
-      if(slicei == NULL || slicei->loaded == 0) continue;
+      if(slicei->loaded == 0)continue;
     }
     else if(file_type == BOUND_PATCH) {
+      if(global_scase.patchinfo == NULL)continue;
       patchi = global_scase.patchinfo + i;
-      if(patchi == NULL || patchi->loaded == 0) continue;
+      if(patchi->loaded == 0)continue;
     }
     else if(file_type == BOUND_PLOT3D) {
+      if(global_scase.plot3dinfo == NULL)continue;
       plot3di = global_scase.plot3dinfo + i;
-      if(plot3di == NULL || plot3di->loaded == 0) continue;
+      if(plot3di->loaded == 0)continue;
     }
     reg_file = GetRegFile(file_type, i);
     key_index = ( char ** )bsearch(( char * )&reg_file, sorted_filenames, ninfo, sizeof(char *), CompareBoundFileName);
