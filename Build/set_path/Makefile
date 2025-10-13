@@ -25,8 +25,23 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 # Definition of the object variables
 
-obj = main.o string_util.o dmalloc.o file_util.o  md5.o sha1.o sha256.o stdio_buffer.o threader.o
+csrc = main.c string_util.c dmalloc.c file_util.c  md5.c sha1.c sha256.c stdio_buffer.c threader.c
+
+obj = $(csrc:.c=.o)
 objwin = $(obj:.o=.obj)
+
+# setup for analyzing source code using clang
+
+linux_osx_c_chk    = $(csrc:.c=.chk)
+linux_osx_chk      = $(linux_osx_c_chk)
+
+win_c_chk   = $(csrc:.c=.winchk)
+win_chk     = $(win_c_chk)
+
+#CLANGANALYZE=clang --analyze -Xanalyzer -analyzer-checker=core,deadcode
+CLANGANALYZE=clang --analyze
+CLANGSUMMARY=../../scripts/clang_summary.sh
+CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
 
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\pthreads.lib
@@ -41,12 +56,39 @@ no_target:
 	@echo \******** You did not specify a make target \********
 	@echo Use one of targets found in the Makefile
 
-.SUFFIXES: .c .obj .o .cpp
+.SUFFIXES: .c .obj .o .cpp  .chk .winchk
 
 .c.obj:
 	$(CC) -c $(CFLAGS) $(FILTERC) $(INC_DIR) $<
 .c.o:
 	$(CC) -c $(CFLAGS) $(FILTERC) $(INC_DIR) $<
+
+# ------------- linux and osx clang checks ----------------
+
+.c.chk:
+	$(CLANGANALYZE) $(CFLAGS) $(INC_DIR) $< 2> $@
+
+# ------------- windows clang checks ----------------
+
+.c.winchk:
+	$(CLANGANALYZE) $(CFLAGS) $(INC_DIR) $< 2> $@
+
+# VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+# VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   check source   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+# VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+
+# ------------- linux_osx_check ----------------
+
+linux_osx_check : CFLAGS    = $(SMV_TESTFLAG)
+linux_osx_check : $(linux_osx_chk)
+	$(CLANGSUMMARY) set_path.summary
+
+# ------------- win_check ----------------
+
+win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB
+win_check : INC_DIR += -I $(SOURCE_DIR)/pthreads
+win_check : $(win_chk)
+	$(CLANGWINSUMMARY) set_path.summary
 
 # ********  rules for each platform supported *************
 
