@@ -70,6 +70,26 @@ clang_win_64 : exe       = set_path_win_64.exe
 clang_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib $(SMV_LIBS_CLANG)
 
+# ------------- clang linux 64 ----------------
+
+clang_linux_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+clang_linux_64 : LFLAGS    = -m64 -lm
+clang_linux_64 : CC        = clang
+clang_linux_64 : exe       = set_path_linux_64
+
+clang_linux_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+# ------------- gnu linux 64 db ----------------
+
+clang_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+clang_linux_64_db : LFLAGS    = -m64 -lm
+clang_linux_64_db : CC        = clang
+clang_linux_64_db : exe       = set_path_linux_64_db
+
+clang_linux_64_db : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
 #-------------- Clean Target to remove Object and Module files -----------
 
 .PHONY : clean
