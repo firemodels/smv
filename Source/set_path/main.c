@@ -403,7 +403,11 @@ int reg_path(int setget, int pathtype, char *path){
         printf("Setting %s path to: %s\n",path_type,path);
       }
       else{
-        RegSetValueEx(hKey,PATH,0,REG_EXPAND_SZ,(LPBYTE)path,strlen(path)+1);
+        lRet = RegSetValueEx(hKey,PATH,0,REG_EXPAND_SZ,(LPBYTE)path,strlen(path)+1);
+        if(lRet!=ERROR_SUCCESS){
+          printf("RegSetValueEx error: %i\n",(int)lRet);
+          return 0;
+        }
       }
       lRet = RegCloseKey( hKey);
       if(lRet!=ERROR_SUCCESS){
