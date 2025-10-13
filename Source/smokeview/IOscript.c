@@ -2428,21 +2428,21 @@ int GetNSliceGeomFrames(scriptdata *scripti){
 
     for(j = 0; j<mslicei->nslices; j++){
       slicei = global_scase.slicecoll.sliceinfo+mslicei->islices[j];
-      if(slicei->nframes==0){
+      if(slicei->ntimes==0){
         if(slicei->slice_filetype==SLICE_GEOM){
           int nvals, error;
 
-          slicei->nframes = GetGeomDataSize(slicei->file, &nvals, ALL_FRAMES, NULL, NULL, NULL, NULL, NULL, &error);
+          slicei->ntimes = GetGeomDataSize(slicei->file, &nvals, ALL_FRAMES, NULL, NULL, NULL, NULL, NULL, &error);
         }
         else{
-          slicei->nframes = GetNSliceFrames(slicei->file, &scripti->fval2, &scripti->fval3);
+          slicei->ntimes = GetNSliceFrames(slicei->file, &scripti->fval2, &scripti->fval3);
         }
       }
       if(nframes==-1){
-        nframes = slicei->nframes;
+        nframes = slicei->ntimes;
       }
       else{
-        nframes = MIN(nframes, slicei->nframes);
+        nframes = MIN(nframes, slicei->ntimes);
       }
     }
   }
