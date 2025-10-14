@@ -94,7 +94,7 @@ set TARGET=smokeview
 echo %BUILDDIR%\%TARGET%\%BUILD%
 cd %BUILDDIR%\%TARGET%\%BUILD%
 dir
-call make_%TARGET%.bat bot
+call make_%TARGET%.bat -bot
 
 set TARGET=smokezip
 echo %BUILDDIR%\%TARGET%\%BUILD%

@@ -19,7 +19,7 @@ if (NOT json-c_FOUND)
             FIND_PACKAGE_ARGS CONFIG NAMES json-c
         )
         FetchContent_MakeAvailable(json-c-git)
-        target_link_libraries(smvq PRIVATE json-c-static)
+        target_link_libraries(smvq PRIVATE json-c)
         target_include_directories(smvq PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/json-c)
     else()
         message("${json-c_INCLUDE_DIRS}")
@@ -37,7 +37,4 @@ if (WIN32)
     #     install(IMPORTED_RUNTIME_ARTIFACTS unofficial::getopt-win32::getopt)
     # endif()
 endif()
-
-
-target_link_libraries(smvq PUBLIC json-c::json-c)
 install(TARGETS smvq)
