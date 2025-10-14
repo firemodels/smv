@@ -122,6 +122,27 @@ clang_win_64 : $(objwin)
 
 # ------------- gnu linux 64 ----------------
 
+clang_linux_64 : CFLAGS    = -O0 -m64 -D PTW32_STATIC_LIB $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+clang_linux_64 : LFLAGS    = -m64 -lm -lpthread
+clang_linux_64 : CC        = clang
+clang_linux_64 : exe       = fds2fed_linux_64
+
+clang_linux_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+# ------------- gnu linux 64 db ----------------
+
+clang_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D PTW32_STATIC_LIB -D _DEBUG $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+clang_linux_64_db : LFLAGS    = -m64 -lm -lpthread
+clang_linux_64_db : CC        = clang
+clang_linux_64_db : exe       = fds2fed_linux_64_db
+
+clang_linux_64_db : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+
+# ------------- gnu linux 64 ----------------
+
 gnu_linux_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
 gnu_linux_64 : LFLAGS    = -m64 -lm
 gnu_linux_64 : CC        = gcc
