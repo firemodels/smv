@@ -136,6 +136,24 @@ gnu_linux_64_db : exe       = background_linux_64
 gnu_linux_64_db: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
 
+# ------------- clang Linux 64 ----------------
+
+clang_linux_64 : CFLAGS    = -O2 -m64 -Wall -D PTW32_STATIC_LIB $(GITINFO) $(GNU_COMPINFO) $(INC_DIR)
+clang_linux_64 : CC        = clang
+clang_linux_64 : exe       = background_linux_64
+
+clang_linux_64: $(obj)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm -lpthread
+
+# ------------- gnu Linux 64 db ----------------
+
+clang_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D PTW32_STATIC_LIB -D _DEBUG $(GITINFO) $(GNU_COMPINFO)
+clang_linux_64_db : CC        = clang
+clang_linux_64_db : exe       = background_linux_64
+
+clang_linux_64_db: $(obj)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm -lpthread
+
 # ------------- gcc OSX 64 ----------------
 gnu_osx_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 gnu_osx_64 : CC        = gcc
