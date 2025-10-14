@@ -80,6 +80,15 @@ gnu_linux_64 : exe       = hashfile_linux_64
 gnu_linux_64: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
 
+# ------------- clang linux 64 ----------------
+
+clang_linux_64 : CFLAGS    = -O2 -m64 -Wall -D PTW32_STATIC_LIB $(GITINFO) $(GNU_COMPINFO)
+clang_linux_64 : CC        = clang
+clang_linux_64 : exe       = hashfile_linux_64
+
+clang_linux_64: $(obj)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm -lpthread
+
 # ------------- gnu linux 64 ----------------
 
 gnu_osx_64 : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)

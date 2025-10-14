@@ -123,14 +123,14 @@ int main(int argc, char **argv){
 #endif
 
   if(argc==1){
-    common_opts opts = {
 #ifdef pp_HASH
+    common_opts opts = {
         .hash_option = HASH_SHA1,
-#else
-        0
-#endif
     };
     PRINTVERSION("background ", &opts);
+#else
+    PRINTVERSION("background ", NULL);
+#endif
     return 1;
   }
 
