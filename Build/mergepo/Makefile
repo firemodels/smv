@@ -88,6 +88,16 @@ gnu_linux_64 : exe       = mergepo_linux_64
 gnu_linux_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
+# ------------- clang linux 64 ----------------
+
+clang_linux_64 : CFLAGS    = -O2 -m64 -D PTW32_STATIC_LIB $(GITINFO) $(GNU_COMPINFO)
+clang_linux_64 : LFLAGS    = -lm -lpthread
+clang_linux_64 : CC        = clang
+clang_linux_64 : exe       = mergepo_linux_64
+
+clang_linux_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
 # ------------- gnu osx 64 ----------------
 
 gnu_osx_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
