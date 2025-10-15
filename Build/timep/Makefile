@@ -62,6 +62,15 @@ intel_win_64 : exe       = timep_win_64.exe
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
+# ------------- intel win 64 ----------------
+
+clang_win_64 : CFLAGS    = -Od -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads /nologo $(GITINFO)
+clang_win_64 : CC        = clang-cl
+clang_win_64 : exe       = timep_win_64.exe
+
+clang_win_64 : $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_CLANG)
+
 # ------------- gnu linux 64 db ----------------
 
 gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GNU_COMPINFO) $(GITINFO)
@@ -81,6 +90,27 @@ gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = timep_linux_64
 
 gnu_linux_64: $(obj)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm
+
+# ------------- clang linux 64 db ----------------
+
+clang_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D PTW32_STATIC_LIB -D _DEBUG $(GNU_COMPINFO) $(GITINFO)
+clang_linux_64_db : LFLAGS    = -lpthread
+clang_linux_64_db : CC        = clang
+clang_linux_64_db : exe       = timep_linux_64_db
+
+clang_linux_64_db: $(obj)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/gnu_linux_64 $(LIBS_LINUX)  -lm
+
+# ------------- gnu linux 64----------------
+
+clang_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
+clang_linux_64 : CFLAGS    = -O2 -m64 -Wall -D PTW32_STATIC_LIB $(GITINFO) $(GNU_COMPINFO)
+clang_linux_64 : LFLAGS    = -lpthread
+clang_linux_64 : CC        = clang
+clang_linux_64 : exe       = timep_linux_64
+
+clang_linux_64: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm
 
 # ------------- intel linux 64 ----------------
