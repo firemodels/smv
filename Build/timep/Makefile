@@ -62,6 +62,15 @@ intel_win_64 : exe       = timep_win_64.exe
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
+# ------------- intel win 64 ----------------
+
+clang_win_64 : CFLAGS    = -Od -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads /nologo $(GITINFO)
+clang_win_64 : CC        = clang-cl
+clang_win_64 : exe       = timep_win_64.exe
+
+clang_win_64 : $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_CLANG)
+
 # ------------- gnu linux 64 db ----------------
 
 gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GNU_COMPINFO) $(GITINFO)
