@@ -31,6 +31,10 @@ goto eof
    set valid=1
    set from=bot
  )
+ if /I "%1" EQU "bot" (
+   set valid=1
+   set from=bot
+ )
  if /I "%1" EQU "-debug" (
    set valid=1
    set debug=_db
