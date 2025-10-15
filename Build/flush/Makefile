@@ -92,6 +92,25 @@ gnu_linux_64 : exe       = flush_linux_64
 gnu_linux_64: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm
 
+# ------------- clang linux 64 db ----------------
+
+clang_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D PTW32_STATIC_LIB -D _DEBUG $(GNU_COMPINFO) $(GITINFO)
+clang_linux_64_db : CC        = clang
+clang_linux_64_db : exe       = flush_linux_64_db
+
+clang_linux_64_db: $(obj)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/gnu_linux_64 $(LIBS_LINUX)  -lm -lpthread
+
+# ------------- clang linux 64  ----------------
+
+clang_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
+clang_linux_64 : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO) -D PTW32_STATIC_LIB
+clang_linux_64 : CC        = clang
+clang_linux_64 : exe       = flush_linux_64
+
+clang_linux_64: $(obj)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm -lpthread
+
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
