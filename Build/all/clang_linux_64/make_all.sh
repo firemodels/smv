@@ -12,8 +12,8 @@ function build_target() {
 }
 
 build_target background
-build_target convert
-build_target env2mod
+# build_target convert
+# build_target env2mod
 build_target fds2fed
 # build_target flush
 # build_target get_time
