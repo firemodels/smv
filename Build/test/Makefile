@@ -45,7 +45,6 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu linux 64----------------
 
-gnu_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
 gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall
 gnu_linux_64 : LFLAGS    =
 gnu_linux_64 : CC        = gcc
@@ -63,7 +62,6 @@ gnu_linux_64_format: $(srcs)
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
 intel_linux_64 : CFLAGS    = -O2 -m64
 intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = test_linux_64
