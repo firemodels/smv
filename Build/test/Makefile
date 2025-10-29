@@ -43,6 +43,16 @@ intel_win_64 : exe       = test_win_64.exe
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin)
 
+# ------------- clang win 64 ----------------
+
+clang_win_64 : CFLAGS    = -m64
+clang_win_64 : LFLAGS    = -m64
+clang_win_64 : CC        = clang-cl
+clang_win_64 : exe       = test_win_64.exe
+
+clang_win_64 : $(objwin)
+	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin)
+
 # ------------- gnu linux 64----------------
 
 gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall
