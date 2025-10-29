@@ -92,6 +92,22 @@ intel_win_64 : exe       = stars_win_64
 intel_win_64 : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(STARS_LIBS_WIN)
 
+# ------------- clang_win_64 ----------------
+
+clang_win_64 : DYNLIB_EXT = .dll
+clang_win_64 : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/stars
+clang_win_64 : CFLAGS    = -O1  -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB
+ifeq ($(GLUT),freeglut)
+clang_win_64 : CFLAGS   += -D FREEGLUT_STATIC
+endif
+clang_win_64 : LFLAGS    = -D FREEGLUT_STATIC
+clang_win_64 : CC        = clang-cl
+clang_win_64 : CPP       = clang-cl
+clang_win_64 : exe       = stars_win_64
+
+clang_win_64 : $(objwin)
+	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(STARS_LIBS_WIN)
+
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV  Linux VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
