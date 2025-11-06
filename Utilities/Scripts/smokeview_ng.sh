@@ -128,8 +128,13 @@ echo " *** volume rendering"
 echo "   start frame: $STARTFRAME"
 echo "    skip frame: $SKIPFRAME"
 fi
-if [ "$NOSHOW" == "1" ]; then
-  xvfb-run $SMOKEVIEW $SMVBINDIR $TIME $SCRIPT $VOLRENDER $STARTFRAME $SKIPFRAME $CASE >/dev/null
+notfound=`xvfb-run 2>&1 >/dev/null | tail -1 | grep "not found" | wc -l`
+if [ $notfound -eq 1 ]; then
+   echo "***error: xvfb-run not installed"
 else
-  xvfb-run $SMOKEVIEW $SMVBINDIR $TIME $SCRIPT $VOLRENDER $STARTFRAME $SKIPFRAME $CASE
+  if [ "$NOSHOW" == "1" ]; then
+    xvfb-run $SMOKEVIEW $SMVBINDIR $TIME $SCRIPT $VOLRENDER $STARTFRAME $SKIPFRAME $CASE >/dev/null
+  else
+    xvfb-run $SMOKEVIEW $SMVBINDIR $TIME $SCRIPT $VOLRENDER $STARTFRAME $SKIPFRAME $CASE
+  fi
 fi
