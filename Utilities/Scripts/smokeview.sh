@@ -86,16 +86,10 @@ if ! [ -e $ssffile ]; then
   exit
 fi
 
-if [  "$SETUP_XSERVER" == "1" ]; then
-  source $SMOKEVIEWDIR/startXserver.sh >/dev/null 2>&1
-fi
 if [ "$TIME" != "" ]; then
   $TIME -p -o $TIMEFILE $SMOKEVIEW $RUNSCRIPT $ARG2 $in >/dev/null 
   grep real $TIMEFILE | awk -F' ' '{print $2}'
   rm -f $TIMEFILE
 else
-  $SMOKEVIEW $RUNSCRIPT $ARG2 $in
-fi
-if [  "$SETUP_XSERVER" == "1" ]; then
-  source $SMOKEVIEWDIR/stopXserver.sh >/dev/null 2>&1
+  xvfb-run $SMOKEVIEW $RUNSCRIPT $ARG2 $in
 fi

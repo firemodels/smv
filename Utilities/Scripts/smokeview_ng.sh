@@ -119,10 +119,6 @@ if [ "$BINDIR" == "" ]; then
 fi
 SMVBINDIR="-bindir $BINDIR"
 
-STARTX=$FIREMODELS_ROOT/smv/Utilities/Scripts/startXserver.sh
-STOPX=$FIREMODELS_ROOT/smv/Utilities/Scripts/stopXserver.sh
-
-source $STARTX
 echo "     smokeview: $SMOKEVIEW"
 echo "          case: ${CASE}.smv"
 echo "        script: $SCRIPTFILE"
@@ -133,8 +129,7 @@ echo "   start frame: $STARTFRAME"
 echo "    skip frame: $SKIPFRAME"
 fi
 if [ "$NOSHOW" == "1" ]; then
-  $SMOKEVIEW $SMVBINDIR $TIME $SCRIPT $VOLRENDER $STARTFRAME $SKIPFRAME $CASE >/dev/null
+  xvfb-run $SMOKEVIEW $SMVBINDIR $TIME $SCRIPT $VOLRENDER $STARTFRAME $SKIPFRAME $CASE >/dev/null
 else
-  $SMOKEVIEW $SMVBINDIR $TIME $SCRIPT $VOLRENDER $STARTFRAME $SKIPFRAME $CASE
+  xvfb-run $SMOKEVIEW $SMVBINDIR $TIME $SCRIPT $VOLRENDER $STARTFRAME $SKIPFRAME $CASE
 fi
-source $STOPX 

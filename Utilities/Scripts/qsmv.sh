@@ -49,22 +49,7 @@ if [ ! -e $HOME/.smokebot ]; then
   mkdir $HOME/.smokebot
 fi
 
-ID_FILE=$HOME/.smokebot/xvfb_ids
-if [ ! -e $ID_FILE ]; then
-  echo 1000 > $ID_FILE 
-fi
-DISPLAY_PORT=`head -1 $ID_FILE`
-DISPLAY_PORT=$((DISPLAY_PORT+1))
-echo $DISPLAY_PORT  > $ID_FILE
-
 cd $CURDIR
-
-#*** define xstart and xstop scripts used to start and stop X11 environment
-
-XSTART=$REPOROOT/smv/Utilities/Scripts/startXserver.sh
-XSTOP=$REPOROOT/smv/Utilities/Scripts/stopXserver.sh
-
-#*** define resource manager that is used
 
 missing_slurm=`srun -V |& tail -1 | grep "not found" | wc -l`
 RESOURCE_MANAGER="NONE"
@@ -464,11 +449,12 @@ echo "      Run command: $exe $script_file $smv_script $NOBOUNDS $FED $redirect 
 echo "            Queue: $queue"
 echo ""
 
-IDFILE=/tmp/SMVID.$infile.\$\$
-source $XSTART \$IDFILE $DISPLAY_PORT
-$exe $script_file $smv_script $NOBOUNDS $FED $redirect $render_opts $SMVBINDIR $infile
-source $XSTOP \$IDFILE
-rm -f \$IDFILE
+notfound=`xvfb-run 2>&1 >/dev/null | tail -1 | grep "not found" | wc -l`
+if [ $notfound -eq 1 ]; then
+   echo "***error: xvfb-run not installed"
+else
+   xvfb-run $exe $script_file $smv_script $NOBOUNDS $FED $redirect $render_opts $SMVBINDIR $infile
+fi
 EOF
 else
 cat << EOF >> $scriptfile
