@@ -6,10 +6,16 @@ if [ "`uname`" == "Darwin" ]; then
 fi
 
 ssffile=
-module load SMV6
+#module load SMV6
 SMOKEVIEW=smokeview
 RUNSCRIPT=-runscript
+
 SMOKEVIEWDIR=$(dirname "$0")
+CURDIR=`pwd`
+cd $SMOKEVIEWDIR
+SMOKEVIEWDIR=`pwd`
+cd $CURDIR
+
 TIME=
 TIMEFILE=smv_time
 OUTPUT=
@@ -91,9 +97,5 @@ if [ "$TIME" != "" ]; then
   grep real $TIMEFILE | awk -F' ' '{print $2}'
   rm -f $TIMEFILE
 else
-notfound=`xvfb-run 2>&1 >/dev/null | tail -1 | grep "not found" | wc -l`
-if [ $notfound -eq 1 ]; then
-   echo "***error: xvfb-run not installed"
-else
-  xvfb-run -s "-fp /usr/share/X11/fonts/misc -screen 0 1280x1024x24" -a $SMOKEVIEW $RUNSCRIPT $ARG2 $in
+  $SMOKEVIEWDIR/XVFB-RUN.sh $SMOKEVIEW $RUNSCRIPT $ARG2 $in
 fi
