@@ -449,7 +449,7 @@ echo "      Run command: $exe $script_file $smv_script $NOBOUNDS $FED $redirect 
 echo "            Queue: $queue"
 echo ""
 
-notfound=`xvfb-run 2>&1 >/dev/null | tail -1 | grep "not found" | wc -l`
+notfound=\`xvfb-run 2>&1 >/dev/null | tail -1 | grep "not found" | wc -l\`
 if [ $notfound -eq 1 ]; then
    echo "***error: xvfb-run not installed"
 else
