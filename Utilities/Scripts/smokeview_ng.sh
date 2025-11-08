@@ -133,8 +133,8 @@ if [ $notfound -eq 1 ]; then
    echo "***error: xvfb-run not installed"
 else
   if [ "$NOSHOW" == "1" ]; then
-    xvfb-run -a $SMOKEVIEW $SMVBINDIR $TIME $SCRIPT $VOLRENDER $STARTFRAME $SKIPFRAME $CASE >/dev/null
+    xvfb-run -s "-screen 0 1280x1024x24" -a $SMOKEVIEW $SMVBINDIR $TIME $SCRIPT $VOLRENDER $STARTFRAME $SKIPFRAME $CASE >/dev/null
   else
-    xvfb-run -a $SMOKEVIEW $SMVBINDIR $TIME $SCRIPT $VOLRENDER $STARTFRAME $SKIPFRAME $CASE
+    xvfb-run -s "-screen 0 1280x1024x24" -a $SMOKEVIEW $SMVBINDIR $TIME $SCRIPT $VOLRENDER $STARTFRAME $SKIPFRAME $CASE
   fi
 fi
