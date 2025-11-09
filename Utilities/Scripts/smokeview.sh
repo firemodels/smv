@@ -6,10 +6,16 @@ if [ "`uname`" == "Darwin" ]; then
 fi
 
 ssffile=
-module load SMV6
+#module load SMV6
 SMOKEVIEW=smokeview
 RUNSCRIPT=-runscript
+
 SMOKEVIEWDIR=$(dirname "$0")
+CURDIR=`pwd`
+cd $SMOKEVIEWDIR
+SMOKEVIEWDIR=`pwd`
+cd $CURDIR
+
 TIME=
 TIMEFILE=smv_time
 OUTPUT=
@@ -86,16 +92,10 @@ if ! [ -e $ssffile ]; then
   exit
 fi
 
-if [  "$SETUP_XSERVER" == "1" ]; then
-  source $SMOKEVIEWDIR/startXserver.sh >/dev/null 2>&1
-fi
 if [ "$TIME" != "" ]; then
   $TIME -p -o $TIMEFILE $SMOKEVIEW $RUNSCRIPT $ARG2 $in >/dev/null 
   grep real $TIMEFILE | awk -F' ' '{print $2}'
   rm -f $TIMEFILE
 else
-  $SMOKEVIEW $RUNSCRIPT $ARG2 $in
-fi
-if [  "$SETUP_XSERVER" == "1" ]; then
-  source $SMOKEVIEWDIR/stopXserver.sh >/dev/null 2>&1
+  $SMOKEVIEWDIR/XVFB-RUN.sh $SMOKEVIEW $RUNSCRIPT $ARG2 $in
 fi
