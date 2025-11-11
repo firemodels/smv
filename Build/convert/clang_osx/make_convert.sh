@@ -1,3 +1,3 @@
 #!/bin/bash
 rm -f *.o
-make -f ../Makefile clang_osx_64
+make -f ../Makefile clang_osx

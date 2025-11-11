@@ -1,3 +1,3 @@
 #!/bin/bash
-rm -f *.o convert_linux_64
-make -f ../Makefile intel_linux_64_db
+rm -f *.o convert_linux
+make -f ../Makefile intel_linux_db
