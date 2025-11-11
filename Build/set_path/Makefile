@@ -92,7 +92,7 @@ win_check : $(win_chk)
 
 # ********  rules for each platform supported *************
 
-# ------------- intel win 64 ----------------
+# ------------- intel win ----------------
 
 intel_win : CFLAGS    =  -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads -O2 /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win : CC        = $(I_CC)
@@ -102,7 +102,7 @@ intel_win : exe       = set_path_win.exe
 intel_win : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib  $(SMV_LIBS_WIN)
 
-# ------------- clang win 64 ----------------
+# ------------- clang win ----------------
 
 clang_win : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
 clang_win : CC        = clang-cl

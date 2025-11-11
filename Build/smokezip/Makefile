@@ -102,7 +102,7 @@ win_check : INC_DIR += -I $(SOURCE_DIR)/pthreads
 win_check : $(win_chk)
 	$(CLANGWINSUMMARY) smokezip.summary
 
-# ------------- intel win 64 ----------------
+# ------------- intel win ----------------
 
 intel_win : INC_DIR   += -I $(SOURCE_DIR)/pthreads
 intel_win : CFLAGS    = -Od /nologo -D PTW32_STATIC_LIB  $(OPT) $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
@@ -112,7 +112,7 @@ intel_win : exe       = smokezip_win.exe
 intel_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(LIB_DIR)/intel_win/pthreads.lib $(LIB_DIR)/intel_win/zlib.lib
 
-# ------------- clang win 64 ----------------
+# ------------- clang win ----------------
 
 clang_win : INC_DIR   += -I $(SOURCE_DIR)/pthreads
 clang_win : CFLAGS    = -m64  -D PTW32_STATIC_LIB -D BGDWIN32 -D GLEW_STATIC $(SMV_TESTFLAG)
@@ -124,7 +124,7 @@ clang_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_CLANG)
 
 
-# ------------- gnu linux 64 ----------------
+# ------------- gnu linux ----------------
 
 gnu_linux : CFLAGS    = -O0 -m64 -Wall $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
 gnu_linux : LFLAGS    = -m64 -lm
@@ -134,7 +134,7 @@ gnu_linux : exe       = smokezip_linux
 gnu_linux : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/gnu_linux -lz -lpthread
 
-# ------------- gnu linux 64 ----------------
+# ------------- gnu linux ----------------
 
 gnu_linux_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
 gnu_linux_db : LFLAGS    = -m64 -lm
@@ -144,7 +144,7 @@ gnu_linux_db : exe       = smokezip_linux_db
 gnu_linux_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/gnu_linux -lz -lpthread
 
-# ------------- clang linux 64 ----------------
+# ------------- clang linux ----------------
 
 clang_linux : CFLAGS    = -O0 -m64 -Wall $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
 clang_linux : LFLAGS    = -m64 -lm
@@ -154,7 +154,7 @@ clang_linux : exe       = smokezip_linux
 clang_linux : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/clang_linux -lz -lpthread
 
-# ------------- gnu linux 64 ----------------
+# ------------- gnu linux ----------------
 
 clang_linux_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
 clang_linux_db : LFLAGS    = -m64 -lm
@@ -165,7 +165,7 @@ clang_linux_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/clang_linux -lz -lpthread
 
 
-# ------------- gnu osx 64 ----------------
+# ------------- gnu osx ----------------
 
 gnu_osx : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
 gnu_osx : LFLAGS    = -L $(LIB_DIR)/gnu_osx -lz -lpthread
@@ -175,7 +175,7 @@ gnu_osx : exe       = smokezip_osx
 gnu_osx : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-# ------------- gnu osx 64 db ----------------
+# ------------- gnu osx db ----------------
 
 gnu_osx_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
 gnu_osx_db : LFLAGS    = -L $(LIB_DIR)/gnu_osx -lz -lpthread
@@ -185,7 +185,7 @@ gnu_osx_db : exe       = smokezip_osx_db
 gnu_osx_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-# ------------- clang osx 64 ----------------
+# ------------- clang osx ----------------
 
 clang_osx : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
 clang_osx : LFLAGS    = -L $(LIB_DIR)/clang_osx -lz -lpthread
@@ -195,7 +195,7 @@ clang_osx : exe       = smokezip_osx
 clang_osx : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-# ------------- clang osx 64 db ----------------
+# ------------- clang osx db ----------------
 
 clang_osx_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
 clang_osx_db : LFLAGS    = -L $(LIB_DIR)/clang_osx -lz -lpthread
@@ -205,8 +205,8 @@ clang_osx_db : exe       = smokezip_osx_db
 clang_osx_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-# ------------- intel linux 64 ----------------
-# ------------- intel linux 64 ----------------
+# ------------- intel linux ----------------
+# ------------- intel linux ----------------
 
 intel_linux_db : CFLAGS    = -O2 -m64 ${INC_DIR} -Wall -Wextra -Wuninitialized -Wunused-function \
                                 -Wunused-variable -Wno-sign-compare -Wno-unused-parameter -Wno-string-concatenation \
@@ -218,7 +218,7 @@ intel_linux_db : exe       = smokezip_linux_db
 intel_linux_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-# ------------- intel linux 64 ----------------
+# ------------- intel linux ----------------
 intel_linux : CFLAGS    = -O2 -m64 ${INC_DIR} $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
 intel_linux : LFLAGS    = -L $(LIB_DIR)/intel_linux -lz -lpthread -static-intel
 intel_linux : CC        = $(I_ICC)

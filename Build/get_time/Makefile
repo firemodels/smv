@@ -34,7 +34,7 @@ no_target:
 
 # ********  rules for each platform supported *************
 
-# ------------- intel win 64 ----------------
+# ------------- intel win ----------------
 
 intel_win : CFLAGS    = -Od /nologo
 intel_win : CC        = $(I_CC)
@@ -44,7 +44,7 @@ intel_win : exe       = get_time_win.exe
 intel_win : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin)
 
-# ------------- clang win 64 ----------------
+# ------------- clang win ----------------
 
 clang_win : CFLAGS    = -m64
 clang_win : CC        = clang-cl

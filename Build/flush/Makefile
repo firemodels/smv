@@ -55,7 +55,7 @@ no_target:
 
 # ********  rules for each platform supported *************
 
-# ------------- intel win 64 ----------------
+# ------------- intel win ----------------
 
 intel_win : CFLAGS    = -Od -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win : CC        = $(I_CC)
@@ -64,7 +64,7 @@ intel_win : exe       = flush_win.exe
 intel_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN) $(SMV_LIBS_WIN)
 
-# ------------- clang win 64 ----------------
+# ------------- clang win ----------------
 
 clang_win : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
 clang_win : CC        = clang-cl
@@ -73,7 +73,7 @@ clang_win : exe       = flush_win.exe
 clang_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN) $(SMV_LIBS_CLANG)
 
-# ------------- gnu linux 64 db ----------------
+# ------------- gnu linux db ----------------
 
 gnu_linux_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GNU_COMPINFO) $(GITINFO)
 gnu_linux_db : CC        = gcc
@@ -82,7 +82,7 @@ gnu_linux_db : exe       = flush_linux_db
 gnu_linux_db: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/gnu_linux $(LIBS_LINUX)  -lm
 
-# ------------- gnu linux 64  ----------------
+# ------------- gnu linux  ----------------
 
 gnu_linux : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux
 gnu_linux : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
@@ -92,7 +92,7 @@ gnu_linux : exe       = flush_linux
 gnu_linux: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm
 
-# ------------- clang linux 64 db ----------------
+# ------------- clang linux db ----------------
 
 clang_linux_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D PTW32_STATIC_LIB -D _DEBUG $(GNU_COMPINFO) $(GITINFO)
 clang_linux_db : CC        = clang
@@ -101,7 +101,7 @@ clang_linux_db : exe       = flush_linux_db
 clang_linux_db: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/gnu_linux $(LIBS_LINUX)  -lm -lpthread
 
-# ------------- clang linux 64  ----------------
+# ------------- clang linux  ----------------
 
 clang_linux : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux
 clang_linux : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO) -D PTW32_STATIC_LIB
@@ -111,7 +111,7 @@ clang_linux : exe       = flush_linux
 clang_linux: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm -lpthread
 
-# ------------- intel linux 64 ----------------
+# ------------- intel linux ----------------
 
 intel_linux : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux
 intel_linux : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
@@ -121,7 +121,7 @@ intel_linux : exe       = flush_linux
 intel_linux : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) -L$(LIB_DIR_PLAT) $(LIBS_LINUX) $(LFLAGS)
 
-# ------------- gnu osx 64 ----------------
+# ------------- gnu osx ----------------
 
 gnu_osx : CFLAGS    = -O0 -m64 $(GITINFO)
 gnu_osx : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_osx $(LIBS_OSX)
@@ -132,7 +132,7 @@ gnu_osx : exe       = flush_osx
 gnu_osx : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-# ------------- gnu osx 64 db ----------------
+# ------------- gnu osx db ----------------
 
 gnu_osx_db : CFLAGS    = -O0 -m64 -Wall $(GITINFO)
 gnu_osx_db : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_osx $(LIBS_OSX)
@@ -143,7 +143,7 @@ gnu_osx_db : exe       = flush_osx_db
 gnu_osx_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-# ------------- clang osx 64 ----------------
+# ------------- clang osx ----------------
 
 clang_osx : CFLAGS    = -O0 -m64 $(GITINFO)
 clang_osx : LFLAGS    = -m64 -L $(LIB_DIR)/clang_osx $(LIBS_OSX)
@@ -154,7 +154,7 @@ clang_osx : exe       = flush_osx
 clang_osx : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-# ------------- gnu osx 64 db ----------------
+# ------------- gnu osx db ----------------
 
 clang_osx_db : CFLAGS    = -O0 -m64 -Wall $(GITINFO)
 clang_osx_db : LFLAGS    = -m64 -L $(LIB_DIR)/clang_osx $(LIBS_OSX)

@@ -49,7 +49,7 @@ SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\pthreads.lib
 SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win
 SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\pthreads.lib
 
-# ------------- intel win 64 ----------------
+# ------------- intel win ----------------
 
 intel_win : CFLAGS    = -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads -O2 /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win : CC        = $(I_CC)
@@ -59,7 +59,7 @@ intel_win : exe       = sh2bat_win.exe
 intel_win : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
-# ------------- clang win 64 ----------------
+# ------------- clang win ----------------
 
 clang_win : CFLAGS    = $(GITINFO) -I $(SOURCE_DIR)/pthreads -D PTW32_STATIC_LIB
 clang_win : CC        = clang-cl

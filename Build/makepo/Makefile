@@ -47,7 +47,7 @@ no_target:
 
 # ********  rules for each platform supported *************
 
-# ------------- intel win 64 ----------------
+# ------------- intel win ----------------
 
 intel_win : CFLAGS    = -O2 /nologo -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads -D PTW32_STATIC_LIB  $(GITINFO) $(INTEL_COMPINFO)
 intel_win : LFLAGS    =
@@ -57,7 +57,7 @@ intel_win : exe       = makepo_win.exe
 intel_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(LFLAGS) $(SMV_LIBS_WIN)
 
-# ------------- clang win 64 ----------------
+# ------------- clang win ----------------
 
 clang_win : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
 clang_win : LFLAGS    =
@@ -67,7 +67,7 @@ clang_win : exe       = clang-cl_win.exe
 clang_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(LFLAGS) $(SMV_LIBS_CLANG)
 
-# ------------- intel linux 64 ----------------
+# ------------- intel linux ----------------
 
 intel_linux : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
 intel_linux : LFLAGS    = -lpthread
@@ -77,7 +77,7 @@ intel_linux : exe       = makepo_linux
 intel_linux : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj)
 
-# ------------- gnu linux 64 ----------------
+# ------------- gnu linux ----------------
 
 gnu_linux : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 gnu_linux : LFLAGS    = -lm
@@ -87,7 +87,7 @@ gnu_linux : exe       = makepo_linux
 gnu_linux : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-# ------------- clang linux 64 ----------------
+# ------------- clang linux ----------------
 
 clang_linux : CFLAGS    = -O2 -m64 $(GITINFO) -D PTW32_STATIC_LIB $(GNU_COMPINFO)
 clang_linux : LFLAGS    = -lm -lpthread
@@ -97,7 +97,7 @@ clang_linux : exe       = makepo_linux
 clang_linux : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-# ------------- gcc osx 64 ----------------
+# ------------- gcc osx ----------------
 
 gnu_osx : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 gnu_osx : CC        = clang
@@ -106,7 +106,7 @@ gnu_osx : exe       = makepo_osx
 gnu_osx : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj)
 
-# ------------- clang osx 64 ----------------
+# ------------- clang osx ----------------
 
 clang_osx : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 clang_osx : CC        = gcc

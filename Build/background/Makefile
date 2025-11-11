@@ -91,7 +91,7 @@ win_check : $(win_chk)
 
 # ********  rules for each platform supported *************
 
-# ------------- intel Win 64 ----------------
+# ------------- intel win ----------------
 
 intel_win : CFLAGS    = -O1 /nologo -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/shared $(GITINFO) $(INTEL_COMPINFO)
 intel_win : CC        = $(I_CC)
@@ -100,7 +100,7 @@ intel_win : exe       = background_win.exe
 intel_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
-# ------------- clang Win 64 ----------------
+# ------------- clang win ----------------
 
 clang_win : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
 clang_win : CC        = clang-cl
@@ -109,7 +109,7 @@ clang_win : exe       = background_win.exe
 clang_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_CLANG)
 
-# ------------- intel linux 64 ----------------
+# ------------- intel linux ----------------
 
 intel_linux : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
 intel_linux : CC        = $(I_ICC)
@@ -118,7 +118,7 @@ intel_linux : exe       = background_linux
 intel_linux : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj)
 
-# ------------- gnu Linux 64 ----------------
+# ------------- gnu linux ----------------
 
 gnu_linux : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO) $(INC_DIR)
 gnu_linux : CC        = gcc
@@ -127,7 +127,7 @@ gnu_linux : exe       = background_linux
 gnu_linux: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
 
-# ------------- gnu Linux 64 db ----------------
+# ------------- gnu linux db ----------------
 
 gnu_linux_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_db : CC        = gcc
@@ -136,7 +136,7 @@ gnu_linux_db : exe       = background_linux
 gnu_linux_db: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
 
-# ------------- clang Linux 64 ----------------
+# ------------- clang linux ----------------
 
 clang_linux : CFLAGS    = -O2 -m64 -Wall -D PTW32_STATIC_LIB $(GITINFO) $(GNU_COMPINFO) $(INC_DIR)
 clang_linux : CC        = clang
@@ -145,7 +145,7 @@ clang_linux : exe       = background_linux
 clang_linux: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm -lpthread
 
-# ------------- gnu Linux 64 db ----------------
+# ------------- gnu linux db ----------------
 
 clang_linux_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D PTW32_STATIC_LIB -D _DEBUG $(GITINFO) $(GNU_COMPINFO)
 clang_linux_db : CC        = clang
@@ -154,7 +154,7 @@ clang_linux_db : exe       = background_linux
 clang_linux_db: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm -lpthread
 
-# ------------- gcc OSX 64 ----------------
+# ------------- gcc osx ----------------
 gnu_osx : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 gnu_osx : CC        = gcc
 gnu_osx : exe       = background_osx
@@ -171,7 +171,7 @@ gnu_osx_db : exe       = background_osx_db
 gnu_osx_db : $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj)  -lm
 
-# ------------- clang OSX 64 ----------------
+# ------------- clang osx ----------------
 clang_osx : CFLAGS    = -O2 -m64 $(GITINFO) $(GNU_COMPINFO)
 clang_osx : CC        = clang
 clang_osx : exe       = background_osx

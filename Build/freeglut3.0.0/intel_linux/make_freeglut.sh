@@ -2,4 +2,4 @@
 source ../../scripts/setopts.sh $*
 
 make -f ../Makefile clean
-eval make -f ../Makefile intel_linux_64
+eval make -f ../Makefile intel_linux

@@ -30,7 +30,7 @@ no_target:
 
 .SUFFIXES: .c .obj .o .cpp
 
-# ------------- intel win 64 ----------------
+# ------------- intel win ----------------
 
 intel_win : FFLAGS    = -O2 /nologo /fpscomp:general /stand:f18 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
 intel_win : FC        = $(I_IFORT)
@@ -39,7 +39,7 @@ intel_win : exe       = hashfort_win.exe
 intel_win : $(objwin)
 	$(FC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
-# ------------- intel linux 64 ----------------
+# ------------- intel linux ----------------
 
 intel_linux : FFLAGS    = -O2 -m64 -stand:f18
 intel_linux : FC        = $(I_IFORT)

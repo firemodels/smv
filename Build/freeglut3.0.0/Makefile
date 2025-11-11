@@ -52,41 +52,41 @@ OBJSWINS_WIN = $(OBJSWINS:.o=.obj)
 
 .SUFFIXES:      .c .o .obj .pic.o
 
-# intel linux 64
+# intel linux
 
-intel_linux_64 : INC+=-I $(SOURCE_DIR)/x11
-intel_linux_64 : CC=icx
-intel_linux_64 : $(OBJS)
+intel_linux : INC+=-I $(SOURCE_DIR)/x11
+intel_linux : CC=icx
+intel_linux : $(OBJS)
 	ar rcs libglut.a $(OBJS)
 
-# gnu linux 64
+# gnu linux
 
-gnu_linux_64 : INC+=-I $(SOURCE_DIR)/x11
-gnu_linux_64 : CC=gcc
-gnu_linux_64 : $(OBJS)
+gnu_linux : INC+=-I $(SOURCE_DIR)/x11
+gnu_linux : CC=gcc
+gnu_linux : $(OBJS)
 	ar rcs libglut.a $(OBJS)
 
-# gnu osx 64
+# gnu osx
 
-gnu_osx_64 : INC+=-I $(SOURCE_DIR)/x11  -I /opt/X11/include
-gnu_osx_64 : CC=gcc
-gnu_osx_64 : $(OBJS)
+gnu_osx : INC+=-I $(SOURCE_DIR)/x11  -I /opt/X11/include
+gnu_osx : CC=gcc
+gnu_osx : $(OBJS)
 	ar rcs libglut.a $(OBJS)
 
-# intel win 64
+# intel win
 
-intel_win_64 : INC+=-I $(SOURCE_DIR)/mswin
-intel_win_64 : SIZE=
-intel_win_64 : CC=icl
-intel_win_64 : $(OBJSWINS_WIN)
+intel_win : INC+=-I $(SOURCE_DIR)/mswin
+intel_win : SIZE=
+intel_win : CC=icl
+intel_win : $(OBJSWINS_WIN)
 	$(LIB)  $(OBJSWINS_WIN) -OUT:freeglut_staticd.lib
 
-# clang win 64
+# clang win
 
-clang_win_64 : INC+=-I $(SOURCE_DIR)/mswin
-clang_win_64 : SIZE=
-clang_win_64 : CC=clang-cl
-clang_win_64 : $(OBJSWINS_WIN)
+clang_win : INC+=-I $(SOURCE_DIR)/mswin
+clang_win : SIZE=
+clang_win : CC=clang-cl
+clang_win : $(OBJSWINS_WIN)
 	$(LIB)  $(OBJSWINS_WIN) -OUT:freeglut_staticd.lib
 
 #-------------- Clean Target to remove Object and Module files -----------

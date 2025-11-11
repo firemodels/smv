@@ -364,7 +364,7 @@ clang_linux : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 clang_linux : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
 clang_linux : CC        = clang
 clang_linux : CPP       = clang++
-clang_linux : exe       = smokeview_linux$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
+clang_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 clang_linux : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
@@ -434,7 +434,7 @@ gnu_osx : LFLAGS   += -framework OpenGL -framework GLUT
 endif
 gnu_osx : CC        = ${COMPILER}
 gnu_osx : CPP       = ${COMPILER2}
-gnu_osx : exe       = smokeview_osx$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
+gnu_osx : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 gnu_osx : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
@@ -470,7 +470,7 @@ clang_osx : LFLAGS   += -framework OpenGL -framework GLUT
 endif
 clang_osx : CC        = ${COMPILER}
 clang_osx : CPP       = ${COMPILER2}
-clang_osx : exe       = smokeview_osx$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
+clang_osx : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 clang_osx : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
