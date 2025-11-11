@@ -1,3 +1,3 @@
 #!/bin/bash
 rm -f *.o
-make -f ../Makefile gnu_linux_64_db
+make -f ../Makefile gnu_linux_db

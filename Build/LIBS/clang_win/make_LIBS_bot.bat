@@ -41,7 +41,7 @@ copy libglutwin.lib %LIBDIR%\glut32.lib
 
 :: FREEGLUT
 if NOT x%glutopt% == xfreeglut goto skip_freeglut
-cd %BUILDDIR%\freeglut3.0.0\gnu_win_64
+cd %BUILDDIR%\freeglut3.0.0\gnu_win
 call make_freeglut %OPTS% 
 copy freeglut_staticd.lib %LIBDIR%\freeglut_staticd.lib
 :skip_freeglut

@@ -32,7 +32,7 @@ cp libglui.a $LIBDIR/.
 
 # FREEGLUT
 if [ "$GLUT" == "freeglut" ]; then
-  cd $BUILDDIR/freeglut3.0.0/gnu_osx_64
+  cd $BUILDDIR/freeglut3.0.0/gnu_osx
   ./make_freeglut.sh $OPTS
   cp libglut.a $LIBDIR/.
 else

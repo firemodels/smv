@@ -1,20 +1,16 @@
 #!/bin/bash
 # use -C to force use of the clang compiler
 OPTS="-C $*"
-
 source ../../../Source/scripts/setopts.sh $OPTS
 
 LIBDIR=`pwd`
-rm *.a
+rm $LIBDIR/*.a
 
 cd $LIBDIR/../../../Source
 SRCDIR=`pwd`
 
 cd ../Build
 BUILDDIR=`pwd`
-
-cd $SRCDIR
-SRCDIR=`pwd`
 
 # GD
 cd $SRCDIR/gd-2.3.3
@@ -23,21 +19,18 @@ cp libgd.a $LIBDIR/.
 
 # GLUI
 cd $SRCDIR/glui_v2_1_beta
-if [ "$GLUT" == "freeglut" ]; then
-  ./makelib.sh $OPTS -f
-else
-  ./makelib.sh $OPTS
-fi
+./makelib.sh $OPTS
 cp libglui.a $LIBDIR/.
 
-# FREEGLUT
+# GLUT
 if [ "$GLUT" == "freeglut" ]; then
-  cd $BUILDDIR/freeglut3.0.0/clang_osx_64
+  cd $BUILDDIR/freeglut3.0.0/gnu_linux
   ./make_freeglut.sh $OPTS
-  cp libglut.a $LIBDIR/.
 else
-  echo ***using OSX provided glut
+  cd $SRCDIR/glut-3.7.6
+  ./makelib.sh $OPTS
 fi
+cp libglut.a $LIBDIR/.
 
 # JPEG
 cd $SRCDIR/jpeg-9b

@@ -41,7 +41,7 @@ call makelib %OPTS%
 copy libglutwin.lib %LIBDIR%\glut32.lib
 
 :: FREEGLUT
-cd %BUILDDIR%\freeglut3.0.0\intel_win_64
+cd %BUILDDIR%\freeglut3.0.0\intel_win
 call make_freeglut %OPTS% 
 copy libglutwin.lib %LIBDIR%\freeglut32.lib
 

@@ -1,6 +1,6 @@
 #!/bin/bash
-# use -C to force use of the clang compiler
-OPTS="-C $*"
+# use -G to force use of the gnu compiler
+OPTS="-G $*"
 source ../../../Source/scripts/setopts.sh $OPTS
 
 LIBDIR=`pwd`
@@ -24,7 +24,7 @@ cp libglui.a $LIBDIR/.
 
 # GLUT
 if [ "$GLUT" == "freeglut" ]; then
-  cd $BUILDDIR/freeglut3.0.0/gnu_linux_64
+  cd $BUILDDIR/freeglut3.0.0/gnu_linux
   ./make_freeglut.sh $OPTS
 else
   cd $SRCDIR/glut-3.7.6

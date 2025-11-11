@@ -27,7 +27,7 @@ BUILDDIR=`pwd`
 if [[ "$target" == "all" ]] || [[ "$target" == "glut" ]]; then
 if [ "$GLUT" == "freeglut" ]; then
   echo "********** building freeglut"
-  cd $BUILDDIR/freeglut3.0.0/gnu_linux_64 >& freeglut.out
+  cd $BUILDDIR/freeglut3.0.0/gnu_linux >& freeglut.out
   ./make_freeglut.sh $OPTS >& $LIBDIR/freeglut.out
 else
   echo "********** building glut"
