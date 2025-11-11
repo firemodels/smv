@@ -8,17 +8,17 @@ LIB_DIR = $(BUILD_DIR)/LIBS
 INC_DIR = -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR)/zlib128 \
           -I $(SOURCE_DIR)/png-1.6.48 -I $(SOURCE_DIR)/shared  -I $(SOURCE_DIR)/pnginfo
 
-SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
 
-SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win_64
+SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win
 
 PNG_LIBS = -lgd -ljpeg -lpng -lz
 SYSTEM_LIBS = -lpthread
 
 #--- clang
 
-SMV_CLANG_LIBDIR = $(LIB_DIR)\clang_win_64
+SMV_CLANG_LIBDIR = $(LIB_DIR)\clang_win
 SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\gd.lib $(SMV_CLANG_LIBDIR)\jpeg.lib $(SMV_CLANG_LIBDIR)\png.lib  $(SMV_CLANG_LIBDIR)\zlib.lib $(SMV_CLANG_LIBDIR)\pthreads.lib
 
 FILTERC =
@@ -103,135 +103,135 @@ win_check : $(win_chk)
 
 # ------------- intel winx 64 db ----------------
 
-intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -D _CONSOLE -D BGDWIN32 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64_db : INC_DIR   += -I $(SOURCE_DIR)/pthreads
-intel_win_64_db : CC        = $(I_CC)
-intel_win_64_db : exe       = pnginfo_win_64_db.exe
+intel_win_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -D _CONSOLE -D BGDWIN32 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_db : INC_DIR   += -I $(SOURCE_DIR)/pthreads
+intel_win_db : CC        = $(I_CC)
+intel_win_db : exe       = pnginfo_win_db.exe
 
-intel_win_64_db : $(objwin)
+intel_win_db : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = /O2 /nologo -D BGDWIN32 -D PTW32_STATIC_LIB $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads
-intel_win_64 : CC        = $(I_CC)
-intel_win_64 : exe       = pnginfo_win_64.exe
+intel_win : CFLAGS    = /O2 /nologo -D BGDWIN32 -D PTW32_STATIC_LIB $(GITINFO) $(INTEL_COMPINFO)
+intel_win : INC_DIR   += -I $(SOURCE_DIR)/pthreads
+intel_win : CC        = $(I_CC)
+intel_win : exe       = pnginfo_win.exe
 
-intel_win_64 : $(objwin)
+intel_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
 # ------------- clang win 64 ----------------
 
-clang_win_64 : CFLAGS    = -m64 -D BGDWIN32 -D PTW32_STATIC_LIB
-clang_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads
-clang_win_64 : LFLAGS    = -m64
-clang_win_64 : CC        = clang-cl
-clang_win_64 : exe       = pnginfo_win_64.exe
+clang_win : CFLAGS    = -m64 -D BGDWIN32 -D PTW32_STATIC_LIB
+clang_win : INC_DIR   += -I $(SOURCE_DIR)/pthreads
+clang_win : LFLAGS    = -m64
+clang_win : CC        = clang-cl
+clang_win : exe       = pnginfo_win.exe
 
-clang_win_64 : $(objwin)
+clang_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin)  $(SMV_LIBS_CLANG)
 
 # ------------- gnu linux 64 ----------------
 
-gnu_linux_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
-gnu_linux_64 : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_linux_64 $(PNG_LIBS) $(SYSTEM_LIBS) -lm
-gnu_linux_64 : CC        = gcc
-gnu_linux_64 : exe       = pnginfo_linux_64
+gnu_linux : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
+gnu_linux : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_linux $(PNG_LIBS) $(SYSTEM_LIBS) -lm
+gnu_linux : CC        = gcc
+gnu_linux : exe       = pnginfo_linux
 
-gnu_linux_64 : $(obj)
+gnu_linux : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- gnu linux 64 ----------------
 
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO)
-gnu_linux_64_db : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_linux_64 $(PNG_LIBS) $(SYSTEM_LIBS) -lm
-gnu_linux_64_db : CC        = gcc
-gnu_linux_64_db : exe       = pnginfo_linux_64_db
+gnu_linux_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_db : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_linux $(PNG_LIBS) $(SYSTEM_LIBS) -lm
+gnu_linux_db : CC        = gcc
+gnu_linux_db : exe       = pnginfo_linux_db
 
-gnu_linux_64_db : $(obj)
+gnu_linux_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- clang linux 64 ----------------
 
-clang_linux_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
-clang_linux_64 : LFLAGS    = -m64 -L $(LIB_DIR)/clang_linux_64 $(PNG_LIBS) $(SYSTEM_LIBS) -lm
-clang_linux_64 : CC        = clang
-clang_linux_64 : exe       = pnginfo_linux_64
+clang_linux : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
+clang_linux : LFLAGS    = -m64 -L $(LIB_DIR)/clang_linux $(PNG_LIBS) $(SYSTEM_LIBS) -lm
+clang_linux : CC        = clang
+clang_linux : exe       = pnginfo_linux
 
-clang_linux_64 : $(obj)
+clang_linux : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- gnu linux 64 ----------------
 
-clang_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO)
-clang_linux_64_db : LFLAGS    = -m64 -L $(LIB_DIR)/clang_linux_64 $(PNG_LIBS) $(SYSTEM_LIBS) -lm
-clang_linux_64_db : CC        = clang
-clang_linux_64_db : exe       = pnginfo_linux_64_db
+clang_linux_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO)
+clang_linux_db : LFLAGS    = -m64 -L $(LIB_DIR)/clang_linux $(PNG_LIBS) $(SYSTEM_LIBS) -lm
+clang_linux_db : CC        = clang
+clang_linux_db : exe       = pnginfo_linux_db
 
-clang_linux_64_db : $(obj)
+clang_linux_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 
 # ------------- gnu osx 64 ----------------
 
-gnu_osx_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
-gnu_osx_64 : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 $(PNG_LIBS) $(SYSTEM_LIBS)
-gnu_osx_64 : CC        = gcc
-gnu_osx_64 : exe       = pnginfo_osx_64
+gnu_osx : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
+gnu_osx : LFLAGS    = -L $(LIB_DIR)/gnu_osx $(PNG_LIBS) $(SYSTEM_LIBS)
+gnu_osx : CC        = gcc
+gnu_osx : exe       = pnginfo_osx
 
-gnu_osx_64 : $(obj)
+gnu_osx : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- gnu osx 64 db ----------------
 
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
-gnu_osx_64_db : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 $(PNG_LIBS) $(SYSTEM_LIBS)
-gnu_osx_64_db : CC        = gcc
-gnu_osx_64_db : exe       = pnginfo_osx_64_db
+gnu_osx_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
+gnu_osx_db : LFLAGS    = -L $(LIB_DIR)/gnu_osx $(PNG_LIBS) $(SYSTEM_LIBS)
+gnu_osx_db : CC        = gcc
+gnu_osx_db : exe       = pnginfo_osx_db
 
-gnu_osx_64_db : $(obj)
+gnu_osx_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- clang osx 64 db ----------------
 
-clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
-clang_osx_64_db : LFLAGS    = -L $(LIB_DIR)/clang_osx_64 $(PNG_LIBS) $(SYSTEM_LIBS)
-clang_osx_64_db : CC        = clang
-clang_osx_64_db : exe       = pnginfo_osx_64_db
+clang_osx_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
+clang_osx_db : LFLAGS    = -L $(LIB_DIR)/clang_osx $(PNG_LIBS) $(SYSTEM_LIBS)
+clang_osx_db : CC        = clang
+clang_osx_db : exe       = pnginfo_osx_db
 
-clang_osx_64_db : $(obj)
+clang_osx_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- clang osx 64 ----------------
 
-clang_osx_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
-clang_osx_64 : LFLAGS    = -L $(LIB_DIR)/clang_osx_64 $(PNG_LIBS) $(SYSTEM_LIBS)
-clang_osx_64 : CC        = clang
-clang_osx_64 : exe       = pnginfo_osx_64
+clang_osx : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
+clang_osx : LFLAGS    = -L $(LIB_DIR)/clang_osx $(PNG_LIBS) $(SYSTEM_LIBS)
+clang_osx : CC        = clang
+clang_osx : exe       = pnginfo_osx
 
-clang_osx_64 : $(obj)
+clang_osx : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- intel linux 64 ----------------
 
 # ------------- intel linux 64 ----------------
-intel_linux_64 : CFLAGS    = -O2 -m64 $(INC_DIR) $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
-intel_linux_64 : LFLAGS    = -L $(LIB_DIR)/intel_linux_64 $(PNG_LIBS) $(SYSTEM_LIBS)  -static-intel
-intel_linux_64 : CC        = $(I_ICC)
-intel_linux_64 : exe       = pnginfo_linux_64
+intel_linux : CFLAGS    = -O2 -m64 $(INC_DIR) $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
+intel_linux : LFLAGS    = -L $(LIB_DIR)/intel_linux $(PNG_LIBS) $(SYSTEM_LIBS)  -static-intel
+intel_linux : CC        = $(I_ICC)
+intel_linux : exe       = pnginfo_linux
 
-intel_linux_64 : $(obj)
+intel_linux : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-intel_linux_64_db : CFLAGS    = -O2 -m64 $(INC_DIR) -Wall -Wextra -Wuninitialized -Wunused-function \
+intel_linux_db : CFLAGS    = -O2 -m64 $(INC_DIR) -Wall -Wextra -Wuninitialized -Wunused-function \
                                 -Wunused-variable -Wno-sign-compare -Wno-unused-parameter -Wno-string-concatenation \
                                 $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
-intel_linux_64_db : LFLAGS    = -L $(LIB_DIR)/intel_linux_64 $(PNG_LIBS) $(SYSTEM_LIBS) -static-intel
-intel_linux_64_db : CC        = $(I_ICC)
-intel_linux_64_db : exe       = pnginfo_linux_64_db
+intel_linux_db : LFLAGS    = -L $(LIB_DIR)/intel_linux $(PNG_LIBS) $(SYSTEM_LIBS) -static-intel
+intel_linux_db : CC        = $(I_ICC)
+intel_linux_db : exe       = pnginfo_linux_db
 
-intel_linux_64_db : $(obj)
+intel_linux_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 #-------------- Clean Target to remove Object and Module files -----------

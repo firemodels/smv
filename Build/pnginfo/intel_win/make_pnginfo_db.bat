@@ -12,7 +12,7 @@ Title Building pnginfo for 64 bit Windows
 call ..\..\scripts\test_libs.bat ..\..\LIBS\
 
 erase *.obj *.mod *.exe
-make SHELL="%ComSpec%" -f ..\Makefile intel_win_64_db
+make SHELL="%ComSpec%" -f ..\Makefile intel_win_db
 if "x%EXIT_SCRIPT%" == "x" goto skip1
 exit
 :skip1
