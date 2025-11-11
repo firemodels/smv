@@ -7,7 +7,7 @@ Title Building makepo for 64 bit Windows
 call ..\..\scripts\test_clang_libs.bat ..\..\LIBS\
 
 erase *.obj *.exe
-make -j 4 SHELL="%ComSpec%" -f ..\Makefile clang_win_64
+make -j 4 SHELL="%ComSpec%" -f ..\Makefile clang_win
 if x%from% == xbot goto skip2
 pause
 :skip2
