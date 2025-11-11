@@ -12,7 +12,7 @@ Title Building flushcache for 64 bit Windows
 call ..\..\scripts\test_libs.bat ..\..\LIBS\
 
 erase *.obj *.exe
-make -j 4 SHELL="%ComSpec%" -f ..\Makefile intel_win_64
+make -j 4 SHELL="%ComSpec%" -f ..\Makefile intel_win
 if "x%EXIT_SCRIPT%" == "x" goto skip1
 exit
 :skip1
