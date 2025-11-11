@@ -12,7 +12,7 @@ Title Building sh2bat for 64 bit Windows
 call ..\..\scripts\test_libs.bat ..\..\LIBS\
 
 erase *.obj *.mod
-make SHELL="%ComSpec%" -f ..\Makefile intel_win_64
+make SHELL="%ComSpec%" -f ..\Makefile intel_win
 if "x%EXIT_SCRIPT%" == "x" goto skip1
 exit
 :skip1
