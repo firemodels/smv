@@ -1,3 +1,3 @@
 @echo off
 call %userprofile%\bin\fds_setup
-%reporoot%\smv\Build\smokeview\intel_win_64\smokeview_win_test_64_db.exe %*
+%reporoot%\smv\Build\smokeview\intel_win\smokeview_win_test_db.exe %*
