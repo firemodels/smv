@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 BUILDDIR=$(pwd)/../..
-BUILD=gnu_linux_64
+BUILD=gnu_linux
 
 function build_target() {
     TARGET=$1

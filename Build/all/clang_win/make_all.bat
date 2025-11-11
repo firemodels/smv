@@ -3,7 +3,7 @@
 set ALLDIR=%CD%
 cd ..\..
 set BUILDDIR=%CD%
-set BUILD=clang_win_64
+set BUILD=clang_win
 
 set allprogs=background convert env2mod fds2fed flush get_time getdate hashfile makepo mergepo pnginfo set_path sh2bat smokediff smokeview smokezip timep wind2fds
 
@@ -20,7 +20,7 @@ goto eof
   echo -------------------------------------------------------
   call make_%TARGET% bot
   echo.
-  dir %prog%_win_64.exe
+  dir %prog%_win.exe
   exit /b
 
 :eof

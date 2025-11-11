@@ -3,7 +3,7 @@
 set ALLDIR=%CD%
 cd ..\..
 set BUILDDIR=%CD%
-set BUILD=intel_win_64
+set BUILD=intel_win
 
 cd %ALLDIR%
 call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
@@ -23,7 +23,7 @@ goto eof
   echo -------------------------------------------------------
   call make_%TARGET% bot
   echo.
-  dir %prog%_win_64.exe
+  dir %prog%_win.exe
   exit /b
 
 :eof
