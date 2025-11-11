@@ -31,7 +31,7 @@ erase *.obj *.mod *.exe 2> Nul
 :: build libraries if one is missing
 call ..\..\scripts\test_libs.bat ..\..\LIBS\
 
-make -j %NUMBER_OF_PROCESSORS% ICON="%ICON%" GLUT="%GLUT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64%debug%
+make -j %NUMBER_OF_PROCESSORS% ICON="%ICON%" GLUT="%GLUT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win%debug%
 if x%from% == xbot goto skip2
 pause
 :skip2

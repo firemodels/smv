@@ -5,7 +5,7 @@ source ../../scripts/setopts.sh $*
 set -e
 
 curdir=`pwd`
-LIBDIR=../../LIBS/gnu_linux_64/
+LIBDIR=../../LIBS/gnu_linux/
 if [ "$BUILD_LIBS" == "1" ]; then
   cd $LIBDIR
   ./make_LIBS.sh
@@ -17,4 +17,4 @@ fi
 if [ "$BUILD_ALL" == "1" ]; then
   make -f ../Makefile clean
 fi
-eval make -j 4 ${SMV_MAKE_OPTS} -f ../Makefile gnu_linux_64_db
+eval make -j 4 ${SMV_MAKE_OPTS} -f ../Makefile gnu_linux_db

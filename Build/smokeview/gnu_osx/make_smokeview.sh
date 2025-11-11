@@ -1,8 +1,9 @@
 #!/bin/bash
 OPTS="-G $*"
+
 source ../../scripts/setopts.sh $OPTS
 
-LIBDIR=../../LIBS/gnu_osx_64
+LIBDIR=../../LIBS/gnu_osx
 
 CURDIR=`pwd`
 cd $LIBDIR
@@ -25,6 +26,6 @@ fi
 cd $CURDIR
 
 if [ "$BUILD_ALL" == "1" ]; then
-  rm -f *.o *.mod smokeview_osx_64*
+  rm -f *.o *.mod smokeview_osx*
 fi
-eval make COMPILER=${COMPILER} COMPILER2=${COMPILER2} GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile gnu_osx_64_db
+eval make COMPILER=${COMPILER} COMPILER2=${COMPILER2} GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile gnu_osx
