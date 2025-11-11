@@ -8,9 +8,9 @@ call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 set SMV_TESTFLAG=
 set SMV_TESTSTRING=
 
-Title Building Smokeview for 64 bit Windows
+Title Building Smokeview for Windows
 if "%1" NEQ "-t" goto endif
-  Title Building Test Smokeview for 64 bit Windows
+  Title Building Test Smokeview for Windows
   set SMV_TESTFLAG=-D pp_BETA
   set SMV_TESTSTRING=_test
 :endif

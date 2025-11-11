@@ -4,7 +4,7 @@ set from=%1
 :: setup compiler environment
 call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 
-Title Building 64 bit Windows setpath
+Title Building Windows setpath
 erase *.obj *.exe
 make SHELL="%ComSpec%" -f ../Makefile intel_win
 if "x%EXIT_SCRIPT%" == "x" goto skip1

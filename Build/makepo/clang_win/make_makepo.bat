@@ -1,7 +1,7 @@
 @echo off
 set from=%1
 
-Title Building makepo for 64 bit Windows
+Title Building makepo for Windows
 
 :: build libraries if one is missing
 call ..\..\scripts\test_clang_libs.bat ..\..\LIBS\

@@ -1,7 +1,7 @@
 @echo off
 set arg1=%1
 
-Title Building flush for 64 bit Windows
+Title Building flush for Windows
 
 :: build libraries if one is missing
 call ..\..\scripts\test_clang_libs.bat ..\..\LIBS\

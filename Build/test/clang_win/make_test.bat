@@ -1,7 +1,7 @@
 @echo off
 set arg1=%1
 
-Title Building test for 64 bit Windows
+Title Building test for Windows
 
 :: build libraries if one is missing
 call ..\..\scripts\test_libs.bat ..\..\LIBS\

@@ -5,7 +5,7 @@ set from=%1
 :: setup compiler environment
 call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 
-Title Building filehash for 64 bit Windows
+Title Building filehash for Windows
 
 erase *.obj *.exe
 make -j 4 SHELL="%ComSpec%" -f ..\Makefile intel_win

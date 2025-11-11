@@ -6,7 +6,7 @@ if x%arg1% == xbot goto skip1
 call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 :skip1
 
-Title Building env2mod for 64 bit Windows
+Title Building env2mod for Windows
 
 :: build libraries if one is missing
 call ..\..\scripts\test_libs.bat ..\..\LIBS\

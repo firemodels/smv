@@ -1,7 +1,7 @@
 @echo off
 set arg1=%1
 
-Title Building timep for 64 bit Windows
+Title Building timep for Windows
 
 :: build libraries if one is missing
 call ..\..\scripts\test_libs.bat ..\..\LIBS\

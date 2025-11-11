@@ -1,7 +1,7 @@
 @echo off
 set arg1=%1
 
-Title Building convert for 64 bit Windows
+Title Building convert for Windows
 
 :: build libraries if one is missing
 call ..\..\scripts\test_clang_libs.bat ..\..\LIBS\

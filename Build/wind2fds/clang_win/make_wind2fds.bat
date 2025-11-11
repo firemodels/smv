@@ -1,7 +1,7 @@
 @echo off
 set arg1=%1
 
-Title Building wind2fds for 64 bit Windows
+Title Building wind2fds for Windows
 
 :: build libraries if one is missing
 call ..\..\scripts\test_clang_libs.bat ..\..\LIBS\

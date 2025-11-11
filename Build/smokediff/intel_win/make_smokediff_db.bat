@@ -2,7 +2,7 @@
 :: setup compiler environment
 call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 
-Title Building debug smokediff for 64 bit Windows
+Title Building debug smokediff for Windows
 
 set SMV_TESTFLAG=
 if x%ONEAPI_FORT_CAPS% == x1 set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_WIN_ONEAPI

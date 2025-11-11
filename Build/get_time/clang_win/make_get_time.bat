@@ -1,7 +1,7 @@
 @echo off
 set from=%1
 
-Title Building get_time for 64 bit Windows
+Title Building get_time for Windows
 
 erase *.obj *.exe
 make -f ..\Makefile clang_win
