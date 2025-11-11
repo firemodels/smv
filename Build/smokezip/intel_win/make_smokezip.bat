@@ -15,7 +15,7 @@ set SMV_TESTFLAG=
 if x%ONEAPI_FORT_CAPS% == x1 set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_WIN_ONEAPI
 
 erase *.obj *.mod *.exe
-make -j 4 SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG%" -f ..\Makefile intel_win_64
+make -j 4 SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG%" -f ..\Makefile intel_win
 if "x%EXIT_SCRIPT%" == "x" goto skip1
 exit
 :skip1
