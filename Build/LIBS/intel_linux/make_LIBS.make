@@ -1,7 +1,7 @@
 OPTS="-I $*"
 LIBDIR=$(shell pwd)
 SRCDIR=$(LIBDIR)/../../../Source
-export TARGET=intel_linux_64
+export TARGET=intel_linux
 
 all: libgd.a libglui.a libglut.a libjpeg.a libpng.a libz.a
 
