@@ -90,7 +90,7 @@ done
 
 if [ "$TESTOPT" != "" ]; then
    TESTFLAG=" -D pp_BETA"
-   SMV_MAKE_OPTS="$SMV_MAKE_OPTS SMV_TESTSTRING=\"test_\" "
+   SMV_MAKE_OPTS="$SMV_MAKE_OPTS SMV_TESTSTRING=\"_test\" "
    TEST=test_
 fi
 export SMV_MAKE_OPTS

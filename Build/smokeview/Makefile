@@ -172,7 +172,7 @@ intel_win_san : LFLAGS    = /F32768000 /traceback /Zi $(SANITIZE_OPTIONS)
 intel_win_san : CC        = icx
 intel_win_san : CPP       = icx
 
-intel_win_san : exe       = smokeview_win_$(SMV_TESTSTRING)64
+intel_win_san : exe       = smokeview_win$(SMV_TESTSTRING)
 
 intel_win_san : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(SMV_LIBS_WIN)
@@ -197,7 +197,7 @@ endif
 intel_win_db : CC        = icx
 intel_win_db : CPP       = icx
 
-intel_win_db : exe       = smokeview_win_$(SMV_TESTSTRING)64_db
+intel_win_db : exe       = smokeview_win$(SMV_TESTSTRING)_db
 
 intel_win_db : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(SMV_LIBS_WIN)
@@ -220,7 +220,7 @@ intel_win : LFLAGS   += $(SANITIZE_OPTIONS)
 endif
 intel_win : CC        = icx
 intel_win : CPP       = icx
-intel_win : exe       = smokeview_win_$(SMV_TESTSTRING)64
+intel_win : exe       = smokeview_win$(SMV_TESTSTRING)
 
 intel_win : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(SMV_LIBS_WIN)
@@ -234,7 +234,7 @@ clang_win_db : LFLAGS    = -m64 $(SMV_LIBS_CLANG) $(SMV_PROFILEFLAG) $(WIN32_LIB
 clang_win_db : LFLAGS   += -fsanitize=address -fsanitize=undefined
 clang_win_db : CC        = clang-cl
 clang_win_db : CPP       = clang-cl
-clang_win_db : exe       = smokeview_win_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
+clang_win_db : exe       = smokeview_win$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 clang_win_db : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) $(LFLAGS)
@@ -246,7 +246,7 @@ clang_win : CFLAGS    = -m64 -D GLEW_STATIC -D NDEBUG  -D BGDWIN32 -D PTW32_STAT
 clang_win : LFLAGS    = -m64 $(SMV_LIBS_CLANG) $(SMV_PROFILEFLAG) $(WIN32_LIBS)
 clang_win : CC        = clang-cl
 clang_win : CPP       = clang-cl
-clang_win : exe       = smokeview_win_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
+clang_win : exe       = smokeview_win$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 clang_win : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) $(LFLAGS)
@@ -281,7 +281,7 @@ intel_linux : LFLAGS   += $(SANITIZE_OPTIONS)
 endif
 intel_linux : CC        = icx
 intel_linux : CPP       = icpx
-intel_linux : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
+intel_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 intel_linux : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(SMV_LIBS_LINUX) $(INTEL_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
@@ -304,7 +304,7 @@ intel_linux_db : LFLAGS   += $(SANITIZE_OPTIONS)
 endif
 intel_linux_db : CC        = icx
 intel_linux_db : CPP       = icpx
-intel_linux_db : exe       = smokeview_linux_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
+intel_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
 
 intel_linux_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/intel_linux $(SMV_LIBS_LINUX) $(INTEL_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
@@ -318,7 +318,7 @@ gnu_linux_db : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 gnu_linux_db : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
 gnu_linux_db : CC        = gcc
 gnu_linux_db : CPP       = g++
-gnu_linux_db : exe       = smokeview_linux_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
+gnu_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
 
 gnu_linux_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
@@ -334,7 +334,7 @@ gnu_linux : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 gnu_linux : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
 gnu_linux : CC        = gcc
 gnu_linux : CPP       = g++
-gnu_linux : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
+gnu_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 gnu_linux : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
@@ -349,7 +349,7 @@ clang_linux_db : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 clang_linux_db : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
 clang_linux_db : CC        = clang
 clang_linux_db : CPP       = clang++
-clang_linux_db : exe       = smokeview_linux_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
+clang_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
 
 clang_linux_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
@@ -364,7 +364,7 @@ clang_linux : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 clang_linux : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
 clang_linux : CC        = clang
 clang_linux : CPP       = clang++
-clang_linux : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
+clang_linux : exe       = smokeview_linux$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
 clang_linux : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
@@ -416,7 +416,7 @@ gnu_osx_db : LFLAGS   += -framework OpenGL -framework GLUT
 endif
 gnu_osx_db : CC        = ${COMPILER}
 gnu_osx_db : CPP       = ${COMPILER2}
-gnu_osx_db : exe       = smokeview_osx_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
+gnu_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
 
 gnu_osx_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
@@ -434,7 +434,7 @@ gnu_osx : LFLAGS   += -framework OpenGL -framework GLUT
 endif
 gnu_osx : CC        = ${COMPILER}
 gnu_osx : CPP       = ${COMPILER2}
-gnu_osx : exe       = smokeview_osx_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
+gnu_osx : exe       = smokeview_osx$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
 gnu_osx : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
@@ -452,7 +452,7 @@ clang_osx_db : LFLAGS   += -framework OpenGL -framework GLUT
 endif
 clang_osx_db : CC        = ${COMPILER}
 clang_osx_db : CPP       = ${COMPILER2}
-clang_osx_db : exe       = smokeview_osx_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
+clang_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
 
 clang_osx_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
@@ -470,7 +470,7 @@ clang_osx : LFLAGS   += -framework OpenGL -framework GLUT
 endif
 clang_osx : CC        = ${COMPILER}
 clang_osx : CPP       = ${COMPILER2}
-clang_osx : exe       = smokeview_osx_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
+clang_osx : exe       = smokeview_osx$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
 clang_osx : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
