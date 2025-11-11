@@ -12,7 +12,7 @@ Title Building Smokeview for 64 bit Windows
 if "%1" NEQ "-t" goto endif
   Title Building Test Smokeview for 64 bit Windows
   set SMV_TESTFLAG=-D pp_BETA
-  set SMV_TESTSTRING=test_
+  set SMV_TESTSTRING=_test
 :endif
 
 if x%ONEAPI_FORT_CAPS% == x1 set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_WIN_ONEAPI

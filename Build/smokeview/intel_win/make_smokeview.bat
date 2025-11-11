@@ -17,7 +17,7 @@ set SMV_TESTSTRING=
 if "%release%" == "-r" goto endif
   Title Building Test Smokeview for 64 bit Windows
   set SMV_TESTFLAG=-D pp_BETA
-  set SMV_TESTSTRING=test_
+  set SMV_TESTSTRING=_test
 :endif
 
 if NOT x%GLUT% == xfreeglut set GLUT=glut
