@@ -36,67 +36,67 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od /nologo
-intel_win_64 : CC        = $(I_CC)
-intel_win_64 : exe       = test_win_64.exe
+intel_win : CFLAGS    = -Od /nologo
+intel_win : CC        = $(I_CC)
+intel_win : exe       = test_win.exe
 
-intel_win_64 : $(objwin)
+intel_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin)
 
 # ------------- clang win 64 ----------------
 
-clang_win_64 : CFLAGS    = -m64
-clang_win_64 : LFLAGS    = -m64
-clang_win_64 : CC        = clang-cl
-clang_win_64 : exe       = test_win_64.exe
+clang_win : CFLAGS    = -m64
+clang_win : LFLAGS    = -m64
+clang_win : CC        = clang-cl
+clang_win : exe       = test_win.exe
 
-clang_win_64 : $(objwin)
+clang_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin)
 
 # ------------- gnu linux 64----------------
 
-gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall
-gnu_linux_64 : LFLAGS    =
-gnu_linux_64 : CC        = gcc
-gnu_linux_64 : exe       = test_linux_64
+gnu_linux : CFLAGS    = -O2 -m64 -Wall
+gnu_linux : LFLAGS    =
+gnu_linux : CC        = gcc
+gnu_linux : exe       = test_linux
 
-gnu_linux_64: $(obj)
+gnu_linux: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj)
 
-gnu_linux_64_check : CFLAGS    = -O2 -m64 -Wall
-gnu_linux_64_check: $(srcs)
+gnu_linux_check : CFLAGS    = -O2 -m64 -Wall
+gnu_linux_check: $(srcs)
 	clang-tidy $^ --  $(CFLAGS) $(INC)
 
-gnu_linux_64_format: $(srcs)
+gnu_linux_format: $(srcs)
 	clang-format -i $^
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : CFLAGS    = -O2 -m64
-intel_linux_64 : CC        = $(I_ICC)
-intel_linux_64 : exe       = test_linux_64
+intel_linux : CFLAGS    = -O2 -m64
+intel_linux : CC        = $(I_ICC)
+intel_linux : exe       = test_linux
 
-intel_linux_64 : $(obj)
+intel_linux : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj)
 
 # ------------- gnu osx 64 ----------------
 
-gnu_osx_64 : CFLAGS    = -O0 -m64
-gnu_osx_64 : LFLAGS    = -m64
-gnu_osx_64 : CC        = gcc
-gnu_osx_64 : CPP       = g++
-gnu_osx_64 : exe       = test_osx_64
+gnu_osx : CFLAGS    = -O0 -m64
+gnu_osx : LFLAGS    = -m64
+gnu_osx : CC        = gcc
+gnu_osx : CPP       = g++
+gnu_osx : exe       = test_osx
 
-gnu_osx_64 : $(obj)
+gnu_osx : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- clang osx 64 ----------------
 
-clang_osx_64 : CFLAGS    = -O0 -m64
-clang_osx_64 : LFLAGS    = -m64
-clang_osx_64 : CC        = clang
-clang_osx_64 : CPP       = clang++
-clang_osx_64 : exe       = test_osx_64
+clang_osx : CFLAGS    = -O0 -m64
+clang_osx : LFLAGS    = -m64
+clang_osx : CC        = clang
+clang_osx : CPP       = clang++
+clang_osx : exe       = test_osx
 
-clang_osx_64 : $(obj)
+clang_osx : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)

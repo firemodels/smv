@@ -8,7 +8,7 @@ INC_DIR =  -I $(SOURCE_DIR)/shared
 INC_DIR += -I $(SOURCE_DIR)/timep
 
 
-WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+WIN_LIBDIR = $(LIB_DIR)/intel_win
 
 FILTERC =
 FILTERF =
@@ -33,10 +33,10 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 obj =    md5.o sha1.o sha256.o dmalloc.o file_util.o string_util.o stdio_buffer.o main.o threader.o
 objwin = $(obj:.o=.obj)
 
-SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\pthreads.lib
 
-SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win_64
+SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win
 SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\pthreads.lib
 
 
@@ -55,114 +55,114 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads /nologo $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : CC        = $(I_CC)
-intel_win_64 : exe       = timep_win_64.exe
+intel_win : CFLAGS    = -Od -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads /nologo $(GITINFO) $(INTEL_COMPINFO)
+intel_win : CC        = $(I_CC)
+intel_win : exe       = timep_win.exe
 
-intel_win_64 : $(objwin)
+intel_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
 # ------------- intel win 64 ----------------
 
-clang_win_64 : CFLAGS    = -Od -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads /nologo $(GITINFO)
-clang_win_64 : CC        = clang-cl
-clang_win_64 : exe       = timep_win_64.exe
+clang_win : CFLAGS    = -Od -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads /nologo $(GITINFO)
+clang_win : CC        = clang-cl
+clang_win : exe       = timep_win.exe
 
-clang_win_64 : $(objwin)
+clang_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_CLANG)
 
 # ------------- gnu linux 64 db ----------------
 
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GNU_COMPINFO) $(GITINFO)
-gnu_linux_64_db : LFLAGS    =
-gnu_linux_64_db : CC        = gcc
-gnu_linux_64_db : exe       = timep_linux_64_db
+gnu_linux_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GNU_COMPINFO) $(GITINFO)
+gnu_linux_db : LFLAGS    =
+gnu_linux_db : CC        = gcc
+gnu_linux_db : exe       = timep_linux_db
 
-gnu_linux_64_db: $(obj)
-	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/gnu_linux_64 $(LIBS_LINUX)  -lm
+gnu_linux_db: $(obj)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/gnu_linux $(LIBS_LINUX)  -lm
 
 # ------------- gnu linux 64----------------
 
-gnu_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
-gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
-gnu_linux_64 : LFLAGS    =
-gnu_linux_64 : CC        = gcc
-gnu_linux_64 : exe       = timep_linux_64
+gnu_linux : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux
+gnu_linux : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
+gnu_linux : LFLAGS    =
+gnu_linux : CC        = gcc
+gnu_linux : exe       = timep_linux
 
-gnu_linux_64: $(obj)
+gnu_linux: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm
 
 # ------------- clang linux 64 db ----------------
 
-clang_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D PTW32_STATIC_LIB -D _DEBUG $(GNU_COMPINFO) $(GITINFO)
-clang_linux_64_db : LFLAGS    = -lpthread
-clang_linux_64_db : CC        = clang
-clang_linux_64_db : exe       = timep_linux_64_db
+clang_linux_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D PTW32_STATIC_LIB -D _DEBUG $(GNU_COMPINFO) $(GITINFO)
+clang_linux_db : LFLAGS    = -lpthread
+clang_linux_db : CC        = clang
+clang_linux_db : exe       = timep_linux_db
 
-clang_linux_64_db: $(obj)
-	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/gnu_linux_64 $(LIBS_LINUX)  -lm
+clang_linux_db: $(obj)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/gnu_linux $(LIBS_LINUX)  -lm
 
 # ------------- gnu linux 64----------------
 
-clang_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
-clang_linux_64 : CFLAGS    = -O2 -m64 -Wall -D PTW32_STATIC_LIB $(GITINFO) $(GNU_COMPINFO)
-clang_linux_64 : LFLAGS    = -lpthread
-clang_linux_64 : CC        = clang
-clang_linux_64 : exe       = timep_linux_64
+clang_linux : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux
+clang_linux : CFLAGS    = -O2 -m64 -Wall -D PTW32_STATIC_LIB $(GITINFO) $(GNU_COMPINFO)
+clang_linux : LFLAGS    = -lpthread
+clang_linux : CC        = clang
+clang_linux : exe       = timep_linux
 
-clang_linux_64: $(obj)
+clang_linux: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
-intel_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
-intel_linux_64 : CC        = $(I_ICC)
-intel_linux_64 : exe       = timep_linux_64
+intel_linux : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux
+intel_linux : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
+intel_linux : CC        = $(I_ICC)
+intel_linux : exe       = timep_linux
 
-intel_linux_64 : $(obj)
+intel_linux : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) -L$(LIB_DIR_PLAT) $(LIBS_LINUX) $(LFLAGS)
 
 # ------------- gnu osx 64 ----------------
 
-gnu_osx_64 : CFLAGS    = -O0 -m64 $(GITINFO)
-gnu_osx_64 : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_osx_64 $(LIBS_OSX)
-gnu_osx_64 : CC        = gcc
-gnu_osx_64 : CPP       = g++
-gnu_osx_64 : exe       = timep_osx_64
+gnu_osx : CFLAGS    = -O0 -m64 $(GITINFO)
+gnu_osx : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_osx $(LIBS_OSX)
+gnu_osx : CC        = gcc
+gnu_osx : CPP       = g++
+gnu_osx : exe       = timep_osx
 
-gnu_osx_64 : $(obj)
+gnu_osx : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- gnu osx 64 db ----------------
 
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall $(GITINFO)
-gnu_osx_64_db : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_osx_64 $(LIBS_OSX)
-gnu_osx_64_db : CC        = gcc
-gnu_osx_64_db : CPP       = g++
-gnu_osx_64_db : exe       = timep_osx_64_db
+gnu_osx_db : CFLAGS    = -O0 -m64 -Wall $(GITINFO)
+gnu_osx_db : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_osx $(LIBS_OSX)
+gnu_osx_db : CC        = gcc
+gnu_osx_db : CPP       = g++
+gnu_osx_db : exe       = timep_osx_db
 
-gnu_osx_64_db : $(obj)
+gnu_osx_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- clang osx 64 ----------------
 
-clang_osx_64 : CFLAGS    = -O0 -m64 $(GITINFO)
-clang_osx_64 : LFLAGS    = -m64 -L $(LIB_DIR)/clang_osx_64 $(LIBS_OSX)
-clang_osx_64 : CC        = clang
-clang_osx_64 : CPP       = clang++
-clang_osx_64 : exe       = timep_osx_64
+clang_osx : CFLAGS    = -O0 -m64 $(GITINFO)
+clang_osx : LFLAGS    = -m64 -L $(LIB_DIR)/clang_osx $(LIBS_OSX)
+clang_osx : CC        = clang
+clang_osx : CPP       = clang++
+clang_osx : exe       = timep_osx
 
-clang_osx_64 : $(obj)
+clang_osx : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- gnu osx 64 db ----------------
 
-clang_osx_64_db : CFLAGS    = -O0 -m64 -Wall $(GITINFO)
-clang_osx_64_db : LFLAGS    = -m64 -L $(LIB_DIR)/clang_osx_64 $(LIBS_OSX)
-clang_osx_64_db : CC        = clang
-clang_osx_64_db : CPP       = clang++
-clang_osx_64_db : exe       = timep_osx_64_db
+clang_osx_db : CFLAGS    = -O0 -m64 -Wall $(GITINFO)
+clang_osx_db : LFLAGS    = -m64 -L $(LIB_DIR)/clang_osx $(LIBS_OSX)
+clang_osx_db : CC        = clang
+clang_osx_db : CPP       = clang++
+clang_osx_db : exe       = timep_osx_db
 
-clang_osx_64_db : $(obj)
+clang_osx_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
