@@ -6,7 +6,7 @@ call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 Title Building make_time for 64 bit Windows
 
 erase *.obj *.mod *.exe
-make -f ..\Makefile intel_win_64
+make -f ..\Makefile intel_win
 if "x%EXIT_SCRIPT%" == "x" goto skip1
 exit
 :skip1

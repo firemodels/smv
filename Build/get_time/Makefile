@@ -36,20 +36,20 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od /nologo
-intel_win_64 : CC        = $(I_CC)
-intel_win_64 : CPP       = $(I_CC)
-intel_win_64 : exe       = get_time_win_64.exe
+intel_win : CFLAGS    = -Od /nologo
+intel_win : CC        = $(I_CC)
+intel_win : CPP       = $(I_CC)
+intel_win : exe       = get_time_win.exe
 
-intel_win_64 : $(objwin)
+intel_win : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin)
 
 # ------------- clang win 64 ----------------
 
-clang_win_64 : CFLAGS    = -m64
-clang_win_64 : CC        = clang-cl
-clang_win_64 : CPP       = clang-cl
-clang_win_64 : exe       = get_time_win_64.exe
+clang_win : CFLAGS    = -m64
+clang_win : CC        = clang-cl
+clang_win : CPP       = clang-cl
+clang_win : exe       = get_time_win.exe
 
-clang_win_64 : $(objwin)
+clang_win : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin)
