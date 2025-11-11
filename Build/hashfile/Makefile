@@ -29,10 +29,10 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 obj =    dmalloc.o file_util.o string_util.o sha1.o md5.o sha256.o stdio_buffer.o main.o threader.o
 objwin = $(obj:.o=.obj)
 
-SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\pthreads.lib
 
-SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win_64
+SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win
 SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\pthreads.lib
 
 
@@ -55,64 +55,64 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads /nologo $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : CC        = $(I_CC)
-intel_win_64 : exe       = hashfile_win_64.exe
+intel_win : CFLAGS    = -Od -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads /nologo $(GITINFO) $(INTEL_COMPINFO)
+intel_win : CC        = $(I_CC)
+intel_win : exe       = hashfile_win.exe
 
-intel_win_64 : $(objwin)
+intel_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
 # ------------- clang win 64 ----------------
 
-clang_win_64 : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
-clang_win_64 : CC        = clang-cl
-clang_win_64 : exe       = hashfile_win_64.exe
+clang_win : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
+clang_win : CC        = clang-cl
+clang_win : exe       = hashfile_win.exe
 
-clang_win_64 : $(objwin)
+clang_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_CLANG)
 
 # ------------- gnu linux 64 ----------------
 
-gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
-gnu_linux_64 : CC        = gcc
-gnu_linux_64 : exe       = hashfile_linux_64
+gnu_linux : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
+gnu_linux : CC        = gcc
+gnu_linux : exe       = hashfile_linux
 
-gnu_linux_64: $(obj)
+gnu_linux: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
 
 # ------------- clang linux 64 ----------------
 
-clang_linux_64 : CFLAGS    = -O2 -m64 -Wall -D PTW32_STATIC_LIB $(GITINFO) $(GNU_COMPINFO)
-clang_linux_64 : CC        = clang
-clang_linux_64 : exe       = hashfile_linux_64
+clang_linux : CFLAGS    = -O2 -m64 -Wall -D PTW32_STATIC_LIB $(GITINFO) $(GNU_COMPINFO)
+clang_linux : CC        = clang
+clang_linux : exe       = hashfile_linux
 
-clang_linux_64: $(obj)
+clang_linux: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm -lpthread
 
 # ------------- gnu linux 64 ----------------
 
-gnu_osx_64 : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
-gnu_osx_64 : CC        = gcc
-gnu_osx_64 : exe       = hashfile_osx_64
+gnu_osx : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
+gnu_osx : CC        = gcc
+gnu_osx : exe       = hashfile_osx
 
-gnu_osx_64: $(obj)
+gnu_osx: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
 
 # ------------- clang linux 64 ----------------
 
-clang_osx_64 : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
-clang_osx_64 : CC        = clang
-clang_osx_64 : exe       = hashfile_osx_64
+clang_osx : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
+clang_osx : CC        = clang
+clang_osx : exe       = hashfile_osx
 
-clang_osx_64: $(obj)
+clang_osx: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
 
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
-intel_linux_64 : CC        = $(I_ICC)
-intel_linux_64 : exe       = hashfile_linux_64
+intel_linux : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
+intel_linux : CC        = $(I_ICC)
+intel_linux : exe       = hashfile_linux
 
-intel_linux_64 : $(obj)
+intel_linux : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj)
