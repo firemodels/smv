@@ -15,10 +15,10 @@ bin = .
 obj = hashfort.o main.o
 objwin =  hashfort.obj main.obj
 
-SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\pthreads.lib
 
-SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win_64
+SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win
 SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\pthreads.lib
 
 
@@ -32,20 +32,20 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : FFLAGS    = -O2 /nologo /fpscomp:general /stand:f18 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
-intel_win_64 : FC        = $(I_IFORT)
-intel_win_64 : exe       = hashfort_win_64.exe
+intel_win : FFLAGS    = -O2 /nologo /fpscomp:general /stand:f18 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
+intel_win : FC        = $(I_IFORT)
+intel_win : exe       = hashfort_win.exe
 
-intel_win_64 : $(objwin)
+intel_win : $(objwin)
 	$(FC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : FFLAGS    = -O2 -m64 -stand:f18
-intel_linux_64 : FC        = $(I_IFORT)
-intel_linux_64 : exe       = hashfort_linux_64
+intel_linux : FFLAGS    = -O2 -m64 -stand:f18
+intel_linux : FC        = $(I_IFORT)
+intel_linux : exe       = hashfort_linux
 
-intel_linux_64 : $(obj)
+intel_linux : $(obj)
 	$(FC) -o $(bin)/$(exe) $(obj)
 
 #-------------- Clean Target to remove Object and Module files -----------
