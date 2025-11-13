@@ -27,8 +27,6 @@ MOV_JOBPREFIX=MOV
 
 TEST=$1
 
-size=_64
-
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
   PLATFORM=_osx
@@ -41,7 +39,7 @@ cd ../..
 GITROOT=`pwd`
 cd $CURDIR
 
-FDSEXE=$GITROOT/fds/Build/impi_intel$PLATFORM$size/fds_impi_intel$PLATFORM$size
+FDSEXE=$GITROOT/fds/Build/impi_intel$PLATFORM/fds_impi_intel$PLATFORM
 MAKEMOVIE="$GITROOT/smv/Utilities/Scripts/make_movie.sh"
 QFDS=$GITROOT/fds/Utilities/Scripts/qfds.sh
 QSMV="$GITROOT/smv/Utilities/Scripts/qsmv.sh -j ${MOV_JOBPREFIX} $QUEUE"

@@ -15,22 +15,22 @@ using gcc and gfortran gnu compilers.
 ### Building Libraries Needed by Smokeview
 
   * Smokeview requires several libraries such as glut, png and glui used for implementing dialog boxes, rendering images or interacting with the OS.  To build these libraries using Intel compilers where platform is linux, osx or win:
-      * cd to `smv/Build/LIBS/intel_platform_64`
+      * cd to `smv/Build/LIBS/intel_platform4`
       * type make_LIBS.sh on a Linux or OSX system and make_LIBS.bat on a Windows system
 
 ### Building Smokeview
 
-  * There is a sub-directory under `smv/Build/smokeview` for each target in the Smokeview Makefile.  To build Smokeview on a Linux or OSX system, cd into the `intel_linux_64` or `intel_osx_64` directory and type
+  * There is a sub-directory under `smv/Build/smokeview` for each target in the Smokeview Makefile.  To build Smokeview on a Linux or OSX system, cd into the `intel_linux` or `intel_osx` directory and type
 
    ```./make_smokeview.sh```
 
-On a Windows system cd into the `intel_win_64` directory and type
+On a Windows system cd into the `intel_win` directory and type
 
    ```.\make_smokeview.bat ```
 
 ### Building Smokeview Utilities
 
-Similarly to build a smokeview utiltity such as smokezip or smokediff using the Intel compilers cd into `smv/Build/prog/intel_platform_64` and type
+Similarly to build a smokeview utiltity such as smokezip or smokediff using the Intel compilers cd into `smv/Build/prog/intel_platform` and type
 `./make_prog.sh` on a linux or osx system and `make_prog` on a windows sytem where `prog` is the name of the utility (`smokediff` or `smokezip` for example) and `platform` is `linux`, `osx` or `win` .
 
 ## Building Smokeview and Utilities via CMake

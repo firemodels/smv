@@ -162,11 +162,9 @@ fi
 
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
-  PLATFORM=osx_64
-  FDSPLATFORM=osx
+  PLATFORM=osx
 else
-  PLATFORM=linux_64
-  FDSPLATFORM=linux
+  PLATFORM=linux
 fi
 
 if [ "$use_installed" == "1" ] ; then
@@ -174,9 +172,9 @@ if [ "$use_installed" == "1" ] ; then
 else
   export WIND2FDS=$GITROOT/smv/Build/wind2fds/${COMPILER}_$PLATFORM/wind2fds_$PLATFORM
 fi
-export FDSEXE=$GITROOT/fds/Build/${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG
+export FDSEXE=$GITROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG
 export FDS=$FDSEXE
-export FDSMPI=$GITROOT/fds/Build/${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG
+export FDSMPI=$GITROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG
 export CFAST=$CFASTREPO/Build/CFAST/${COMPILER}_$PLATFORM/cfast7_$PLATFORM
 
 QFDSSH="$GITROOT/fds/Utilities/Scripts/qfds.sh -j $JOBPREFIX"

@@ -1,7 +1,6 @@
 @echo off
 setlocal
 
-set size=_64
 set git_drive=c:
 set DEBUG=
 set SCRIPT_DIR=%CD%
@@ -40,12 +39,12 @@ set RUNCFAST_E=call %GITROOT%\fds\Verification\scripts\erase_stop.bat
 
 :: VVVVVVVVVVVV set parameters VVVVVVVVVVVVVVVVVVVVVV
 
-set FDSBASE=fds_impi_win%size%%DEBUG%.exe
-set FDSEXE=%GITROOT%\fds\Build\impi_intel_win%size%%DEBUG%\%FDSBASE%
-set CFASTEXE=%GITROOT%\cfast\Build\CFAST\intel_win%size%\cfast7_win%size%.exe
-set WIND2FDSEXE=%GITROOT%\smv\Build\wind2fds\intel_win%size%\wind2fds_win%size%.exe
+set FDSBASE=fds_impi_win%DEBUG%.exe
+set FDSEXE=%GITROOT%\fds\Build\impi_intel_win%DEBUG%\%FDSBASE%
+set CFASTEXE=%GITROOT%\cfast\Build\CFAST\intel_win\cfast7_win.exe
+set WIND2FDSEXE=%GITROOT%\smv\Build\wind2fds\intel_win\wind2fds_win.exe
 
-set BACKGROUNDEXE=%GITROOT%\smv\Build\background\intel_win%size%\background.exe
+set BACKGROUNDEXE=%GITROOT%\smv\Build\background\intel_win\background.exe
 
 :: Run jobs in background (or not)
 
@@ -63,7 +62,7 @@ call :is_file_installed %WIND2FDSEXE%|| exit /b 1
 set FDS=%bg%%FDSEXE%
 set CFAST=%bg%%CFASTEXE%
 
-set SH2BAT=%GITROOT%\smv\Build\sh2bat\intel_win_64\sh2bat
+set SH2BAT=%GITROOT%\smv\Build\sh2bat\intel_win\sh2bat
 call :is_file_installed %sh2bat%|| exit /b 1
 
 echo.

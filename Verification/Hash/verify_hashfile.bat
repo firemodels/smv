@@ -1,10 +1,10 @@
 @echo off
 
 set CURDIR=%CD%
-set HASHFILEDIR=..\..\Build\hashfile\intel_win_64
+set HASHFILEDIR=..\..\Build\hashfile\intel_win
 cd %HASHFILEDIR%
 set HASHFILEDIR=%CD%
-set HASHFILE=%HASHFILEDIR%\hashfile_win_64.exe
+set HASHFILE=%HASHFILEDIR%\hashfile_win.exe
 cd %CURDIR%
 
 if not exist %HASHFILE% (

@@ -12,7 +12,7 @@ if %stopscript% == 1 (
 set mypath=%~dp0
 
 if x%repo% == x goto else1
-  set smokeview=%userprofile%\%repo%\smv\Build\smokeview\gnu_win_64\smokeview_win_test_64_db.exe
+  set smokeview=%userprofile%\%repo%\smv\Build\smokeview\gnu_win\smokeview_win_test_db.exe
   if EXIST %smokeview% goto endif1
   echo ***error: %smokeview% does not exist
   echo aborted
@@ -110,7 +110,7 @@ echo.
 echo -f      - same as -r FireModels_fork
 echo -h      - display this message
 echo -p      - only profile smokeview_gnu (assume that smokeview_gnu was already run)
-echo -r root - use the version of smokeview_gnu found in %userprofile%\root\smv\Build\smokeview\gnu_win_64,
+echo -r root - use the version of smokeview_gnu found in %userprofile%\root\smv\Build\smokeview\gnu_win,
 echo           otherwise use the installed version of smokeview_gnu
 exit /b
 

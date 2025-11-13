@@ -4,7 +4,7 @@ set git_drive=d:
 set GITROOT=%CD%\..\..\
 set WUIDIR=%GITROOT%\Verification\Wui
 
-set FDS=%GITROOT%\fds\Build\intel_win_64\fds_win_64
+set FDS=%GITROOT%\fds\Build\intel_win\fds_win
 
 echo %FDS%
 cd %WUIDIR%

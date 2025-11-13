@@ -1,7 +1,6 @@
 @echo off
 
 set curdir=%CD%
-set size=_64
 set git_drive=c:
 set DEBUG=
 set TEST=
@@ -37,12 +36,12 @@ if %useinstalled% == 1 (
   set SMOKEVIEW=smokeview
   set WIND2FDS=wind2fds
 ) else (
-  set BACKGROUND=%GITROOT%\smv\Build\background\intel_win%size%\background.exe
-  set SMOKEDIFF=%GITROOT%\smv\Build\smokediff\intel_win%size%\smokediff_win%size%.exe
-  set FDS2FED=%GITROOT%\smv\Build\fds2fed\intel_win%size%\fds2fed_win%size%.exe
-  set SMOKEVIEW=%GITROOT%\smv\Build\smokeview\intel_win%size%\smokeview_win%TEST%%size%%DEBUG%.exe -bindir %GITROOT%\smv\for_bundle
-  set  SMOKEZIP=%GITROOT%\smv\Build\smokezip\intel_win%size%\smokezip_win%size%.exe
-  set  WIND2FDS=%GITROOT%\smv\Build\wind2fds\intel_win%size%\wind2fds_win%size%.exe
+  set BACKGROUND=%GITROOT%\smv\Build\background\intel_win\background.exe
+  set SMOKEDIFF=%GITROOT%\smv\Build\smokediff\intel_win\smokediff_win.exe
+  set FDS2FED=%GITROOT%\smv\Build\fds2fed\intel_win\fds2fed_win.exe
+  set SMOKEVIEW=%GITROOT%\smv\Build\smokeview\intel_win\smokeview_win%TEST%%DEBUG%.exe -bindir %GITROOT%\smv\for_bundle
+  set  SMOKEZIP=%GITROOT%\smv\Build\smokezip\intel_win\smokezip_win.exe
+  set  WIND2FDS=%GITROOT%\smv\Build\wind2fds\intel_win\wind2fds_win.exe
 )
 
 call :is_file_installed %SMOKEVIEW%|| exit /b 1
@@ -59,7 +58,7 @@ set summary="%GITROOT%\smv\Manuals\SMV_Summary"
 
 set QFDS=call "%SCRIPT_DIR%\runsmv.bat"
 set RUNCFAST=call "%SCRIPT_DIR%\runsmv.bat"
-set SH2BAT=%GITROOT%\smv\Build\sh2bat\intel_win_64\sh2bat
+set SH2BAT=%GITROOT%\smv\Build\sh2bat\intel_win\sh2bat
 
 :: erase summary images
 
