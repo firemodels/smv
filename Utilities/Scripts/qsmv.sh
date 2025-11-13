@@ -9,7 +9,7 @@ function usage {
   echo ""
   echo "options:"
   echo " -e exe - full path of smokeview used to run case "
-  echo "    [default: $REPOROOT/smv/Build/smokeview/intel_linux_64/smokeview_intel_linux_64]"
+  echo "    [default: $REPOROOT/smv/Build/smokeview/intel_linux/smokeview_intel_linux]"
   echo " -h   - show commonly used options"
   echo " -H   - show all options"
   echo " -P n - run n instances of smokeview each instance rendering 1/n'th of the total images"
@@ -304,7 +304,7 @@ if [ "$use_installed" == "1" ]; then
   fi
 else
   if [ "$exe" == "" ]; then
-    exe=$REPOROOT/smv/Build/smokeview/intel_linux_64/smokeview_linux_64
+    exe=$REPOROOT/smv/Build/smokeview/intel_linux/smokeview_linux
     smvdir=$(dirname "${smvpath}")
     if [ "$SMVBINDIR" == "" ]; then
       SMVBINDIR="-bindir $REPOROOT/smv/Build/for_bundle"

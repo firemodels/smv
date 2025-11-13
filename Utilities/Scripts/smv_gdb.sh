@@ -1,6 +1,6 @@
 #!/bin/bash
 ROOT=$1
-prog=$ROOT/smv/Build/smokeview/gnu_linux_64/smokeview_linux_64_db
+prog=$ROOT/smv/Build/smokeview/gnu_linux/smokeview_linux_db
 arg1=$2
 arg2=$3
 cat << EOF > file.$$

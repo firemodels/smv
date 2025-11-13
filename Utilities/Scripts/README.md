@@ -20,7 +20,7 @@ This script is used to generate an MP4 animation file from a slice file.  It is 
 
 to your startup file, typically .bashrc .  Change the "..." in the first part to match your repo location.
 
-2.  Either use smokeview you built at smv/Build/smokeview/intel_linux_64 or use slice2mp4 with the -i option to use the smokeview installed on  your system.
+2.  Either use smokeview you built at smv/Build/smokeview/intel_linux or use slice2mp4 with the -i option to use the smokeview installed on  your system.
 
 3.  cd to a directory containing your case and type `slice2mp4 casename` .  You will see a list of slice files for this case such as
 ```
@@ -50,7 +50,7 @@ how images are generated (number of processes, what queue to use) and an option 
 
         PNG dir: .
         mp4 dir: /var/www/html/gforney
-      smokeview: /home/gforney/FireModels_fork/smv/Build/smokeview/intel_linux_64/smokeview_linux_64
+      smokeview: /home/gforney/FireModels_fork/smv/Build/smokeview/intel_linux/smokeview_linux
       processes: 32, node sharing on
           queue: batch
           email: gforney@gmail.com
@@ -100,10 +100,10 @@ will run 5 instances of smokeview with each instance generating 200 images.
 
 qsmv.sh uses either a smokeview that was built in the repo containing qsmv.sh or a smokeview found in your path.  To build smokeview perform the following steps:
 
-1. cd smv/Build/LIBS/intel_linux_64
+1. cd smv/Build/LIBS/intel_linux
 2. type: 
  ./make_LIBS.sh
-3. cd smv/Build/smokeview/intel_linux_64 
+3. cd smv/Build/smokeview/intel_linux 
 4. type:
  ./make_smokeview.sh
  
@@ -118,7 +118,7 @@ runs smokeview on the case casename.smv using the script casename.ssf
 
 options:
  -e exe - full path of smokeview used to run case
-    [default: /home/gforney/FireModels_fork/smv/Build/smokeview/intel_linux_64/smokeview_intel_linux_64]
+    [default: /home/gforney/FireModels_fork/smv/Build/smokeview/intel_linux/smokeview_intel_linux]
  -h   - show commonly used options
  -H   - show all options
  -P n - run n instances of smokeview each instance rendering 1/n'th of the total images
