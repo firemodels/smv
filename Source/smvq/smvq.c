@@ -27,7 +27,7 @@
 int ReadSMV_Init(smv_case *scase);
 int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream);
 void ReadSMVDynamic(smv_case *scase, char *file);
-void ReadSMVOrig(smv_case *scase);
+void ReadSMVOrig(smv_case *scase, char *smvfile);
 smv_case *CreateScase();
 
 /// @brief Given a file path, get the filename excluding the final extension.
@@ -305,7 +305,7 @@ int RunSmvq(char *input_file, const char *fdsprefix) {
     if(return_code) return return_code;
   }
   show_timings = 1;
-  ReadSMVOrig(scase);
+  ReadSMVOrig(scase, NULL);
   INIT_PRINT_TIMER(ReadSMVDynamic_time);
   ReadSMVDynamic(scase, input_file);
   STOP_TIMER(ReadSMVDynamic_time);

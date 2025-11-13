@@ -83,6 +83,7 @@
 #define SCRIPT_LOADHVAC          251
 #define SCRIPT_SETDEMOMODE       252
 #define SCRIPT_SMOKEPROP         253
+#define SCRIPT_LOADSMV           254
 
 #define SCRIPT_SETTIMEVAL        301
 #define SCRIPT_SETVIEWPOINT      302
