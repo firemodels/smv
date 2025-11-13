@@ -16,6 +16,7 @@
 #include "glui_bounds.h"
 #include "IOobjects.h"
 #include "readslice.h"
+#include "readsmvfile.h"
 
 static char param_buffer[1024];
 static int param_status, line_number;
@@ -280,6 +281,9 @@ void InitKeywords(void){
   InitKeyword("LOADFILE",            SCRIPT_LOADFILE, 1);            // documented
   InitKeyword("LOADINIFILE",         SCRIPT_LOADINIFILE, 1);         // documented
   InitKeyword("UNLOADALL",           SCRIPT_UNLOADALL, 0);           // documented
+
+  // general files
+  InitKeyword("LOADSMV", SCRIPT_LOADSMV, 1);
 
 // hvac files
 
@@ -1153,9 +1157,13 @@ int CompileScript(char *scriptfile){
         SETcval;
         break;
 
- // LOADFILE
+// LOADFILE
 //  file (char)
       case SCRIPT_LOADFILE:
+
+// LOADSMV
+//  file (char)
+case SCRIPT_LOADSMV:
 
 // LOADVFILE
 //  file (char)
@@ -3351,6 +3359,15 @@ void ScriptLoadFile(scriptdata *scripti){
   if(stderr2!=NULL)fprintf(stderr2, "*** Error: file %s failed to load\n", scripti->cval);
 }
 
+/* ------------------ ScriptLoadSMV ------------------------ */
+
+void ScriptLoadSMV(scriptdata *scripti){
+  if(scripti->cval != NULL){
+    PRINTF("script: loading file %s\n\n", scripti->cval);
+    ReadSMVOrig(&global_scase, scripti->cval);
+  }
+}
+
 /* ------------------ ScriptLabel ------------------------ */
 
 void ScriptLabel(scriptdata *scripti){
@@ -4115,6 +4132,9 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_LOADFILE:
       ScriptLoadFile(scripti);
+      break;
+    case SCRIPT_LOADSMV:
+      ScriptLoadSMV(scripti);
       break;
     case SCRIPT_LABEL:
       ScriptLabel(scripti);
