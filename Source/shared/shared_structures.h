@@ -1,7 +1,7 @@
 #ifndef SHARED_STRUCTURES_H_DEFINED
 #define SHARED_STRUCTURES_H_DEFINED
 #include "isobox.h"
-#include "options.h"
+#include "options_common.h"
 #include <stdio.h>
 
 #if defined(_WIN32)
@@ -583,7 +583,6 @@ typedef struct _slicedata {
   int have_bound_file;
   char *comp_file, *reg_file, *vol_file;
   char *geom_file;
-  int nframes;
   int finalize;
   int slcf_index;
   char *slicelabel;

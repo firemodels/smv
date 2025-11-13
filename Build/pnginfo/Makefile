@@ -5,11 +5,13 @@ SOURCE_DIR = ../../../Source
 BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
 
-INC_DIR = -I $(SOURCE_DIR)/pthreads  -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR)/zlib128 \
+INC_DIR = -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR)/zlib128 \
           -I $(SOURCE_DIR)/png-1.6.48 -I $(SOURCE_DIR)/shared  -I $(SOURCE_DIR)/pnginfo
 
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
+
+SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win_64
 
 PNG_LIBS = -lgd -ljpeg -lpng -lz
 SYSTEM_LIBS = -lpthread
@@ -17,7 +19,7 @@ SYSTEM_LIBS = -lpthread
 #--- clang
 
 SMV_CLANG_LIBDIR = $(LIB_DIR)\clang_win_64
-SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\gd.lib $(SMV_CLANG_LIBDIR)\jpeg.lib $(SMV_CLANG_LIBDIR)\png.lib  $(SMV_CLANG_LIBDIR)\zlib.lib
+SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\gd.lib $(SMV_CLANG_LIBDIR)\jpeg.lib $(SMV_CLANG_LIBDIR)\png.lib  $(SMV_CLANG_LIBDIR)\zlib.lib $(SMV_CLANG_LIBDIR)\pthreads.lib
 
 FILTERC =
 FILTERF =
@@ -40,7 +42,7 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 # Definition of the object variables
 
 csrc = dmalloc.c main.c md5.c sha1.c sha256.c readimage.c \
-      file_util.c string_util.c stdio_buffer.c
+      file_util.c string_util.c stdio_buffer.c threader.c
 
 obj = $(csrc:.c=.o)
 objwin = $(obj:.o=.obj)
@@ -101,7 +103,8 @@ win_check : $(win_chk)
 
 # ------------- intel winx 64 db ----------------
 
-intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -I $(SOURCE_DIR)/pthreads -D _CONSOLE -D BGDWIN32 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -D _CONSOLE -D BGDWIN32 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64_db : INC_DIR   += -I $(SOURCE_DIR)/pthreads
 intel_win_64_db : CC        = $(I_CC)
 intel_win_64_db : exe       = pnginfo_win_64_db.exe
 
@@ -110,7 +113,8 @@ intel_win_64_db : $(objwin)
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = /O2 /nologo -D BGDWIN32 $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = /O2 /nologo -D BGDWIN32 -D PTW32_STATIC_LIB $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = pnginfo_win_64.exe
 
@@ -119,7 +123,8 @@ intel_win_64 : $(objwin)
 
 # ------------- clang win 64 ----------------
 
-clang_win_64 : CFLAGS    = -m64 -D BGDWIN32 
+clang_win_64 : CFLAGS    = -m64 -D BGDWIN32 -D PTW32_STATIC_LIB
+clang_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads
 clang_win_64 : LFLAGS    = -m64
 clang_win_64 : CC        = clang-cl
 clang_win_64 : exe       = pnginfo_win_64.exe

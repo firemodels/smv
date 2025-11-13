@@ -804,7 +804,7 @@ int ParseHVACEntry(hvacdatacollection *hvaccoll, bufferstreamdata *stream,
     connect_id = strtok(NULL, "%");
     nodei->node_name = GetCharPtr(node_label);
     network_label = TrimFrontBack(network_label);
-    if(strcmp(network_label, "null") == 0) {
+    if(strcmp(network_label, "null") == 0 || strlen(network_label)==0){
       nodei->network_name = GetCharPtr("Unassigned");
     }
     else {
@@ -871,7 +871,7 @@ int ParseHVACEntry(hvacdatacollection *hvaccoll, bufferstreamdata *stream,
     connect_id = strtok(NULL, "%");
     ducti->duct_name = GetCharPtr(duct_label);
     network_label = TrimFrontBack(network_label);
-    if(strcmp(network_label, "null") == 0) {
+    if(strcmp(network_label, "null")==0 || strlen(network_label)==0){
       ducti->network_name = GetCharPtr("Unassigned");
     }
     else {

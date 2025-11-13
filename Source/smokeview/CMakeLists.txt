@@ -67,10 +67,6 @@ if (WIN32)
 else()
     target_include_directories(smokeview PRIVATE ../glui_gl)
 endif ()
-target_link_libraries(smokeview PRIVATE json-c::json-c)
-# if (BUILD_SHARED_LIBS)
-#     install(IMPORTED_RUNTIME_ARTIFACTS json-c::json-c)
-# endif()
 
 if(WIN32)
     target_link_libraries(smokeview PRIVATE wsock32 ws2_32)
@@ -78,8 +74,6 @@ endif()
 if (VENDORED_UI_LIBS)
     target_include_directories(smokeview PRIVATE ../glui_v2_1_beta)
     target_link_libraries(smokeview PRIVATE glui_static)
-    # Don't need to install a static library
-    # install(TARGETS glui_static)
 else()
     FetchContent_MakeAvailable(glui-git)
     target_link_libraries(smokeview PRIVATE glui)
@@ -96,17 +90,16 @@ elseif (GLUT_FOUND)
 else()
     target_link_libraries(smokeview PRIVATE glut32)
 endif ()
-target_link_libraries(smokeview PRIVATE GLEW::GLEW)
 if (GLEW_FOUND)
+    target_link_libraries(smokeview PRIVATE GLEW::GLEW)
     # This line is a hack to work around the fact the code includes "glew.h"
     # rather than <GL/glew.h> TODO: just change this
     target_include_directories(smokeview PRIVATE ${GLEW_INCLUDE_DIRS}/GL)
+else()
+    target_link_libraries(smokeview PRIVATE glew_static)
 endif()
 
-target_include_directories(smokeview PRIVATE
-    .
-    ../shared
-)
+target_include_directories(smokeview PRIVATE .)
 
 if (BETA)
     add_compile_definitions(pp_BETA)

@@ -3,10 +3,6 @@
 
 #include "options_common.h"
 
-#ifdef __MINGW32__
-#include "options.h"
-#endif
-
 #ifdef pp_THREAD
 #include <pthread.h>
 #endif

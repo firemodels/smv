@@ -763,9 +763,13 @@ EXTERNCPP int  MergeRenderScreenBuffers360(void);
 EXTERNCPP void *PlayMovie(void *arg);
 EXTERNCPP void Render(int view_mode);
 EXTERNCPP void RenderFrame(int view_mode);
+// BEGIN Animated GIF API
 EXTERNCPP int  GifStart(const char *path);
 EXTERNCPP int  GifEnd();
-EXTERNCPP int  GifAddFrame(int delay);
+EXTERNCPP int  GifAddFrameSpec();
+EXTERNCPP void GifSpec_Clear();
+EXTERNCPP void GifSpec_PushFrame(int frame_number, int duration);
+// END Animated GIF API
 EXTERNCPP void ResetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
 EXTERNCPP void *SetupFF(void *arg);
 EXTERNCPP void SetupScreeninfo(void);
@@ -800,7 +804,7 @@ EXTERNCPP void DisplayVersionInfo(char *progname, common_opts *opts);
 EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int skipframe);
 EXTERNCPP int IsFDSRunning(FILE_SIZE *last_size);
 EXTERNCPP void SetViewPoint(int option);
-EXTERNCPP void SMV_EXIT(int code);
+EXTERNCPP NORETURN void SMV_EXIT(int code);
 EXTERNCPP void StartTimer(float *timerptr);
 EXTERNCPP void TransparentOff(void);
 EXTERNCPP void TransparentOn(void);

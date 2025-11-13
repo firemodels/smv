@@ -1,4 +1,4 @@
-#include "options.h"
+#include "options_common.h"
 #include "dmalloc.h"
 #include "string_util.h"
 #include "gd.h"

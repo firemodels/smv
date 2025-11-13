@@ -1,4 +1,4 @@
-#include "options.h"
+#include "options_common.h"
 #define IN_FILE_UTIL
 #include <assert.h>
 #include <stdio.h>
@@ -22,7 +22,9 @@
 #endif
 #include <io.h>
 #include <direct.h>
+#ifndef pp_UNICODE_PATHS
 #include <dirent_win.h>
+#endif
 #include <shlwapi.h>
 #pragma comment(lib, "shlwapi.lib")
 
@@ -1100,7 +1102,7 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files,
   filelistdata *flist;
 
   if(maxfiles == 0 || path == NULL || filter == NULL) {
-    *filelist = NULL;
+    if(filelist != NULL) *filelist = NULL;
     return 0;
   }
 

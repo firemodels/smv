@@ -4,7 +4,7 @@ on: [push, pull_request]
 jobs:
   build_unix_gcc:
     # Set the name of this build, variable depending on the OS
-    name: build ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build }}
+    name: build ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build }} - ${{ matrix.vendored_libs == 'ON' && 'vendored_libs' || 'system_libs' }}
     strategy:
       fail-fast: false
       # The matrix sets all the different combinations of builds, e.g. platforms
@@ -19,6 +19,9 @@ jobs:
         build:
           - Debug
           - Release
+        vendored_libs:
+          - ON
+          - OFF
     # Set the platform to build on
     runs-on: ${{ matrix.os }}
     steps:
@@ -66,9 +69,13 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          cmake -B ${{github.workspace}}/cbuild -DSTRICT_CHECKS=ON -DCMAKE_BUILD_TYPE=${{ matrix.build }}
+          cmake \
+            -B ${{github.workspace}}/cbuild \
+            -DSTRICT_CHECKS=ON \
+            -DVENDORED_LIBS=${{ matrix.vendored_libs }} \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build }} \
+            -DCMAKE_C_COMPILER=${{ matrix.compiler }}
           cmake --build ${{github.workspace}}/cbuild -j4 -v
-          cp ${{github.workspace}}/cbuild/smokeview smokeview
       # Run the CMake-based tests on MacOS
       - name: Test
         if: runner.os == 'macOS'
@@ -81,23 +88,22 @@ jobs:
         shell: bash
         run: |
           xvfb-run ctest --test-dir cbuild -j10 --output-on-failure -V
-      # Archive the smokeview executable
-      - name: Archive production artifacts
-        if: matrix.build == 'Release'
-        uses: actions/upload-artifact@v4
-        with:
-          name: smokeview-${{ runner.os }}-${{ matrix.compiler }}
-          path: smokeview
   build_windows_msvc:
-    name: build ${{ matrix.os }} - msvc - ${{ matrix.build }}
+    name: build ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build }} - ${{ matrix.vendored_libs == 'ON' && 'vendored_libs' || 'system_libs' }}
     strategy:
       fail-fast: false
       matrix:
         os:
           - windows-2022
+        compiler:
+          - cl
+          - clang
         build:
           - Debug
           - Release
+        vendored_libs:
+          - ON
+          - OFF
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -115,17 +121,17 @@ jobs:
         shell: cmd
         run: |
           cmake --version
-          cmake -B ${{github.workspace}}\cbuild -DSTRICT_CHECKS=ON -DCMAKE_BUILD_TYPE=${{ matrix.build }} -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%/scripts/buildsystems/vcpkg.cmake
-          cmake --build ${{github.workspace}}\cbuild -j4 --config ${{ matrix.build }}
-          copy ${{github.workspace}}\cbuild\${{ matrix.build }}\smokeview.exe smokeview.exe
+          cmake -B ${{github.workspace}}\cbuild ^
+            -DSTRICT_CHECKS=ON ^
+            ${{ matrix.compiler == 'clang' && '-GNinja' || '' }} ^
+            -DVENDORED_LIBS=${{ matrix.vendored_libs }} ^
+            -DVENDORED_UI_LIBS=ON ^
+            -DCMAKE_BUILD_TYPE=${{ matrix.build }} ^
+            -DCMAKE_C_COMPILER=${{ matrix.compiler }} ^
+            ${{ matrix.vendored_libs == 'OFF' && '-DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%/scripts/buildsystems/vcpkg.cmake' || '' }}
+          cmake --build ${{github.workspace}}\cbuild -j4 --config ${{ matrix.build }} -v
       - name: Test
         shell: bash
         working-directory: ${{github.workspace}}/cbuild
         run: |
           ctest -j10 -C ${{ matrix.build }} --output-on-failure
-      - name: Archive production artifacts
-        if: matrix.build == 'Release'
-        uses: actions/upload-artifact@v4
-        with:
-          name: smokeview-windows-msvc
-          path: smokeview.exe

@@ -1,4 +1,4 @@
-#include "options.h"
+#include "options_common.h"
 #define IN_TRANSLATE
 #include <stdio.h>
 #include <stdlib.h>

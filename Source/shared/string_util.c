@@ -1,5 +1,5 @@
 #define IN_STRING_UTIL
-#include "options.h"
+#include "options_common.h"
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -19,7 +19,9 @@
 #undef S_ISCHR
 #undef S_ISREG
 #endif
+#ifndef pp_UNICODE_PATHS
 #include <dirent_win.h>
+#endif
 #include <windows.h>
 #else
 #include <dirent.h>
@@ -2175,4 +2177,3 @@ void PRINTversion(char *progname){
 #endif
   FREEMEMORY(progfullpath);
 }
-

@@ -17,6 +17,7 @@ OPT=
 
 RANLIB=ranlib
 RM=/bin/rm -f
+LIB=lib
 OBJS = pthread.o
 OBJSWIN = $(OBJS:.o=.obj)
 
@@ -25,4 +26,4 @@ libpthreads.a: $(OBJS)
 	$(RANLIB) $@
 
 libpthreads.lib: $(OBJSWIN)
-	lib $(OBJSWIN) -OUT:$@
+	$(LIB) $(OBJSWIN) -OUT:$@

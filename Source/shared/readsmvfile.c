@@ -4,7 +4,7 @@
 #define _GNU_SOURCE
 #endif
 
-#include "options.h"
+#include "options_common.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -3994,7 +3994,6 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   sd->cell_center = cellcenter;
   if(slicegeom==1&&cell_center_flag==1)sd->cell_center = 1;
  // sd->file_size = 0;
-  sd->nframes = 0;
   sd->reg_file = NULL;
   sd->comp_file = NULL;
   sd->vol_file = NULL;

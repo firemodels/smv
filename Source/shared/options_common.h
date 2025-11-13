@@ -158,6 +158,55 @@
 #define PRINT_CUM_TIMER(timer, label) PrintTime(__FILE__, __LINE__, &timer, label, 0)
 #endif
 
+// Define a NORETURN macro that marks a function as never returning. This is
+// needed to mark that SMV_EXIT never returns, otherwise tools like clang-tidy
+// would find spurious issues.
+#ifndef noreturn
+#  if (__STDC_VERSION__ >= 201112L) && !defined(_WIN32)
+     // C11 provides a standard 'noreturn' macro that can be used. Conflicts
+     // means this doesn't work well on windows
+#    include <stdnoreturn.h>
+#    define NORETURN noreturn
+#  elif defined(_WIN32)
+     // noreturn as defined on windows
+#    define NORETURN _declspec(noreturn)
+#  else
+     // noreturn as defined on other platforms
+#    define NORETURN __attribute__((noreturn))
+#  endif
+#endif
+
 #include "lint.h"
+
+#define pp_GPU              // support the GPU
+#define pp_THREAD           // turn on multi-threading
+
+//*** options: windows
+
+#ifdef WIN32
+#ifdef pp_GPU
+#define pp_WINGPU           // only draw 3d slices with the GPU on windows
+#endif
+#endif
+
+//*** options: OSX
+
+#ifdef pp_OSX
+#define pp_SMOKE3D_FORCE        // always have at least one smoke3d entry to prevent crash when unloading slices
+#ifndef GL_SILENCE_DEPRECATION
+#define GL_SILENCE_DEPRECATION
+#endif
+#endif
+
+#undef pp_OSX_HIGHRES
+#ifdef pp_OSX
+#define pp_OSX_HIGHRES
+#endif
+
+//*** options: for debugging
+
+#ifdef _DEBUG
+//#define pp_MEM_DEBUG_PRINT // output file/line number for each memory allocation call
+#endif
 
 #endif

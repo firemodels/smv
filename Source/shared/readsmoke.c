@@ -1,4 +1,4 @@
-#include "options.h"
+#include "options_common.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -10,9 +10,7 @@
 #include "histogram.h"
 #include "isobox.h"
 #include "readsmoke.h"
-#include "smokeviewdefs.h"
 #include "string_util.h"
-#include "structures.h"
 
 /* ------------------ FreeSmoke3d ------------------------ */
 

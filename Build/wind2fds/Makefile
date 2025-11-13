@@ -24,7 +24,7 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 # Definition of the object variables
 
-csrc =    main.c dmalloc.c string_util.c file_util.c  md5.c sha1.c sha256.c stdio_buffer.c
+csrc =    main.c dmalloc.c string_util.c file_util.c  md5.c sha1.c sha256.c stdio_buffer.c threader.c
 
 obj = $(csrc:.c=.o)
 objwin = $(obj:.o=.obj)
@@ -43,7 +43,13 @@ CLANGSUMMARY=../../scripts/clang_summary.sh
 CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
 
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur
-main.obj: CFLAGS = -Od /nologo -D pp_WIN_INTEL
+main.obj: CFLAGS = -Od /nologo -D pp_WIN_INTEL -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
+
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\pthreads.lib
+
+SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win_64
+SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\pthreads.lib
 
 #*** General Purpose Rules ***
 
@@ -87,21 +93,21 @@ win_check : $(win_chk)
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od /nologo -I $(SOURCE_DIR)/pthreads $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -Od /nologo -D PTW32_STATIC_LIB $(GITINFO) $(INTEL_COMPINFO) -I $(SOURCE_DIR)/pthreads
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = wind2fds_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
 # ------------- clang win 64 ----------------
 
-clang_win_64 : CFLAGS    = -m64
+clang_win_64 : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
 clang_win_64 : CC        = clang-cl
 clang_win_64 : exe       = wind2fds_win_64.exe
 
 clang_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_CLANG)
 
 # ------------- intel linux 64 ----------------
 
@@ -131,6 +137,27 @@ gnu_linux_64_db : exe       = wind2fds_linux_64_db
 
 gnu_linux_64_db : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) -lm
+
+# ------------- clang linux 64 ----------------
+
+clang_linux_64 : CFLAGS    = -O0 -m64 -D PTW32_STATIC_LIB -Wall $(GITINFO) $(GNU_COMPINFO)
+clang_linux_64 : CC        = clang
+clang_linux_64 : exe       = wind2fds_linux_64
+
+clang_linux_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) -lm -lpthread
+
+
+# ------------- gnu linux 64 db ----------------
+
+clang_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D PTW32_STATIC_LIB -D _DEBUG $(GITINFO) $(GNU_COMPINFO)
+clang_linux_64_db : CFLAGS    = -O0 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
+clang_linux_64_db : CC        = clang
+clang_linux_64_db : exe       = wind2fds_linux_64_db
+
+clang_linux_64_db : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) -lm -lpthread
+
 
 # ------------- gnu osx 64 ----------------
 

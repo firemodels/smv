@@ -2,6 +2,8 @@
 # getdate makefile
 
 SOURCE_DIR = ../../../Source/
+BUILD_DIR = ../../../Build
+LIB_DIR = $(BUILD_DIR)/LIBS
 FILTERC =
 FILTERF =
 
@@ -67,4 +69,22 @@ intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = getdate_linux_64
 
 intel_linux_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
+
+# ------------- gnu linux 64 ----------------
+
+gnu_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO)
+gnu_linux_64 : CC        = gcc
+gnu_linux_64 : exe       = getdate_linux_64
+
+gnu_linux_64 : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
+
+# ------------- clang linux 64 ----------------
+
+clang_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO)
+clang_linux_64 : CC        = clang
+clang_linux_64 : exe       = getdate_linux_64
+
+clang_linux_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj)

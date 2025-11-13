@@ -30,8 +30,15 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 # Definition of the object variables
 
-obj =    md5.o sha1.o sha256.o dmalloc.o file_util.o string_util.o stdio_buffer.o main.o
+obj =    md5.o sha1.o sha256.o dmalloc.o file_util.o string_util.o stdio_buffer.o main.o threader.o
 objwin = $(obj:.o=.obj)
+
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\pthreads.lib
+
+SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win_64
+SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\pthreads.lib
+
 
 #*** General Purpose Rules ***
 
@@ -50,21 +57,21 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od -I $(SOURCE_DIR)/pthreads /nologo $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -Od -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = flush_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN) $(SMV_LIBS_WIN)
 
 # ------------- clang win 64 ----------------
 
-clang_win_64 : CFLAGS    = -m64
+clang_win_64 : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
 clang_win_64 : CC        = clang-cl
 clang_win_64 : exe       = flush_win_64.exe
 
 clang_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(LIBS_WIN) $(SMV_LIBS_CLANG)
 
 # ------------- gnu linux 64 db ----------------
 
@@ -84,6 +91,25 @@ gnu_linux_64 : exe       = flush_linux_64
 
 gnu_linux_64: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm
+
+# ------------- clang linux 64 db ----------------
+
+clang_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D PTW32_STATIC_LIB -D _DEBUG $(GNU_COMPINFO) $(GITINFO)
+clang_linux_64_db : CC        = clang
+clang_linux_64_db : exe       = flush_linux_64_db
+
+clang_linux_64_db: $(obj)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/gnu_linux_64 $(LIBS_LINUX)  -lm -lpthread
+
+# ------------- clang linux 64  ----------------
+
+clang_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
+clang_linux_64 : CFLAGS    = -O2 -m64 -Wall $(GITINFO) $(GNU_COMPINFO) -D PTW32_STATIC_LIB
+clang_linux_64 : CC        = clang
+clang_linux_64 : exe       = flush_linux_64
+
+clang_linux_64: $(obj)
+	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm -lpthread
 
 # ------------- intel linux 64 ----------------
 

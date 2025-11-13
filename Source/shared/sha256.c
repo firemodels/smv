@@ -1,5 +1,5 @@
 // NOLINTBEGIN
-#include "options.h"
+#include "options_common.h"
 #ifdef pp_HASH
 /*
  *  FIPS-180-2 compliant SHA-256 implementation

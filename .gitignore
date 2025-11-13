@@ -64,6 +64,7 @@ SMV/win32_local/
 *.a
 smokeview*64*
 SMV/for_bundle/uploads
+Source/*/finished
 
 # manuals script-generated files
 Manuals/*/SCRIPT_FIGURES/*/*.pdf

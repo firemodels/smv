@@ -2,6 +2,8 @@
 # smokediff makefile
 
 SOURCE_DIR = ../../../Source
+BUILD_DIR = ../../../Build
+LIB_DIR = $(BUILD_DIR)/LIBS
 INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokediff
 FILTERC =
 FILTERF =
@@ -26,7 +28,7 @@ GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 # Definition of the object variables
 
 csrc = color2rgb.c dmalloc.c file_util.c getdata.c histogram.c IOdboundary.c IOdplot.c \
-      IOdslice.c main.c md5.c readsmv.c sha1.c sha256.c stdio_buffer.c string_util.c utilities.c
+      IOdslice.c main.c md5.c readsmv.c sha1.c sha256.c stdio_buffer.c string_util.c utilities.c threader.c
 
 obj = $(csrc:.c=.o)
 objwin = $(obj:.o=.obj)
@@ -43,6 +45,13 @@ win_chk     = $(win_c_chk)
 CLANGANALYZE=clang --analyze
 CLANGSUMMARY=../../scripts/clang_summary.sh
 CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
+
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\pthreads.lib
+
+SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win_64
+SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\pthreads.lib
+
 
 #*** General Purpose Rules ***
 
@@ -93,28 +102,29 @@ intel_win_64_db : CC        = $(I_CC)
 intel_win_64_db : exe       = smokediff_win_64_db.exe
 
 intel_win_64_db : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
 # ------------- intel win 64 ----------------
 
 intel_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads
 intel_win_64 : FFLAGS    = /O2 -fpp /nologo /iface:stdref /stand:f18 /fpscomp:general
-intel_win_64 : CFLAGS    = /O2 /nologo $(GITINFO) $(SMV_TESTFLAG) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = /O2 /nologo -D PTW32_STATIC_LIB $(GITINFO) $(SMV_TESTFLAG) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = smokediff_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
 # ------------- clang win 64 ----------------
 
-clang_win_64 : CFLAGS    = -m64 -D GLEW_STATIC $(SMV_TESTFLAG)
+clang_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads
+clang_win_64 : CFLAGS    = -m64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG)
 clang_win_64 : LFLAGS    = -m64
 clang_win_64 : CC        = clang-cl
 clang_win_64 : exe       = smokediff_win_64.exe
 
 clang_win_64 : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(SMV_LIBS_CLANG)
 
 # ------------- gnu linux 64 ----------------
 
@@ -138,9 +148,9 @@ gnu_linux_64_db : $(obj)
 
 # ------------- clang linux 64 ----------------
 
-clang_linux_64 : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
-clang_linux_64 : LFLAGS    = -m64 -lm
-clang_linux_64 : CC        = gcc
+clang_linux_64 : CFLAGS    = -O0 -m64 -D PTW32_STATIC_LIB $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+clang_linux_64 : LFLAGS    = -m64 -lm -lpthread
+clang_linux_64 : CC        = clang
 clang_linux_64 : exe       = smokediff_linux_64
 
 clang_linux_64 : $(obj)
@@ -148,9 +158,9 @@ clang_linux_64 : $(obj)
 
 # ------------- gnu linux 64 db ----------------
 
-clang_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
-clang_linux_64_db : LFLAGS    = -m64 -lm
-clang_linux_64_db : CC        = gcc
+clang_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D PTW32_STATIC_LIB -D _DEBUG $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+clang_linux_64_db : LFLAGS    = -m64 -lm -lpthread
+clang_linux_64_db : CC        = clang
 clang_linux_64_db : exe       = smokediff_linux_64_db
 
 clang_linux_64_db : $(obj)
