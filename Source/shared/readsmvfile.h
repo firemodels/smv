@@ -22,7 +22,7 @@ EXTERNCPP surfdata *GetSurface(smv_case *scase, const char *label);
 EXTERNCPP int ParseCHIDProcess(smv_case *scase, bufferstreamdata *stream, int option);
 EXTERNCPP float *GetColorPtr(smv_case *scase, float *color);
 EXTERNCPP void GetElevAz(float *xyznorm, float *dtheta, float *rotate_axis, float *dpsi);
-EXTERNCPP void ReadSMVOrig(smv_case *scase);
+EXTERNCPP void ReadSMVOrig(smv_case *scase, char *smvfile);
 EXTERNCPP void ReadSMVDynamic(smv_case *scase, char *file);
 EXTERNCPP FILE_SIZE ReadCSVFile(smv_case *scase, csvfiledata *csvfi, int flag);
 EXTERNCPP void ReadHRR(smv_case *scase, int flag);

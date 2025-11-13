@@ -4356,17 +4356,19 @@ blockagedata *GetBlockagePtr(smv_case *scase, float *xyz){
 
 /* ------------------ ReadSMVOrig ------------------------ */
 
-void ReadSMVOrig(smv_case *scase){
+void ReadSMVOrig(smv_case *scase, char *smvfile){
   FILE *stream=NULL;
+  char *smv_orig_filename;
 
-  char *smv_orig_filename = CasePathSmvOrig(scase);
+  smv_orig_filename = smvfile;
+  if(smv_orig_filename==NULL)smv_orig_filename = CasePathSmvOrig(scase);
   stream = FOPEN(smv_orig_filename, "r");
   if(stream == NULL) {
-    FREEMEMORY(smv_orig_filename);
+    if(smvfile==NULL)FREEMEMORY(smv_orig_filename);
     return;
   }
   PRINTF("reading  %s\n", smv_orig_filename);
-  FREEMEMORY(smv_orig_filename);
+  if(smvfile==NULL)FREEMEMORY(smv_orig_filename);
 
   for(;;){
     char buffer[255];
