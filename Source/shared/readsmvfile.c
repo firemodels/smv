@@ -6563,7 +6563,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         ReadCADGeomToCollection(&scase->cadgeomcoll, bufferptr, scase->color_defs.block_shininess);
       }
       else {
-        PRINTF(_("***Error: CAD geometry file: %s could not be opened"),
+        PRINTF("***Error: CAD geometry file: %s could not be opened",
                bufferptr);
         PRINTF("\n");
       }

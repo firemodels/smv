@@ -2984,7 +2984,7 @@ int ReadSMV_Configure(){
     global_hrrpuv_cb_min = global_hrrpuv_cb_min_default;
   }
 
-  PRINTF("%s", _("complete"));
+  PRINTF("%s", "complete");
   PRINTF("\n\n");
   PrintMemoryInfo;
 
