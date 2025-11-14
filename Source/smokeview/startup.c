@@ -415,7 +415,7 @@ void SetupGlut(int argc, char **argv){
 #ifdef pp_OSX
     if(verbose_output==1)PRINTF("(%i/%i)", GetScreenHeight(), GLUTGetScreenHeight());
 #endif
-    if(verbose_output==1)PRINTF("\n%s\n",_("complete"));
+    if(verbose_output==1)PRINTF("\n%s\n","complete");
 
   }
 #ifdef pp_OSX
@@ -424,14 +424,14 @@ void SetupGlut(int argc, char **argv){
 
   if(use_graphics==1){
 #ifdef _DEBUG
-    if(verbose_output==1)PRINTF("%s",_("initializing Smokeview graphics window - "));
+    if(verbose_output==1)PRINTF("%s","initializing Smokeview graphics window - ");
 #endif
     glutInitWindowSize(screenWidth, screenHeight);
     if(have_dialogX0 == 0)dialogX0 = screenX0;
     if(have_dialogY0 == 0)dialogY0 = screenY0;
     glutInitWindowPosition(screenX0, screenY0);
 #ifdef _DEBUG
-    if(verbose_output==1)PRINTF("%s\n",_("initialized"));
+    if(verbose_output==1)PRINTF("%s\n","initialized");
 #endif
 
     max_screenWidth =  GLUTGetScreenWidth();
@@ -532,7 +532,7 @@ void InitOpenGL(int option){
 #endif
 
   if(option==PRINT){
-    if(verbose_output==1)PRINTF("%s\n", _("initializing OpenGL"));
+    if(verbose_output==1)PRINTF("%s\n", "initializing OpenGL");
   }
 
   type = GLUT_RGB|GLUT_DEPTH;
@@ -556,24 +556,24 @@ void InitOpenGL(int option){
   }
 
 #ifdef _DEBUG
-  if(option==PRINT)PRINTF("%s",_("   Initializing Glut display mode - "));
+  if(option==PRINT)PRINTF("%s","   Initializing Glut display mode - ");
 #endif
   glutInitDisplayMode(type);
 #ifdef _DEBUG
-  if(option==PRINT)PRINTF("%s\n",_("initialized"));
+  if(option==PRINT)PRINTF("%s\n","initialized");
 #endif
 
   CheckMemory;
 #ifdef _DEBUG
-  if(option==PRINT)PRINTF("%s\n",_("   creating window"));
+  if(option==PRINT)PRINTF("%s\n","   creating window");
 #endif
   mainwindow_id = glutCreateWindow("");
 #ifdef _DEBUG
-  if(option==PRINT)PRINTF("%s\n",_("   window created"));
+  if(option==PRINT)PRINTF("%s\n","   window created");
 #endif
 
 #ifdef _DEBUG
-  if(option==PRINT)PRINTF("%s",_("   Initializing callbacks - "));
+  if(option==PRINT)PRINTF("%s","   Initializing callbacks - ");
 #endif
   glutSpecialUpFunc(SpecialKeyboardUpCB);
   glutKeyboardUpFunc(KeyboardUpCB);
@@ -586,7 +586,7 @@ void InitOpenGL(int option){
   glutVisibilityFunc(NULL);
   glutMenuStatusFunc(MenuStatusCB);
 #ifdef _DEBUG
-  if(option==PRINT)PRINTF("%s\n",_("initialized"));
+  if(option==PRINT)PRINTF("%s\n","initialized");
 #endif
 
   opengl_version = GetOpenGLVersion(opengl_version_label);
@@ -609,11 +609,11 @@ void InitOpenGL(int option){
     }
 #ifdef _DEBUG
     if(err==0&&option==PRINT){
-      PRINTF("%s\n",_("  GPU shader initialization succeeded"));
+      PRINTF("%s\n","  GPU shader initialization succeeded");
     }
 #endif
     if(err!=0&&option==PRINT){
-      PRINTF("%s\n",_("  GPU shader initialization failed"));
+      PRINTF("%s\n","  GPU shader initialization failed");
     }
   }
 #endif
@@ -642,7 +642,7 @@ void InitOpenGL(int option){
   }
   opengldefined=1;
   if(option==PRINT){
-    if(verbose_output==1)PRINTF("%s\n\n", _("complete"));
+    if(verbose_output==1)PRINTF("%s\n\n", "complete");
   }
 }
 
