@@ -19,8 +19,6 @@ jobs:
           - convert
           - env2mod
           - flush
-          - makepo
-          - mergepo
           - pnginfo
           - smokediff
           - smokeview
@@ -35,10 +33,6 @@ jobs:
             program: env2mod
           - compiler: clang
             program: flush
-          - compiler: clang
-            program: makepo
-          - compiler: clang
-            program: mergepo
           - compiler: clang
             program: timep
     runs-on: ${{ matrix.os }}
@@ -66,8 +60,6 @@ jobs:
           - convert
           - env2mod
           - flush
-          - makepo
-          - mergepo
           - pnginfo
           - smokediff
           - smokeview
