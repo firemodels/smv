@@ -17,9 +17,7 @@ build_target env2mod
 build_target fds2fed
 build_target flush
 # build_target get_time - only runs on windows
-build_target getdate
-build_target hashfile
-# build_target hashfort a fortran program, ie clang not an option
+build_target getdateort a fortran program, ie clang not an option
 build_target makepo
 build_target mergepo
 build_target pnginfo
