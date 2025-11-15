@@ -320,7 +320,7 @@ extern "C" void GLUIClipSetup(int main_window){
   glui_clip->hide();
 
   PANEL_clip = glui_clip->add_panel("",GLUI_PANEL_NONE);
-  PANEL_clip_lower = glui_clip->add_panel_to_panel(PANEL_clip,_("Clip lower"));
+  PANEL_clip_lower = glui_clip->add_panel_to_panel(PANEL_clip,"Clip lower");
   PANEL_clipx = glui_clip->add_panel_to_panel(PANEL_clip_lower,"X",GLUI_PANEL_NONE);
   SPINNER_clip_xmin=glui_clip->add_spinner_to_panel(PANEL_clipx,"X",GLUI_SPINNER_FLOAT,&clipinfo.xmin,SPINNER_xlower,ClipCB);
   glui_clip->add_column_to_panel(PANEL_clipx,false);
@@ -337,15 +337,15 @@ extern "C" void GLUIClipSetup(int main_window){
   CHECKBOX_clip_zmin=glui_clip->add_checkbox_to_panel(PANEL_clipz,"",&clipinfo.clip_zmin,CLIP_zlower,ClipCB);
 
   radio_clip = glui_clip->add_radiogroup_to_panel(PANEL_clip,&clip_mode,CLIP_all,ClipCB);
-  RADIOBUTTON_clip_1a=glui_clip->add_radiobutton_to_group(radio_clip,_("Clipping disabled"));
-  RADIOBUTTON_clip_1b=glui_clip->add_radiobutton_to_group(radio_clip,_("Clip blockages and data"));
-  RADIOBUTTON_clip_1c=glui_clip->add_radiobutton_to_group(radio_clip,_("Clip blockages"));
-  RADIOBUTTON_clip_1c=glui_clip->add_radiobutton_to_group(radio_clip,_("Clip data"));
+  RADIOBUTTON_clip_1a=glui_clip->add_radiobutton_to_group(radio_clip,"Clipping disabled");
+  RADIOBUTTON_clip_1b=glui_clip->add_radiobutton_to_group(radio_clip,"Clip blockages and data");
+  RADIOBUTTON_clip_1c=glui_clip->add_radiobutton_to_group(radio_clip,"Clip blockages");
+  RADIOBUTTON_clip_1c=glui_clip->add_radiobutton_to_group(radio_clip,"Clip data");
   assert(CLIP_MAX==3);
 
   glui_clip->add_column_to_panel(PANEL_clip, false);
 
-  PANEL_clip_upper = glui_clip->add_panel_to_panel(PANEL_clip,_("Clip upper"));
+  PANEL_clip_upper = glui_clip->add_panel_to_panel(PANEL_clip,"Clip upper");
 
   PANEL_clipX = glui_clip->add_panel_to_panel(PANEL_clip_upper,"X",GLUI_PANEL_NONE);
   SPINNER_clip_xmax=glui_clip->add_spinner_to_panel(PANEL_clipX,"X",GLUI_SPINNER_FLOAT,&clipinfo.xmax,SPINNER_xupper,ClipCB);
@@ -370,11 +370,11 @@ extern "C" void GLUIClipSetup(int main_window){
 
   glui_clip->add_column_to_panel(panel_wrapup,false);
 
-  BUTTON_clip_1=glui_clip->add_button_to_panel(panel_wrapup,_("Save settings"),SAVE_SETTINGS_CLIP,ClipCB);
+  BUTTON_clip_1=glui_clip->add_button_to_panel(panel_wrapup,"Save settings",SAVE_SETTINGS_CLIP,ClipCB);
 
   glui_clip->add_column_to_panel(panel_wrapup,false);
 
-  BUTTON_clip_2=glui_clip->add_button_to_panel(panel_wrapup,_("Close"),CLIP_CLOSE,ClipCB);
+  BUTTON_clip_2=glui_clip->add_button_to_panel(panel_wrapup,"Close",CLIP_CLOSE,ClipCB);
 #ifdef pp_CLOSEOFF
   BUTTON_clip_2->disable();
 #endif

@@ -695,8 +695,8 @@ extern "C" void GLUIGeometrySetup(int main_window){
         hi = global_scase.hvaccoll.hvacductvalsinfo->duct_vars + i;
         LIST_hvacductvar_index->add_item(i, hi->label.shortlabel);
       }
-      glui_geometry->add_button_to_panel(PANEL_hvac_duct, _("Set duct bounds"), HVACDUCT_SET_BOUNDS, HvacCB);
-      glui_geometry->add_button_to_panel(PANEL_hvac_duct, _("Set node bounds"), HVACNODE_SET_BOUNDS, HvacCB);
+      glui_geometry->add_button_to_panel(PANEL_hvac_duct, "Set duct bounds", HVACDUCT_SET_BOUNDS, HvacCB);
+      glui_geometry->add_button_to_panel(PANEL_hvac_duct, "Set node bounds", HVACNODE_SET_BOUNDS, HvacCB);
     }
 
     glui_geometry->add_column_to_panel(PANEL_hvac_group2, false);
@@ -727,8 +727,8 @@ extern "C" void GLUIGeometrySetup(int main_window){
         hi = global_scase.hvaccoll.hvacnodevalsinfo->node_vars + i;
         LIST_hvacnodevar_index->add_item(i, hi->label.shortlabel);
       }
-      glui_geometry->add_button_to_panel(PANEL_hvac_node, _("Set duct bounds"), HVACDUCT_SET_BOUNDS, HvacCB);
-      glui_geometry->add_button_to_panel(PANEL_hvac_node, _("Set node bounds"), HVACNODE_SET_BOUNDS, HvacCB);
+      glui_geometry->add_button_to_panel(PANEL_hvac_node, "Set duct bounds", HVACDUCT_SET_BOUNDS, HvacCB);
+      glui_geometry->add_button_to_panel(PANEL_hvac_node, "Set node bounds", HVACNODE_SET_BOUNDS, HvacCB);
     }
     HvacCB(HVAC_PROPS);
     HvacCB(HVAC_SHOW_NETWORKS);
@@ -750,7 +750,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
     if(global_scase.surfcoll.nsurfinfo>0){
       glui_geometry->add_statictext_to_panel(PANEL_faces, "");
 
-      LIST_obst_surface[DOWN_X] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Left"), surface_indices+DOWN_X, UPDATE_LIST, GLUIObjectCB);
+      LIST_obst_surface[DOWN_X] = glui_geometry->add_listbox_to_panel(PANEL_faces, "Left", surface_indices+DOWN_X, UPDATE_LIST, GLUIObjectCB);
       LIST_obst_surface[DOWN_X]->set_w(260);
       for(i = 0; i<global_scase.surfcoll.nsurfinfo; i++){
         surfdata *surfi;
@@ -762,7 +762,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
         LIST_obst_surface[DOWN_X]->add_item(i, surfacelabel);
       }
 
-      LIST_obst_surface[UP_X] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Right"), surface_indices+UP_X, UPDATE_LIST, GLUIObjectCB);
+      LIST_obst_surface[UP_X] = glui_geometry->add_listbox_to_panel(PANEL_faces, "Right", surface_indices+UP_X, UPDATE_LIST, GLUIObjectCB);
       LIST_obst_surface[UP_X]->set_w(260);
       for(i = 0; i<global_scase.surfcoll.nsurfinfo; i++){
         surfdata *surfi;
@@ -774,7 +774,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
         LIST_obst_surface[UP_X]->add_item(i, surfacelabel);
       }
 
-      LIST_obst_surface[DOWN_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Front"), surface_indices+DOWN_Y, UPDATE_LIST, GLUIObjectCB);
+      LIST_obst_surface[DOWN_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces, "Front", surface_indices+DOWN_Y, UPDATE_LIST, GLUIObjectCB);
       LIST_obst_surface[DOWN_Y]->set_w(260);
       for(i = 0; i<global_scase.surfcoll.nsurfinfo; i++){
         surfdata *surfi;
@@ -786,7 +786,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
         LIST_obst_surface[DOWN_Y]->add_item(i, surfacelabel);
       }
 
-      LIST_obst_surface[UP_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Back"), surface_indices+UP_Y, UPDATE_LIST, GLUIObjectCB);
+      LIST_obst_surface[UP_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces, "Back", surface_indices+UP_Y, UPDATE_LIST, GLUIObjectCB);
       LIST_obst_surface[UP_Y]->set_w(260);
       for(i = 0; i<global_scase.surfcoll.nsurfinfo; i++){
         surfdata *surfi;
@@ -798,7 +798,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
         LIST_obst_surface[UP_Y]->add_item(i, surfacelabel);
       }
 
-      LIST_obst_surface[DOWN_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Down"), surface_indices+DOWN_Z, UPDATE_LIST, GLUIObjectCB);
+      LIST_obst_surface[DOWN_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces, "Down", surface_indices+DOWN_Z, UPDATE_LIST, GLUIObjectCB);
       LIST_obst_surface[DOWN_Z]->set_w(260);
       for(i = 0; i<global_scase.surfcoll.nsurfinfo; i++){
         surfdata *surfi;
@@ -810,7 +810,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
         LIST_obst_surface[DOWN_Z]->add_item(i, surfacelabel);
       }
 
-      LIST_obst_surface[UP_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Up"), surface_indices+UP_Z, UPDATE_LIST, GLUIObjectCB);
+      LIST_obst_surface[UP_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces, "Up", surface_indices+UP_Z, UPDATE_LIST, GLUIObjectCB);
       LIST_obst_surface[UP_Z]->set_w(260);
       for(i = 0; i<global_scase.surfcoll.nsurfinfo; i++){
         surfdata *surfi;
@@ -834,7 +834,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
     {
       char meshlabel[255];
 
-      strcpy(meshlabel, _("Mesh:"));
+      strcpy(meshlabel, "Mesh:");
       strcat(meshlabel, global_scase.meshescoll.meshinfo->label);
       STATIC_mesh_index = glui_geometry->add_statictext_to_panel(PANEL_obj_stretch4, meshlabel);
 
@@ -852,7 +852,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
       blockage_snapped = 0;
     }
     blockage_as_input = 1-blockage_snapped;
-    CHECKBOX_blockage = glui_geometry->add_checkbox_to_panel(PANEL_obj_stretch2, _("Dimensions snapped to grid"), &blockage_snapped,
+    CHECKBOX_blockage = glui_geometry->add_checkbox_to_panel(PANEL_obj_stretch2, "Dimensions snapped to grid", &blockage_snapped,
                                                              BLOCKAGE_AS_INPUT, GLUIObjectCB);
     PANEL_obj_stretch3 = glui_geometry->add_panel_to_panel(PANEL_obj_stretch2, "", GLUI_PANEL_NONE);
     EDIT_xmin = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "x", GLUI_EDITTEXT_FLOAT, &glui_block_xmin, XMIN_SPIN, GLUIObjectCB);
@@ -892,7 +892,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
 
       meshi = global_scase.meshescoll.meshinfo+i;
       if(meshi->ncutcells>0){
-        glui_geometry->add_checkbox_to_panel(ROLLOUT_unstructured, _("Show cutcells"), &show_cutcells);
+        glui_geometry->add_checkbox_to_panel(ROLLOUT_unstructured, "Show cutcells", &show_cutcells);
         break;
       }
     }
@@ -984,7 +984,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
     glui_geometry->add_column_to_panel(PANEL_properties2, false);
 
     PANEL_properties_surf = glui_geometry->add_panel_to_panel(PANEL_properties2, "SURF");
-    LIST_geom_surface = glui_geometry->add_listbox_to_panel(PANEL_properties_surf, _("id:"), &geom_surf_index, SURF_GET, VolumeCB);
+    LIST_geom_surface = glui_geometry->add_listbox_to_panel(PANEL_properties_surf, "id:", &geom_surf_index, SURF_GET, VolumeCB);
     {
       int ii;
 
@@ -1101,7 +1101,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
     SPINNER_geom_zlevel->set_float_limits(zbar0ORIG, zbarORIG);
 
     VolumeCB(GEOM_VERT_EXAG);
-    BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(PANEL_elevation_color, _("Reset"), RESET_ZBOUNDS, VolumeCB);
+    BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(PANEL_elevation_color, "Reset", RESET_ZBOUNDS, VolumeCB);
   }
 
   if(global_scase.nterraininfo>0&&global_scase.ngeominfo==0){
@@ -1124,11 +1124,11 @@ extern "C" void GLUIGeometrySetup(int main_window){
 
   PANEL_geom_close = glui_geometry->add_panel("", GLUI_PANEL_NONE);
 
-  glui_geometry->add_button_to_panel(PANEL_geom_close, _("Save settings"), SAVE_SETTINGS_GEOM, BlockeditDlgCB);
+  glui_geometry->add_button_to_panel(PANEL_geom_close, "Save settings", SAVE_SETTINGS_GEOM, BlockeditDlgCB);
 
   glui_geometry->add_column_to_panel(PANEL_geom_close, false);
 
-  BUTTON_blockage_1=glui_geometry->add_button_to_panel(PANEL_geom_close, _("Close"),CLOSE_WINDOW, BlockeditDlgCB);
+  BUTTON_blockage_1=glui_geometry->add_button_to_panel(PANEL_geom_close, "Close",CLOSE_WINDOW, BlockeditDlgCB);
 #ifdef pp_CLOSEOFF
   BUTTON_blockage_1->disable();
 #endif
