@@ -8,7 +8,7 @@ set BUILD=intel_win_64
 cd %ALLDIR%
 call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 
-set allprogs=background convert env2mod fds2fed flush get_time getdate hashfile makepo mergepo pnginfo set_path sh2bat smokediff smokeview smokezip timep wind2fds
+set allprogs=background convert env2mod fds2fed flush get_time getdate makepo mergepo pnginfo set_path sh2bat smokediff smokeview smokezip timep wind2fds
 
 for %%x in ( %allprogs% ) do ( call :make_prog %%x )
 goto eof
