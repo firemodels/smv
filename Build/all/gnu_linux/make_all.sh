@@ -18,8 +18,6 @@ build_target fds2fed
 build_target flush
 # build_target get_time
 build_target getdate
-build_target hashfile
-# build_target hashfort
 build_target makepo
 build_target mergepo
 build_target pnginfo
