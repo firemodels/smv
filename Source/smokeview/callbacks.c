@@ -4006,15 +4006,13 @@ void DoScript(void){
       advance_script = 1;
       if(render_status!=RENDER_OFF)advance_script = 0;
     }
-#define NREPEATS 2
+#define NREPEATS 1
     if(nrenderonce>=NREPEATS){
       nrenderonce = 0;
     }
 
-    if(advance_script==1){                        // don't advance command if Smokeview is executing a RENDERALL command
-      if(nrenderonce==0){
-        current_script_command++; // force RENDERONCE to be run twice
-      }
+    if(advance_script==1){ // don't advance command if Smokeview is executing a RENDERALL command
+      if(nrenderonce==0)current_script_command++;
       script_render_flag= RunScriptCommand(current_script_command);
       if(runscript==2&&noexit==0&&current_script_command==NULL){
         SMV_EXIT(0);
