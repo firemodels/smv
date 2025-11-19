@@ -3,9 +3,8 @@ include(CTest)
 set(FIG_COMMIT "513dc046131f5dfdda47ff485efc2db7243f06b1")
 
 FetchContent_Declare(
-    test_data
-    GIT_REPOSITORY https://github.com/firemodels/fig.git
-    GIT_TAG        ${FIG_COMMIT}
+  test_data
+  URL        https://github.com/firemodels/fig/archive/${FIG_COMMIT}.zip
 )
 FetchContent_MakeAvailable(test_data)
 set(FIG_DIR ${test_data_SOURCE_DIR})
