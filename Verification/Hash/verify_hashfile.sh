@@ -6,10 +6,10 @@ if [ "`uname`" == "Darwin" ]; then
   platform="osx"
 fi
 
-HASHFILEDIR=../../Build/hashfile/intel_${platform}_64
+HASHFILEDIR=../../Build/hashfile/intel_${platform}
 cd $HASHFILEDIR
 HASHFILEDIR=`pwd`
-HASHFILE=$HASHFILEDIR/hashfile_${platform}_64
+HASHFILE=$HASHFILEDIR/hashfile_${platform}
 cd $CURDIR
 
 if [ ! -e $HASHFILE ]; then

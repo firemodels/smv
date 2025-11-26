@@ -1,5 +1,5 @@
 @echo off
-set convert=..\..\Build\wind2fds\intel_win_64\wind2fds_win_64.exe
+set convert=..\..\Build\wind2fds\intel_win\wind2fds_win.exe
 
 if exist %convert% goto convert_wind
 echo "***error: The program %convert% does not exist"

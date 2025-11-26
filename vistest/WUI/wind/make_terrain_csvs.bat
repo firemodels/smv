@@ -1,4 +1,4 @@
-set convert=..\..\..\utilities\wind2fds\intel_win_64\wind2fds_win_64
+set convert=..\..\..\utilities\wind2fds\intel_win\wind2fds_win
 
 %convert% -prefix sd11 -offset " 1000  1000.0 184.0" a111024.csv t111024_exp.csv
 %convert% -prefix sd21 -offset "7000.0 1000.0 254.0" a111026.csv t111026_exp.csv

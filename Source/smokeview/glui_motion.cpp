@@ -235,7 +235,7 @@ void MakeMovieBashScript(void){
   fprintf(stream, "FIREMODELS=%s\n", firemodels);
   fprintf(stream, "MAKEMOVIE=$FIREMODELS/smv/Utilities/Scripts/make_movie.sh\n");
   fprintf(stream, "QSMV=$FIREMODELS/smv/Utilities/Scripts/qsmv.sh\n");
-  fprintf(stream, "SMOKEVIEW=$FIREMODELS/smv/Build/smokeview/intel_linux_64/smokeview_linux_64\n");
+  fprintf(stream, "SMOKEVIEW=$FIREMODELS/smv/Build/smokeview/intel_linux/smokeview_linux\n");
 
 
   fprintf(stream, "$QSMV -j SV_ -P $NPROCS -q $QUEUE -e $SMOKEVIEW -c %s %s\n", movie_ssf_script, global_scase.fdsprefix);

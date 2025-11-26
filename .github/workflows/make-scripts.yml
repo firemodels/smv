@@ -44,7 +44,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev
-          pushd Build/${{ matrix.program }}/${{ matrix.compiler }}_linux_64
+          pushd Build/${{ matrix.program }}/${{ matrix.compiler }}_linux
           ./make_${{ matrix.program }}.sh
           popd
   build-windows:
@@ -77,6 +77,6 @@ jobs:
       - name: Build
         shell: cmd
         run: |
-          pushd Build\${{ matrix.program }}\${{ matrix.compiler }}_win_64
+          pushd Build\${{ matrix.program }}\${{ matrix.compiler }}_win
           call make_${{ matrix.program }}.bat bot
           popd

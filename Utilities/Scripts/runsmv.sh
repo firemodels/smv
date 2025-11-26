@@ -58,10 +58,10 @@ fi
 #define SMV if it doesn't exist
 CURDIR=`pwd`
 if [ "$SMV" == "" ]; then
-  SMV=../../Build/smokeview/intel_linux_64
+  SMV=../../Build/smokeview/intel_linux
   if [ -e $SMV ]; then
     cd $SMV
-    SMV=`pwd`/smokeview_linux_64
+    SMV=`pwd`/smokeview_linux
     cd $CURDIR
     if [ ! -e $SMV ]; then
       SMV=

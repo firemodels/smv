@@ -7,12 +7,12 @@ cd ../..
 reporoot=`pwd`
 visdir=$reporoot/Verification/Visualization
 if [ "`uname`" == "Darwin" ]; then
-  SMVDIR=$reporoot/smv/Build/intel_osx_64
-  SMVPROG=smokeview_osx_64
+  SMVDIR=$reporoot/smv/Build/intel_osx
+  SMVPROG=smokeview_osx
   SMV="$reporoot/Utilities/Scripts/smokeview.sh -e $SMVDIR/$SMVPROG"
 else
-  SMVDIR=$reporoot/smv/Build/intel_linux_64
-  SMVPROG=smokeview_linux_64
+  SMVDIR=$reporoot/smv/Build/intel_linux
+  SMVPROG=smokeview_linux
   SMV="$reporoot/Utilities/Scripts/smokeview.sh -e $SMVDIR/$SMVPROG"
 fi
 

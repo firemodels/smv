@@ -37,27 +37,27 @@ default: CFLAGS=-m64 $(INCS) $(PLATFORM) $(NOCLOSE) $(CFLAGOPT)
 default: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
-intel_linux_64: CPP_STANDARD = -std=c++11 -stdlib=libc++
-intel_linux_64: CFLAGS=-m64 $(INCS) $(PLATFORM) $(NOCLOSE) $(CFLAGOPT) -fpermissive
-intel_linux_64: $(GLUI_OBJS)
+intel_linux: CPP_STANDARD = -std=c++11 -stdlib=libc++
+intel_linux: CFLAGS=-m64 $(INCS) $(PLATFORM) $(NOCLOSE) $(CFLAGOPT) -fpermissive
+intel_linux: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
-intel_osx_64: CFLAGS=-m64 -stdlib=libc++ $(NOCLOSE) -fpermissive
-intel_osx_64: $(GLUI_OBJS)
+intel_osx: CFLAGS=-m64 -stdlib=libc++ $(NOCLOSE) -fpermissive
+intel_osx: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
-gnu_osx_64: CFLAGS=-m64 $(NOCLOSE) -fpermissive
-gnu_osx_64: $(GLUI_OBJS)
+gnu_osx: CFLAGS=-m64 $(NOCLOSE) -fpermissive
+gnu_osx: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
-intel_win_64: CFLAGS= $(NOCLOSE) /Wno-unused_parameter
-intel_win_64 : $(GLUI_OBJSWIN)
+intel_win: CFLAGS= $(NOCLOSE) /Wno-unused_parameter
+intel_win : $(GLUI_OBJSWIN)
 	$(LIB) $(GLUI_OBJSWIN) -OUT:libglui.lib
 
-clang_win_64: CFLAGS= $(NOCLOSE)
-clang_win_64 : $(GLUI_OBJSWIN)
+clang_win: CFLAGS= $(NOCLOSE)
+clang_win : $(GLUI_OBJSWIN)
 	$(LIB) $(GLUI_OBJSWIN) -OUT:libglui.lib
 
-gnu_win_64: CFLAGS=$(NOCLOSE) $(INCS) -fpermissive -Wno-write-strings -Wno-int-to-pointer-cast
-gnu_win_64: $(GLUI_OBJS)
+gnu_win: CFLAGS=$(NOCLOSE) $(INCS) -fpermissive -Wno-write-strings -Wno-int-to-pointer-cast
+gnu_win: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)

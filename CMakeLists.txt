@@ -208,7 +208,6 @@ add_subdirectory(Source/wind2fds)
 
 # The programs to build on Windows only
 if(WIN32)
-    add_subdirectory(Source/runbatch)
     add_subdirectory(Source/set_path)
 endif()
 

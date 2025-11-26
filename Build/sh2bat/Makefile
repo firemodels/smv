@@ -43,30 +43,30 @@ no_target:
 
 # ********  rules for each platform supported *************
 
-SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
+SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\pthreads.lib
 
-SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win_64
+SMV_CLANG_LIBDIR = $(LIB_DIR)/clang_win
 SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\pthreads.lib
 
-# ------------- intel win 64 ----------------
+# ------------- intel win ----------------
 
-intel_win_64 : CFLAGS    = -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads -O2 /nologo $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : CC        = $(I_CC)
-intel_win_64 : CPP       = $(I_CC)
-intel_win_64 : exe       = sh2bat_win_64.exe 
+intel_win : CFLAGS    = -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads -O2 /nologo $(GITINFO) $(INTEL_COMPINFO)
+intel_win : CC        = $(I_CC)
+intel_win : CPP       = $(I_CC)
+intel_win : exe       = sh2bat_win.exe 
 
-intel_win_64 : $(objwin)
+intel_win : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN)
 
-# ------------- clang win 64 ----------------
+# ------------- clang win ----------------
 
-clang_win_64 : CFLAGS    = $(GITINFO) -I $(SOURCE_DIR)/pthreads -D PTW32_STATIC_LIB
-clang_win_64 : CC        = clang-cl
-clang_win_64 : CPP       = clang-cl
-clang_win_64 : exe       = sh2bat_win_64.exe
+clang_win : CFLAGS    = $(GITINFO) -I $(SOURCE_DIR)/pthreads -D PTW32_STATIC_LIB
+clang_win : CC        = clang-cl
+clang_win : CPP       = clang-cl
+clang_win : exe       = sh2bat_win.exe
 
-clang_win_64 : $(objwin)
+clang_win : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_CLANG)
 
 #-------------- Clean Target to remove Object and Module files -----------

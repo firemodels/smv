@@ -8,8 +8,8 @@ curdir=`pwd`
 cd ../../Build
 
 BUILDDIR=`pwd`
-CONVERTDIR=$BUILDDIR/convert/intel_${platform}_64
-CONVERTPROG=convert_${platform}_64
+CONVERTDIR=$BUILDDIR/convert/intel_${platform}_
+CONVERTPROG=convert_${platform}
 CONVERT=$CONVERTDIR/$CONVERTPROG
 
 if [ ! -e $CONVERT ]; then

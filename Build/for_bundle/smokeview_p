@@ -63,7 +63,7 @@ else
     echo "***error: the repo root $HOME/$repo does not exist"
     exit 1
   fi
-  smokeview=$HOME/$repo/smv/Build/smokeview/gnu_${platform}_64/smokeview_${platform}_64p
+  smokeview=$HOME/$repo/smv/Build/smokeview/gnu_${platform}/smokeview_${platform}p
   if [ ! -e $smokeview ]; then
     echo ***error: $smokeview does not exist
     exit 1

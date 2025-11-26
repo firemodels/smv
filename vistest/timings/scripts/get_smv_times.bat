@@ -9,8 +9,8 @@ set CASE=plume_timing
 cd ..\..\..\
 set smvrepo=%CD%
 
-set TIME=%smvrepo%\Build\timep\intel_win_64\timep_win_64.exe
-set FLUSH=%smvrepo%\Build\flush\intel_win_64\flush_win_64.exe -g 16 -w
+set TIME=%smvrepo%\Build\timep\intel_win\timep_win.exe
+set FLUSH=%smvrepo%\Build\flush\intel_win\flush_win.exe -g 16 -w
 
 :: make sure programs used by this script exist
 
