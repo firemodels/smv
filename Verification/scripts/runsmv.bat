@@ -1,6 +1,6 @@
 @echo off
 
-call %GITROOT%\fds\Utilities\Scripts\getopts.bat %*
+call %GITROOT%\bot\Bundlebot\nightly\getopts.bat %*
 
 set fulldir=%BASEDIR%/%dir%
 

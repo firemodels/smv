@@ -1,5 +1,5 @@
 @echo off
 
-call %GITROOT%\fds\Utilities\Scripts\getopts.bat %*
+call %GITROOT%\bot\Bundlebot\nightly\getopts.bat %*
 
 if exist %dir%\%infile%.stop erase %dir%\%infile%.stop
