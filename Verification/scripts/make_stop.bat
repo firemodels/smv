@@ -1,4 +1,4 @@
 @echo off
-call %GITROOT%\fds\Utilities\Scripts\getopts.bat %*
+call %GITROOT%\bot\Bundlebot\nightly\getopts.bat %*
 
 echo 2 > %dir%\%infile%.stop
