@@ -261,37 +261,60 @@ if [ "$RUN_SMV" == "1" ]; then
 
 # precompute FED slices
   cd $GITROOT/smv/Verification/Visualization
-  $FDS2FED plume5c
-  $FDS2FED plume5cdelta
-  $FDS2FED thouse5
-  $FDS2FED thouse5delta
-  $FDS2FED fed_test
+  $FDS2FED plume5c            &
+  pid_feda=$1
+  $FDS2FED plume5cdelta       &
+  pid_fedb=$1
+  $FDS2FED thouse5            &
+  pid_fedc=$1
+  $FDS2FED thouse5delta       &
+  pid_fedd=$1
+  $FDS2FED fed_test           &
+  pid_fede=$1
 
 # compute isosurface from particles
 
   cd $GITROOT/smv/Verification/Visualization
   echo Compressing sphere_propanec case
-  $SMOKEZIP -f sphere_propanec
+  $SMOKEZIP -f sphere_propanec &
+  pid_casea=$!
 
 # compute isosurface from particles
 
   cd $GITROOT/smv/Verification/Visualization
   echo Converting particles to isosurfaces in case plumeiso
-  $SMOKEZIP -f -part2iso plumeiso
+  $SMOKEZIP -f -part2iso plumeiso &
+  pid_caseb=$!
 
   cd $GITROOT/smv/Verification/WUI
-  echo Converting particles to isosurfaces in case pine_tree
   if  [ -e pine_tree.smv ]; then
-    $SMOKEZIP -f -part2iso pine_tree
+    echo Converting particles to isosurfaces in case pine_tree
+    $SMOKEZIP -f -part2iso pine_tree &
+    pid_casec=$!
   fi
 
 # difference plume5c and thouse5
 
   cd $GITROOT/smv/Verification/Visualization
+
   echo Differencing cases plume5c and plume5cdelta
-  $SMOKEDIFF -w -r plume5c plume5cdelta
+  $SMOKEDIFF -w -r plume5c plume5cdelta &
+  pid_cased=$!
   echo Differencing cases thouse5 and thouse5delta
-  $SMOKEDIFF -w -r thouse5 thouse5delta
+  $SMOKEDIFF -w -r thouse5 thouse5delta &
+  pid_cased=$!
+
+  wait $pid_feda
+  wait $pid_fedb
+  wait $pid_fedc
+  wait $pid_fedd
+  wait $pid_fede
+  wait $pid_casea
+  wait $pid_caseb
+  if  [ -e $GITROOT/smv/Verification/WUI/pine_tree.smv ]; then
+    wait $pid_casec
+  fi
+  wait $pid_cased
 
   echo Generating images
 
