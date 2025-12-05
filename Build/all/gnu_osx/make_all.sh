@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 BUILDDIR=$(pwd)/../..
-BUILD=gnu_linux
+BUILD=gnu_osx
 
 function build_target() {
     TARGET=$1
@@ -16,10 +16,9 @@ build_target convert
 build_target env2mod
 build_target fds2fed
 build_target flush
-# build_target get_time
-build_target getdate
+# build_target get_time - only runs on windows
 build_target pnginfo
-# build_target set_path
+# build_target set_path - only runs on windows
 build_target smokediff
 build_target smokeview
 build_target smokezip
