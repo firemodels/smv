@@ -27,7 +27,7 @@ BUILDDIR=`pwd`
 if [[ "$target" == "all" ]] || [[ "$target" == "glut" ]]; then
   if [ "$GLUT" == "freeglut" ]; then
     echo "********** building freeglut"
-    cd $BUILDDIR/freeglut3.0.0/gnu_linux >& freeglut.out
+    cd $BUILDDIR/freeglut3.0.0/gnu_linux
     ./make_freeglut.sh $OPTS >& $LIBDIR/freeglut.out &
     pid_glut=$!
   else
@@ -83,35 +83,45 @@ fi
 if [[ "$target" == "all" ]] || [[ "$target" == "glut" ]]; then
   wait $pid_glut
   echo glut library built
+  if [ "$GLUT" == "freeglut" ]; then
+    cd $BUILDDIR/freeglut3.0.0/gnu_linux
+  else
+    cd $SRCDIR/glut-3.7.6
+  fi
   cp libglut.a $LIBDIR/.
 fi
 
 if [[ "$target" == "all" ]] || [[ "$target" == "glui" ]]; then
   wait $pid_glui
   echo glui library built
+  cd $SRCDIR/glui_v2_1_beta
   cp libglui.a $LIBDIR/.
 fi
 
 if [[ "$target" == "all" ]] || [[ "$target" == "zlib" ]]; then
   wait $pid_zlib
   echo zlib library built
+  cd $SRCDIR/zlib131
   cp libz.a $LIBDIR/.
 fi
 
 if [[ "$target" == "all" ]] || [[ "$target" == "jpeg" ]]; then
   wait $pid_jpeg
   echo jpeg library built
+  cd $SRCDIR/jpeg-9b
   cp libjpeg.a $LIBDIR/.
 fi
 
 if [[ "$target" == "all" ]] || [[ "$target" == "png" ]]; then
   wait $pid_png
   echo png library built
+  cd $SRCDIR/png-1.6.48
   cp libpng.a $LIBDIR/.
 fi
 
 if [[ "$target" == "all" ]] || [[ "$target" == "gd" ]]; then
   wait $pid_gd
   echo gd library built
+  cd $SRCDIR/gd-2.3.3
   cp libgd.a $LIBDIR/.
 fi
