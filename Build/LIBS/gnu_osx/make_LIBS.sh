@@ -36,8 +36,8 @@ fi
 
 # FREEGLUT
 if [ "$GLUT" == "freeglut" ]; then
-  cd $BUILDDIR/freeglut3.0.0/gnu_osx
   echo building glut
+  cd $BUILDDIR/freeglut3.0.0/gnu_osx
   ./make_freeglut.sh $OPTS >& $LIBDIR/glut.out &
   pid_glut=$!
 else
@@ -51,6 +51,7 @@ cd $SRCDIR/jpeg-9b
 pid_jpeg=$!
 
 # PNG
+echo building png library
 cd $SRCDIR/png-1.6.48
 ./makelib.sh $OPTS >& $LIBDIR/png.out &
 pid_png=$!
