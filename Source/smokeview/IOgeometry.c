@@ -2676,6 +2676,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     if(slice_average_flag==1){
       int data_per_timestep, nvals2, ntimes;
       float *times, **qvalptrs;
+      char slice_label[256];
 
       show_slice_average = 1;
       nvals2 = slicei->patchgeom->geom_nvals;
@@ -2686,7 +2687,8 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       for(i = 0; i < ntimes; i++){
         qvalptrs[i] = slicei->patchgeom->geom_vals + i*data_per_timestep;
       }
-      if(TimeAverageData(qvalptrs, qvalptrs, nvals2, data_per_timestep, times, ntimes, slice_average_interval)==1){
+      sprintf(slice_label, "averaging data - mesh %i", slicei->blocknumber+1);
+      if(TimeAverageData(slice_label, qvalptrs, qvalptrs, nvals2, data_per_timestep, times, ntimes, slice_average_interval)==1){
         show_slice_average = 0;
       }
     }
