@@ -4306,6 +4306,7 @@ void LoadParticleMenu(int value){
             }
           }
           STOP_TIMER(part_load_time);
+          printf("\n");
           PrintFileLoadTimes(part_file_count,part_load_size,part_load_time);
           if(have_particles==0)printf("***warning: particle files have no particles\n");
         }
@@ -5136,6 +5137,7 @@ void LoadMultiVSliceMenu(int value){
         if(vslicei->skip==1&&vslicei->loaded==1)UnloadVSliceMenu(mvslicei->ivslices[i]);
       }
       STOP_TIMER(load_time);
+      printf("\n");
       PrintFileLoadTimes(file_count,load_size,load_time);
     }
     script_multivslice=0;
@@ -5169,6 +5171,7 @@ void LoadMultiVSliceMenu(int value){
       file_count++;
     }
     STOP_TIMER(load_time);
+    printf("\n");
     PrintFileLoadTimes(file_count,load_size,load_time);
   }
   else{
@@ -5261,6 +5264,7 @@ FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
   SetLoadedSliceBounds(mslicei->islices, mslicei->nslices);
   file_size = LoadAllMSlicesMT(last_slice, mslicei, &file_count);
   STOP_TIMER(load_time);
+  printf("\n");
   PrintFileLoadTimes(file_count,(float)file_size,load_time);
   return file_size;
 }
@@ -5836,6 +5840,7 @@ void LoadAllIsos(int iso_type){
     }
   }
   STOP_TIMER(load_time);
+  printf("\n");
   PrintFileLoadTimes(file_count,load_size,load_time);
 }
 
@@ -5948,7 +5953,7 @@ void LoadBoundaryMenu(int value){
         THREADcontrol(compress_threads, THREAD_LOCK);
         SetLoadedPatchBounds(&value, 1);
         if(patchi->structured == YES){
-          PRINTF("Loading %s(%s)\n", patchi->file, patchi->label.shortlabel);
+          PRINTF("\nLoading %s(%s)\n", patchi->file, patchi->label.shortlabel);
         }
         ReadBoundary(value, LOAD, &errorcode);
         THREADcontrol(compress_threads, THREAD_UNLOCK);
@@ -6018,7 +6023,7 @@ void LoadBoundaryMenu(int value){
         if(InPatchList(patchj, patchi)==1){
           THREADcontrol(compress_threads, THREAD_LOCK);
           if(patchi->structured == YES){
-            PRINTF("Loading %s(%s)\n", patchi->file, patchi->label.shortlabel);
+            PRINTF("\nLoading %s(%s)\n", patchi->file, patchi->label.shortlabel);
           }
           load_size+=ReadBoundary(i, LOAD, &errorcode);
           if(patchi->structured!=NO&&patchi->finalize==1){
@@ -6029,6 +6034,7 @@ void LoadBoundaryMenu(int value){
         }
       }
       STOP_TIMER(load_time);
+      printf("\n");
       PrintFileLoadTimes(file_count,load_size,load_time);
     }
     force_redisplay=1;

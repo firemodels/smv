@@ -2553,7 +2553,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   int filesize;
 
   if(current_script_command==NULL||NOT_LOADRENDER){
-    PRINTF("Loading %s(%s)\n", patchi->file, patchi->label.shortlabel);
+    PRINTF("\nLoading %s(%s)\n", patchi->file, patchi->label.shortlabel);
   }
   filesize=GetGeomData(patchi, patchi->file, load_flag, ntimes_local, nvals, patchi->geom_times,
     patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, geom_offsets, &error);

@@ -3469,7 +3469,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       return 0;
     }
     if(time_frame==ALL_FRAMES){
-      PRINTF("Loading %s(%s)\n", file, sd->label.shortlabel);
+      PRINTF("\nLoading %s(%s)\n", file, sd->label.shortlabel);
     }
     START_TIMER(read_time);
     if(sd->compression_type != UNCOMPRESSED){

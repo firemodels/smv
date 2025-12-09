@@ -91,7 +91,7 @@ void ReadHVACData(int flag){
     GLUISetValTypeIndex(BOUND_HVACDUCT, 0);
 
     STOP_TIMER(total_time);
-    PRINTF("Loading %s\n", global_scase.hvaccoll.hvacductvalsinfo->file);
+    PRINTF("\nLoading %s\n", global_scase.hvaccoll.hvacductvalsinfo->file);
     if(file_size > 1000000000){
       PRINTF("Loaded %.1f GB/%.1f s\n", (float)file_size / 1000000000., total_time);
     }

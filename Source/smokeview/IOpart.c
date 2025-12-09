@@ -2041,7 +2041,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
     THREADcontrol(partload_threads, THREAD_UNLOCK);
   }
   else{
-    PRINTF("Loading %s\n", file_arg);
+    PRINTF("\nLoading %s\n", file_arg);
   }
   int have_particles;
 

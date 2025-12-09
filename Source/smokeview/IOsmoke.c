@@ -3514,7 +3514,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
     smoke3di->compression_type = GetSmoke3DVersion(smoke3di);
     update_smoke3dmenulabels = 1;
   }
-  if(iframe_arg==ALL_SMOKE_FRAMES)PRINTF("Loading %s(%s)\n", smoke3di->file, smoke3di->label.shortlabel);
+  if(iframe_arg==ALL_SMOKE_FRAMES)PRINTF("\nLoading %s(%s)\n", smoke3di->file, smoke3di->label.shortlabel);
   CheckMemory;
   smoke3di->ntimes_old = smoke3di->ntimes;
   if(GetSmoke3DSizes(smoke3di, fortran_skip, smoke3di->file, smoke3di->compression_type, &smoke3di->times_map, &smoke3di->times, &smoke3di->use_smokeframe,

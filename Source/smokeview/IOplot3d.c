@@ -379,7 +379,7 @@ FILE_SIZE ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
 
   file_size= GetFileSizeSMV(file);
-  PRINTF("Loading %s\n", file);
+  PRINTF("\nLoading %s\n", file);
   START_TIMER(read_time);
   float qmin[6], qmax[6], *qminptr=NULL, *qmaxptr=NULL;
 
