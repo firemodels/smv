@@ -4905,8 +4905,6 @@ extern "C" void GLUIBoundsSetup(int main_window){
     if(global_scase.smoke3dcoll.nsmoke3dinfo > 0)BUTTON_3DSMOKE = glui_bounds->add_button_to_panel(ROLLOUT_showhide, "3D smoke/fire", FILESHOW_3dsmoke, FileShowCB);
     if(global_scase.nplot3dinfo > 0)BUTTON_PLOT3D = glui_bounds->add_button_to_panel(ROLLOUT_showhide, "Plot3D", FILESHOW_plot3d, FileShowCB);
     glui_bounds->add_button_to_panel(ROLLOUT_showhide, "File Sizes", FILESHOW_sizes, FileShowCB);
-
-
     GLUIUpdateShowHideButtons();
   }
 
