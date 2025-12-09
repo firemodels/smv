@@ -136,7 +136,6 @@ GLUI_Checkbox *CHECKBOX_labels_memusage = NULL;
 #endif
 GLUI_Checkbox *CHECKBOX_labels_labels = NULL;
 GLUI_Checkbox *CHECKBOX_labels_gridloc=NULL;
-GLUI_Checkbox *CHECKBOX_labels_average=NULL;
 GLUI_Checkbox *CHECKBOX_user_ticks_show_x=NULL;
 GLUI_Checkbox *CHECKBOX_user_ticks_show_y=NULL;
 GLUI_Checkbox *CHECKBOX_user_ticks_show_z=NULL;
@@ -836,7 +835,6 @@ extern "C" void GLUIDisplaySetup(int main_window){
 
   PANEL_gen1 = glui_labels->add_panel_to_panel(ROLLOUT_general1, "", GLUI_PANEL_NONE);
 
-  if(global_scase.slicecoll.nsliceinfo > 0)CHECKBOX_labels_average = glui_labels->add_checkbox_to_panel(PANEL_gen1, "Average", &vis_slice_average, LABELS_label, GLUILabelsCB);
   CHECKBOX_labels_axis = glui_labels->add_checkbox_to_panel(PANEL_gen1, "Axis", &visaxislabels, LABELS_label, GLUILabelsCB);
   CHECKBOX_visColorbarVertical = glui_labels->add_checkbox_to_panel(PANEL_gen1, "Colorbar(vertical)", &visColorbarVertical, LABELS_vcolorbar, GLUILabelsCB);
   CHECKBOX_visColorbarHorizontal = glui_labels->add_checkbox_to_panel(PANEL_gen1, "Colorbar(horizontal)", &visColorbarHorizontal, LABELS_hcolorbar, GLUILabelsCB);
@@ -1562,7 +1560,6 @@ extern "C" void GLUISetLabelControls(){
   if(CHECKBOX_labels_ticks!=NULL)CHECKBOX_labels_ticks->set_int_val(visFDSticks);
   if(CHECKBOX_labels_axis!=NULL)CHECKBOX_labels_axis->set_int_val(visaxislabels);
   if(CHECKBOX_labels_framerate!=NULL)CHECKBOX_labels_framerate->set_int_val(visFramerate);
-  if(CHECKBOX_labels_average!=NULL)CHECKBOX_labels_average->set_int_val(vis_slice_average);
   if(CHECKBOX_labels_memload!=NULL)CHECKBOX_labels_memload->set_int_val(vismemload);
 #ifdef pp_memusage
   if(CHECKBOX_labels_memusage != NULL)CHECKBOX_labels_memusage->set_int_val(vismemusage);

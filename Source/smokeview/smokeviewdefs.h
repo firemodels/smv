@@ -845,7 +845,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define MENU_LABEL_fdsticks            10
 #define MENU_LABEL_hmslabel            11
 #define MENU_LABEL_grid                12
-#define MENU_LABEL_sliceaverage        13
 #define MENU_LABEL_userticks           15
 #define MENU_LABEL_ShowAll             16
 #define MENU_LABEL_HideAll             17

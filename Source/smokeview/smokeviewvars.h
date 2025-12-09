@@ -1265,12 +1265,10 @@ SVEXTERN int SVDECL(fontsize_save, 0);
 SVEXTERN int SVDECL(trainer_mode,0);
 SVEXTERN int SVDECL(trainer_active,0);
 
-SVEXTERN int SVDECL(slice_average_flag,0);
-SVEXTERN int SVDECL(show_slice_average, 0), SVDECL(vis_slice_average, 1);
+SVEXTERN int SVDECL(slice_average_flag,0), SVDECL(show_slice_average, 0);
 SVEXTERN float SVDECL(slice_average_interval,10.0);
 
-SVEXTERN int SVDECL(boundary_average_flag, 0);
-SVEXTERN int SVDECL(show_boundary_average,0),  SVDECL(vis_boundary_average, 1);
+SVEXTERN int SVDECL(boundary_average_flag, 0), SVDECL(show_boundary_average,0);
 SVEXTERN float SVDECL(boundary_average_interval, 10.0);
 
 SVEXTERN int SVDECL(maxtourframes,500);

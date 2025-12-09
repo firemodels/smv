@@ -836,7 +836,6 @@ void LabelMenu(int value){
     visFramelabel=1;
     visLabels=1;
     visMeshlabel=1;
-    vis_slice_average=1;
     if(global_scase.ntickinfo>0)visFDSticks=1;
     visgridloc=1;
     vis_hrr_label=1;
@@ -861,7 +860,6 @@ void LabelMenu(int value){
     vis_hrr_label=0;
     if(global_scase.ntickinfo>0)visFDSticks=0;
     visgridloc=0;
-    vis_slice_average=0;
     vismemload=0;
 #ifdef pp_memusage
     vismemusage = 0;
@@ -916,9 +914,6 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_grid:
      visgridloc = 1 - visgridloc;
-     break;
-   case MENU_LABEL_sliceaverage:
-     vis_slice_average = 1 - vis_slice_average;
      break;
    case MENU_LABEL_hrr:
      vis_hrr_label=1-vis_hrr_label;
@@ -10278,8 +10273,6 @@ static int menu_count=0;
 #endif
   if(visMeshlabel == 1)glutAddMenuEntry("*Mesh", MENU_LABEL_meshlabel);
   if(visMeshlabel == 0)glutAddMenuEntry("Mesh", MENU_LABEL_meshlabel);
-  if(vis_slice_average == 1)glutAddMenuEntry("*Slice average", MENU_LABEL_sliceaverage);
-  if(vis_slice_average == 0)glutAddMenuEntry("Slice average", MENU_LABEL_sliceaverage);
   if(LabelGetNUserLabels(&global_scase.labelscoll) > 0){
     if(visLabels == 1)glutAddMenuEntry("*Text labels", MENU_LABEL_textlabels);
     if(visLabels == 0)glutAddMenuEntry("Text labels", MENU_LABEL_textlabels);

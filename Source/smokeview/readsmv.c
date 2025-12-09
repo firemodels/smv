@@ -4201,10 +4201,21 @@ int ReadIni2(const char *inifile, int localfile){
       continue;
     }
     if(MatchINI(buffer, "SLICEAVERAGE") == 1){
+      int dummy;
+
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %f %i", &slice_average_flag, &slice_average_interval, &vis_slice_average);
+      sscanf(buffer, "%i %f %i", &slice_average_flag, &slice_average_interval, &dummy);
       ONEORZERO(slice_average_flag);
       if(slice_average_interval<0.0)slice_average_interval = 0.0;
+      continue;
+    }
+    if(MatchINI(buffer, "BOUNDAVERAGE") == 1){
+      int dummy;
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %f %i", &boundary_average_flag, &boundary_average_interval, &dummy);
+      ONEORZERO(boundary_average_flag);
+      if(boundary_average_interval<0.0)boundary_average_interval = 0.0;
       continue;
     }
     if(MatchINI(buffer, "SKYBOX") == 1){
@@ -7928,6 +7939,8 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "\n *** DATA LOADING ***\n\n");
 
+  fprintf(fileout, "BOUNDAVERAGE\n");
+  fprintf(fileout, " %i %f %i\n", boundary_average_flag, boundary_average_interval, 1);
   fprintf(fileout, "CSV\n");
   fprintf(fileout, " %i\n", csv_loaded);
   fprintf(fileout, "LOADINC\n");
@@ -7939,7 +7952,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "RESEARCHMODE\n");
   fprintf(fileout, " %i %i %f %i %i %i %i %i %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint, ngridloc_digits, sliceval_ndigits, force_exponential, force_decimal, force_zero_pad);
   fprintf(fileout, "SLICEAVERAGE\n");
-  fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, vis_slice_average);
+  fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, 1);
   fprintf(fileout, "SLICEDATAOUT\n");
   fprintf(fileout, " %i \n", output_slicedata);
   fprintf(fileout, "USER_ROTATE\n");
