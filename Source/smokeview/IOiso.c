@@ -989,7 +989,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   PRINTF("size verts=%i tris=%i\n",(int)(ntotal_isoverts*sizeof(isovert)),(int)(ntotal_isotris*sizeof(isotri)/3));
 #endif
   STOP_TIMER(read_time);
-  PRINTF(" - %.1f MB/%.1f s\n",(float)read_size/1000000.,read_time);
+  PRINTF("Loaded %.1f MB/%.1f s\n",(float)read_size/1000000.,read_time);
 
   fclose(isostream);
   if(*errorcode!=0){

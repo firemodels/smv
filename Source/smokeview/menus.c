@@ -5782,7 +5782,7 @@ FILE_SIZE LoadIsoI(int value){
   }
   isoi->loading=0;
   STOP_TIMER(total_time);
-  PRINTF(" - %.1f MB/%.1f s\n",(float)return_filesize/1000000.,total_time);
+  PRINTF("Loaded %.1f MB/%.1f s\n",(float)return_filesize/1000000.,total_time);
   return return_filesize;
 }
 
@@ -5948,7 +5948,7 @@ void LoadBoundaryMenu(int value){
         THREADcontrol(compress_threads, THREAD_LOCK);
         SetLoadedPatchBounds(&value, 1);
         if(patchi->structured == YES){
-          PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
+          PRINTF("Loading %s(%s)\n", patchi->file, patchi->label.shortlabel);
         }
         ReadBoundary(value, LOAD, &errorcode);
         THREADcontrol(compress_threads, THREAD_UNLOCK);
@@ -6018,7 +6018,7 @@ void LoadBoundaryMenu(int value){
         if(InPatchList(patchj, patchi)==1){
           THREADcontrol(compress_threads, THREAD_LOCK);
           if(patchi->structured == YES){
-            PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
+            PRINTF("Loading %s(%s)\n", patchi->file, patchi->label.shortlabel);
           }
           load_size+=ReadBoundary(i, LOAD, &errorcode);
           if(patchi->structured!=NO&&patchi->finalize==1){

@@ -2041,7 +2041,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
     THREADcontrol(partload_threads, THREAD_UNLOCK);
   }
   else{
-    PRINTF("Loading %s", file_arg);
+    PRINTF("Loading %s\n", file_arg);
   }
   int have_particles;
 
@@ -2086,13 +2086,13 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
     }
     STOP_TIMER(load_time_local);
     if(file_size_local>1000000000){
-      PRINTF(" - %.1f GB/%.1f s\n", (float)file_size_local/1000000000., load_time_local);
+      PRINTF("Loaded %.1f GB/%.1f s\n", (float)file_size_local/1000000000., load_time_local);
     }
     else if(file_size_local>1000000){
-      PRINTF(" - %.1f MB/%.1f s\n", (float)file_size_local/1000000., load_time_local);
+      PRINTF("Loaded %.1f MB/%.1f s\n", (float)file_size_local/1000000., load_time_local);
     }
     else{
-      PRINTF(" - %.0f kB/%.1f s\n", (float)file_size_local/1000., load_time_local);
+      PRINTF("Loaded %.0f kB/%.1f s\n", (float)file_size_local/1000., load_time_local);
     }
     update_part_bounds = 1;
   }
