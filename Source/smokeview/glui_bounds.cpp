@@ -7048,6 +7048,9 @@ extern "C" void GLUIShowBounds(int menu_id){
     FileRolloutCB(SCRIPT_ROLLOUT);
     break;
   case DIALOG_SMOKEZIP:
+    if(ROLLOUT_files->is_open == 0) {
+      FileDataColRolloutCB(FILE_ROLLOUT);
+    }
     FileRolloutCB(COMPRESS_ROLLOUT);
     break;
   case DIALOG_3DSMOKE:
