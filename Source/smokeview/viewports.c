@@ -277,8 +277,9 @@ void GetViewportInfo(void){
   doit=0;
   if(showtime==1){
     if(visTimelabel == 1 || visFramelabel == 1 || vis_hrr_label == 1 || visTimebar == 1)doit=1;
-    if(doit==0&&visFramerate==1)doit=1;
-    if(doit==0&&vis_slice_average==1&&show_slice_average&&slice_average_flag==1)doit=1;
+    if(doit==0 && visFramerate==1)doit=1;
+    if(doit==0 && show_slice_average==1 && slice_average_flag==1)doit=1;
+    if(doit==0 && show_boundary_average==1 && boundary_average_flag==1)doit = 1;
   }
   if(show_horizontal_colorbar == 1
     ||vismemload==1
@@ -1268,7 +1269,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
     sprintf(frameratelabel," Frame rate:%4.1f",framerate);
     OutputText(right_label_pos,v_space,frameratelabel);
   }
-  if(show_slice_average==1&&vis_slice_average==1&&slice_average_flag==1){
+  if(show_slice_average==1&&slice_average_flag==1){
     char sliceavglabel[30];
 
     sprintf(sliceavglabel," AVG: %4.1f",slice_average_interval);

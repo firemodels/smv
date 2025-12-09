@@ -2990,7 +2990,7 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
 
   /* ------------------ TimeAverageData ------------------------ */
 
-int TimeAverageData(float **data_out, float **data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time){
+int TimeAverageData(char *label, float **data_out, float **data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time){
 
 #define IND(itime,ival) ((itime)*data_per_timestep + (ival))
   float *datatemp = NULL;
@@ -2998,6 +2998,7 @@ int TimeAverageData(float **data_out, float **data_in, int ndata, int data_per_t
   float average_timed2;
   int i, j, k;
 
+  if(label!=NULL)printf("%s\n", label);
   if(data_in == NULL || data_out == NULL)return 1;
   if(ndata < data_per_timestep || data_per_timestep < 1 || ntimes_local < 1 || average_time < 0.0)return 1;
   if(ndata != data_per_timestep*ntimes_local)return 1;
@@ -3009,7 +3010,6 @@ int TimeAverageData(float **data_out, float **data_in, int ndata, int data_per_t
     datatemp[i] = 0.0;
   }
   for(i = 0; i < ntimes_local; i++){
-    PRINTF("averaging time=%.2f\n", times_local[i]);
     below = 0;
     for(j = i - 1; j >= 0; j--){
       if(times_local[i] - times_local[j] > average_timed2){
@@ -3469,7 +3469,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       return 0;
     }
     if(time_frame==ALL_FRAMES){
-      PRINTF("Loading %s(%s)", file, sd->label.shortlabel);
+      PRINTF("\nLoading %s(%s)\n", file, sd->label.shortlabel);
     }
     START_TIMER(read_time);
     if(sd->compression_type != UNCOMPRESSED){
@@ -3559,13 +3559,16 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       show_slice_average = 1;
 
       int i;
+      char slice_label[256];
+
+      sprintf(slice_label, "averaging slice data - mesh: %i\n", blocknumber+1);
       NewMemory((void **)&qvalptrs, sd->ntimes*sizeof(float *));
       for(i=0; i< sd->ntimes; i++){
         qvalptrs[i] = sd->qslicedata + i*data_per_timestep;
       }
       if(
         sd->compression_type != UNCOMPRESSED ||
-        TimeAverageData(qvalptrs, qvalptrs, ndata, data_per_timestep, sd->times, ntimes_local, slice_average_interval) == 1
+        TimeAverageData(slice_label, qvalptrs, qvalptrs, ndata, data_per_timestep, sd->times, ntimes_local, slice_average_interval) == 1
         ){
         show_slice_average = 0; // averaging failed
       }
@@ -3835,13 +3838,13 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
   if(time_frame==ALL_FRAMES&&load_flag != RESETBOUNDS){
     if(file_size>1000000000){
-      PRINTF(" - %.1f GB/%.1f s\n", (float)file_size / 1000000000., total_time);
+      PRINTF("Loaded %.1f GB/%.1f s\n", (float)file_size / 1000000000., total_time);
     }
     else if(file_size>1000000){
-      PRINTF(" - %.1f MB/%.1f s\n", (float)file_size / 1000000., total_time);
+      PRINTF("Loaded %.1f MB/%.1f s\n", (float)file_size / 1000000., total_time);
     }
     else{
-      PRINTF(" - %.0f KB/%.1f s\n", (float)file_size / 1000., total_time);
+      PRINTF("Loaded %.0f KB/%.1f s\n", (float)file_size / 1000., total_time);
     }
   }
 #ifdef pp_RECOMPUTE_DEBUG

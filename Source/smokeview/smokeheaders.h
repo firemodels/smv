@@ -533,7 +533,7 @@ EXTERNCPP FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, i
 EXTERNCPP void SetSliceColors(float smin, float smax, slicedata *sd, int flag, int *errorcode);
 EXTERNCPP void Slice2Device(void);
 EXTERNCPP void SortSlices(void);
-EXTERNCPP int  TimeAverageData(float **data_out, float **data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time);
+EXTERNCPP int  TimeAverageData(char *label, float **data_out, float **data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time);
 EXTERNCPP void UpdateAllSliceColors(int slicetype, int *errorcode);
 EXTERNCPP void UpdateAllSliceLabels(int slicetype, int *errorcode);
 EXTERNCPP void UpdateGslicePlanes(void);

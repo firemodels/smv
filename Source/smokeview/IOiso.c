@@ -989,7 +989,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   PRINTF("size verts=%i tris=%i\n",(int)(ntotal_isoverts*sizeof(isovert)),(int)(ntotal_isotris*sizeof(isotri)/3));
 #endif
   STOP_TIMER(read_time);
-  PRINTF(" - %.1f MB/%.1f s\n",(float)read_size/1000000.,read_time);
+  PRINTF("Loaded %.1f MB/%.1f s\n",(float)read_size/1000000.,read_time);
 
   fclose(isostream);
   if(*errorcode!=0){
@@ -1037,7 +1037,7 @@ FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, 
 
     isoi = global_scase.isoinfo+ifile;
     if(flag == UNLOAD && isoi->loaded == 0)return 0;
-    if(flag==LOAD)PRINTF("Loading %s(%s)\n", file,isoi->surface_label.shortlabel);
+    if(flag==LOAD)PRINTF("\nLoading %s(%s)\n", file,isoi->surface_label.shortlabel);
       if(isoi->geomflag==1){
         return_filesize=ReadIsoGeom(ifile,flag,geom_frame_index,errorcode);
       }
@@ -1682,7 +1682,6 @@ void SetIsoLabels(float smin, float smax,
   sb->label=&(sd->color_label);
 
   *errorcode=0;
-  PRINTF("setting up iso labels \n");
   GetColorbarLabels(smin,smax,global_scase.nrgb,sb->colorlabels,sb->levels256);
 }
 

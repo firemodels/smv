@@ -836,7 +836,6 @@ void LabelMenu(int value){
     visFramelabel=1;
     visLabels=1;
     visMeshlabel=1;
-    vis_slice_average=1;
     if(global_scase.ntickinfo>0)visFDSticks=1;
     visgridloc=1;
     vis_hrr_label=1;
@@ -861,7 +860,6 @@ void LabelMenu(int value){
     vis_hrr_label=0;
     if(global_scase.ntickinfo>0)visFDSticks=0;
     visgridloc=0;
-    vis_slice_average=0;
     vismemload=0;
 #ifdef pp_memusage
     vismemusage = 0;
@@ -916,9 +914,6 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_grid:
      visgridloc = 1 - visgridloc;
-     break;
-   case MENU_LABEL_sliceaverage:
-     vis_slice_average = 1 - vis_slice_average;
      break;
    case MENU_LABEL_hrr:
      vis_hrr_label=1-vis_hrr_label;
@@ -4311,6 +4306,7 @@ void LoadParticleMenu(int value){
             }
           }
           STOP_TIMER(part_load_time);
+          printf("\n");
           PrintFileLoadTimes(part_file_count,part_load_size,part_load_time);
           if(have_particles==0)printf("***warning: particle files have no particles\n");
         }
@@ -5141,6 +5137,7 @@ void LoadMultiVSliceMenu(int value){
         if(vslicei->skip==1&&vslicei->loaded==1)UnloadVSliceMenu(mvslicei->ivslices[i]);
       }
       STOP_TIMER(load_time);
+      printf("\n");
       PrintFileLoadTimes(file_count,load_size,load_time);
     }
     script_multivslice=0;
@@ -5174,6 +5171,7 @@ void LoadMultiVSliceMenu(int value){
       file_count++;
     }
     STOP_TIMER(load_time);
+    printf("\n");
     PrintFileLoadTimes(file_count,load_size,load_time);
   }
   else{
@@ -5266,6 +5264,7 @@ FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
   SetLoadedSliceBounds(mslicei->islices, mslicei->nslices);
   file_size = LoadAllMSlicesMT(last_slice, mslicei, &file_count);
   STOP_TIMER(load_time);
+  printf("\n");
   PrintFileLoadTimes(file_count,(float)file_size,load_time);
   return file_size;
 }
@@ -5787,7 +5786,7 @@ FILE_SIZE LoadIsoI(int value){
   }
   isoi->loading=0;
   STOP_TIMER(total_time);
-  PRINTF(" - %.1f MB/%.1f s\n",(float)return_filesize/1000000.,total_time);
+  PRINTF("Loaded %.1f MB/%.1f s\n",(float)return_filesize/1000000.,total_time);
   return return_filesize;
 }
 
@@ -5841,6 +5840,7 @@ void LoadAllIsos(int iso_type){
     }
   }
   STOP_TIMER(load_time);
+  printf("\n");
   PrintFileLoadTimes(file_count,load_size,load_time);
 }
 
@@ -5953,7 +5953,7 @@ void LoadBoundaryMenu(int value){
         THREADcontrol(compress_threads, THREAD_LOCK);
         SetLoadedPatchBounds(&value, 1);
         if(patchi->structured == YES){
-          PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
+          PRINTF("\nLoading %s(%s)\n", patchi->file, patchi->label.shortlabel);
         }
         ReadBoundary(value, LOAD, &errorcode);
         THREADcontrol(compress_threads, THREAD_UNLOCK);
@@ -6023,7 +6023,7 @@ void LoadBoundaryMenu(int value){
         if(InPatchList(patchj, patchi)==1){
           THREADcontrol(compress_threads, THREAD_LOCK);
           if(patchi->structured == YES){
-            PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
+            PRINTF("\nLoading %s(%s)\n", patchi->file, patchi->label.shortlabel);
           }
           load_size+=ReadBoundary(i, LOAD, &errorcode);
           if(patchi->structured!=NO&&patchi->finalize==1){
@@ -6034,6 +6034,7 @@ void LoadBoundaryMenu(int value){
         }
       }
       STOP_TIMER(load_time);
+      printf("\n");
       PrintFileLoadTimes(file_count,load_size,load_time);
     }
     force_redisplay=1;
@@ -10278,8 +10279,6 @@ static int menu_count=0;
 #endif
   if(visMeshlabel == 1)glutAddMenuEntry("*Mesh", MENU_LABEL_meshlabel);
   if(visMeshlabel == 0)glutAddMenuEntry("Mesh", MENU_LABEL_meshlabel);
-  if(vis_slice_average == 1)glutAddMenuEntry("*Slice average", MENU_LABEL_sliceaverage);
-  if(vis_slice_average == 0)glutAddMenuEntry("Slice average", MENU_LABEL_sliceaverage);
   if(LabelGetNUserLabels(&global_scase.labelscoll) > 0){
     if(visLabels == 1)glutAddMenuEntry("*Text labels", MENU_LABEL_textlabels);
     if(visLabels == 0)glutAddMenuEntry("Text labels", MENU_LABEL_textlabels);

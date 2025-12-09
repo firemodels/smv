@@ -2553,7 +2553,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   int filesize;
 
   if(current_script_command==NULL||NOT_LOADRENDER){
-    PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
+    PRINTF("\nLoading %s(%s)\n", patchi->file, patchi->label.shortlabel);
   }
   filesize=GetGeomData(patchi, patchi->file, load_flag, ntimes_local, nvals, patchi->geom_times,
     patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, geom_offsets, &error);
@@ -2676,6 +2676,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     if(slice_average_flag==1){
       int data_per_timestep, nvals2, ntimes;
       float *times, **qvalptrs;
+      char slice_label[256];
 
       show_slice_average = 1;
       nvals2 = slicei->patchgeom->geom_nvals;
@@ -2686,7 +2687,8 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       for(i = 0; i < ntimes; i++){
         qvalptrs[i] = slicei->patchgeom->geom_vals + i*data_per_timestep;
       }
-      if(TimeAverageData(qvalptrs, qvalptrs, nvals2, data_per_timestep, times, ntimes, slice_average_interval)==1){
+      sprintf(slice_label, "averaging data - mesh %i", slicei->blocknumber+1);
+      if(TimeAverageData(slice_label, qvalptrs, qvalptrs, nvals2, data_per_timestep, times, ntimes, slice_average_interval)==1){
         show_slice_average = 0;
       }
     }
@@ -2789,7 +2791,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   updatemenu = 1;
   STOP_TIMER(total_time);
   if(current_script_command==NULL||NOT_LOADRENDER){
-    PRINTF(" - %.1f MB/%.1f s\n", (float)return_filesize/1000000., total_time);
+    PRINTF("Loaded %.1f MB/%.1f s\n", (float)return_filesize/1000000., total_time);
   }
   PrintMemoryInfo;
 #ifdef pp_RECOMPUTE_DEBUG

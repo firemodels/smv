@@ -2701,6 +2701,7 @@ GLUI_Rollout *ROLLOUT_iso_colors = NULL;
 GLUI_Rollout *ROLLOUT_smoke3d=NULL,*ROLLOUT_volsmoke3d=NULL;
 GLUI_Rollout *ROLLOUT_time=NULL,*ROLLOUT_colorbar=NULL;
 GLUI_Rollout *ROLLOUT_outputpatchdata=NULL;
+GLUI_Rollout *ROLLOUT_boundary_average=NULL;
 GLUI_Rollout *ROLLOUT_slice_settings = NULL;
 GLUI_Rollout *ROLLOUT_filebounds = NULL;
 GLUI_Rollout *ROLLOUT_showhide = NULL;
@@ -2816,6 +2817,7 @@ GLUI_Spinner *SPINNER_tload_end=NULL;
 GLUI_Spinner *SPINNER_tload_skip=NULL;
 GLUI_Spinner *SPINNER_plot3d_vectorpointsize=NULL,*SPINNER_plot3d_vectorlinewidth=NULL,*SPINNER_plot3d_vectorlinelength=NULL;
 GLUI_Spinner *SPINNER_sliceaverage=NULL;
+GLUI_Spinner *SPINNER_boundaryaverage=NULL;
 GLUI_Spinner *SPINNER_zipstep=NULL;
 GLUI_Spinner *SPINNER_partstreaklength=NULL;
 GLUI_Spinner *SPINNER_partpointsize=NULL;
@@ -2911,6 +2913,7 @@ GLUI_Checkbox *CHECKBOX_cellcenter_slice_interp=NULL;
 GLUI_Checkbox *CHECKBOX_skip_subslice=NULL;
 GLUI_Checkbox *CHECKBOX_turb_slice=NULL;
 GLUI_Checkbox *CHECKBOX_average_slice=NULL;
+GLUI_Checkbox *CHECKBOX_average_boundary=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_begin=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_end=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
@@ -3070,11 +3073,12 @@ int      nparticleprocinfo=0;
 //*** subboundprocinfo entries
 #define BOUNDARY_BOUND             0
 #define BOUNDARY_CHOP              1
-#define BOUNDARY_OUTPUT_ROLLOUT    2
-#define BOUNDARY_DUPLICATE_ROLLOUT 3
-#define BOUNDARY_SETTINGS_ROLLOUT  4
+#define BOUNDARY_AVERAGE_ROLLOUT   2
+#define BOUNDARY_OUTPUT_ROLLOUT    3
+#define BOUNDARY_DUPLICATE_ROLLOUT 4
+#define BOUNDARY_SETTINGS_ROLLOUT  5
 
-procdata  subboundprocinfo[5];
+procdata  subboundprocinfo[6];
 int       nsubboundprocinfo=0;
 
 /* ------------------ UpdateShowExtPatch ------------------------ */
@@ -4143,8 +4147,12 @@ extern "C" void BoundBoundCB(int var){
         patchdata *patchi;
 
         patchi = global_scase.patchinfo + i;
-        if(patchi->loaded == 0)continue;
-        LoadBoundaryMenu(i);
+        if(patchi->loaded == 1){
+          int errorcode;
+
+          ReadBoundary(i,UNLOAD,&errorcode);
+          ReadBoundary(i,LOAD,&errorcode);
+        }
       }
     }
     break;
@@ -5050,6 +5058,14 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
     patchboundsCPP.setup("boundary", ROLLOUT_bound, patchbounds_cpp, npatchbounds_cpp, &cache_boundary_data, SHOW_CACHE_CHECKBOX, GLUIPatchBoundsCPP_CB,
       SubBoundRolloutCB, subboundprocinfo, &nsubboundprocinfo);
+
+    ROLLOUT_boundary_average = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, "Average data", false, BOUNDARY_AVERAGE_ROLLOUT, SubBoundRolloutCB);
+    TOGGLE_ROLLOUT(subboundprocinfo, nsubboundprocinfo, ROLLOUT_boundary_average, BOUNDARY_AVERAGE_ROLLOUT, glui_bounds);
+
+    CHECKBOX_average_boundary = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_average, "Average boundary data", &boundary_average_flag);
+    SPINNER_boundaryaverage = glui_bounds->add_spinner_to_panel(ROLLOUT_boundary_average, "Time interval", GLUI_SPINNER_FLOAT, &boundary_average_interval);
+    SPINNER_boundaryaverage->set_float_limits(0.0, MAX(120.0, global_scase.tourcoll.tour_tstop));
+    glui_bounds->add_button_to_panel(ROLLOUT_boundary_average, "Reload", FILE_RELOAD, BoundBoundCB);
 
     ROLLOUT_outputpatchdata = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, "Output data", false,
       BOUNDARY_OUTPUT_ROLLOUT, SubBoundRolloutCB);
