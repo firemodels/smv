@@ -894,6 +894,14 @@ then select and move the mouse in the  rotation control.  One may also select wh
 
 \chapter{Visualizing Smoke}
 
+FDS generates several data files
+visualized by Smokeview. Each file type may be loaded or unloaded
+using the {\em Load/Unload}\ menu described in Appendix
+\ref{sectload}. Visualizations produced by these data files are
+described in this and the following sections. The format used to
+store each of the data files is given in the FDS User's
+Guide~\cite{FDS_Users_Guide}.
+
 \section{Tracers and Streaklines}
 
 \renewcommand{\figheight}{1.4in}
@@ -901,10 +909,10 @@ then select and move the mouse in the  rotation control.  One may also select wh
 \label{section:particles}\ Particle files contain the locations of
 tracer particles used to visualize the flow field. Figure
 \ref{figparticle}\ shows several snapshots of a developing kitchen
-fire visualized by using particles where particles are colored
-black. If present, sprinkler water droplets would be colored blue.
-Particles are stored in files ending with the extension {\tt
-.prt5}\ and are displayed by selecting the particle file entry from
+fire visualized using particles colored black. 
+If present, sprinkler water droplets are colored blue.
+Particles are stored in files having the extension {\tt .prt5}\
+and are displayed by selecting the particle file entry from
 the {\em Load/Unload}\ menu.
 
 Streaklines are a technique for showing motion in a still image.
@@ -954,15 +962,7 @@ files and Section \ref{section:isosurface}\ for some examples.
 %---------------------------------------------------------------------------------
 %---------------------------------------------------------------------------------
 \section{Realistic}
-\label{section:volsmoke}\ FDS generates several data files
-visualized by Smokeview. Each file type may be loaded or unloaded
-using the {\em Load/Unload}\ menu described in Appendix
-\ref{sectload}. Visualizations produced by these data files are
-described in this and the following sections. The format used to
-store each of the data files is given in the FDS User's
-Guide~\cite{FDS_Users_Guide}.
-
-Visualizing smoke realistically is a daunting challenge for at
+\label{section:volsmoke}\ Visualizing smoke realistically is a daunting challenge for at
 least three reasons. First, the storage requirements for
 describing smoke can easily exceed the disk capacities of present
 32 bit operating systems such as Linux, i.e., file sizes can easily
@@ -1360,7 +1360,7 @@ FDS also outputs duplicate slices when two or more identical {\tt \&SLCF}\ entri
 \section{2D Shaded Contours on Solid Surfaces - Boundary Files}
 \label{section:bf}
 Boundary files contain simulation data recorded at blockage or
-wall surfaces. Continuously shaded contours are drawn for
+wall surfaces. Shaded contours are drawn for
 quantities such as wall surface temperature, radiative flux, etc.
 Figure \ref{figboundary}\ shows several snapshots of a boundary
 file animation where the surfaces are colored according to their
@@ -1437,7 +1437,7 @@ by using:
 \begin{lstlisting}
 &BNDF QUANTITY='WALL TEMPERATURE' /
 \end{lstlisting}
-Loading a boundary file is a memory intensive operation.  The
+Loading a boundary file is memory intensive.  The
 entire boundary file is read in to determine the minimum and
 maximum data values.  These bounds are then used to convert four
 byte floats to one byte color indices.  To reduce
