@@ -27,18 +27,20 @@ EXTERNCPP char *CasePathCaseIni(smv_case *scase);
 EXTERNCPP char *CasePathFed(smv_case *scase);
 // char *dEcsv_filename;
 EXTERNCPP char *CasePathDeCsv(smv_case *scase);
-// char *html_filename;
-EXTERNCPP char *CasePathHtml(smv_case *scase);
-// char *smv_orig_filename;
-EXTERNCPP char *CasePathSmvOrig(smv_case *scase);
+#ifdef pp_HTML
 // char *htmlvr_filename;
 EXTERNCPP char *CasePathHtmlVr(smv_case *scase);
+// char *html_filename;
+EXTERNCPP char *CasePathHtml(smv_case *scase);
 // char *htmlobst_filename;
 EXTERNCPP char *CasePathHtmlObst(smv_case *scase);
 // char *htmlslicenode_filename;
 EXTERNCPP char *CasePathHtmlSliceNode(smv_case *scase);
 // char *htmlslicecell_filename;
 EXTERNCPP char *CasePathHtmlSliceCell(smv_case *scase);
+// char *smv_orig_filename;
+#endif
+EXTERNCPP char *CasePathSmvOrig(smv_case *scase);
 // char *event_filename;
 EXTERNCPP char *CasePathEvent(smv_case *scase);
 // char *ffmpeg_command_filename;

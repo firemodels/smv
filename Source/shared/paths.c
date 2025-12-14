@@ -141,6 +141,7 @@ char *CasePathSmvOrig(smv_case *scase){
   return SetupPath(NULL, scase->fdsprefix, ".smo");
 }
 
+#ifdef pp_HTML
 /* ------------------ CasePathHtmlVr ------------------------ */
 
 // char *htmlvr_filename;
@@ -168,6 +169,7 @@ char *CasePathHtmlSliceNode(smv_case *scase){
 char *CasePathHtmlSliceCell(smv_case *scase){
   return SetupPath(NULL, scase->fdsprefix, "_slicecell.json");
 }
+#endif
 
 /* ------------------ CasePathEvent ------------------------ */
 
