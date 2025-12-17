@@ -928,16 +928,22 @@ int CompileScript(char *scriptfile){
         break;
 #ifdef pp_HTML
 // RENDERDIR
-// RENDERHTMLDIR
 //  directory name (char) (where rendered files will go)
       case SCRIPT_RENDERDIR:
       case SCRIPT_RENDERHTMLDIR:
+#else
+// RENDERDIR
+//  directory name (char) (where rendered files will go)
+      case SCRIPT_RENDERDIR:
+#endif
       {
         int len;
         int i;
 
         scripti->need_graphics = 1;
+#ifdef pp_HTML
         if(kw->index==SCRIPT_RENDERHTMLDIR)scripti->need_graphics = 0;
+#endif
         SETbuffer;
         if(script_renderdir_cmd!=NULL&&strlen(script_renderdir_cmd)>0){
           strcpy(param_buffer, script_renderdir_cmd);
@@ -959,7 +965,6 @@ int CompileScript(char *scriptfile){
         }
         break;
       }
-#endif
 
 // SCENECLIP
 //  clip mode (int)
