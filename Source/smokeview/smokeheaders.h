@@ -741,6 +741,7 @@ EXTERNCPP void UpdateUseTextures(void);
 EXTERNCPP void UpdateVentOffset(void);
 EXTERNCPP void WriteIni(int flag,char *file);
 
+#ifdef pp_HTML
 //*** renderhtml.c headers
 
 EXTERNCPP int Obst2Data(char *html_file);
@@ -748,6 +749,7 @@ EXTERNCPP int SliceNode2Data(char *html_file, int option);
 EXTERNCPP int SliceCell2Data(char *html_file, int option);
 EXTERNCPP int Smv2Html(char *html_out, int option, int from_where);
 EXTERNCPP int Smv2Geom(char *html_file);
+#endif
 
 //*** renderimage.c headers
 

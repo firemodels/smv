@@ -2040,11 +2040,12 @@ void RenderMenu(int value){
     }
     Keyboard('R',FROM_SMOKEVIEW);
     break;
+#ifdef pp_HTML
   case RenderJSON:
   case RenderJSONALL:
     {
 
-      char *htmlobst_filename = CasePathHtmlObst(&global_scase);
+      char *htmlobst_filename      = CasePathHtmlObst(&global_scase);
       char *htmlslicenode_filename = CasePathHtmlSliceNode(&global_scase);
       char *htmlslicecell_filename = CasePathHtmlSliceCell(&global_scase);
       int json_option;
@@ -2088,6 +2089,7 @@ void RenderMenu(int value){
       FREEMEMORY(html_filename);
 
     } break;
+#endif
   case RenderCancel:
     RenderState(RENDER_OFF);
     break;
@@ -11538,11 +11540,13 @@ static int menu_count=0;
     CREATEMENU(rendermenu,RenderMenu);
     GLUTADDSUBMENU("Start rendering",  render_startmenu);
     glutAddMenuEntry("Stop rendering", RenderCancel);
+#ifdef pp_HTML
     glutAddMenuEntry("-", MENU_DUMMY);
     glutAddMenuEntry("Render html(current)", RenderHTML);
     glutAddMenuEntry("Render html(all)",     RenderHTMLALL);
     glutAddMenuEntry("Render json(current)",  RenderJSON);
     glutAddMenuEntry("Render json(all)",     RenderJSONALL);
+#endif
 
     glutAddMenuEntry("-", MENU_DUMMY);
 

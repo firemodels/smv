@@ -1485,8 +1485,9 @@ extern "C" void GLUIMotionSetup(int main_window){
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "jpg");
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "gif");
 
+#ifdef pp_HTML
   glui_motion->add_button_to_panel(PANEL_render_file, "Render to html", RENDER_HTML, RenderCB);
-
+#endif
   LIST_render_skip = glui_motion->add_listbox_to_panel(ROLLOUT_render, "Show:", &render_skip, RENDER_SKIP, RenderCB);
   for(i = 0; i<NRENDER_SKIPS; i++){
     LIST_render_skip->add_item(render_skips[i], crender_skips[i]);
@@ -2683,11 +2684,15 @@ void RenderCB(int var){
     case RENDER_LABEL:
     case RENDER_TYPE:
       break;
-    case RENDER_HTML: {
-      char *html_filename = CasePathHtml(&global_scase);
-      Smv2Html(html_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW);
-      FREEMEMORY(html_filename);
-    } break;
+#ifdef pp_HTML
+    case RENDER_HTML:
+      {
+        char *html_filename = CasePathHtml(&global_scase);
+        Smv2Html(html_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW);
+        FREEMEMORY(html_filename);
+      } 
+      break;
+#endif
 #ifdef pp_RENDER360_DEBUG
     case RENDER_DEBUG_360:
       if(debug_360_skip_x<2){

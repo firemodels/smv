@@ -382,6 +382,7 @@ void InitKeywords(void){
   InitKeyword("RENDERCLIP",          SCRIPT_RENDERCLIP, 1);          // documented
   InitKeyword("RENDERDIR",           SCRIPT_RENDERDIR, 1);           // documented
   InitKeyword("RENDERDOUBLEONCE",    SCRIPT_RENDERDOUBLEONCE, 1);    // documented
+#ifdef pp_HTML
   InitKeyword("RENDERHTMLALL",       SCRIPT_RENDERHTMLALL, 1);       // documented
   InitKeyword("RENDERHTMLDIR",       SCRIPT_RENDERHTMLDIR, 1);       // documented
   InitKeyword("RENDERHTMLGEOM",      SCRIPT_RENDERHTMLGEOM, 1);
@@ -389,6 +390,7 @@ void InitKeywords(void){
   InitKeyword("RENDERHTMLONCE",      SCRIPT_RENDERHTMLONCE, 1);      // documented
   InitKeyword("RENDERHTMLSLICECELL", SCRIPT_RENDERHTMLSLICECELL, 2);
   InitKeyword("RENDERHTMLSLICENODE", SCRIPT_RENDERHTMLSLICENODE, 2);
+#endif
   InitKeyword("RENDERONCE",          SCRIPT_RENDERONCE, 1);          // documented
   InitKeyword("RENDERSIZE",          SCRIPT_RENDERSIZE, 1);          // documented
   InitKeyword("RENDERSTART",         SCRIPT_RENDERSTART, 1);         // documented
@@ -924,18 +926,24 @@ int CompileScript(char *scriptfile){
           scripti->ival = AVI;
         }
         break;
-
+#ifdef pp_HTML
 // RENDERDIR
-// RENDERHTMLDIR
 //  directory name (char) (where rendered files will go)
       case SCRIPT_RENDERDIR:
       case SCRIPT_RENDERHTMLDIR:
+#else
+// RENDERDIR
+//  directory name (char) (where rendered files will go)
+      case SCRIPT_RENDERDIR:
+#endif
       {
         int len;
         int i;
 
         scripti->need_graphics = 1;
+#ifdef pp_HTML
         if(kw->index==SCRIPT_RENDERHTMLDIR)scripti->need_graphics = 0;
+#endif
         SETbuffer;
         if(script_renderdir_cmd!=NULL&&strlen(script_renderdir_cmd)>0){
           strcpy(param_buffer, script_renderdir_cmd);
@@ -994,7 +1002,7 @@ int CompileScript(char *scriptfile){
       case SCRIPT_RENDERDOUBLEONCE:
         SETcval2;
         break;
-
+#ifdef pp_HTML
 // RENDERHTMLONCE
 // RENDERHTMLALL
 // file name base (char) (or blank to use smokeview default)
@@ -1016,7 +1024,7 @@ int CompileScript(char *scriptfile){
         SETcval2;
         scripti->need_graphics = 0;
         break;
-
+#endif
 // RENDERSTART
 //  start_frame (int) skip_frame (int)
       case SCRIPT_RENDERSTART:
@@ -1572,6 +1580,7 @@ case SCRIPT_LOADSMV:
   return return_val;
 }
 
+#ifdef pp_HTML
 /* ------------------ GetWebFileName ------------------------ */
 
 void GetWebFileName(char *web_filename, scriptdata *scripti){
@@ -1648,6 +1657,7 @@ void ScriptRenderHtml(scriptdata *scripti, int option){
   GetWebFileName(webvr_filename, scripti);
   strcat(webvr_filename,"_vr.html");
 }
+#endif
 
 /* ------------------ ScriptRenderStart ------------------------ */
 
@@ -4019,6 +4029,7 @@ int RunScriptCommand(scriptdata *script_command){
         script_dir_path=NULL;
       }
       break;
+#ifdef pp_HTML
     case SCRIPT_RENDERHTMLDIR:
       if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
         script_htmldir_path = scripti->cval;
@@ -4033,6 +4044,7 @@ int RunScriptCommand(scriptdata *script_command){
         script_htmldir_path = NULL;
       }
       break;
+#endif
     case SCRIPT_KEYBOARD:
       if(scripti->cval!=NULL){
         char *key;
@@ -4084,6 +4096,7 @@ int RunScriptCommand(scriptdata *script_command){
       Keyboard('r',FROM_SMOKEVIEW);
       returnval=1;
       break;
+#ifdef pp_HTML
     case SCRIPT_RENDERHTMLALL:
       ScriptRenderHtml(scripti, HTML_ALL_TIMES);
       returnval = 1;
@@ -4108,6 +4121,7 @@ int RunScriptCommand(scriptdata *script_command){
       ScriptRenderSliceCell(scripti);
       returnval = 1;
       break;
+#endif
     case SCRIPT_RENDERDOUBLEONCE:
       Keyboard('R',FROM_SMOKEVIEW);
       returnval=1;
