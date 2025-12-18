@@ -570,7 +570,17 @@ void UpdateMovieType(int type){
 
 void UpdateRenderType(int type){
   render_filetype = type;
+#ifdef pp_JPEG
   if(RADIO_render_type!=NULL)RADIO_render_type->set_int_val(render_filetype);
+#else
+  if(render_filetype==PNG){
+    render_filetype_glui = 0;
+  }
+  else{
+    render_filetype_glui = 1;
+  }
+  if(RADIO_render_type!=NULL)RADIO_render_type->set_int_val(render_filetype_glui);
+#endif
   updatemenu = 1;
 }
 
@@ -1480,10 +1490,22 @@ extern "C" void GLUIMotionSetup(int main_window){
   glui_motion->add_column_to_panel(PANEL_render_file, false);
 
   PANEL_file_type = glui_motion->add_panel_to_panel(PANEL_render_file, "type:", true);
+#ifdef pp_JPEG
   RADIO_render_type = glui_motion->add_radiogroup_to_panel(PANEL_file_type, &render_filetype, RENDER_TYPE, RenderCB);
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "png");
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "jpg");
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "gif");
+#else
+  if(render_filetype==PNG){
+    render_filetype_glui=0;
+  }
+  else{
+    render_filetype_glui=1;
+  }
+  RADIO_render_type = glui_motion->add_radiogroup_to_panel(PANEL_file_type, &render_filetype_glui, RENDER_TYPE, RenderCB);
+  glui_motion->add_radiobutton_to_group(RADIO_render_type, "png");
+  glui_motion->add_radiobutton_to_group(RADIO_render_type, "gif");
+#endif
 
 #ifdef pp_HTML
   glui_motion->add_button_to_panel(PANEL_render_file, "Render to html", RENDER_HTML, RenderCB);
@@ -2680,9 +2702,19 @@ void RenderCB(int var){
     case MAKE_MOVIE:
       HandleMakeMovie();
       break;
+    case RENDER_TYPE:
+#ifndef pp_JPEG
+      if(render_filetype_glui==0){
+        render_filetype = PNG;
+      }
+      else{
+        render_filetype = RGIF;
+      }
+      updatemenu=1;
+#endif
+      break;
     case RENDER_SKIP:
     case RENDER_LABEL:
-    case RENDER_TYPE:
       break;
 #ifdef pp_HTML
     case RENDER_HTML:
