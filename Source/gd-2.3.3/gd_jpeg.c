@@ -48,8 +48,16 @@
 #endif
 
 /* 1.8.1: remove dependency on jinclude.h */
+//#pragma pack(push, 8)
 #include "jpeglib.h"
+//#pragma pack(pop)
 #include "jerror.h"
+
+
+//#pragma message ("sizeof(jpeg_compress_struct) = " STRINGIFY(sizeof(struct jpeg_compress_struct)))
+//#pragma message ("sizeof(jpeg_error_mgr) = " STRINGIFY(sizeof(struct jpeg_error_mgr)))
+
+//static_assert(sizeof(struct jpeg_compress_struct) == 584, "Check jpeg_compress_struct size");
 
 static const char *const GD_JPEG_VERSION = "1.0";
 
