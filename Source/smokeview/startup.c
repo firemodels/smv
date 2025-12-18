@@ -1509,7 +1509,9 @@ void InitVars(void){
   }
 
   strcpy(ext_png, ".png");
+#ifdef pp_JPEG
   strcpy(ext_jpg, ".jpg");
+#endif
   strcpy(ext_gif, ".gif");
   render_filetype=PNG;
 

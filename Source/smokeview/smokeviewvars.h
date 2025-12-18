@@ -600,6 +600,9 @@ SVEXTERN int SVDECL(render_clip_top, 0);
 SVEXTERN int render_size_index;
 SVEXTERN int SVDECL(renderW, 640), SVDECL(renderH, 480), render_window_size;
 SVEXTERN int render_filetype;
+#ifndef pp_JPEG
+SVEXTERN int render_filetype_glui;
+#endif
 SVEXTERN int SVDECL(render_label_type, RENDER_LABEL_FRAMENUM);
 
 SVEXTERN int SVDECL(movie_crf, 17);
@@ -1836,7 +1839,9 @@ SVEXTERN   int openfileflag;
 SVEXTERN float xyzmaxdiff;
 SVEXTERN float vector_scalelength;
 SVEXTERN char ext_png[5];
+#ifdef pp_JPEG
 SVEXTERN char ext_jpg[5];
+#endif
 SVEXTERN char ext_gif[5];
 SVEXTERN int SVDECL(encode_png, 1);
 #ifdef INMAIN
