@@ -11485,41 +11485,32 @@ static int menu_count=0;
     }
 
     CREATEMENU(render_filetypemenu, RenderMenu);
-#ifdef pp_JPEG
-    if(render_filetype==PNG){
+    switch(render_filetype){
+    case PNG:
       glutAddMenuEntry("  *PNG", RenderPNG);
+#ifdef pp_JPEG
       glutAddMenuEntry("  JPEG", RenderJPEG);
+#endif
       glutAddMenuEntry("   GIF", RenderGIF);
-    }
-    else if(render_filetype==JPEG){
+      break;
+#ifdef pp_JPEG
+    case JPEG:
       glutAddMenuEntry("   PNG", RenderPNG);
       glutAddMenuEntry(" *JPEG", RenderJPEG);
       glutAddMenuEntry("   GIF", RenderGIF);
-    }
-    else if(render_filetype == RGIF){
-      glutAddMenuEntry("   PNG", RenderPNG);
-      glutAddMenuEntry("  JPEG", RenderJPEG);
-      glutAddMenuEntry("  *GIF", RenderGIF);
-    }
-    else{
-      glutAddMenuEntry("   PNG", RenderPNG);
-      glutAddMenuEntry("  JPEG", RenderJPEG);
-      glutAddMenuEntry("   GIF", RenderGIF);
-    }
-#else
-    if(render_filetype==PNG){
-      glutAddMenuEntry("  *PNG", RenderPNG);
-      glutAddMenuEntry("   GIF", RenderGIF);
-    }
-    else if(render_filetype == RGIF){
-      glutAddMenuEntry("   PNG", RenderPNG);
-      glutAddMenuEntry("  *GIF", RenderGIF);
-    }
-    else{
-      glutAddMenuEntry("   PNG", RenderPNG);
-      glutAddMenuEntry("   GIF", RenderGIF);
-    }
+      break;
 #endif
+    case RGIF:
+      glutAddMenuEntry("   PNG", RenderPNG);
+#ifdef pp_JPEG
+      glutAddMenuEntry("  JPEG", RenderJPEG);
+#endif
+      glutAddMenuEntry("  *GIF", RenderGIF);
+      break;
+    default:
+      assert(FFALSE);
+      break;
+    }
 
     CREATEMENU(render_startmenu,RenderMenu);
     {

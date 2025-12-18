@@ -93,24 +93,21 @@ void MakeMovie(void){
 
   if(render_status == RENDER_ON)return;
 
+  switch(render_filetype){
+  case PNG:
+    strcpy(image_ext, ".png");
+    break;
 #ifdef pp_JPEG
-  if(render_filetype==JPEG){
+  case JPEG:
     strcpy(image_ext, ".jpg");
-  }
-  else if(render_filetype == RGIF){
-    strcpy(image_ext, ".gif");
-  }
-  else{
-    strcpy(image_ext, ".png");
-  }
-#else
-  if(render_filetype == RGIF){
-    strcpy(image_ext, ".gif");
-  }
-  else{
-    strcpy(image_ext, ".png");
-  }
+    break;
 #endif
+  case RGIF:
+    strcpy(image_ext, ".gif");
+    break;
+  default:
+    assert(FFALSE);
+  }
 // construct full pathname of movie
 
   GetMovieFilePath(moviefile_path);
