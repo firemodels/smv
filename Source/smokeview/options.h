@@ -14,12 +14,12 @@
 //#define pp_SHOW_UPDATE      // show what is being updated in the UpdateShowScene routine
 //#define pp_TERRAIN_HIDE     // hide terrain when hiding internal blockages
 //#define pp_HTML             // add option to render to html (html render not working)
-//define pp_JPEG              // isolate jpeg code (rendering to jpeg not work)
 
 //*** options: windows
 
 #ifdef _WIN32
 #define pp_DIALOG_SHORTCUTS // dialog shortcuts
+//#define pp_JPEG           // isolate jpeg code (rendering to jpeg does not work on windows)
 #endif
 
 //*** options: Linux
@@ -27,12 +27,18 @@
 #ifdef __linux__
 #define pp_REFRESH          // refresh glui dialogs when they change size
 #define pp_DIALOG_SHORTCUTS // dialog shortcuts
+#ifndef pp_JPEG
+#define pp_JPEG             // jpeg rendering works on linux
+#endif
 #endif
 
 //*** options: OSX
 
 #ifdef pp_OSX
 #define pp_REFRESH      // refresh glui dialogs when they change size
+#ifndef pp_JPEG
+#define pp_JPEG             // jpeg rendering works on osx
+#endif
 #endif
 
 //*** options: for debugging
