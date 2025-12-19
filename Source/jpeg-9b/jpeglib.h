@@ -1055,6 +1055,8 @@ EXTERN(JDIMENSION) jpeg_read_scanlines JPP((j_decompress_ptr cinfo,
 					    JDIMENSION max_lines));
 EXTERN(boolean) jpeg_finish_decompress JPP((j_decompress_ptr cinfo));
 
+EXTERN(void) JpegTest(char *message);
+
 /* Replaces jpeg_read_scanlines when reading raw downsampled data. */
 EXTERN(JDIMENSION) jpeg_read_raw_data JPP((j_decompress_ptr cinfo,
 					   JSAMPIMAGE data,
