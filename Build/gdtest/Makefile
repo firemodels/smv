@@ -17,9 +17,11 @@ bin = .
 
 LIB_DIR = $(BUILD_DIR)/LIBS
 WIN_LIBDIR = $(LIB_DIR)/intel_win
+LINUX_LIBDIR = $(LIB_DIR)/intel_linux
 
 INC_DIR = -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR)/jpeg-9b
 WIN_LIBS = $(WIN_LIBDIR)\gd.lib $(WIN_LIBDIR)\jpeg.lib
+LINUX_LIBS= -lgd -ljpeg
 
 # Definition of the object variables
 
@@ -80,10 +82,10 @@ gnu_linux_format: $(srcs)
 
 intel_linux : CFLAGS    = -O2 -m64
 intel_linux : CC        = $(I_ICC)
-intel_linux : exe       = test_linux
+intel_linux : exe       = gdtest_linux
 
 intel_linux : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) -L$(LINUX_LIBDIR) $(LINUX_LIBS)
 
 # ------------- gnu osx ----------------
 
