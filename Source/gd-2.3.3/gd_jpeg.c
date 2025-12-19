@@ -207,7 +207,8 @@ BGD_DECLARE(void) gdJpegTest(void){
   int size1;
 
   size1 = sizeof(struct jpeg_compress_struct);
-  printf("in gdSizeTest: %i:\n",size1);
+  printf("in gd: %i:\n",size1);
+  JpegTest("from gd");
 }
 
 BGD_DECLARE(void) gdImageJpeg(gdImagePtr im, FILE *outFile, int quality)

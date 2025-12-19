@@ -12,6 +12,7 @@ int main(int argc, char **argv){
 
   size1 = sizeof(struct jpeg_compress_struct);
 
-  printf("in gdtest: %i:\n",size1);
+  printf("in gdtest/main: %i:\n",size1);
   gdJpegTest();
+  JpegTest("from main");
 }

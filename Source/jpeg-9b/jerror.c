@@ -251,3 +251,11 @@ jpeg_std_error (struct jpeg_error_mgr * err)
 
   return err;
 }
+
+void JpegTest(char *message){
+  int size1;
+
+  size1 = sizeof(struct jpeg_compress_struct);
+  printf("in jpeg %s: %i\n", message, size1);
+}
+
