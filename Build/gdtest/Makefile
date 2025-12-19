@@ -76,10 +76,10 @@ intel_linux : $(obj)
 # ------------- clang osx ----------------
 
 clang_osx : CFLAGS    = -O0 -m64
-clang_osx : LFLAGS    = -m64
+clang_osx : LFLAGS    = -m64  -L$(CLANG_OSX_LIBDIR) $(LINUXOSX_LIBS)
 clang_osx : CC        = clang
 clang_osx : CPP       = clang++
-clang_osx : exe       = test_osx -L$(CLANG_OSX_LIBDIR) $(LINUXOSX_LIBS)
+clang_osx : exe       = gdtest_osx
 
 clang_osx : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
