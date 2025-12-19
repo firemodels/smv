@@ -63,23 +63,6 @@ clang_win : exe       = test_win.exe
 clang_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin)
 
-# ------------- gnu linux----------------
-
-gnu_linux : CFLAGS    = -O2 -m64 -Wall
-gnu_linux : LFLAGS    =
-gnu_linux : CC        = gcc
-gnu_linux : exe       = test_linux
-
-gnu_linux: $(obj)
-	$(CC) -m64 -o $(bin)/$(exe) $(obj)
-
-gnu_linux_check : CFLAGS    = -O2 -m64 -Wall
-gnu_linux_check: $(srcs)
-	clang-tidy $^ --  $(CFLAGS) $(INC)
-
-gnu_linux_format: $(srcs)
-	clang-format -i $^
-
 # ------------- intel linux ----------------
 
 intel_linux : CFLAGS    = -O2 -m64
@@ -88,17 +71,6 @@ intel_linux : exe       = gdtest_linux
 
 intel_linux : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) -L$(LINUX_LIBDIR) $(LINUX_LIBS)
-
-# ------------- gnu osx ----------------
-
-gnu_osx : CFLAGS    = -O0 -m64
-gnu_osx : LFLAGS    = -m64
-gnu_osx : CC        = gcc
-gnu_osx : CPP       = g++
-gnu_osx : exe       = test_osx
-
-gnu_osx : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- clang osx ----------------
 
