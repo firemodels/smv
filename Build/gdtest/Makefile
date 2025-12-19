@@ -18,10 +18,12 @@ bin = .
 LIB_DIR = $(BUILD_DIR)/LIBS
 WIN_LIBDIR = $(LIB_DIR)/intel_win
 LINUX_LIBDIR = $(LIB_DIR)/intel_linux
+OSX_LIBDIR = $(LIB_DIR)/clang_osx
 
 INC_DIR = -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR)/jpeg-9b
 WIN_LIBS = $(WIN_LIBDIR)\gd.lib $(WIN_LIBDIR)\jpeg.lib
 LINUX_LIBS= -lgd -ljpeg
+OSX_LIBS= -lgd -ljpeg
 
 # Definition of the object variables
 
@@ -104,7 +106,7 @@ clang_osx : CFLAGS    = -O0 -m64
 clang_osx : LFLAGS    = -m64
 clang_osx : CC        = clang
 clang_osx : CPP       = clang++
-clang_osx : exe       = test_osx
+clang_osx : exe       = test_osx -L$(OSX_LIBDIR) $(OSX_LIBS)
 
 clang_osx : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
