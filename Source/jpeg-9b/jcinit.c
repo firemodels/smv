@@ -20,6 +20,14 @@
 #include "jinclude.h"
 #include "jpeglib.h"
 
+//#define STRINGIFY_HELPER(x) #x
+//#define STRINGIFY(x) STRINGIFY_HELPER(x)
+
+//#pragma message ("sizeof(jpeg_compress_struct) = " STRINGIFY(sizeof(struct jpeg_compress_struct)))
+//#pragma message ("sizeof(jpeg_error_mgr) = " STRINGIFY(sizeof(struct jpeg_error_mgr)))
+
+
+//static_assert(sizeof(struct jpeg_compress_struct) == 584, "Check jpeg_compress_struct size");
 
 /*
  * Master selection of compression modules.
