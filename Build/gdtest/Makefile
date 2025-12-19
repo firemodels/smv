@@ -16,14 +16,15 @@ VPATH = $(SOURCE_DIR)/gdtest
 bin = .
 
 LIB_DIR = $(BUILD_DIR)/LIBS
-WIN_LIBDIR = $(LIB_DIR)/intel_win
-LINUX_LIBDIR = $(LIB_DIR)/intel_linux
-OSX_LIBDIR = $(LIB_DIR)/clang_osx
+INTEL_WIN_LIBDIR = $(LIB_DIR)/intel_win
+CLANG_WIN_LIBDIR = $(LIB_DIR)/clang_win
+INTEL_LINUX_LIBDIR = $(LIB_DIR)/intel_linux
+CLANG_OSX_LIBDIR = $(LIB_DIR)/clang_osx
 
 INC_DIR = -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR)/jpeg-9b
-WIN_LIBS = $(WIN_LIBDIR)\gd.lib $(WIN_LIBDIR)\jpeg.lib
-LINUX_LIBS= -lgd -ljpeg
-OSX_LIBS= -lgd -ljpeg
+INTEL_WIN_LIBS = $(INTEL_WIN_LIBDIR)\gd.lib $(INTEL_WIN_LIBDIR)\jpeg.lib
+CLANG_WIN_LIBS = $(CLANG_WIN_LIBDIR)\gd.lib $(CLANG_WIN_LIBDIR)\jpeg.lib
+LINUXOSX_LIBS= -lgd -ljpeg
 
 # Definition of the object variables
 
@@ -46,22 +47,22 @@ no_target:
 
 # ------------- intel win ----------------
 
-intel_win : CFLAGS    = -Od /nologo -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB -D BGDWIN32 -D NONDLL
+intel_win : CFLAGS    = -Od /nologo -D BGDWIN32
 intel_win : CC        = $(I_CC)
 intel_win : exe       = gdtest_win.exe
 
 intel_win : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin) $(WIN_LIBS)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(INTEL_WIN_LIBS)
 
 # ------------- clang win ----------------
 
-clang_win : CFLAGS    = -m64
+clang_win : CFLAGS    = -m64 -D BGDWIN32  
 clang_win : LFLAGS    = -m64
 clang_win : CC        = clang-cl
-clang_win : exe       = test_win.exe
+clang_win : exe       = gdtest_win.exe
 
 clang_win : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(CLANG_WIN_LIBS)
 
 # ------------- intel linux ----------------
 
@@ -70,7 +71,7 @@ intel_linux : CC        = $(I_ICC)
 intel_linux : exe       = gdtest_linux
 
 intel_linux : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) -L$(LINUX_LIBDIR) $(LINUX_LIBS)
+	$(CC) -o $(bin)/$(exe) $(obj) -L$(INTEL_LINUX_LIBDIR) $(LINUXOSX_LIBS)
 
 # ------------- clang osx ----------------
 
@@ -78,7 +79,7 @@ clang_osx : CFLAGS    = -O0 -m64
 clang_osx : LFLAGS    = -m64
 clang_osx : CC        = clang
 clang_osx : CPP       = clang++
-clang_osx : exe       = test_osx -L$(OSX_LIBDIR) $(OSX_LIBS)
+clang_osx : exe       = test_osx -L$(CLANG_OSX_LIBDIR) $(LINUXOSX_LIBS)
 
 clang_osx : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
