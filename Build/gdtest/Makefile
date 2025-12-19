@@ -15,7 +15,11 @@ include ../../scripts/intel_compiler.mak
 VPATH = $(SOURCE_DIR)/gdtest
 bin = .
 
+LIB_DIR = $(BUILD_DIR)/LIBS
+WIN_LIBDIR = $(LIB_DIR)/intel_win
+
 INC_DIR = -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR)/jpeg-9b
+WIN_LIBS = $(WIN_LIBDIR)\gd.lib $(WIN_LIBDIR)\jpeg.lib
 
 # Definition of the object variables
 
@@ -38,12 +42,12 @@ no_target:
 
 # ------------- intel win ----------------
 
-intel_win : CFLAGS    = -Od /nologo
+intel_win : CFLAGS    = -Od /nologo -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB -D BGDWIN32 -D NONDLL
 intel_win : CC        = $(I_CC)
 intel_win : exe       = gdtest_win.exe
 
 intel_win : $(objwin)
-	$(CC) -o $(bin)/$(exe) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(WIN_LIBS)
 
 # ------------- clang win ----------------
 

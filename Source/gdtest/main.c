@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "jpeglib.h"
+#include "gd.h"
 
 /* ------------------ main ------------------------ */
 
@@ -11,5 +12,6 @@ int main(int argc, char **argv){
 
   size1 = sizeof(struct jpeg_compress_struct);
 
-  printf("in test: %i:\n",size1);
+  printf("in gdtest: %i:\n",size1);
+  gdJpegTest();
 }
