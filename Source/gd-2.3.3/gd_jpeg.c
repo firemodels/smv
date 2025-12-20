@@ -48,7 +48,11 @@
 #endif
 
 /* 1.8.1: remove dependency on jinclude.h */
+#ifdef _WIN32
 #include "jpeglib_wrapper.h"
+#else
+#include "jpeglib.h"
+#endif
 #include "jerror.h"
 
 
