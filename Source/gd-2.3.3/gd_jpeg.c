@@ -48,9 +48,7 @@
 #endif
 
 /* 1.8.1: remove dependency on jinclude.h */
-//#pragma pack(push, 8)
-#include "jpeglib.h"
-//#pragma pack(pop)
+#include "jpeglib_wrapper.h"
 #include "jerror.h"
 
 
