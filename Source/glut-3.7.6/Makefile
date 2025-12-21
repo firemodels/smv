@@ -17,7 +17,7 @@ FILTERC=-Wno-implicit-int -Wno-implicit-function-declaration -Wint-to-pointer-ca
 	$(CC) -c $(CFLAGS) $(INC) $(FILTERC) $<
 
 
-CFLAGS= -O2 -I ../glut_gl $(PLATFORM) /Wno-unused_parameter 
+CFLAGS= -O2 -I ../glut_gl $(PLATFORM)
 
 RANLIB=ranlib
 
