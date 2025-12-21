@@ -114,5 +114,8 @@ if (CMAKE_C_COMPILER_ID STREQUAL Clang)
         -Wno-implicit-function-declaration
         -Wno-deprecated-declarations
         -Wno-ignored-pragmas
+        -Wno-incompatible-function-pointer-types
+        -Wno-incompatible-pointer-types
+        -Wno-macro-redefined
     )
 endif()
