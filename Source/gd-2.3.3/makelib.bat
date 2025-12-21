@@ -6,7 +6,6 @@ erase *.o *.obj libgd.a libgd.lib
 set target=libgd.lib
 if %COMPILER% == gcc set target=libgd.a
 if exist finished erase finished
-@REM make CFLAGS="-DHAVE_BOOLEAN -DBGDWIN32 -DWIN32 -DNONDLL -DENABLE_FREETYPE=OFF -DBUILD_SHARED_LIBS=OFF -DHAVE_LIBPNG -DHAVE_LIBZ -DHAVE_LIBJPEG " COMPILER=%COMPILER% LIB=%LIB% SIZE=%SIZE% RM=erase -f ./makefile %target%
 make CFLAGS="-DBGDWIN32 -DWIN32 -DENABLE_FREETYPE=OFF  -DHAVE_LIBPNG -DHAVE_LIBZ -DHAVE_LIBJPEG " COMPILER=%COMPILER% LIB=%LIB% SIZE=%SIZE% RM=erase -f ./makefile %target%
 if %COPYLIB% == 1 copy %FROMLIB% %TOLIB%
 echo finished > finished

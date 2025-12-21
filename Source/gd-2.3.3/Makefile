@@ -23,7 +23,9 @@ COMPILER=gcc -fPIC
 SIZE=-m64
 LIB=lib
 
-CC=$(COMPILER) $(SIZE) $(INCLUDEDIRS) $(STDINT) -Wno-incompatible-function-pointer-types -Wno-incompatible-pointer-types
+CC=$(COMPILER) $(SIZE) $(INCLUDEDIRS) $(STDINT) \
+            -Wno-incompatible-function-pointer-types -Wno-incompatible-pointer-types \
+            -Wno-deprecated-declarations -Wno-macro-redefined
 
 .SUFFIXES:      .c .o .obj
 
