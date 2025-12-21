@@ -24,16 +24,10 @@ LIB=lib
 # Compiler and linker flags
 NOHWOPT = -DPNG_ARM_NEON_OPT=0 -DPNG_MIPS_MSA_OPT=0 \
           -DPNG_POWERPC_VSX_OPT=0 -DPNG_INTEL_SSE_OPT=0
-STDC = -pedantic-errors # -std=c99
-WARN = -Wall -Wextra -Wundef
+WARN = -Wall -Wextra -Wundef -Wno-sign-conversion -Wno-deprecated-declarations
 WARNMORE = -Wcast-align -Wconversion -Wshadow -Wpointer-arith -Wwrite-strings \
            -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes
-LOCAL_CPPFLAGS = $(NOHWOPT)
-CPPFLAGS = -I$(ZLIBINC) # -DPNG_DEBUG=5
-ALL_CPPFLAGS = $(LOCAL_CPPFLAGS) $(CPPFLAGS)
-LOCAL_CFLAGS = $(STDC) $(WARN) # $(WARNMORE)
-CFLAGS = -O2 # -g
-ALL_CFLAGS = $(LOCAL_CFLAGS) $(CFLAGS)
+CFLAGS = -O2 -I$(ZLIBINC) $(NOHWOPT) $(WARN) $(WARNMORE)
 ARFLAGS = rc
 LDFLAGS = -L$(ZLIBLIB) # -g
 LIBS = -lz -lm
@@ -60,10 +54,10 @@ pnglibconf.h: $(PNGLIBCONF_H_PREBUILT)
 .SUFFIXES:      .c .o .obj
 
 .c.obj:
-	$(CC) -c $(ALL_CPPFLAGS) $(ALL_CFLAGS) -o $@ $*.c
+	$(CC) -c $(CFLAGS) -o $@ $*.c
 
 .c.o:
-	$(CC) -c $(ALL_CPPFLAGS) $(ALL_CFLAGS) -o $@ $*.c
+	$(CC) -c $(CFLAGS) -o $@ $*.c
 
 static: libpng.a pngtest$(EXEEXT)
 

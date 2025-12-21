@@ -64,7 +64,7 @@ target_compile_definitions(gd_static PUBLIC
     -D_WIN32_IE=0x0600
 )
 if (WIN32)
-    target_compile_definitions(gd_static PUBLIC HAVE_BOOLEAN)
+    target_compile_definitions(gd_static PUBLIC )
 endif()
 target_include_directories(gd_static PUBLIC .)
 
@@ -114,5 +114,8 @@ if (CMAKE_C_COMPILER_ID STREQUAL Clang)
         -Wno-implicit-function-declaration
         -Wno-deprecated-declarations
         -Wno-ignored-pragmas
+        -Wno-incompatible-function-pointer-types
+        -Wno-incompatible-pointer-types
+        -Wno-macro-redefined
     )
 endif()
