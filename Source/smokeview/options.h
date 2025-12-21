@@ -19,7 +19,7 @@
 
 #ifdef _WIN32
 #define pp_DIALOG_SHORTCUTS // dialog shortcuts
-//#define pp_JPEG           // isolate jpeg code (rendering to jpeg does not work on windows)
+#define pp_JPEG           // isolate jpeg code (rendering to jpeg does not work on windows)
 #endif
 
 //*** options: Linux
