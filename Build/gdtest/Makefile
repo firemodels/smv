@@ -19,6 +19,8 @@ LIB_DIR = $(BUILD_DIR)/LIBS
 INTEL_WIN_LIBDIR = $(LIB_DIR)/intel_win
 CLANG_WIN_LIBDIR = $(LIB_DIR)/clang_win
 INTEL_LINUX_LIBDIR = $(LIB_DIR)/intel_linux
+CLANG_LINUX_LIBDIR = $(LIB_DIR)/clang_linux
+GNU_LINUX_LIBDIR = $(LIB_DIR)/gnu_linux
 CLANG_OSX_LIBDIR = $(LIB_DIR)/clang_osx
 
 INC_DIR = -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR)/jpeg-9b
@@ -72,6 +74,24 @@ intel_linux : exe       = gdtest_linux
 
 intel_linux : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) -L$(INTEL_LINUX_LIBDIR) $(LINUXOSX_LIBS)
+
+# ------------- gnu linux ----------------
+
+gnu_linux : CFLAGS    = -O2 -m64
+gnu_linux : CC        = gcc
+gnu_linux : exe       = gdtest_linux
+
+gnu_linux : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) -lm -L$(GNU_LINUX_LIBDIR) $(LINUXOSX_LIBS)
+
+# ------------- clang linux ----------------
+
+clang_linux : CFLAGS    = -O2 -m64
+clang_linux : CC        = clang
+clang_linux : exe       = gdtest_linux
+
+clang_linux : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) -L$(CLANG_LINUX_LIBDIR) $(LINUXOSX_LIBS)
 
 # ------------- clang osx ----------------
 
