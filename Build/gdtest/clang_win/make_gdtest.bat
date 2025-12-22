@@ -1,12 +1,7 @@
 @echo off
 set arg1=%1
 
-:: setup compiler environment
-if x%arg1% == xbot goto skip1
-call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
-:skip1
-
-Title Building flushcache for Windows
+Title Building gdtest for Windows
 
 :: build libraries if one is missing
 call ..\..\scripts\test_libs.bat ..\..\LIBS\
