@@ -23,14 +23,16 @@ COMPILER=gcc -fPIC
 SIZE=-m64
 LIB=lib
 
-CC=$(COMPILER) $(SIZE) $(INCLUDEDIRS) $(STDINT) \
-            -Wno-incompatible-function-pointer-types -Wno-incompatible-pointer-types \
-            -Wno-deprecated-declarations -Wno-macro-redefined -Wno-deprecated-non-prototype
+CFLAGS=-Wno-incompatible-function-pointer-types -Wno-incompatible-pointer-types \
+            -Wno-deprecated-declarations -Wno-macro-redefined
+CFLAGSWIN=-Wno-deprecated-non-prototype
+
+CC=$(COMPILER) $(SIZE) $(INCLUDEDIRS) $(STDINT)
 
 .SUFFIXES:      .c .o .obj
 
 .c.obj:
-	$(CC) -c $(CFLAGS) $(INC) $(FILTERC) $<
+	$(CC) -c $(CFLAGS) $(CFLAGSWIN) $(INC) $(FILTERC) $<
 .c.o:
 	$(CC) -c $(CFLAGS) $(INC) $(FILTERC) $<
 
