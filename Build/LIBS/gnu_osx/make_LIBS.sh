@@ -5,7 +5,7 @@ OPTS="-G $*"
 source ../../../Source/scripts/setopts.sh $OPTS
 
 LIBDIR=`pwd`
-rm *.a
+git clean -dxf
 
 cd $LIBDIR/../../../Source
 SRCDIR=`pwd`
@@ -14,7 +14,12 @@ cd ../Build
 BUILDDIR=`pwd`
 
 cd $SRCDIR
-SRCDIR=`pwd`
+git clean -dxf
+
+cd $BUILDDIR
+git clean -dxf
+
+echo
 
 # GD
 echo building GD library

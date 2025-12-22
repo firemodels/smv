@@ -8,7 +8,7 @@ COMPILER=icx
 CC=$(COMPILER) $(SIZE)
 LIB=lib
 
-FILTERC=-Wno-implicit-int -Wno-implicit-function-declaration -Wint-to-pointer-cast
+FILTERC=-Wno-implicit-int -Wno-implicit-function-declaration -Wno-int-to-pointer-cast
 # FILTERC= -D WIN32 -D _LIB
 
 .c.obj:
