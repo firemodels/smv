@@ -16,7 +16,8 @@ COMPILER=icx
 SIZE=-m64
 CC=$(COMPILER)
 
-CFLAGS=-O2 $(SIZE) -Wno-deprecated-non-prototype -Wno-implicit-function-declaration
+CFLAGS=-O2 $(SIZE) -Wno-implicit-function-declaration
+CFLAGSWIN=-O2 $(SIZE) -Wno-deprecated-non-prototype
 
 VER=1.1.4
 
@@ -26,7 +27,7 @@ RANLIB=ranlib
 .SUFFIXES:      .c .o .obj
 
 .c.obj:
-	$(CC) -c $(CFLAGS) $<
+	$(CC) -c $(CFLAGS) $CFLAGSWIN $<
 .c.o:
 	$(CC) -c $(CFLAGS) $<
 
