@@ -1,5 +1,5 @@
-#ifdef pp_HTML
 #include "options.h"
+#ifdef pp_HTML
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
