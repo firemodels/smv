@@ -13,7 +13,6 @@
 
 //#define pp_SHOW_UPDATE      // show what is being updated in the UpdateShowScene routine
 //#define pp_TERRAIN_HIDE     // hide terrain when hiding internal blockages
-//#define pp_HTML             // add option to render to html (html render not working)
 
 //*** options: windows
 
