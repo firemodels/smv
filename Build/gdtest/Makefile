@@ -16,12 +16,16 @@ VPATH = $(SOURCE_DIR)/gdtest
 bin = .
 
 LIB_DIR = $(BUILD_DIR)/LIBS
+
 INTEL_WIN_LIBDIR = $(LIB_DIR)/intel_win
 CLANG_WIN_LIBDIR = $(LIB_DIR)/clang_win
+
 INTEL_LINUX_LIBDIR = $(LIB_DIR)/intel_linux
 CLANG_LINUX_LIBDIR = $(LIB_DIR)/clang_linux
 GNU_LINUX_LIBDIR = $(LIB_DIR)/gnu_linux
+
 CLANG_OSX_LIBDIR = $(LIB_DIR)/clang_osx
+GNU_OSX_LIBDIR = $(LIB_DIR)/gnu_osx
 
 INC_DIR = -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR)/jpeg-9b
 INTEL_WIN_LIBS = $(INTEL_WIN_LIBDIR)\gd.lib $(INTEL_WIN_LIBDIR)\jpeg.lib
@@ -98,8 +102,17 @@ clang_linux : $(obj)
 clang_osx : CFLAGS    = -O0 -m64
 clang_osx : LFLAGS    = -m64  -L$(CLANG_OSX_LIBDIR) $(LINUXOSX_LIBS)
 clang_osx : CC        = clang
-clang_osx : CPP       = clang++
 clang_osx : exe       = gdtest_osx
 
 clang_osx : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+# ------------- gnu osx ----------------
+
+gnu_osx : CFLAGS    = -O0 -m64
+gnu_osx : LFLAGS    = -m64  -L$(GNU_OSX_LIBDIR) $(LINUXOSX_LIBS)
+gnu_osx : CC        = gcc
+gnu_osx : exe       = gdtest_osx
+
+gnu_osx : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
