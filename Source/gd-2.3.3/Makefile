@@ -25,7 +25,7 @@ LIB=lib
 
 CC=$(COMPILER) $(SIZE) $(INCLUDEDIRS) $(STDINT) \
             -Wno-incompatible-function-pointer-types -Wno-incompatible-pointer-types \
-            -Wno-deprecated-declarations -Wno-macro-redefined
+            -Wno-deprecated-declarations -Wno-macro-redefined -Wno-deprecated-non-prototype
 
 .SUFFIXES:      .c .o .obj
 

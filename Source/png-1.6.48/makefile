@@ -24,8 +24,8 @@ LIB=lib
 # Compiler and linker flags
 NOHWOPT = -DPNG_ARM_NEON_OPT=0 -DPNG_MIPS_MSA_OPT=0 \
           -DPNG_POWERPC_VSX_OPT=0 -DPNG_INTEL_SSE_OPT=0
-WARN = -Wall -Wextra -Wundef -Wno-sign-conversion -Wno-deprecated-declarations
-WARNMORE = -Wcast-align -Wconversion -Wshadow -Wpointer-arith -Wwrite-strings \
+WARN = -Wall -Wextra -Wundef -Wno-conversion -Wno-sign-conversion -Wno-deprecated-declarations
+WARNMORE = -Wcast-align -Wshadow -Wpointer-arith -Wwrite-strings \
            -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes
 CFLAGS = -O2 -I$(ZLIBINC) $(NOHWOPT) $(WARN) $(WARNMORE)
 ARFLAGS = rc
