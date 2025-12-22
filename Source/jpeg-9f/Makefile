@@ -14,7 +14,7 @@ SIZE=-m32
 CC=$(COMPILER) $(SIZE)
 
 # You may need to adjust these cc options:
-CFLAGS= -O2  -I$(srcdir)
+CFLAGS= -O2  -I$(srcdir) -Wno-deprecated-declarations
 
 .c.obj:
 	$(CC) -c $(CFLAGS) $(INC) $(FILTERC) $<
