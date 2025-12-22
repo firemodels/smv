@@ -82,7 +82,7 @@ gnu_linux : CC        = gcc
 gnu_linux : exe       = gdtest_linux
 
 gnu_linux : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) -lm -L$(GNU_LINUX_LIBDIR) $(LINUXOSX_LIBS)
+	$(CC) -o $(bin)/$(exe) $(obj) -L$(GNU_LINUX_LIBDIR) $(LINUXOSX_LIBS) -lm
 
 # ------------- clang linux ----------------
 
@@ -91,7 +91,7 @@ clang_linux : CC        = clang
 clang_linux : exe       = gdtest_linux
 
 clang_linux : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) -L$(CLANG_LINUX_LIBDIR) $(LINUXOSX_LIBS)
+	$(CC) -o $(bin)/$(exe) $(obj) -L$(CLANG_LINUX_LIBDIR) $(LINUXOSX_LIBS) -lm
 
 # ------------- clang osx ----------------
 
