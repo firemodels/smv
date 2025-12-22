@@ -5205,9 +5205,6 @@ int ReadIni2(const char *inifile, int localfile){
     if(MatchINI(buffer, "RENDERFILETYPE") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i %i", &render_filetype, &movie_filetype, &render_resolution);
-#ifndef pp_JPEG
-      if(render_filetype!=PNG&&render_filetype!=RGIF)render_filetype=PNG;
-#endif
       RenderCB(RENDER_RESOLUTION);
       continue;
     }

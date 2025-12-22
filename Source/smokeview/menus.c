@@ -2177,13 +2177,11 @@ void RenderMenu(int value){
      UpdateRenderType(render_filetype);
      updatemenu = 1;
      break;
-#ifdef pp_JPEG
   case RenderJPEG:
      render_filetype=JPEG;
      UpdateRenderType(render_filetype);
      updatemenu = 1;
      break;
-#endif
   case RenderGIF:
     render_filetype = RGIF;
     UpdateRenderType(render_filetype);
@@ -11488,23 +11486,17 @@ static int menu_count=0;
     switch(render_filetype){
     case PNG:
       glutAddMenuEntry("  *PNG", RenderPNG);
-#ifdef pp_JPEG
       glutAddMenuEntry("  JPEG", RenderJPEG);
-#endif
       glutAddMenuEntry("   GIF", RenderGIF);
       break;
-#ifdef pp_JPEG
     case JPEG:
       glutAddMenuEntry("   PNG", RenderPNG);
       glutAddMenuEntry(" *JPEG", RenderJPEG);
       glutAddMenuEntry("   GIF", RenderGIF);
       break;
-#endif
     case RGIF:
       glutAddMenuEntry("   PNG", RenderPNG);
-#ifdef pp_JPEG
       glutAddMenuEntry("  JPEG", RenderJPEG);
-#endif
       glutAddMenuEntry("  *GIF", RenderGIF);
       break;
     default:

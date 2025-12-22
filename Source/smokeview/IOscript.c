@@ -901,7 +901,6 @@ int CompileScript(char *scriptfile){
 //  jpg or png  (char)
       case SCRIPT_RENDERTYPE:
         SETcval;
-#ifdef pp_JPEG
         if(STRCMP(scripti->cval, "PNG") == 0){
           scripti->ival = PNG;
         }
@@ -911,14 +910,6 @@ int CompileScript(char *scriptfile){
         else{
           scripti->ival = RGIF;
         }
-#else
-        if(STRCMP(scripti->cval, "PNG") == 0){
-          scripti->ival = PNG;
-        }
-        else{
-          scripti->ival = RGIF;
-        }
-#endif
         break;
 
 // MOVIETYPE
@@ -4003,7 +3994,6 @@ int RunScriptCommand(scriptdata *script_command){
       RenderMenu(RenderCustom);
       break;
     case SCRIPT_RENDERTYPE:
-#ifdef pp_JPEG
       if(STRCMP(scripti->cval, "JPEG") == 0){
         UpdateRenderType(JPEG);
       }
@@ -4013,14 +4003,6 @@ int RunScriptCommand(scriptdata *script_command){
       else{
         UpdateRenderType(RGIF);
       }
-#else
-      if(STRCMP(scripti->cval, "PNG")==0){
-        UpdateRenderType(PNG);
-      }
-      else{
-        UpdateRenderType(RGIF);
-      }
-#endif
       break;
     case SCRIPT_HILIGHTMINVALS:
       ScriptHilightMinMaxVals(scripti, 0);
