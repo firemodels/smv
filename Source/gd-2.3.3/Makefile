@@ -23,18 +23,18 @@ COMPILER=gcc -fPIC
 SIZE=-m64
 LIB=lib
 
-CFLAGS=-Wno-incompatible-function-pointer-types -Wno-incompatible-pointer-types \
+WFLAGS=-Wno-incompatible-function-pointer-types -Wno-incompatible-pointer-types \
             -Wno-deprecated-declarations -Wno-macro-redefined
-CFLAGSWIN=-Wno-deprecated-non-prototype
+WFLAGSWIN=-Wno-deprecated-non-prototype
 
 CC=$(COMPILER) $(SIZE) $(INCLUDEDIRS) $(STDINT)
 
 .SUFFIXES:      .c .o .obj
 
 .c.obj:
-	$(CC) -c $(CFLAGS) $(CFLAGSWIN) $(INC) $(FILTERC) $<
+	$(CC) -c $(CFLAGS) $(WFLAGS) $(WFLAGSWIN) $(INC) $(FILTERC) $<
 .c.o:
-	$(CC) -c $(CFLAGS) $(INC) $(FILTERC) $<
+	$(CC) -c $(CFLAGS) $(WFLAGS) $(INC) $(FILTERC) $<
 
 LIBOBJS=gd.o gd_avif.o gd_bmp.o gd_color.o gd_color_map.o gd_color_match.o gd_crop.o gd_filename.o \
 	gd_filter.o gd_gd.o gd_gd2.o gd_gif_in.o gd_gif_out.o gd_heif.o gd_interpolation.o gd_io.o gd_io_dp.o \
