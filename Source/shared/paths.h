@@ -28,8 +28,6 @@ EXTERNCPP char *CasePathFed(smv_case *scase);
 // char *dEcsv_filename;
 EXTERNCPP char *CasePathDeCsv(smv_case *scase);
 #ifdef pp_HTML
-// char *htmlvr_filename;
-EXTERNCPP char *CasePathHtmlVr(smv_case *scase);
 // char *html_filename;
 EXTERNCPP char *CasePathHtml(smv_case *scase);
 // char *htmlobst_filename;

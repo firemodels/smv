@@ -318,9 +318,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define OUTPUT_FFMPEG    129
 
 #define PNG        0
-#ifdef pp_JPEG
 #define JPEG       1
-#endif
 #define RGIF       2
 #define IMAGE_NONE 3
 
@@ -726,9 +724,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define RENDER_CURRENT_SINGLE   998
 #define RENDER_CURRENT_MULTIPLE 978
 #define RENDER_CURRENT_360      991
-#ifdef pp_JPEG
 #define RenderJPEG              997
-#endif
 #define RenderPNG               996
 #define RenderGIF               977
 #define Render320               995

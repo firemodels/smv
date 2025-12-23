@@ -142,13 +142,6 @@ char *CasePathSmvOrig(smv_case *scase){
 }
 
 #ifdef pp_HTML
-/* ------------------ CasePathHtmlVr ------------------------ */
-
-// char *htmlvr_filename;
-char *CasePathHtmlVr(smv_case *scase){
-  return SetupPath(NULL, scase->fdsprefix, "_vr.html");
-}
-
 /* ------------------ CasePathHtmlObst ------------------------ */
 
 // char *htmlobst_filename;

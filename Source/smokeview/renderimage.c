@@ -97,11 +97,9 @@ void MakeMovie(void){
   case PNG:
     strcpy(image_ext, ".png");
     break;
-#ifdef pp_JPEG
   case JPEG:
     strcpy(image_ext, ".jpg");
     break;
-#endif
   case RGIF:
     strcpy(image_ext, ".gif");
     break;
@@ -404,11 +402,9 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
   case PNG:
     renderfile_ext = ext_png;
     break;
-#ifdef pp_JPEG
   case JPEG:
     renderfile_ext = ext_jpg;
     break;
-#endif
   case RGIF:
     renderfile_ext = ext_gif;
     break;
@@ -753,9 +749,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
 
   if(
     render_filetype!=PNG&&
-#ifdef pp_JPEG
     render_filetype!=JPEG&&
-#endif
     render_filetype!=RGIF
     )render_filetype=PNG;
 
@@ -900,11 +894,9 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
   case PNG:
     gdImagePng(RENDERimage,RENDERfile);
     break;
-#ifdef pp_JPEG
   case JPEG:
     gdImageJpeg(RENDERimage,RENDERfile,-1);
     break;
-#endif
   case RGIF:
     gdImageGif(RENDERimage, RENDERfile);
     break;
@@ -1254,9 +1246,7 @@ int MergeRenderScreenBuffers360(void){
 
   if(
     render_filetype!=PNG&&
-#ifdef pp_JPEG
     render_filetype!=JPEG&&
-#endif
     render_filetype!=RGIF)render_filetype=PNG;
 
   if(GetRenderFileName(VIEW_CENTER, renderfile_dir, renderfile)!=0)return 1;
@@ -1358,11 +1348,9 @@ int MergeRenderScreenBuffers360(void){
   case PNG:
     gdImagePng(RENDERimage, RENDERfile);
     break;
-#ifdef pp_JPEG
   case JPEG:
     gdImageJpeg(RENDERimage, RENDERfile, -1);
     break;
-#endif
   case RGIF:
     gdImageGif(RENDERimage, RENDERfile);
     break;
