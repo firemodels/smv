@@ -7,8 +7,6 @@
 
 //*** options: all platforms
 
-//#define pp_HTML             // add option to render to html (html render not working)
-
 #ifndef _DEFAULT_SOURCE
 #define _DEFAULT_SOURCE
 #endif
