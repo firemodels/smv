@@ -372,7 +372,7 @@ QSUB="qsub -q $queue"
 #*** setup for SLURM (alternative to torque)
 
 if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
-  QSUB="sbatch --cpus-per-task=8 -p $queue --ignore-pbs "
+  QSUB="sbatch --cpus-per-task=16 -p $queue --ignore-pbs "
 #  QSUB="sbatch -p $queue --ignore-pbs "
 fi
 
