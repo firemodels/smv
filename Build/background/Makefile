@@ -116,7 +116,7 @@ intel_linux : CC        = $(I_ICC)
 intel_linux : exe       = background_linux
 
 intel_linux : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) -lpthread
 
 # ------------- gnu linux ----------------
 
