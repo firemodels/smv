@@ -735,12 +735,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define RenderLABELframenumber  980
 #define RenderLABELtime         979
 #define MENU_RENDER_SETTINGS    900
-#ifdef pp_HTML
-#define RenderJSON              982
-#define RenderJSONALL           983
-#define RenderHTML              984
-#define RenderHTMLALL           985
-#endif
 #define HTML_CURRENT_TIME         0
 #define HTML_ALL_TIMES            1
 

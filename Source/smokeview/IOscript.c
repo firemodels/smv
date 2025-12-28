@@ -382,15 +382,6 @@ void InitKeywords(void){
   InitKeyword("RENDERCLIP",          SCRIPT_RENDERCLIP, 1);          // documented
   InitKeyword("RENDERDIR",           SCRIPT_RENDERDIR, 1);           // documented
   InitKeyword("RENDERDOUBLEONCE",    SCRIPT_RENDERDOUBLEONCE, 1);    // documented
-#ifdef pp_HTML
-  InitKeyword("RENDERHTMLALL",       SCRIPT_RENDERHTMLALL, 1);       // documented
-  InitKeyword("RENDERHTMLDIR",       SCRIPT_RENDERHTMLDIR, 1);       // documented
-  InitKeyword("RENDERHTMLGEOM",      SCRIPT_RENDERHTMLGEOM, 1);
-  InitKeyword("RENDERHTMLOBST",      SCRIPT_RENDERHTMLOBST, 1);
-  InitKeyword("RENDERHTMLONCE",      SCRIPT_RENDERHTMLONCE, 1);      // documented
-  InitKeyword("RENDERHTMLSLICECELL", SCRIPT_RENDERHTMLSLICECELL, 2);
-  InitKeyword("RENDERHTMLSLICENODE", SCRIPT_RENDERHTMLSLICENODE, 2);
-#endif
   InitKeyword("RENDERONCE",          SCRIPT_RENDERONCE, 1);          // documented
   InitKeyword("RENDERSIZE",          SCRIPT_RENDERSIZE, 1);          // documented
   InitKeyword("RENDERSTART",         SCRIPT_RENDERSTART, 1);         // documented
@@ -929,24 +920,14 @@ int CompileScript(char *scriptfile){
           scripti->ival = AVI;
         }
         break;
-#ifdef pp_HTML
 // RENDERDIR
 //  directory name (char) (where rendered files will go)
       case SCRIPT_RENDERDIR:
-      case SCRIPT_RENDERHTMLDIR:
-#else
-// RENDERDIR
-//  directory name (char) (where rendered files will go)
-      case SCRIPT_RENDERDIR:
-#endif
       {
         int len;
         int i;
 
         scripti->need_graphics = 1;
-#ifdef pp_HTML
-        if(kw->index==SCRIPT_RENDERHTMLDIR)scripti->need_graphics = 0;
-#endif
         SETbuffer;
         if(script_renderdir_cmd!=NULL&&strlen(script_renderdir_cmd)>0){
           strcpy(param_buffer, script_renderdir_cmd);
@@ -1005,29 +986,6 @@ int CompileScript(char *scriptfile){
       case SCRIPT_RENDERDOUBLEONCE:
         SETcval2;
         break;
-#ifdef pp_HTML
-// RENDERHTMLONCE
-// RENDERHTMLALL
-// file name base (char) (or blank to use smokeview default)
-      case SCRIPT_RENDERHTMLONCE:
-      case SCRIPT_RENDERHTMLALL:
-      case SCRIPT_RENDERHTMLGEOM:
-      case SCRIPT_RENDERHTMLOBST:
-        scripti->need_graphics = 0;
-        SETcval2;
-        break;
-      case SCRIPT_RENDERHTMLSLICENODE:
-      case SCRIPT_RENDERHTMLSLICECELL:
-        //  0 current frame, 1 all frames
-        // file name base (char) (or blank to use smokeview default)
-        SETbuffer;
-        scripti->ival = 1;   // skip
-        sscanf(param_buffer, "%i", &scripti->ival);
-
-        SETcval2;
-        scripti->need_graphics = 0;
-        break;
-#endif
 // RENDERSTART
 //  start_frame (int) skip_frame (int)
       case SCRIPT_RENDERSTART:
@@ -1582,85 +1540,6 @@ case SCRIPT_LOADSMV:
   fclose(stream);
   return return_val;
 }
-
-#ifdef pp_HTML
-/* ------------------ GetWebFileName ------------------------ */
-
-void GetWebFileName(char *web_filename, scriptdata *scripti){
-  strcpy(web_filename, "");
-  if(script_htmldir_path!=NULL){
-    if(strlen(script_htmldir_path)!=2||
-      script_htmldir_path[0]!='.'||
-      script_htmldir_path[1]!=dirseparator[0]){
-      strcat(web_filename, script_htmldir_path);
-      strcat(web_filename, dirseparator);
-    }
-  }
-  if(scripti->cval2 != NULL){
-    strcat(web_filename, scripti->cval2);
-  }
-}
-
-/* ------------------ ScriptRenderSliceNode ------------------------ */
-
-void ScriptRenderSliceNode(scriptdata *scripti){
-  char web_filename[1024];
-
-  GetWebFileName(web_filename, scripti);
-  if(scripti->ival==0){
-    SliceNode2Data(web_filename, HTML_CURRENT_TIME);
-  }
-  else{
-    SliceNode2Data(web_filename, HTML_ALL_TIMES);
-  }
-}
-
-/* ------------------ ScriptRenderSliceCell ------------------------ */
-
-void ScriptRenderSliceCell(scriptdata *scripti){
-  char web_filename[1024];
-
-  GetWebFileName(web_filename, scripti);
-  if(scripti->ival==0){
-    SliceCell2Data(web_filename, HTML_CURRENT_TIME);
-  }
-  else{
-    SliceCell2Data(web_filename, HTML_ALL_TIMES);
-  }
-}
-
-/* ------------------ ScriptRenderObst ------------------------ */
-
-void ScriptRenderObst(scriptdata *scripti){
-  char web_filename[1024];
-
-  GetWebFileName(web_filename, scripti);
-  Obst2Data(web_filename);
-}
-
-/* ------------------ ScriptRenderGeom ------------------------ */
-
-void ScriptRenderGeom(scriptdata *scripti){
-  char web_filename[1024];
-
-  GetWebFileName(web_filename, scripti);
-  Smv2Geom(web_filename);
-}
-
-/* ------------------ ScriptRenderHtml ------------------------ */
-
-void ScriptRenderHtml(scriptdata *scripti, int option){
-  char web_filename[1024];
-  char webvr_filename[1024];
-
-  GetWebFileName(web_filename, scripti);
-  strcat(web_filename,".html");
-  Smv2Html(web_filename, option, FROM_SCRIPT);
-
-  GetWebFileName(webvr_filename, scripti);
-  strcat(webvr_filename,"_vr.html");
-}
-#endif
 
 /* ------------------ ScriptRenderStart ------------------------ */
 
@@ -4035,22 +3914,6 @@ int RunScriptCommand(scriptdata *script_command){
         script_dir_path=NULL;
       }
       break;
-#ifdef pp_HTML
-    case SCRIPT_RENDERHTMLDIR:
-      if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
-        script_htmldir_path = scripti->cval;
-        if(Writable(script_htmldir_path)==NO){
-          fprintf(stderr, "*** Error: Cannot write to the RENDERHTMLDIR directory: %s\n", script_htmldir_path);
-          if(stderr2!=NULL)fprintf(stderr2, "*** Error: Cannot write to the RENDERHTMLDIR directory: %s\n", script_htmldir_path);
-          SMV_EXIT(2);
-        }
-        PRINTF("script: setting html render path to %s\n", script_htmldir_path);
-      }
-      else{
-        script_htmldir_path = NULL;
-      }
-      break;
-#endif
     case SCRIPT_KEYBOARD:
       if(scripti->cval!=NULL){
         char *key;
@@ -4102,32 +3965,6 @@ int RunScriptCommand(scriptdata *script_command){
       Keyboard('r',FROM_SMOKEVIEW);
       returnval=1;
       break;
-#ifdef pp_HTML
-    case SCRIPT_RENDERHTMLALL:
-      ScriptRenderHtml(scripti, HTML_ALL_TIMES);
-      returnval = 1;
-      break;
-    case SCRIPT_RENDERHTMLONCE:
-      ScriptRenderHtml(scripti, HTML_CURRENT_TIME);
-      returnval = 1;
-      break;
-    case SCRIPT_RENDERHTMLGEOM:
-      ScriptRenderGeom(scripti);
-      returnval = 1;
-      break;
-    case SCRIPT_RENDERHTMLOBST:
-      ScriptRenderObst(scripti);
-      returnval = 1;
-      break;
-    case SCRIPT_RENDERHTMLSLICENODE:
-      ScriptRenderSliceNode(scripti);
-      returnval = 1;
-      break;
-    case SCRIPT_RENDERHTMLSLICECELL:
-      ScriptRenderSliceCell(scripti);
-      returnval = 1;
-      break;
-#endif
     case SCRIPT_RENDERDOUBLEONCE:
       Keyboard('R',FROM_SMOKEVIEW);
       returnval=1;
