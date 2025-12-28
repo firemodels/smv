@@ -192,6 +192,8 @@ case $OPTION  in
   T)
    if [[ $OPTARG =~ ^-?[0-9]+$ ]]; then
      CPUS_PER_TASK="$OPTARG"
+   else
+     echo $OPTARG not an integer. Setting cpus per task to $CPUS_PER_TASK
    fi
    ;;
   v)
@@ -406,6 +408,7 @@ echo "       frame skip: $skip"
 echo "         nobounds: $NOBOUNDS"
 echo "             Host: \`hostname\`"
 echo "      Run command: $exe $script_file $smv_script $NOBOUNDS $FED $redirect $render_opts $SMVBINDIR $infile"
+echo "    Cpus per task: $CPUS_PER_TASK"
 echo "            Queue: $queue"
 echo ""
 
