@@ -2040,56 +2040,6 @@ void RenderMenu(int value){
     }
     Keyboard('R',FROM_SMOKEVIEW);
     break;
-#ifdef pp_HTML
-  case RenderJSON:
-  case RenderJSONALL:
-    {
-
-      char *htmlobst_filename      = CasePathHtmlObst(&global_scase);
-      char *htmlslicenode_filename = CasePathHtmlSliceNode(&global_scase);
-      char *htmlslicecell_filename = CasePathHtmlSliceCell(&global_scase);
-      int json_option;
-
-      json_option = HTML_CURRENT_TIME;
-      if(value==RenderJSONALL)json_option = HTML_ALL_TIMES;
-      if(Obst2Data(htmlobst_filename)!=0){
-        printf("blockage data output to %s\n",htmlobst_filename);
-      }
-      else{
-        printf("no blockage data to output\n");
-      }
-      if(SliceNode2Data(htmlslicenode_filename, json_option)!=0){
-        printf("node centered slice file data output to %s\n", htmlslicenode_filename);
-      }
-      else{
-        printf("no node centered slice file data to output\n");
-      }
-      if(SliceCell2Data(htmlslicecell_filename, json_option)!=0){
-        printf("cell centered slice file data output to %s\n", htmlslicecell_filename);
-      }
-      else{
-        printf("no cell centered slice file data to output\n");
-      }
-      FREEMEMORY(htmlobst_filename);
-      FREEMEMORY(htmlslicenode_filename);
-      FREEMEMORY(htmlslicecell_filename);
-      break;
-    }
-    break;
-    case RenderHTML: {
-      char *html_filename = CasePathHtml(&global_scase);
-      Smv2Html(html_filename, HTML_CURRENT_TIME,
-               FROM_SMOKEVIEW);
-      FREEMEMORY(html_filename);
-    }
-    break;
-    case RenderHTMLALL: {
-      char *html_filename = CasePathHtml(&global_scase);
-      Smv2Html(html_filename, HTML_ALL_TIMES, FROM_SMOKEVIEW);
-      FREEMEMORY(html_filename);
-
-    } break;
-#endif
   case RenderCancel:
     RenderState(RENDER_OFF);
     break;
@@ -11540,13 +11490,6 @@ static int menu_count=0;
     CREATEMENU(rendermenu,RenderMenu);
     GLUTADDSUBMENU("Start rendering",  render_startmenu);
     glutAddMenuEntry("Stop rendering", RenderCancel);
-#ifdef pp_HTML
-    glutAddMenuEntry("-", MENU_DUMMY);
-    glutAddMenuEntry("Render html(current)", RenderHTML);
-    glutAddMenuEntry("Render html(all)",     RenderHTMLALL);
-    glutAddMenuEntry("Render json(current)",  RenderJSON);
-    glutAddMenuEntry("Render json(all)",     RenderJSONALL);
-#endif
 
     glutAddMenuEntry("-", MENU_DUMMY);
 

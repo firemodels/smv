@@ -141,29 +141,6 @@ char *CasePathSmvOrig(smv_case *scase){
   return SetupPath(NULL, scase->fdsprefix, ".smo");
 }
 
-#ifdef pp_HTML
-/* ------------------ CasePathHtmlObst ------------------------ */
-
-// char *htmlobst_filename;
-char *CasePathHtmlObst(smv_case *scase){
-  return SetupPath(NULL, scase->fdsprefix, "_obst.json");
-}
-
-/* ------------------ CasePathHtmlSliceNode ------------------------ */
-
-// char *htmlslicenode_filename;
-char *CasePathHtmlSliceNode(smv_case *scase){
-  return SetupPath(NULL, scase->fdsprefix, "_slicenode.json");
-}
-
-/* ------------------ CasePathHtmlSliceCell ------------------------ */
-
-// char *htmlslicecell_filename;
-char *CasePathHtmlSliceCell(smv_case *scase){
-  return SetupPath(NULL, scase->fdsprefix, "_slicecell.json");
-}
-#endif
-
 /* ------------------ CasePathEvent ------------------------ */
 
 // char *event_filename;

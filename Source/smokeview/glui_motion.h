@@ -97,9 +97,6 @@
 #define UPPER_SCREEN_ROLLOUT  2
 
 #define RENDER_360CB 9
-#ifdef pp_HTML
-#define RENDER_HTML 15
-#endif
 
 //*** glui_motion.cpp headers
 

@@ -1,7 +1,0 @@
-// put rendered files in specified directory
-
-RENDERHTMLDIR
- .
-
-RENDERHTMLOBST
- plume5c_obst.txt
