@@ -27,11 +27,10 @@ function usage {
   echo " -e exe - execute the program exe"
   echo " -i     - use installed smokeview"
   echo " -j p   - job prefix"
-  echo " -N n   - reserve n cores [default: $ncores]"
   echo " -r     - redirect output"
   echo " -s     - first frame rendered [default: 1]"
   echo " -S     - interval between frames [default: 1]"
-  echo " -T     - share nodes"
+  echo " -T n   - cpus per task [default: $CPUS_PER_TASK]"
   echo ""
   exit
 }
@@ -55,28 +54,13 @@ missing_slurm=`srun -V |& tail -1 | grep "not found" | wc -l`
 RESOURCE_MANAGER="NONE"
 if [ $missing_slurm -eq 0 ]; then
   RESOURCE_MANAGER="SLURM"
-else
-  missing_torque=`echo | qmgr -n |& tail -1 | grep "not found" | wc -l`
-  if [ $missing_torque -eq 0 ]; then
-    RESOURCE_MANAGER="TORQUE"
-  fi
-fi
-
-if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
   if [ "$SLURM_MEM" != "" ]; then
     SLURM_MEM="#SBATCH --mem=$SLURM_MEM"
   fi
   if [ "$SLURM_MEMPERCPU" != "" ]; then
     SLURM_MEM="#SBATCH --mem-per-cpu=$SLURM_MEMPERCPU"
   fi
-else
-  RESOURCE_MANAGER="TORQUE"
 fi
-
-#*** determine number of cores
-
-ncores=`grep processor /proc/cpuinfo | wc -l`
-NRESERVE=$ncores
 
 #*** determine default queue
 
@@ -106,13 +90,12 @@ e_arg=
 f_arg=
 i_arg=
 j_arg=
-N_ARG=
 q_arg=
 r_arg=
-T_arg=
 v_arg=
 one_frame=
 NOBOUNDS=
+CPUS_PER_TASK=16
 
 if [ $# -lt 1 ]; then
   usage
@@ -122,7 +105,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'Ab:Bc:C:d:D:e:fFhHij:n:N:Op:P:q:rs:S:tv' OPTION
+while getopts 'Ab:Bc:C:d:e:fhHij:n:Op:P:q:rs:S:tT:v' OPTION
 do
 case $OPTION  in
   A)
@@ -175,9 +158,6 @@ case $OPTION  in
   n)
    dummy="${OPTARG}"
    ;;
-  N)
-   NRESERVE="${OPTARG}"
-   ;;
   O)
    one_frame=1
    ;;
@@ -209,6 +189,11 @@ case $OPTION  in
   t)
    dummy=1
    ;;
+  T)
+   if [[ $OPTARG =~ ^-?[0-9]+$ ]]; then
+     CPUS_PER_TASK="$OPTARG"
+   fi
+   ;;
   v)
    showinput=1
    v_arg="-v"
@@ -227,18 +212,13 @@ if ! [[ $nprocs =~ $re ]] ; then
    nprocs=1;
 fi
 
-if ! [[ $NRESERVE =~ $re ]] ; then
-   NRESERVE=$ncores;
-fi
-N_ARG="-N $NRESERVE"
-
 if [ $nprocs != 1 ]; then
   if [ "$one_frame" == "" ]; then
     for i in $(seq 1 $nprocs); do
-      $QSMV $b_arg $B_ARG $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $N_ARG $q_arg $r_arg $v_arg $T_arg -s $i -S $nprocs $in
+      $QSMV $b_arg $B_ARG $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $q_arg $r_arg $v_arg -s $i -S $nprocs $in
     done
   else
-    $QSMV $b_arg $B_ARG $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $N_ARG $q_arg $r_arg $v_arg $T_arg -s $nprocs -S $nprocs $in
+    $QSMV $b_arg $B_ARG $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $q_arg $r_arg $v_arg -s $nprocs -S $nprocs $in
   fi
   exit
 fi
@@ -275,12 +255,8 @@ fi
 
 #*** parse walltime parameter
 
-if [ "$walltime" == "" ]; then
-    if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
-	walltime=99-99:99:99
-    else
-	walltime=999:0:0
-    fi
+if [[ "$walltime" == "" ]] && [[ "$RESOURCE_MANAGER" == "SLURM" ]]; then
+  walltime=99-99:99:99
 fi
 
 #*** define executable
@@ -312,7 +288,6 @@ else
   fi
 fi
 
-let ppn=$NRESERVE
 let nodes=1
 
 TITLE="$infile"
@@ -372,7 +347,7 @@ QSUB="qsub -q $queue"
 #*** setup for SLURM (alternative to torque)
 
 if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
-  QSUB="sbatch --cpus-per-task=16 -p $queue --ignore-pbs "
+  QSUB="sbatch --cpus-per-task=$CPUS_PER_TASK -p $queue --ignore-pbs "
 #  QSUB="sbatch -p $queue --ignore-pbs "
 fi
 
@@ -399,9 +374,8 @@ cat << EOF > $scriptfile
 # $0 $commandline
 EOF
 
-if [ "$queue" != "none" ]; then
-  if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
-    cat << EOF >> $scriptfile
+if [[ "$queue" != "none" ]] && [[ "$RESOURCE_MANAGER" == "SLURM" ]]; then
+  cat << EOF >> $scriptfile
 #SBATCH -J ${SMVJOBPREFIX}$infile
 #SBATCH -e $outerr
 #SBATCH -o $outlog
@@ -409,28 +383,12 @@ if [ "$queue" != "none" ]; then
 #SBATCH --nodes=1
 #***** xxxSBATCH --exclusive
 
-
 $SLURM_MEM
 EOF
-    if [ "$walltimestring_slurm" != "" ]; then
-      cat << EOF >> $scriptfile
+  if [ "$walltimestring_slurm" != "" ]; then
+    cat << EOF >> $scriptfile
 #SBATCH $walltimestring_slurm
 EOF
-    fi
-
-  else
-    cat << EOF >> $scriptfile
-#PBS -N ${SMVJOBPREFIX}${TITLE}/f${first}s$skip
-#PBS -W umask=0022
-#PBS -e $outerr
-#PBS -o $outlog
-#PBS -l nodes=$nodes:ppn=$ppn
-EOF
-    if [ "$walltimestring_pbs" != "" ]; then
-      cat << EOF >> $scriptfile
-#PBS $walltimestring_pbs
-EOF
-    fi
   fi
 fi
 
