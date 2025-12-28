@@ -131,8 +131,9 @@ use_installed=
 RUN_SMV=1
 RUN_WUI=1
 QUEUE=batch
+CPUS_PER_TASK=
 
-while getopts 'Cdghij:q:tWY' OPTION
+while getopts 'Cdghij:q:tT:WY' OPTION
 do
 case $OPTION  in
   C)
@@ -156,6 +157,9 @@ case $OPTION  in
   t)
    TEST=_test
   ;;
+  T)
+   CPUS_PER_TASK="-T $OPTARG" 
+   ;;
   W)
    RUN_SMV=0
    RUN_WUI=1
@@ -229,7 +233,7 @@ echo
 if [ "$QUEUE" == "none" ]; then
   RUNSMV="$GITROOT/smv/Utilities/Scripts/runsmv.sh"
 else
-  RUNSMV="$GITROOT/smv/Utilities/Scripts/qsmv.sh -j $JOBPREFIX $use_installed -q $QUEUE"
+  RUNSMV="$GITROOT/smv/Utilities/Scripts/qsmv.sh $CPUS_PER_TASK -j $JOBPREFIX $use_installed -q $QUEUE"
 fi
 export QFDS=$RUNSMV
 export RUNCFAST=$RUNSMV
