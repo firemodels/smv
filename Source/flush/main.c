@@ -28,7 +28,7 @@ void Usage(int option){
  char githash[LEN_BUFFER];
  char gitdate[LEN_BUFFER];
 
-  GetGitInfo(githash,gitdate);    // get githash
+  GetGitInfo(githash,gitdate,NULL);    // get githash
 
 
   fprintf(stdout, "\nflush [options]\n");
