@@ -32,7 +32,7 @@ void Usage(int option){
   char githash[100];
   char gitdate[100];
 
-  GetGitInfo(githash, gitdate);    // get githash
+  GetGitInfo(githash, gitdate, NULL);    // get githash
 
   PRINTF("\nsmokeview [options] casename\n");
   PRINTF("%s - %s\n\n", githash, __DATE__);

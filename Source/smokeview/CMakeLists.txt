@@ -100,10 +100,6 @@ endif()
 
 target_include_directories(smokeview PRIVATE .)
 
-if (BETA)
-    add_compile_definitions(pp_BETA)
-endif ()
-
 if (SMV_ROOT_OVERRIDE)
     target_compile_definitions(smokeview PRIVATE SMV_ROOT_OVERRIDE="${SMV_ROOT_OVERRIDE}")
 endif()

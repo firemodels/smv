@@ -380,9 +380,11 @@ void InitStartupDirs(void){
   monitor_screen_height = GetScreenHeight();
 #endif
 
-#ifdef pp_BETA
-  fprintf(stderr, "%s\n", "\n*** This version of Smokeview is intended for review and testing ONLY. ***");
-#endif
+  int is_beta;
+  GetGitInfo(NULL, NULL, &is_beta);
+  if(is_beta == 1){
+    fprintf(stderr, "%s\n", "\n*** This version of Smokeview is intended for review and testing ONLY. ***");
+  }
 }
 
 /* ------------------ GLUTGetScreenWidth ------------------------ */
@@ -1410,7 +1412,7 @@ void InitVars(void){
   direction_color[3]=1.0;
   direction_color_ptr=GetColorPtr(&global_scase, direction_color);
 
-  GetGitInfo(smv_githash,smv_gitdate);
+  GetGitInfo(smv_githash,smv_gitdate, NULL );
 
   rgb_terrain[0][0]=1.0;
   rgb_terrain[0][1]=0.0;

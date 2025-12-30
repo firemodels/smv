@@ -165,7 +165,7 @@ EXTERNCPP int            LogBase2(float xx);
 #endif
 EXTERNCPP void           Array2String(float *vals, int nvals, char *string);
 EXTERNCPP float          GetMantissaExponent(float x, int *exp10);
-EXTERNCPP void           GetGitInfo(char *githash, char *gitdate);
+EXTERNCPP void           GetGitInfo(char *githash, char *gitdate, int *gettest);
 EXTERNCPP char          *GetString(char *buffer);
 EXTERNCPP char          *Time2TimeLabel(float time, float dt, char *timelabel, int fixed_point);
 EXTERNCPP char          *Time2RenderLabel(float time, float dt, float maxtime, char *timelabel);
