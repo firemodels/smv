@@ -56,13 +56,11 @@ typedef struct {
 
 #endif
 
-#ifdef pp_HASH
 #define HASH_NONE   0
 #define HASH_MD5    1
 #define HASH_SHA1   2
 #define HASH_SHA256 3
 #define HASH_ALL    4
-#endif
 #define HELP_SUMMARY 1
 #define HELP_ALL 2
 
@@ -87,9 +85,7 @@ typedef struct {
   int show_help;
   int show_version;
   int first_arg;
-#ifdef pp_HASH
   int hash_option;
-#endif
 } common_opts;
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -122,11 +118,9 @@ EXTERNCPP int            ReadLabelsBNDS(flowlabels *flowlabel, BFILE *stream, ch
 EXTERNCPP int            ReadLabels(flowlabels *flow_label, BFILE *stream, char *suffix_label);
 EXTERNCPP int            AppendLabels(flowlabels *flow_label, char *suffix_label);
 
-#ifdef pp_HASH
 EXTERNCPP unsigned char *GetHashMD5(char *file);
 EXTERNCPP unsigned char *GetHashSHA256(char *file);
 EXTERNCPP unsigned char *GetHashSHA1(char *file);
-#endif
 EXTERNCPP int            MatchWild(char *pTameText, char *pWildText);
 EXTERNCPP int            Match(char *buffer, const char *key);
 EXTERNCPP int            MatchINI(char *buffer, const char *key);
@@ -173,11 +167,7 @@ EXTERNCPP char          *Time2RenderLabel(float time, float dt, float maxtime, c
 EXTERNCPP char          *RandStr(char* str, int length);
 EXTERNCPP void           GetBaseTitle(char *progname, char *title_base);
 EXTERNCPP void           GetTitle(char *progname, char *fulltitle);
-#ifdef pp_HASH
 EXTERNCPP void           PRINTversion(char *progname, int hash_option);
-#else
-EXTERNCPP void           PRINTversion(char *progname);
-#endif
 
 // vvvvvvvvvvvvvvvvvvvvvvvv variables vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 

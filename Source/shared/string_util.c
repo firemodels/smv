@@ -30,12 +30,9 @@
 #include "datadefs.h"
 #include "file_util.h"
 #include "string_util.h"
-#ifdef pp_HASH
 #include "mbedtls/md5.h"
 #include "mbedtls/sha256.h"
 #include "mbedtls/sha1.h"
-#endif
-
 
 unsigned int *random_ints, nrandom_ints;
 
@@ -1880,7 +1877,6 @@ void GetTitle(char *progname, char *fulltitle){
   STRCAT(fulltitle, __TIME__);
 }
 
-#ifdef pp_HASH
 #define HASH_BUFFER_LEN 1
 #define HASH_MD5_LEN   16
 #define HASH_SHA1_LEN   20
@@ -2051,7 +2047,6 @@ unsigned char *GetHashSHA256(char *file){
   return_hash[2*HASH_SHA256_LEN] = 0;
   return return_hash;
 }
-#endif
 
 /* ------------------ UsageCommon ------------------------ */
 
@@ -2061,7 +2056,6 @@ void UsageCommon(int option){
     PRINTF("  -help_all  - display all help info\n");
     PRINTF("  -version   - display version information\n");
   }
-#ifdef pp_HASH
   if(option == HELP_ALL){
     PRINTF("  -md5       - display an md5 hash when -version is invoked\n");
     PRINTF("  -sha1      - display a sha1 hash when -version is invoked\n");
@@ -2069,7 +2063,6 @@ void UsageCommon(int option){
     PRINTF("  -hash_all  - display all hashes when -version option is invoked\n");
     PRINTF("  -hash_none - do not display any hashes  when -version is invoked\n");
   }
-#endif
 }
 
 /* ------------------ IsCommoneOption ------------------------ */
@@ -2078,13 +2071,11 @@ int IsCommonOption(char *argi){
   if(STRCMP("-help", argi)==0||(STRCMP("-h", argi)==0&&STRCMP("-help_all",argi)!=0))return 1;
   if(STRCMP("-help_all", argi) == 0)return 1;
   if(STRCMP("-version", argi)==0||STRCMP("-v", argi)==0)return 1;
-#ifdef pp_HASH
   if(STRCMP("-sha256", argi)==0)return 1;
   if(STRCMP("-sha1", argi)==0)return 1;
   if(STRCMP("-md5", argi)==0)return 1;
   if(STRCMP("-hash_all", argi)==0)return 1;
  if(STRCMP("-hash_none", argi)==0)return 1;
-#endif
   return 0;
 }
 
@@ -2092,13 +2083,7 @@ int IsCommonOption(char *argi){
 
 common_opts ParseCommonOptions(int argc, char **argv){
   int i, no_minus,first_arg=0;
-  common_opts opts = {
-#ifdef pp_HASH
-    .hash_option = HASH_SHA1,
-#else
-    0
-#endif
-  };
+  common_opts opts = {.hash_option = HASH_SHA1,};
 
   no_minus = 0;
   for(i = 1; i<argc; i++){
@@ -2125,7 +2110,6 @@ common_opts ParseCommonOptions(int argc, char **argv){
       if(no_minus==0)opts.show_version = 1;
       continue;
     }
-#ifdef pp_HASH
     if(STRCMP("-sha256", argi)==0){
       opts.hash_option = HASH_SHA256;
       continue;
@@ -2146,18 +2130,13 @@ common_opts ParseCommonOptions(int argc, char **argv){
       opts.hash_option = HASH_NONE;
       continue;
     }
-#endif
   }
   return opts;
 }
 
 /* ------------------ version ------------------------ */
 
-#ifdef pp_HASH
 void PRINTversion(char *progname, int option){
-#else
-void PRINTversion(char *progname){
-#endif
   char *progfullpath = GetBinPath();
   char githash[256];
   char gitdate[256];
@@ -2176,7 +2155,6 @@ void PRINTversion(char *progname){
   PRINTF("Sanitize checks  : enabled\n");
 #endif
 
-#ifdef pp_HASH
   if(option==HASH_MD5||option==HASH_ALL){
     unsigned char *hash = NULL;
 
@@ -2198,7 +2176,6 @@ void PRINTversion(char *progname){
     if(hash!=NULL)PRINTF("Checksum(SHA256) : %s\n", hash);
     FREEMEMORY(hash);
   }
-#endif
 #ifdef _WIN32
   PRINTF("Platform         : WIN64 ");
 #ifdef INTEL_COMPILER_ANY
