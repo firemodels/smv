@@ -290,17 +290,16 @@ int GetRowCols(FILE *stream, int *nrows, int *ncols){
 #endif
 
 void GetGitInfo(char *githash, char *gitdate, int *gittest){
-  char rev[256], revcopy[256], *beg=NULL;
+  char rev[256], *beg=NULL;
 
   strcpy(rev,pp_GITHASH);
   TrimBack(rev);
   beg = TrimFront(rev);
   if(gittest != NULL){
-    char *testtoken=NULL;
-    int rev = 1;
+    char *testtoken=NULL, revcopy[256];;
+    int revision = 1;
 
     *gittest = 1;
-
     strcpy(revcopy, rev);
 //#define pp_GITTEST
 #ifdef pp_GITTEST
@@ -309,8 +308,8 @@ void GetGitInfo(char *githash, char *gitdate, int *gittest){
     testtoken = strtok(revcopy, "-");
     if(testtoken != NULL)testtoken = strtok(NULL, "-");
     if(testtoken != NULL)testtoken = strtok(NULL, "-");
-    if(testtoken != NULL)sscanf(testtoken, "%i", &rev);
-    if(rev == 0)*gittest = 0;
+    if(testtoken != NULL)sscanf(testtoken, "%i", &revision);
+    if(revision == 0)*gittest = 0;
   }
   if(githash!=NULL){
     if(strlen(beg)>0){
