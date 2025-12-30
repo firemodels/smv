@@ -355,7 +355,7 @@ int main(int argc, char **argv)
       abort();
     }
   if(print_help) {
-    printf("smvq-%s\n", PROGVERSION);
+    printf("smvq\n");
     printf("\nUsage:  smvq [OPTIONS] <FILE>\n");
     printf("\nOptions:\n");
     printf("  -h Print help\n");
@@ -363,7 +363,7 @@ int main(int argc, char **argv)
     return 0;
   }
   if(print_version) {
-    printf("smvq - smv query processor (v%s)\n", PROGVERSION);
+    printf("smvq - smv query processor\n");
     return 0;
   }
 #if defined(_WIN32) && defined(pp_UNICODE_PATHS)

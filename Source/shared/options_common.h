@@ -40,13 +40,6 @@
 #endif
 #endif
 
-#ifdef pp_BETA
-#define PROGVERSION "Test"
-#else
-#define PROGVERSION ""
-#endif
-
-
 // Microsofts MSVC has timespec defined
 #ifdef _MSC_VER
 #ifndef HAVE_STRUCT_TIMESPEC
