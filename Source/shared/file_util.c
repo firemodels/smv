@@ -834,16 +834,9 @@ bufferdata *File2Buffer(char *file, char *size_file, int *options, bufferdata *b
   }
 //  nread = fread_p(file, buffer, offset, delta, nthreads);
 
-//#define XXXX
-#ifdef XXXX
   FILE *stream;
   stream = FOPEN(file, "rb");
-#endif
 
-#ifndef XXXX
-  FILE *stream;
-  stream = FOPEN(file, "rb");
-#endif
   if(stream == NULL){
     FreeBufferInfo(bufferinfo);
     return NULL;

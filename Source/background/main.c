@@ -53,7 +53,7 @@ void Usage(int option){
   char gitdate[100];
   char pp[] = "%";
 
-  GetGitInfo(githash, gitdate);    // get githash
+  GetGitInfo(githash, gitdate, NULL);    // get githash
 
   printf("\n");
   printf("background [-d delay time (s) -h -u max_usage -v] prog [arguments]\n");

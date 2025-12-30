@@ -12,7 +12,7 @@ void Usage(int option){
   char githash[100];
   char gitdate[100];
 
-  GetGitInfo(githash, gitdate);    // get githash
+  GetGitInfo(githash, gitdate, NULL);    // get githash
 
   PRINTF("\n");
   PRINTF("fds2fed [options] smv_case1\n");

@@ -8466,7 +8466,7 @@ void WriteIni(int flag,char *filename){
     char githash[256];
     char gitdate[256];
 
-    GetGitInfo(githash,gitdate);    // get githash
+    GetGitInfo(githash,gitdate, NULL);    // get githash
     fprintf(fileout,"\n\n");
     fprintf(fileout,"# FDS/Smokeview Environment\n");
     fprintf(fileout,"# -------------------------\n\n");

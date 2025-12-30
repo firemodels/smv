@@ -32,7 +32,7 @@ void Usage(int option){
   char githash[100];
   char gitdate[100];
 
-  GetGitInfo(githash, gitdate);    // get githash
+  GetGitInfo(githash, gitdate, NULL);    // get githash
 
   PRINTF("\nsmokeview [options] casename\n");
   PRINTF("%s - %s\n\n", githash, __DATE__);
@@ -664,13 +664,6 @@ void FreeArgs(int n_args, char **args) {
 
 int main(int argc, char **argv){
   int return_code;
-
-#ifdef TEST
-  int nnn;
-
-  nnn = global_scase.smoke3dcoll.nsmoke3dinfo;
-  printf("nsmoke3dinfo=%i\n", nnn);
-#endif
 
   START_TIMER(timer_startup);
   // uncomment following block of code to test crash detection

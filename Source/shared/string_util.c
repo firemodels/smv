@@ -288,27 +288,48 @@ int GetRowCols(FILE *stream, int *nrows, int *ncols){
 #ifndef pp_GITDATE
 #define pp_GITDATE "unknown"
 #endif
-void GetGitInfo(char *githash, char *gitdate){
+
+void GetGitInfo(char *githash, char *gitdate, int *gittest){
   char rev[256], *beg=NULL;
 
   strcpy(rev,pp_GITHASH);
   TrimBack(rev);
   beg = TrimFront(rev);
-  if(strlen(beg)>0){
-    strcpy(githash,beg);
+  if(gittest != NULL){
+    char *testtoken=NULL, revcopy[256];;
+    int revision = 1;
+
+    *gittest = 1;
+    strcpy(revcopy, rev);
+//#define pp_GITTEST
+#ifdef pp_GITTEST
+    strcpy(revcopy, "%s", "SMV-6.10.6-12-gc216-dirty-ppbeta");
+#endif
+    testtoken = strtok(revcopy, "-");
+    if(testtoken != NULL)testtoken = strtok(NULL, "-");
+    if(testtoken != NULL)testtoken = strtok(NULL, "-");
+    if(testtoken != NULL)sscanf(testtoken, "%i", &revision);
+    if(revision == 0)*gittest = 0;
   }
-  else{
-    strcpy(githash,"unknown");
+  if(githash!=NULL){
+    if(strlen(beg)>0){
+      strcpy(githash,beg);
+    }
+    else{
+      strcpy(githash,"unknown");
+    }
   }
 
   strcpy(rev, pp_GITDATE);
   TrimBack(rev);
   beg = TrimFront(rev);
-  if(strlen(beg)>0){
-    strcpy(gitdate, beg);
-  }
-  else{
-    strcpy(gitdate, "unknown");
+  if(gitdate != NULL){
+    if(strlen(beg)>0){
+      strcpy(gitdate, beg);
+    }
+    else{
+      strcpy(gitdate, "unknown");
+    }
   }
 }
 
@@ -1837,7 +1858,7 @@ void GetBaseTitle(char *progname, char *title_base){
   char git_version[100];
   char git_date[100];
 
-  GetGitInfo(git_version, git_date);    // get githash
+  GetGitInfo(git_version, git_date, NULL);    // get githash
 
   // construct string of the form:
   //   5.x.y_#
@@ -2126,7 +2147,7 @@ void PRINTversion(char *progname){
   char gitdate[256];
   char releasetitle[1024];
 
-  GetGitInfo(githash, gitdate);    // get githash
+  GetGitInfo(githash, gitdate, NULL);    // get githash
   GetTitle(progname, releasetitle);
 
   PRINTF("\n");
