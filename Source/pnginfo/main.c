@@ -18,7 +18,7 @@ void Usage(int option){
   char githash[256];
   char gitdate[256];
 
-  GetGitInfo(githash, gitdate);    // get githash
+  GetGitInfo(githash, gitdate, NULL);    // get githash
 
   PRINTF("\n");
   PRINTF("pnginfo [options] image_file.png\n");

@@ -15,7 +15,7 @@ void Usage(int option){
  char githash[256];
  char gitdate[256];
 
-  GetGitInfo(githash,gitdate);    // get githash
+  GetGitInfo(githash,gitdate, NULL);    // get githash
 
   fprintf(stderr, "\nsh2bat [opttions] file_in file_out\n");
   fprintf(stderr, "%s %s\n\n", githash, __DATE__);

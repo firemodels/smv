@@ -16,7 +16,7 @@ void Usage(int option){
   char githash[100];
   char gitdate[100];
 
-  GetGitInfo(githash,gitdate);    // get githash
+  GetGitInfo(githash,gitdate,NULL);    // get githash
 
   printf("\n");
   printf("wind2fds [-prefix label] [-offset x y z] input_file [output_file]\n");

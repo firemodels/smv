@@ -15,7 +15,7 @@ void Usage(int option){
   char githash[100];
   char gitdate[100];
 
-  GetGitInfo(githash, gitdate);    // get githash
+  GetGitInfo(githash, gitdate, NULL);    // get githash
 
   PRINTF("\n");
   PRINTF("smokediff [options] smv_case1 smv_case2\n");

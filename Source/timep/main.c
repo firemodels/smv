@@ -30,7 +30,7 @@ void Usage(char *prog, int option){
  char githash[LEN_BUFFER];
  char gitdate[LEN_BUFFER];
 
-  GetGitInfo(githash,gitdate);    // get githash
+  GetGitInfo(githash,gitdate,NULL);    // get githash
 
   fprintf(stdout, "\ntimep [options]\n");
   fprintf(stdout, "%s %s\n\n", githash, __DATE__);

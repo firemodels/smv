@@ -79,7 +79,7 @@ void Usage(int option){
   char githash[100];
   char gitdate[100];
 
-  GetGitInfo(githash, gitdate);
+  GetGitInfo(githash, gitdate, NULL);
 
   printf("\nset_path [-s][-u] [-a path_entry] [-r path_entry] [-d][-p][-v]\n");
   printf("%s %s\n\n", githash, gitdate);
