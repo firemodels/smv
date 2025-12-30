@@ -1481,11 +1481,9 @@ int SmokeviewImage2File(char *directory, char *RENDERfilename, int rendertype, i
   case PNG:
     gdImagePng(RENDERimage,RENDERfile);
     break;
-#ifdef p_JPEG
   case JPEG:
     gdImageJpeg(RENDERimage,RENDERfile,-1);
     break;
-#endif
   case RGIF:
     gdImageGif(RENDERimage, RENDERfile);
     break;
