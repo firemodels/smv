@@ -32,7 +32,7 @@ if [ "$BUILD_ALL" == "1" ]; then
   FULL_BUILD="[default]"
 fi
 TESTOPT=
-while getopts 'AfCGhiLmprStT' OPTION
+while getopts 'AfCGhiLmprS' OPTION
 do
 case $OPTION in
   A)
@@ -58,8 +58,6 @@ case $OPTION in
   echo "-L - rebuild all libraries"
   echo "-p - build a profiling version of smokeview"
   echo "-S - build smokeview with sanitize debug options"
-  echo "-t - build a test version of smokeview"
-  echo "-T - same as -t"
   exit
   ;;
   i)
@@ -78,19 +76,9 @@ case $OPTION in
   S)
    SANITIZE=1
   ;;
-  t)
-   TESTOPT=1
-   ;;
-  T)
-   TESTOPT=1
-  ;;
 esac
 done
 
-if [ "$TESTOPT" != "" ]; then
-   SMV_MAKE_OPTS="$SMV_MAKE_OPTS SMV_TESTSTRING=\"_test\" "
-   TEST=test_
-fi
 export SMV_MAKE_OPTS
 export GLUT
 export TEST
