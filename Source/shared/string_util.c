@@ -2071,13 +2071,11 @@ int IsCommonOption(char *argi){
   if(STRCMP("-help", argi)==0||(STRCMP("-h", argi)==0&&STRCMP("-help_all",argi)!=0))return 1;
   if(STRCMP("-help_all", argi) == 0)return 1;
   if(STRCMP("-version", argi)==0||STRCMP("-v", argi)==0)return 1;
-#ifdef pp_HASH
   if(STRCMP("-sha256", argi)==0)return 1;
   if(STRCMP("-sha1", argi)==0)return 1;
   if(STRCMP("-md5", argi)==0)return 1;
   if(STRCMP("-hash_all", argi)==0)return 1;
  if(STRCMP("-hash_none", argi)==0)return 1;
-#endif
   return 0;
 }
 
