@@ -9,6 +9,7 @@
 
 #include "options.h"
 #include "dmalloc.h"
+#include "string_util.h"
 #include "command_args.h"
 
 /* ------------------ CLE_Message ------------------------ */
@@ -57,6 +58,7 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
 #endif
   args.encode_png_commandline = false;
   for (i = 1; i < argc; i++) {
+    if(IsCommonOption(argv[i])==1)continue;
     if (strcmp(argv[i], "-ini") == 0) {
       args.ini = true;
     } else if (strcmp(argv[i], "-ng_ini") == 0) {
