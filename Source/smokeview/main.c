@@ -665,13 +665,6 @@ void FreeArgs(int n_args, char **args) {
 int main(int argc, char **argv){
   int return_code;
 
-#ifdef TEST
-  int nnn;
-
-  nnn = global_scase.smoke3dcoll.nsmoke3dinfo;
-  printf("nsmoke3dinfo=%i\n", nnn);
-#endif
-
   START_TIMER(timer_startup);
   // uncomment following block of code to test crash detection
 /*
