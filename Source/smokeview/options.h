@@ -17,6 +17,7 @@
 //*** options: windows
 
 #ifdef _WIN32
+#define pp_REFRESH          // refresh glui dialogs when they change size
 #define pp_DIALOG_SHORTCUTS // dialog shortcuts
 #endif
 
