@@ -21,9 +21,7 @@ GLUI_Spinner *SPINNER_cullgeom_portsize=NULL;
 GLUI_Listbox *LIST_LB_labels=NULL;
 GLUI_Listbox *LIST_surfs=NULL;
 
-#ifdef pp_REFRESH
 GLUI_Spinner *SPINNER_refresh_rate=NULL;
-#endif
 
 GLUI_Spinner *SPINNER_sky_diam = NULL;
 
@@ -277,9 +275,7 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LABELS_tick_inside    32
 #define LABELS_tick_outside   33
 //#define LABELS_colorbar_shift 36  movied to smokeviewdefs.h
-#ifdef pp_REFRESH
 #define LABELS_REFRESH_RATE   37
-#endif
 #define LABELS_BOUNDING_BOX   38
 #define LABELS_memload        39
 #define LABELS_memusage       40
@@ -857,10 +853,8 @@ extern "C" void GLUIDisplaySetup(int main_window){
   CHECKBOX_labels_ticks = glui_labels->add_checkbox_to_panel(PANEL_gen1, "Ticks (FDS)", &visFDSticks, LABELS_label, GLUILabelsCB);
   CHECKBOX_visUSERticks2 = glui_labels->add_checkbox_to_panel(PANEL_gen1, "Ticks (User)", &visUSERticks, LABELS_usertick2, GLUILabelsCB);
   glui_labels->add_checkbox_to_panel(PANEL_gen1, "Toggle dialogs", &toggle_dialogs);
-#ifdef pp_REFRESH
   SPINNER_refresh_rate = glui_labels->add_spinner_to_panel(PANEL_gen1, "refresh rate (fps)", GLUI_SPINNER_INT, &glui_refresh_rate, LABELS_REFRESH_RATE, GLUILabelsCB);
   SPINNER_refresh_rate->set_int_limits(0,10);
-#endif
 
   CHECKBOX_hide_scene = glui_labels->add_checkbox_to_panel(PANEL_gen1, "Hide scene when mouse is pressed", &hide_scene, LABELS_BOUNDING_BOX, GLUILabelsCB);
 
@@ -1379,7 +1373,6 @@ extern "C" void GLUILabelsCB(int var){
     case LABELS_BOUNDING_BOX:
       updatemenu = 1;
       break;
-#ifdef pp_REFRESH
     case LABELS_REFRESH_RATE:
       if(glui_refresh_rate>0){
         refresh_interval = 1000/(float)glui_refresh_rate;
@@ -1390,7 +1383,6 @@ extern "C" void GLUILabelsCB(int var){
       }
       glui_refresh_rate_old = glui_refresh_rate;
       break;
-#endif
   case LABELS_colorbar_shift:
     UpdateRGBColors(colorbar_select_index);
     break;

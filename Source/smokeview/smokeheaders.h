@@ -663,9 +663,7 @@ EXTERNCPP void OpenSMVFile(char *filename,int filenamelength,int *openfile);
 EXTERNCPP void ParticlePropShowMenu(int value);
 EXTERNCPP void ParticleShowMenu(int value);
 EXTERNCPP void ParticleStreakShowMenu(int var);
-#ifdef pp_REFRESH
 EXTERNCPP void PeriodicRefresh(int var);
-#endif
 EXTERNCPP void Plot3DListMenu(int value);
 EXTERNCPP void Plot3DShowMenu(int value);
 EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);

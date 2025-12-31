@@ -2339,12 +2339,10 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
   float widthdiv2;
   float eyexINI, eyeyINI, eyezINI;
 
-#ifdef pp_REFRESH
   if(refresh_glui_dialogs==1){
     refresh_glui_dialogs=0;
     GLUIRefreshDialogs();
   }
-#endif
 
   if(stereotype==STEREO_LR){
     VP_scene.left=screen_left;

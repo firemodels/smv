@@ -2950,11 +2950,9 @@ void Keyboard(unsigned char key, int flag){
     case ';':
       ColorbarMenu(COLORBAR_FLIP);
       break;
-#ifdef pp_REFRESH
     case '_':
       GLUIRefreshDialogs();
       break;
-#endif
     case '{':
     case '}':
       if(key2=='{')iplot3dtimelist = GetPlot3DTimeList(-1);

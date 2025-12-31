@@ -19,18 +19,8 @@
 #include "glui.h"
 #include "stdinc.h"
 
-#ifdef __linux__
-#define pp_REFRESH
-#endif
-
-#ifdef pp_OSX_HIGHRES
-#define pp_REFRESH
-#endif
-
-#ifdef pp_REFRESH
 extern "C" int refresh_glui_dialogs;
 extern "C" void SetMainWindow(void);
-#endif
 
 /****************************** GLUI_Rollout::open() **********/
 
@@ -65,11 +55,9 @@ void    GLUI_Rollout::open( void )
   glui->refresh();
 
   restore_window(orig);
-#ifdef pp_REFRESH
   refresh_glui_dialogs = 1;
   SetMainWindow();
   glutPostRedisplay();
-#endif
 }
 
 
@@ -104,11 +92,9 @@ void    GLUI_Rollout::close( void )
   is_open = false;
 
   glui->refresh();
-#ifdef pp_REFRESH
   refresh_glui_dialogs = 1;
   SetMainWindow();
   glutPostRedisplay();
-#endif
 }
 
 
