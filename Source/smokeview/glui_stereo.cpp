@@ -141,9 +141,6 @@ extern "C" void GLUIStereoSetup(int main_window){
   BUTTON_stereo_1=glui_stereo->add_button("Reset",STEREO_RESET,StereoCB);
   BUTTON_stereo_2=glui_stereo->add_button("Save settings",SAVE_SETTINGS_STEREO,StereoCB);
   BUTTON_stereo_3=glui_stereo->add_button("Close",STEREO_CLOSE,StereoCB);
-#ifdef pp_CLOSEOFF
-  BUTTON_stereo_3->disable();
-#endif
 
   glui_stereo->set_main_gfx_window( main_window );
 }

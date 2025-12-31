@@ -300,7 +300,6 @@ void MakeMovieSMVScript(void){
 /* ------------------ GLUICloseRollouts ------------------------ */
 
 extern "C" void GLUICloseRollouts(GLUI *dialog){
-#ifndef pp_CLOSEOFF
   rolloutlistdata *this_rollout;
 
   for(this_rollout = first_rollout.next; this_rollout->next!=NULL; this_rollout = this_rollout->next){
@@ -310,7 +309,6 @@ extern "C" void GLUICloseRollouts(GLUI *dialog){
     dialog->hide();
     updatemenu = 1;
   }
-#endif
 }
 
 /* ------------------ GLUIUpdateFarclip ------------------------ */
@@ -1111,9 +1109,7 @@ extern "C" void GLUIUpdateViewpointList(void){
 void MotionDlgCB(int var){
   switch(var){
   case CLOSE_MOTION:
-#ifndef pp_CLOSEOFF
     if(glui_motion != NULL)glui_motion->hide();
-#endif
     updatemenu = 1;
     break;
   case SAVE_SETTINGS_MOTION:
@@ -1667,9 +1663,6 @@ extern "C" void GLUIMotionSetup(int main_window){
   glui_motion->add_column_to_panel(PANEL_close,false);
 
   BUTTON_motion_2=glui_motion->add_button_to_panel(PANEL_close,"Close",1, MotionDlgCB);
-#ifdef pp_CLOSEOFF
-  BUTTON_motion_2->disable();
-#endif
 
   GLUIShowHideTranslate(rotation_type);
   glui_motion->set_main_gfx_window( main_window );

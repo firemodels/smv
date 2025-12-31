@@ -383,9 +383,6 @@ extern "C" void GLUIShooterSetup(int main_window){
   BUTTON_shooter_2=glui_shooter->add_button_to_panel(PANEL_shooter_win,"Save settings",SAVE_SETTINGS_SHOOTER,ShooterCB);
   glui_shooter->add_column_to_panel(PANEL_shooter_win,false);
   BUTTON_shooter_3=glui_shooter->add_button_to_panel(PANEL_shooter_win,"Close",SHOOTER_CLOSE,ShooterCB);
-#ifdef pp_CLOSEOFF
-  BUTTON_shooter_3->disable();
-#endif
 
   ShooterCB(SHOOTER_VEL_TYPE);
   ShooterCB(SHOOTER_VEL);

@@ -65,9 +65,7 @@ extern "C" void GLUIShowAlert(void){
 /* ------------------ GLUIHideAlert ------------------------ */
 
 extern "C" void GLUIHideAlert(void){
-#ifndef pp_CLOSEOFF
   if(glui_alert!=NULL)glui_alert->hide();
-#endif
 }
 
 /* ------------------ GLUIAlertSetup ------------------------ */

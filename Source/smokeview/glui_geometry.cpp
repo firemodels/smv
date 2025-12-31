@@ -1129,9 +1129,6 @@ extern "C" void GLUIGeometrySetup(int main_window){
   glui_geometry->add_column_to_panel(PANEL_geom_close, false);
 
   BUTTON_blockage_1=glui_geometry->add_button_to_panel(PANEL_geom_close, "Close",CLOSE_WINDOW, BlockeditDlgCB);
-#ifdef pp_CLOSEOFF
-  BUTTON_blockage_1->disable();
-#endif
 
   glui_geometry->set_main_gfx_window( main_window );
 }

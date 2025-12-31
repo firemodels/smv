@@ -2008,9 +2008,6 @@ extern "C" void GLUIPlot2DSetup(int main_window){
     glui_plot2d->add_column_to_panel(PANEL_plot2d_label3, false);
 
     BUTTON_plot2d_2 = glui_plot2d->add_button_to_panel(PANEL_plot2d_label3, "Close", GENPLOT_CLOSE, GLUIGenPlotCB);
-#ifdef pp_CLOSEOFF
-    BUTTON_plot2d_2->disable();
-#endif
   }
 }
 
@@ -2239,9 +2236,6 @@ extern "C" void GLUIDeviceSetup(int main_window){
   glui_device->add_column_to_panel(PANEL_label3,false);
 
   BUTTON_device_2=glui_device->add_button_to_panel(PANEL_label3,"Close",DEVICE_close,GLUIDeviceCB);
-#ifdef pp_CLOSEOFF
-  BUTTON_device_2->disable();
-#endif
 
   glui_device->set_main_gfx_window( main_window );
 }

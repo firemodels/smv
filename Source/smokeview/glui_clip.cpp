@@ -375,9 +375,6 @@ extern "C" void GLUIClipSetup(int main_window){
   glui_clip->add_column_to_panel(panel_wrapup,false);
 
   BUTTON_clip_2=glui_clip->add_button_to_panel(panel_wrapup,"Close",CLIP_CLOSE,ClipCB);
-#ifdef pp_CLOSEOFF
-  BUTTON_clip_2->disable();
-#endif
 
   if(updateclipvals==1){
     SetClipControls(INI_VALS);  // clip vals from ini file

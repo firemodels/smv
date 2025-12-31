@@ -297,9 +297,7 @@ extern "C" void GLUIHideColorbar(void){
     CopyCamera(camera_external,camera_external_save);
     ReshapeCB(screenWidth,screenHeight);
     SetViewPoint(RESTORE_EXTERIOR_VIEW);
-#ifndef pp_CLOSEOFF
     glui_colorbar->hide();
-#endif
   }
   updatemenu=1;
 }
@@ -1161,9 +1159,6 @@ extern "C" void GLUIColorbarSetup(int main_window){
   glui_colorbar->add_button_to_panel(PANEL_cb_save, "Revert", COLORBAR_REVERT, GLUIColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb_save, false);
   BUTTON_cb_close=glui_colorbar->add_button_to_panel(PANEL_cb_save,"Close",COLORBAR_CLOSE,GLUIColorbarCB);
-#ifdef pp_CLOSEOFF
-  BUTTON_colorbar_close->disable();
-#endif
   if(colorbars.ncolorbars > 0){
     GLUIColorbarCB(COLORBAR_LIST);
   }

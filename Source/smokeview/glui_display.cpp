@@ -1316,9 +1316,6 @@ extern "C" void GLUIDisplaySetup(int main_window){
   glui_labels->add_column_to_panel(PANEL_label2,false);
 
   BUTTON_label_4=glui_labels->add_button_to_panel(PANEL_label2,"Close",LABELS_close,GLUILabelsCB);
-#ifdef pp_CLOSEOFF
-  BUTTON_label_4->disable();
-#endif
 
   glui_labels->set_main_gfx_window( main_window );
 }
