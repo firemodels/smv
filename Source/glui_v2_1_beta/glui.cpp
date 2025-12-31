@@ -552,7 +552,7 @@ int _glutBitmapWidthString( void *font, char *s )
     width += glutBitmapWidth( font, *p );
     p++;
   }
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
   if(double_scale==1){
     width /=2;
   }
@@ -1026,7 +1026,7 @@ GLUI_Main::GLUI_Main( void )
   GLUI_Master.glui_id_counter++;
 
   font                    = GLUT_BITMAP_HELVETICA_12;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
   if(double_scale==1){
     font                    = (void *)GLUT_BITMAP_HELVETICA_24;
   }

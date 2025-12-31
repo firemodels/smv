@@ -38,7 +38,7 @@ typedef struct {
 // avoid compiler warnings on C11 and later
 #ifdef pp_C11
 
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
 // 90 - 256
 #define DEG_SYMBOL -160
 #else
@@ -48,7 +48,7 @@ typedef struct {
 
 #else
 
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
 #define DEG_SYMBOL 96
 #else
 #define DEG_SYMBOL 176

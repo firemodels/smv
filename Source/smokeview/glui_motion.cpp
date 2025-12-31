@@ -16,7 +16,7 @@
 #include "paths.h"
 
 #define ROTATE_TRANSLATE
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
 #undef ROTATE_TRANSLATE
 #endif
 
@@ -2144,7 +2144,7 @@ extern "C" void GLUISceneMotionCB(int var){
       if(windowsize_pointer>=2){
         if(windowsize_pointer==windowsize_pointer_old)break;
         windowsize_pointer_old = windowsize_pointer;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
         if(double_scale==1){
           glui_screenWidth  /= 2;
           glui_screenHeight /= 2;

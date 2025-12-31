@@ -39,7 +39,7 @@ typedef struct CommandlineArgs {
   bool stereo;
   /// @brief hide scene and data when moving scene or selecting menus
   bool big;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
   /// @brief On Mac, turn off 2x scene scaling (do not scale scene)
   bool x1;
   /// @brief On Mac, turn on 2x scene scaling

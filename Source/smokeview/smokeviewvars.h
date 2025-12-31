@@ -22,7 +22,7 @@
 #endif
 #include "smokeheaders.h"
 #include "threader.h"
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
 #include "glutbitmap.h"
 #endif
 
@@ -240,7 +240,7 @@ SVEXTERN int SVDECL(show_trirates, 0);
 
 SVEXTERN float SVDECL(pixel_dens, 1.0);
 
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
 SVEXTERN int SVDECL(force_scale, 0);
 extern CCC const BitmapFontRec glutBitmapHelvetica20;
 extern CCC const BitmapFontRec glutBitmapHelvetica24;

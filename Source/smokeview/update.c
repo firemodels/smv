@@ -2926,7 +2926,7 @@ void UpdateDisplay(void){
   if(update_screensize == 1){
     update_screensize = 0;
     GLUIUpdateWindowSizeList();
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(double_scale==1){
       screenWidthINI  /= 2;
       screenHeightINI /= 2;

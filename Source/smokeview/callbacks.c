@@ -1006,7 +1006,7 @@ void UpdateMouseInfo(int flag, int xm, int ym){
 void MouseCBWorker(int button, int state, int xm, int ym){
   float *eye_xyz;
 
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
   if(double_scale==1){
     xm *= 2;
     ym *= 2;
@@ -1470,7 +1470,7 @@ int ThrottleGpu(void){
 /* ------------------ MouseDragCB ------------------------ */
 
 void MouseDragCB(int xm, int ym){
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
   if(double_scale==1){
     xm *= 2;
     ym *= 2;
@@ -3645,7 +3645,7 @@ void SetScreenSize(int *width, int *height){
     screenWidth = MAX(screenWidth, 1);
     if(screenWidth%2==1)screenWidth++;
 
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(double_scale==1){
       screenWidth *= 2;
     }
@@ -3653,7 +3653,7 @@ void SetScreenSize(int *width, int *height){
   }
   if(height!=NULL){
     screenHeight=MAX(*height,1);
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(double_scale==1){
       screenHeight *= 2;
     }

@@ -45,7 +45,7 @@ void Usage(int option){
   UsageCommon(HELP_SUMMARY);
   if(option==HELP_ALL){
     PRINTF("\n%s\n", "Other options:");
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     PRINTF("%s\n", " -1x            - turn off 2x scene scaling (do not scale scene).");
     PRINTF("%s\n", " -2x            - turn on 2x scene scaling.");
 #endif
@@ -296,7 +296,7 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
   }
 
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(args->x1){
       double_scale = 0;
       force_scale  = 1;

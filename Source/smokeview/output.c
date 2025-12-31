@@ -216,7 +216,7 @@ int GetStringWidth(char *string){
       length += glutBitmapWidth(GLUT_BITMAP_HELVETICA_10, *c);
     }
     length *= (288.0 / 235.0);
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(double_scale == 1){
       length *= 2;
     }
@@ -227,7 +227,7 @@ int GetStringWidth(char *string){
       length += glutBitmapWidth(GLUT_BITMAP_HELVETICA_18, *c);
     }
     length *= (416.0 / 423.0);
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(double_scale == 1){
       length *= 2;
     }

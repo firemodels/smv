@@ -159,7 +159,7 @@ void GetViewportInfo(void){
   v_space     = 2;
   text_height = font_height;
   text_width  = 18;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
   if(double_scale==1){
     text_height *= 2;
     text_width  *= 2;
@@ -301,7 +301,7 @@ void GetViewportInfo(void){
   if(doit==1){
     int temp_height, timebar_height = TIMEBAR_HEIGHT;
 
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
   if(double_scale==1){
     timebar_height *= 2;
   }
@@ -323,11 +323,6 @@ void GetViewportInfo(void){
     VP_timebar.width = 0;
     VP_timebar.height = 0;
   }
-//#ifdef pp_OSX_HIGHRES
-//  if(double_scale==1){
-//    VP_timebar.height *= 2;
-//  }
-//#endif
   VP_timebar.right = VP_timebar.left + VP_timebar.width;
   VP_timebar.top   = VP_timebar.down + VP_timebar.height;
 
@@ -1194,7 +1189,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
 #endif
   int delta = TIMEBAR_HEIGHT;
 
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
   if(double_scale==1){
     delta *= 2;
   }
@@ -1254,7 +1249,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
       int timebar_height;
 
       timebar_height = TIMEBAR_HEIGHT;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
       if(double_scale==1){
         timebar_height *= 2;
       }

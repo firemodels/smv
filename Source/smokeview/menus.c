@@ -1687,7 +1687,7 @@ void FontMenu(int value){
     break;
   case SMALL_FONT:
     fontindex=SMALL_FONT;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(double_scale==1){
       font_ptr          = (void *)GLUT_BITMAP_HELVETICA_24;
       colorbar_font_ptr = (void *)GLUT_BITMAP_HELVETICA_20;
@@ -1705,7 +1705,7 @@ void FontMenu(int value){
     break;
   case LARGE_FONT:
     fontindex=LARGE_FONT;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(double_scale==1){
       font_ptr          = (void *)GLUT_BITMAP_HELVETICA_36;
       colorbar_font_ptr = (void *)GLUT_BITMAP_HELVETICA_36;
@@ -1934,7 +1934,7 @@ void RenderState(int onoff){
     update_screeninfo = 1;
     saveW=screenWidth;
     saveH=screenHeight;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(double_scale==1){
       scale = 2;
     }
@@ -11755,7 +11755,7 @@ static int menu_count=0;
     glutAddMenuEntry("  Platform: WIN64", 1);
 #endif
 #ifdef pp_OSX
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(double_scale==1){
       glutAddMenuEntry("  Platform: OSX64(high res fonts)", 1);
     }

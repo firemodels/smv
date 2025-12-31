@@ -182,9 +182,4 @@
 #endif
 #endif
 
-#undef pp_OSX_HIGHRES
-#ifdef pp_OSX
-#define pp_OSX_HIGHRES
-#endif
-
 #endif
