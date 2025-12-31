@@ -373,7 +373,7 @@ int          GLUI_Control::char_width( char c )
 {
   int width;
   width = glutBitmapWidth( get_font(), c );
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
   if(double_scale==1){
     width /= 2;
   }
@@ -386,7 +386,7 @@ int          GLUI_Control::char_width( char c )
 
 void    *GLUI_Control::get_font( void )
 {
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
   if(double_scale==0){
     /*** Does this control have its own font? ***/
     if ( this->font != NULL )

@@ -1,6 +1,6 @@
 #include "option_glui.h"
 
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
 /* GENERATED FILE -- DO NOT MODIFY */
 
 #define glutBitmapHelvetica20 XXX

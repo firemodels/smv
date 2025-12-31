@@ -77,9 +77,6 @@
 //#define pp_MEMPRINT     // output memory allocation info
 #define pp_MEMDEBUG     // comment this line when debugging REALLY large cases (to avoid memory checks)
 #endif
-#ifdef pp_MEMDEBUG
-#define pp_memusage
-#endif
 
 //*** hash output
 
@@ -183,17 +180,6 @@
 #ifndef GL_SILENCE_DEPRECATION
 #define GL_SILENCE_DEPRECATION
 #endif
-#endif
-
-#undef pp_OSX_HIGHRES
-#ifdef pp_OSX
-#define pp_OSX_HIGHRES
-#endif
-
-//*** options: for debugging
-
-#ifdef _DEBUG
-//#define pp_MEM_DEBUG_PRINT // output file/line number for each memory allocation call
 #endif
 
 #endif

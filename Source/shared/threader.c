@@ -8,27 +8,25 @@
 #include "dmalloc.h"
 #include "threader.h"
 
-#ifdef pp_SAMPLE
+// /* ------------------ Sample ------------------------ */
 
-/* ------------------ Sample ------------------------ */
+// void *Sample(void *arg){
+//  // n_sample_threads - number of threads - default 1
+//  // use_sample_threads 0/1 use multi threading or not
+//  // threads - data structure that holds threading instance
+//  // Sample - routine that does the work, must end with THREAD_EXIT macro
 
-void *Sample(void *arg){
- // n_sample_threads - number of threads - default 1
- // use_sample_threads 0/1 use multi threading or not
- // threads - data structure that holds threading instance
- // Sample - routine that does the work, must end with THREAD_EXIT macro
+//   sample code
 
-  sample code
+//   THREAD_EXIT(sample_threads);
+// }
+// //*** call before first use of threading routines
 
-  THREAD_EXIT(sample_threads);
-}
-//*** call before first use of threading routines
+// sample_threads = THREADinit(&n_sample_threads, &use_sample_threads, Sample);
+//
+// //*** call to do the work
+// THREADrun(sample_threads);
 
-sample_threads = THREADinit(&n_sample_threads, &use_sample_threads, Sample);
-
-//*** call to do the work
-THREADrun(sample_threads);
-#endif
 
 /* ------------------ THREADinit ------------------------ */
 

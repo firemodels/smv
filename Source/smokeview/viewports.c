@@ -159,7 +159,7 @@ void GetViewportInfo(void){
   v_space     = 2;
   text_height = font_height;
   text_width  = 18;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
   if(double_scale==1){
     text_height *= 2;
     text_width  *= 2;
@@ -283,7 +283,7 @@ void GetViewportInfo(void){
   }
   if(show_horizontal_colorbar == 1
     ||vismemload==1
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
      || vismemusage == 1
 #endif
   )
@@ -301,7 +301,7 @@ void GetViewportInfo(void){
   if(doit==1){
     int temp_height, timebar_height = TIMEBAR_HEIGHT;
 
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
   if(double_scale==1){
     timebar_height *= 2;
   }
@@ -311,7 +311,7 @@ void GetViewportInfo(void){
     temp_height = text_height + v_space;
     if(visFramelabel==1||vis_hrr_label==1
       ||vismemload==1
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
        || vismemusage == 1
 #endif
     )
@@ -323,11 +323,6 @@ void GetViewportInfo(void){
     VP_timebar.width = 0;
     VP_timebar.height = 0;
   }
-//#ifdef pp_OSX_HIGHRES
-//  if(double_scale==1){
-//    VP_timebar.height *= 2;
-//  }
-//#endif
   VP_timebar.right = VP_timebar.left + VP_timebar.width;
   VP_timebar.top   = VP_timebar.down + VP_timebar.height;
 
@@ -1189,12 +1184,12 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
   int time_width=0, hrr_width=0, frame_width=0;
   int framerate_width = 0;
   int memload_width = 0;
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
   int memusage_width = 0;
 #endif
   int delta = TIMEBAR_HEIGHT;
 
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
   if(double_scale==1){
     delta *= 2;
   }
@@ -1205,7 +1200,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
   timebar_right_width = 0;
   if(visFramerate==1&&showtime==1)framerate_width = GetStringWidth("Frame rate: 99.99");
   timebar_right_width = framerate_width;
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
   if(vismemusage == 1) {
     memusage_width = GetStringWidth("Mem Usage: 9999 MBx");
     timebar_right_width = MAX(timebar_right_width, memusage_width);
@@ -1254,7 +1249,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
       int timebar_height;
 
       timebar_height = TIMEBAR_HEIGHT;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
       if(double_scale==1){
         timebar_height *= 2;
       }
@@ -1292,7 +1287,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
       }
     }
   }
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
   if(vismemusage==1){
       char MEMlabel[128];
 
@@ -2339,12 +2334,10 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
   float widthdiv2;
   float eyexINI, eyeyINI, eyezINI;
 
-#ifdef pp_REFRESH
   if(refresh_glui_dialogs==1){
     refresh_glui_dialogs=0;
     GLUIRefreshDialogs();
   }
-#endif
 
   if(stereotype==STEREO_LR){
     VP_scene.left=screen_left;

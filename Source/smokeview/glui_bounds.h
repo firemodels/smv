@@ -255,9 +255,7 @@ EXTERNCPP void GLUISliceBoundCB(int var);
 EXTERNCPP void GLUIUpdateChar(void);
 EXTERNCPP void GLUIUpdateTracers(void);
 EXTERNCPP void GLUIUpdateShowHideButtons(void);
-#ifdef pp_REFRESH
 EXTERNCPP void GLUIRefreshDialogs(void);
-#endif
 EXTERNCPP void GLUIUpdateVectorpointsize(void);
 EXTERNCPP void GLUIUpdateSliceDupDialog(void);
 EXTERNCPP void SetLoadedSliceBounds(int *list, int nlist);

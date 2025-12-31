@@ -829,7 +829,7 @@ void LabelMenu(int value){
     vis_title_gversion =1;
     visFramerate=1;
     vismemload = 1;
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
     vismemusage = 0;
 #endif
     visaxislabels=1;
@@ -862,7 +862,7 @@ void LabelMenu(int value){
     if(global_scase.ntickinfo>0)visFDSticks=0;
     visgridloc=0;
     vismemload=0;
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
     vismemusage = 0;
 #endif
     break;
@@ -897,11 +897,11 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_memload:
      vismemload = 1 - vismemload;
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
      if(vismemload==1)vismemusage=0;
 #endif
      break;
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
    case MENU_LABEL_memusage:
      vismemusage = 1 - vismemusage;
      if(vismemusage==1)vismemload=0;
@@ -1611,12 +1611,10 @@ void DialogMenu(int value){
     break;
   }
   updatemenu=1;
-#ifdef pp_REFRESH
   refresh_glui_dialogs = 1;
   SetMainWindow();
   GLUIRefreshDialogs();
   glutPostRedisplay();
-#endif
 }
 
 /* ------------------ ZoomMenu ------------------------ */
@@ -1689,7 +1687,7 @@ void FontMenu(int value){
     break;
   case SMALL_FONT:
     fontindex=SMALL_FONT;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(double_scale==1){
       font_ptr          = (void *)GLUT_BITMAP_HELVETICA_24;
       colorbar_font_ptr = (void *)GLUT_BITMAP_HELVETICA_20;
@@ -1707,7 +1705,7 @@ void FontMenu(int value){
     break;
   case LARGE_FONT:
     fontindex=LARGE_FONT;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(double_scale==1){
       font_ptr          = (void *)GLUT_BITMAP_HELVETICA_36;
       colorbar_font_ptr = (void *)GLUT_BITMAP_HELVETICA_36;
@@ -1936,7 +1934,7 @@ void RenderState(int onoff){
     update_screeninfo = 1;
     saveW=screenWidth;
     saveH=screenHeight;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(double_scale==1){
       scale = 2;
     }
@@ -2781,7 +2779,6 @@ void PeriodicReloads(int value){
   }
 }
 
-#ifdef pp_REFRESH
 /* ------------------ PeriodicRefresh ------------------------ */
 
 void PeriodicRefresh(int value){
@@ -2793,7 +2790,6 @@ void PeriodicRefresh(int value){
     }
   }
 }
-#endif
 
 /* ------------------ ScriptMenu2 ------------------------ */
 
@@ -10229,7 +10225,7 @@ static int menu_count=0;
   }
   if(vismemload == 1)glutAddMenuEntry("*Memory load", MENU_LABEL_memload);
   if(vismemload == 0)glutAddMenuEntry("Memory load", MENU_LABEL_memload);
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
   if(vismemusage == 1)glutAddMenuEntry("*Memory usage", MENU_LABEL_memusage);
   if(vismemusage == 0)glutAddMenuEntry("Memory usage", MENU_LABEL_memusage);
 #endif
@@ -11525,11 +11521,7 @@ static int menu_count=0;
   CREATEMENU(filesdialogmenu, DialogMenu);
   glutAddMenuEntry("Auto load data files...", DIALOG_AUTOLOAD);
   if(smokezippath!=NULL&&(global_scase.npatchinfo>0||global_scase.smoke3dcoll.nsmoke3dinfo>0||global_scase.slicecoll.nsliceinfo>0)){
-#ifdef pp_DIALOG_SHORTCUTS
     glutAddMenuEntry("Compress data files...  ALT z", DIALOG_SMOKEZIP);
-#else
-    glutAddMenuEntry("Compress data files...", DIALOG_SMOKEZIP);
-#endif
   }
   glutAddMenuEntry("Save/load configuration files...", DIALOG_CONFIG);
   glutAddMenuEntry("Render images...", DIALOG_RENDER);
@@ -11547,21 +11539,12 @@ static int menu_count=0;
   /* --------------------------------viewdialog menu -------------------------- */
 
   CREATEMENU(viewdialogmenu, DialogMenu);
-#ifdef pp_DIALOG_SHORTCUTS
   glutAddMenuEntry("Clipping...  ALT c", DIALOG_CLIP);
   glutAddMenuEntry("Tours...  ALT t", DIALOG_TOUR_SHOW);
   glutAddMenuEntry("Edit Colorbar...  ALT C", DIALOG_COLORBAR);
   if(global_scase.isZoneFireModel==0 && have_geometry_dialog==1){
     glutAddMenuEntry("Examine geometry...  ALT e", DIALOG_GEOMETRY_OPEN);
   }
-#else
-  glutAddMenuEntry("Clip scene...", DIALOG_CLIP);
-  glutAddMenuEntry("Tours...", DIALOG_TOUR_SHOW);
-  glutAddMenuEntry("Edit Colorbar...  ", DIALOG_COLORBAR);
-  if(global_scase.isZoneFireModel == 0 && have_geometry_dialog == 1){
-    glutAddMenuEntry("Examine geometry...  ", DIALOG_GEOMETRY_OPEN);
-  }
-#endif
   if(global_scase.nterraininfo>0&&global_scase.ngeominfo==0){
     glutAddMenuEntry("Terrain...", DIALOG_TERRAIN);
   }
@@ -11618,13 +11601,8 @@ static int menu_count=0;
   GLUTADDSUBMENU("Window", windowdialogmenu);
 
   glutAddMenuEntry("-",MENU_DUMMY2);
-#ifdef pp_DIALOG_SHORTCUTS
   glutAddMenuEntry("Shrink all dialogs ALT X", DIALOG_SHRINKALL);
   glutAddMenuEntry("Close all dialogs  ALT x", DIALOG_HIDEALL);
-#else
-  glutAddMenuEntry("Shrink all dialogs ", DIALOG_SHRINKALL);
-  glutAddMenuEntry("Close all dialogs  ", DIALOG_HIDEALL);
-#endif
 
   /* -------------------------------- font menu -------------------------- */
 
@@ -11777,7 +11755,7 @@ static int menu_count=0;
     glutAddMenuEntry("  Platform: WIN64", 1);
 #endif
 #ifdef pp_OSX
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(double_scale==1){
       glutAddMenuEntry("  Platform: OSX64(high res fonts)", 1);
     }

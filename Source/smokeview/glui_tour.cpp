@@ -295,12 +295,7 @@ extern "C" void GLUITourSetup(int main_window){
   PANEL_close_tour = glui_tour->add_panel("",false);
   glui_tour->add_button_to_panel(PANEL_close_tour,"Save",SAVE_SETTINGS_TOUR,TourCB);
   glui_tour->add_column_to_panel(PANEL_close_tour,false);
-#ifdef pp_CLOSEOFF
-  GLUI_Button *BUTTON_button2 = glui_tour->add_button_to_panel(PANEL_close_tour,"Close",TOUR_CLOSE,TourCB);
-  BUTTON_button2->disable();
-#else
   glui_tour->add_button_to_panel(PANEL_close_tour,"Close",TOUR_CLOSE,TourCB);
-#endif
   ROLLOUT_keyframe->close();
 
   glui_tour->set_main_gfx_window( main_window );

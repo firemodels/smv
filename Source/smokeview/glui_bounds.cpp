@@ -2649,10 +2649,8 @@ void SetLoadedPartBounds(int *list, int nlist){
 //----------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
 
-#ifdef pp_REFRESH
 extern GLUI *glui_clip, *glui_colorbar, *glui_labels, *glui_geometry, *glui_motion, *glui_device;
 extern GLUI *glui_shooter, *glui_tour, *glui_stereo, *glui_trainer;
-#endif
 
 #define MEMCHECK 1
 
@@ -3143,7 +3141,6 @@ extern "C" void GLUIUpdatePlot2DSize2(void){
   if(SPINNER_plot2d_dt !=NULL)SPINNER_plot2d_dt->set_float_val(plot2d_time_average);
 }
 
-#ifdef pp_REFRESH
 /* ------------------ GLUIRefreshDialogs ------------------------ */
 
 extern "C" void GLUIRefreshDialogs(void){
@@ -3159,7 +3156,6 @@ extern "C" void GLUIRefreshDialogs(void){
   if(glui_tour!=NULL)glui_tour->refresh();
   if(glui_trainer!=NULL)glui_trainer->refresh();
 }
-#endif
 
 /* ------------------ GLUIUpdateSliceSkip ------------------------ */
 
@@ -3823,10 +3819,8 @@ void MemcheckCB(int var){
 void BoundsDlgCB(int var){
   switch(var){
   case CLOSE_BOUNDS:
-#ifndef pp_CLOSEOFF
     glui_bounds->hide();
     updatemenu = 1;
-#endif
     break;
   case SAVE_SETTINGS_BOUNDS:
     WriteIni(LOCAL_INI, NULL);
@@ -5896,12 +5890,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
   MemcheckCB(MEMCHECK);
 
   glui_bounds->add_button("Save settings", SAVE_SETTINGS_BOUNDS, BoundsDlgCB);
-#ifdef pp_CLOSEOFF
-  GLUI_Button *BUTTON_button1=glui_bounds->add_button("Close", CLOSE_BOUNDS, BoundsDlgCB);
-  BUTTON_button1->disable();
-#else
   glui_bounds->add_button("Close", CLOSE_BOUNDS, BoundsDlgCB);
-#endif
 
   glui_bounds->set_main_gfx_window( main_window );
 }

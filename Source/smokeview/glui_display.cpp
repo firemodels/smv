@@ -21,9 +21,7 @@ GLUI_Spinner *SPINNER_cullgeom_portsize=NULL;
 GLUI_Listbox *LIST_LB_labels=NULL;
 GLUI_Listbox *LIST_surfs=NULL;
 
-#ifdef pp_REFRESH
 GLUI_Spinner *SPINNER_refresh_rate=NULL;
-#endif
 
 GLUI_Spinner *SPINNER_sky_diam = NULL;
 
@@ -131,7 +129,7 @@ GLUI_Checkbox *CHECKBOX_labels_framelabel=NULL;
 GLUI_Checkbox *CHECKBOX_labels_frametimelabel = NULL;
 GLUI_Checkbox *CHECKBOX_labels_hrrlabel=NULL;
 GLUI_Checkbox *CHECKBOX_labels_memload=NULL;
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
 GLUI_Checkbox *CHECKBOX_labels_memusage = NULL;
 #endif
 GLUI_Checkbox *CHECKBOX_labels_labels = NULL;
@@ -277,9 +275,7 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LABELS_tick_inside    32
 #define LABELS_tick_outside   33
 //#define LABELS_colorbar_shift 36  movied to smokeviewdefs.h
-#ifdef pp_REFRESH
 #define LABELS_REFRESH_RATE   37
-#endif
 #define LABELS_BOUNDING_BOX   38
 #define LABELS_memload        39
 #define LABELS_memusage       40
@@ -846,7 +842,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
   CHECKBOX_labels_gridloc = glui_labels->add_checkbox_to_panel(PANEL_gen1, "Grid location", &visgridloc, LABELS_label, GLUILabelsCB);
   CHECKBOX_labels_hrrlabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, "HRR", &vis_hrr_label, HRR_label, GLUILabelsCB);
   CHECKBOX_labels_memload = glui_labels->add_checkbox_to_panel(PANEL_gen1, "Memory load", &vismemload, LABELS_memload, GLUILabelsCB);
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
   CHECKBOX_labels_memusage = glui_labels->add_checkbox_to_panel(PANEL_gen1, "Memory usage", &vismemusage, LABELS_memusage, GLUILabelsCB);
 #endif
 
@@ -857,10 +853,8 @@ extern "C" void GLUIDisplaySetup(int main_window){
   CHECKBOX_labels_ticks = glui_labels->add_checkbox_to_panel(PANEL_gen1, "Ticks (FDS)", &visFDSticks, LABELS_label, GLUILabelsCB);
   CHECKBOX_visUSERticks2 = glui_labels->add_checkbox_to_panel(PANEL_gen1, "Ticks (User)", &visUSERticks, LABELS_usertick2, GLUILabelsCB);
   glui_labels->add_checkbox_to_panel(PANEL_gen1, "Toggle dialogs", &toggle_dialogs);
-#ifdef pp_REFRESH
   SPINNER_refresh_rate = glui_labels->add_spinner_to_panel(PANEL_gen1, "refresh rate (fps)", GLUI_SPINNER_INT, &glui_refresh_rate, LABELS_REFRESH_RATE, GLUILabelsCB);
   SPINNER_refresh_rate->set_int_limits(0,10);
-#endif
 
   CHECKBOX_hide_scene = glui_labels->add_checkbox_to_panel(PANEL_gen1, "Hide scene when mouse is pressed", &hide_scene, LABELS_BOUNDING_BOX, GLUILabelsCB);
 
@@ -1322,9 +1316,6 @@ extern "C" void GLUIDisplaySetup(int main_window){
   glui_labels->add_column_to_panel(PANEL_label2,false);
 
   BUTTON_label_4=glui_labels->add_button_to_panel(PANEL_label2,"Close",LABELS_close,GLUILabelsCB);
-#ifdef pp_CLOSEOFF
-  BUTTON_label_4->disable();
-#endif
 
   glui_labels->set_main_gfx_window( main_window );
 }
@@ -1379,7 +1370,6 @@ extern "C" void GLUILabelsCB(int var){
     case LABELS_BOUNDING_BOX:
       updatemenu = 1;
       break;
-#ifdef pp_REFRESH
     case LABELS_REFRESH_RATE:
       if(glui_refresh_rate>0){
         refresh_interval = 1000/(float)glui_refresh_rate;
@@ -1390,7 +1380,6 @@ extern "C" void GLUILabelsCB(int var){
       }
       glui_refresh_rate_old = glui_refresh_rate;
       break;
-#endif
   case LABELS_colorbar_shift:
     UpdateRGBColors(colorbar_select_index);
     break;
@@ -1464,14 +1453,14 @@ extern "C" void GLUILabelsCB(int var){
   case FIRECUTOFF_label:
     break;
   case LABELS_memload:
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
     if(vismemload == 1 && vismemusage == 1){
       vismemusage = 0;
       CHECKBOX_labels_memusage->set_int_val(vismemusage);
     }
 #endif
     break;
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
   case LABELS_memusage:
     if(vismemload == 1 && vismemusage == 1){
       vismemload = 0;
@@ -1561,7 +1550,7 @@ extern "C" void GLUISetLabelControls(){
   if(CHECKBOX_labels_axis!=NULL)CHECKBOX_labels_axis->set_int_val(visaxislabels);
   if(CHECKBOX_labels_framerate!=NULL)CHECKBOX_labels_framerate->set_int_val(visFramerate);
   if(CHECKBOX_labels_memload!=NULL)CHECKBOX_labels_memload->set_int_val(vismemload);
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
   if(CHECKBOX_labels_memusage != NULL)CHECKBOX_labels_memusage->set_int_val(vismemusage);
 #endif
   if(CHECKBOX_labels_labels != NULL)CHECKBOX_labels_labels->set_int_val(visLabels);

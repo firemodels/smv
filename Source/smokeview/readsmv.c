@@ -7916,7 +7916,7 @@ void WriteIni(int flag,char *filename){
   }
   else{
 
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(double_scale==1){
       fprintf(fileout,"WINDOWWIDTH\n");
       fprintf(fileout," %i\n",screenWidth/2);

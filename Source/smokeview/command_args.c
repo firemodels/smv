@@ -52,7 +52,7 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     strcpy(args.prog, argv[0]);
   }
   int i;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
   args.x1 = true;
   args.x2 = false;
 #endif
@@ -69,7 +69,7 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     else if (strcmp(argv[i], "-version") == 0 || strcmp(argv[i], "-v") == 0) {
       args.print_version = true;
     }
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     else if (strcmp(argv[i], "-1x") == 0) {
       args.x1 = true;
       args.x2 = false;

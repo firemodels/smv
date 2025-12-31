@@ -438,7 +438,7 @@ void SetupGlut(int argc, char **argv){
 
     max_screenWidth =  GLUTGetScreenWidth();
     max_screenHeight = GLUTGetScreenHeight();
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(force_scale==0){
       if(monitor_screen_height!=max_screenHeight)double_scale=1;
       if(monitor_screen_height==max_screenHeight)double_scale=0;
@@ -450,7 +450,7 @@ void SetupGlut(int argc, char **argv){
 #endif
     font_ptr          = GLUT_BITMAP_HELVETICA_12;
     colorbar_font_ptr = GLUT_BITMAP_HELVETICA_10;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(double_scale==1){
       font_ptr = (void *)GLUT_BITMAP_HELVETICA_24;
       colorbar_font_ptr = (void *)GLUT_BITMAP_HELVETICA_20;
@@ -464,7 +464,7 @@ void SetupGlut(int argc, char **argv){
 
       TRAINER_WIDTH=300;
       TRAINER_HEIGHT=50;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
       if(double_scale==1){
         TRAINER_WIDTH  *= 2;
         TRAINER_HEIGHT *= 2;
@@ -1246,7 +1246,7 @@ void InitVars(void){
 
   InitScase(&global_scase);
 
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
   double_scale = 1;
 #endif
   global_scase.curdir_writable = Writable(".");
@@ -1259,7 +1259,7 @@ void InitVars(void){
 //*** define slurm queues
 
   queue_list = getenv("SMV_QUEUES");
-#ifdef pp_MOVIE_BATCH_DEBUG
+#ifdef _DEBUG
   if(queue_list==NULL)queue_list = "batch"; // placeholder for debugging slurm queues on the PC
 #endif
 
@@ -1489,7 +1489,7 @@ void InitVars(void){
   strcpy(emptylabel,"");
   font_ptr          = GLUT_BITMAP_HELVETICA_12;
   colorbar_font_ptr = GLUT_BITMAP_HELVETICA_10;
-#ifdef pp_OSX_HIGHRES
+#ifdef pp_OSX
     if(double_scale==1){
       font_ptr = (void *)GLUT_BITMAP_HELVETICA_24;
       colorbar_font_ptr = (void *)GLUT_BITMAP_HELVETICA_20;
