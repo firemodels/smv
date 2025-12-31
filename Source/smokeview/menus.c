@@ -11525,11 +11525,7 @@ static int menu_count=0;
   CREATEMENU(filesdialogmenu, DialogMenu);
   glutAddMenuEntry("Auto load data files...", DIALOG_AUTOLOAD);
   if(smokezippath!=NULL&&(global_scase.npatchinfo>0||global_scase.smoke3dcoll.nsmoke3dinfo>0||global_scase.slicecoll.nsliceinfo>0)){
-#ifdef pp_DIALOG_SHORTCUTS
     glutAddMenuEntry("Compress data files...  ALT z", DIALOG_SMOKEZIP);
-#else
-    glutAddMenuEntry("Compress data files...", DIALOG_SMOKEZIP);
-#endif
   }
   glutAddMenuEntry("Save/load configuration files...", DIALOG_CONFIG);
   glutAddMenuEntry("Render images...", DIALOG_RENDER);
@@ -11547,21 +11543,12 @@ static int menu_count=0;
   /* --------------------------------viewdialog menu -------------------------- */
 
   CREATEMENU(viewdialogmenu, DialogMenu);
-#ifdef pp_DIALOG_SHORTCUTS
   glutAddMenuEntry("Clipping...  ALT c", DIALOG_CLIP);
   glutAddMenuEntry("Tours...  ALT t", DIALOG_TOUR_SHOW);
   glutAddMenuEntry("Edit Colorbar...  ALT C", DIALOG_COLORBAR);
   if(global_scase.isZoneFireModel==0 && have_geometry_dialog==1){
     glutAddMenuEntry("Examine geometry...  ALT e", DIALOG_GEOMETRY_OPEN);
   }
-#else
-  glutAddMenuEntry("Clip scene...", DIALOG_CLIP);
-  glutAddMenuEntry("Tours...", DIALOG_TOUR_SHOW);
-  glutAddMenuEntry("Edit Colorbar...  ", DIALOG_COLORBAR);
-  if(global_scase.isZoneFireModel == 0 && have_geometry_dialog == 1){
-    glutAddMenuEntry("Examine geometry...  ", DIALOG_GEOMETRY_OPEN);
-  }
-#endif
   if(global_scase.nterraininfo>0&&global_scase.ngeominfo==0){
     glutAddMenuEntry("Terrain...", DIALOG_TERRAIN);
   }
@@ -11618,13 +11605,8 @@ static int menu_count=0;
   GLUTADDSUBMENU("Window", windowdialogmenu);
 
   glutAddMenuEntry("-",MENU_DUMMY2);
-#ifdef pp_DIALOG_SHORTCUTS
   glutAddMenuEntry("Shrink all dialogs ALT X", DIALOG_SHRINKALL);
   glutAddMenuEntry("Close all dialogs  ALT x", DIALOG_HIDEALL);
-#else
-  glutAddMenuEntry("Shrink all dialogs ", DIALOG_SHRINKALL);
-  glutAddMenuEntry("Close all dialogs  ", DIALOG_HIDEALL);
-#endif
 
   /* -------------------------------- font menu -------------------------- */
 

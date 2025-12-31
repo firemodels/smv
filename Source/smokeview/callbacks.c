@@ -1776,10 +1776,8 @@ void Keyboard(unsigned char key, int flag){
     case 'b':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
-#ifdef pp_DIALOG_SHORTCUTS
         DialogMenu(DIALOG_BOUNDS); // clip dialog
         break;
-#endif
       case GLUT_ACTIVE_CTRL:
       default:
         show_boundaryfiles = 1-show_boundaryfiles;
@@ -1795,10 +1793,8 @@ void Keyboard(unsigned char key, int flag){
     case 'c':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
-#ifdef pp_DIALOG_SHORTCUTS
         DialogMenu(DIALOG_CLIP); // clip dialog
         break;
-#endif
       case GLUT_ACTIVE_CTRL:
       default:
         if(global_scase.nrooms>0){
@@ -1820,10 +1816,8 @@ void Keyboard(unsigned char key, int flag){
     case 'C':
       switch(keystate){
         case GLUT_ACTIVE_ALT:
-#ifdef pp_DIALOG_SHORTCUTS
           DialogMenu(DIALOG_COLORBAR); // colorbar dialog
           break;
-#endif
         case GLUT_ACTIVE_CTRL:
         default:
           if(global_scase.nrooms>0){
@@ -1846,10 +1840,8 @@ void Keyboard(unsigned char key, int flag){
       }
       switch(keystate){
       case GLUT_ACTIVE_ALT:
-#ifdef pp_DIALOG_SHORTCUTS
         DialogMenu(DIALOG_DISPLAY); // display dialog
         break;
-#endif
       case GLUT_ACTIVE_CTRL:
       default:
         if(rotation_type==EYE_CENTERED){
@@ -1865,10 +1857,8 @@ void Keyboard(unsigned char key, int flag){
     case 'e':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
-#ifdef pp_DIALOG_SHORTCUTS
         DialogMenu(DIALOG_GEOMETRY_OPEN); // edit geometry
         break;
-#endif
       case GLUT_ACTIVE_CTRL:
       default:
         rotation_type++;
@@ -1907,10 +1897,8 @@ void Keyboard(unsigned char key, int flag){
     case 'g':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
-#ifdef pp_DIALOG_SHORTCUTS
         DialogMenu(DIALOG_VIEW);
         break;
-#endif
       case GLUT_ACTIVE_CTRL:
       default:
         if(global_scase.ntotal_blockages>0||global_scase.isZoneFireModel==0||(global_scase.isZoneFireModel==1&&global_scase.ntrnx>0)){
@@ -2112,10 +2100,8 @@ void Keyboard(unsigned char key, int flag){
     case 'm':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
-#ifdef pp_DIALOG_SHORTCUTS
         DialogMenu(DIALOG_MOTION); // motion dialog
         break;
-#endif
       case GLUT_ACTIVE_CTRL:
       default:
         if(global_scase.meshescoll.nmeshes>1){
@@ -2508,10 +2494,8 @@ void Keyboard(unsigned char key, int flag){
     case 's':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
-#ifdef pp_DIALOG_SHORTCUTS
         DialogMenu(DIALOG_3DSMOKE); // 3d smoke dialog
         break;
-#endif
       case GLUT_ACTIVE_CTRL:
         SnapScene(45);
         break;
@@ -2542,7 +2526,6 @@ void Keyboard(unsigned char key, int flag){
     case 't':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
-#ifdef pp_DIALOG_SHORTCUTS
         if(showtour_dialog==1){
           DialogMenu(DIALOG_TOUR_HIDE);
         }
@@ -2550,7 +2533,6 @@ void Keyboard(unsigned char key, int flag){
           DialogMenu(DIALOG_TOUR_SHOW);
         }
         break;
-#endif
       case GLUT_ACTIVE_CTRL:
       default:
         stept=(stept+1)%2;
@@ -2773,7 +2755,6 @@ void Keyboard(unsigned char key, int flag){
         }
         GLUIUpdateClip();
       }
-#ifdef pp_DIALOG_SHORTCUTS
       if(keystate==GLUT_ACTIVE_ALT){
         DialogMenu(DIALOG_SMOKEZIP); // compress dialog
       }
@@ -2782,11 +2763,6 @@ void Keyboard(unsigned char key, int flag){
         plotstate = GetPlotState(STATIC_PLOTS);
         updatemenu = 1;
       }
-#else
-      visz_all = 1-visz_all;
-      plotstate = GetPlotState(STATIC_PLOTS);
-      updatemenu = 1;
-#endif
       if(visx_all==1||visy_all==1||visz_all==1)update_slice2device = 1;
       break;
     case '0':
