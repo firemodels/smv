@@ -1023,7 +1023,6 @@ unsigned int GetScreenMap360LR(int side, float *xyz){
   return (unsigned int)(((ibuff + 1) << 24) | index);
 }
 
-#ifdef pp_RENDER360_DEBUG
 /* ------------------ DrawScreenInfo ------------------------ */
 
 void DrawScreenInfo(void){
@@ -1072,7 +1071,6 @@ void DrawScreenInfo(void){
   glEnd();
   glPopMatrix();
 }
-#endif
 
 /* ------------------ SetupScreeninfo ------------------------ */
 
@@ -1306,7 +1304,6 @@ int MergeRenderScreenBuffers360(void){
 #define AVG2(f,p0,p1) ((1.0-f)*(float)(p0) + (f)*(float)(p1))
 #define AVG4(fx,fy,p00,p01,p10,p11) ((1.0-fy)*AVG2(fx,p00,p10)+(fy)*AVG2(fx,p01,p11))
 
-#ifdef pp_RENDER360_DEBUG
       if(debug_360==1&&(j%debug_360_skip_y==0||i%debug_360_skip_x==0)){
         rgb_local = 128<<8|128;
       }
@@ -1320,16 +1317,6 @@ int MergeRenderScreenBuffers360(void){
         b = AVG4(fx,fy,p00[2],p01[2],p10[2],p11[2]);
         rgb_local = (r<<16)|(g<<8)|b;
       }
-#else
-      p00  = screeni->screenbuffer+3*(iy*screeni->nwidth + ix);
-      p01  = screeni->screenbuffer+3*(iy*screeni->nwidth + ix2);
-      p10  = screeni->screenbuffer+3*(iy2*screeni->nwidth + ix);
-      p11  = screeni->screenbuffer+3*(iy2*screeni->nwidth + ix2);
-      r = AVG4(fx,fy,p00[0],p01[0],p10[0],p11[0]);
-      g = AVG4(fx,fy,p00[1],p01[1],p10[1],p11[1]);
-      b = AVG4(fx,fy,p00[2],p01[2],p10[2],p11[2]);
-      rgb_local = (r<<16)|(g<<8)|b;
-#endif
       screenbuffer360[ijk360]=rgb_local;
       ijk360++;
     }

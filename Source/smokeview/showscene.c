@@ -91,9 +91,7 @@ void ShowScene2(int mode){
 
     /* ++++++++++++++++++++++++ draw screeninfo +++++++++++++++++++++++++ */
 
-#ifdef pp_RENDER360_DEBUG
     if(screenview == 1)DrawScreenInfo();
-#endif
 
     /* ++++++++++++++++++++++++ draw circular vents +++++++++++++++++++++++++ */
 

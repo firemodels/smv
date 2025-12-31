@@ -425,9 +425,7 @@ SVEXTERN int SVDECL(use_light0, 1), SVDECL(use_light1, 1);
 SVEXTERN int SVDECL(iso_transparency_option, 1);
 SVEXTERN int SVDECL(iso_opacity_change, 1);
 
-#ifdef pp_RENDER360_DEBUG
 SVEXTERN int SVDECL(debug_360, 0), SVDECL(debug_360_skip_x,25), SVDECL(debug_360_skip_y,25);
-#endif
 SVEXTERN int SVDECL(output_ffmpeg_command, 0);
 SVEXTERN int SVDECL(margin360_size, 0);
 
@@ -607,10 +605,8 @@ SVEXTERN int SVDECL(movie_bitrate, 5000);
 SVEXTERN int SVDECL(disable_reshape, 0);
 
 SVEXTERN int SVDECL(nscreeninfo,26);
-#ifdef pp_RENDER360_DEBUG
 SVEXTERN int SVDECL(screenview, 0);
 SVEXTERN int SVDECL(*screenvis,NULL);
-#endif
 SVEXTERN int SVDECL(update_screeninfo, 0);
 SVEXTERN screendata SVDECL(*screeninfo,NULL);
 SVEXTERN int SVDECL(nwidth360,1024), SVDECL(nheight360,512);
