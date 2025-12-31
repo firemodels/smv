@@ -2,13 +2,6 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef pp_DRAWISO
-#ifdef pp_OSX
-#include <GLUT/glut.h>
-#else
-#include <GL/glut.h>
-#endif
-#endif
 #include <math.h>
 #include <stdio.h>
 #include "dmalloc.h"

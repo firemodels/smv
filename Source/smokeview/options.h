@@ -41,6 +41,5 @@
 #define pp_MOVIE_BATCH_DEBUG // allow movei batch dialogs to be defined for testing
 #define pp_SNIFF_ERROR
 #endif
-#define pp_RENDER360_DEBUG
 
 #endif

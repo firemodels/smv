@@ -1318,12 +1318,10 @@ void InitVars(void){
     strcpy(movie_email, "");
   }
 
-#ifdef pp_RENDER360_DEBUG
   NewMemory((void **)&screenvis, nscreeninfo * sizeof(int));
   for(i = 0; i < nscreeninfo; i++){
     screenvis[i] = 1;
   }
-#endif
 
   beam_color[0] = 255 * foregroundcolor[0];
   beam_color[1] = 255 * foregroundcolor[1];

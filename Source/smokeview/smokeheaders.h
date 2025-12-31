@@ -743,9 +743,7 @@ EXTERNCPP void WriteIni(int flag,char *file);
 
 //*** renderimage.c headers
 
-#ifdef pp_RENDER360_DEBUG
 EXTERNCPP void DrawScreenInfo(void);
-#endif
 EXTERNCPP char *GetMovieFilePath(char *moviefile_path);
 EXTERNCPP void GetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
 EXTERNCPP GLubyte *GetScreenBuffer(void);

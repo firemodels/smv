@@ -49,10 +49,8 @@
 #define PLAY_MOVIE            29
 #define MOVIE_NAME            30
 #define CLOSE_MOTION           1
-#ifdef pp_RENDER360_DEBUG
 #define SHOWALL_SCREENS       31
 #define HIDEALL_SCREENS       32
-#endif
 #define WINDOW_COLORS         33
 #define COLOR_FLIP            34
 #define CLIP_SHOW_ROTATE      35

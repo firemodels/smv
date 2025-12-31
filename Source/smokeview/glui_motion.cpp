@@ -80,12 +80,10 @@ GLUI_Rollout *ROLLOUT_gslice = NULL;
 #ifdef ROTATE_TRANSLATE
 GLUI_Rollout *ROLLOUT_translaterotate=NULL;
 #endif
-#ifdef pp_RENDER360_DEBUG
 GLUI_Rollout *ROLLOUT_screenvis = NULL;
 GLUI_Rollout *ROLLOUT_lower = NULL;
 GLUI_Rollout *ROLLOUT_middle = NULL;
 GLUI_Rollout *ROLLOUT_upper = NULL;
-#endif
 
 GLUI_Spinner *SPINNER_mesh_center_index = NULL;
 GLUI_Spinner *SPINNER_movie_nprocs=NULL;
@@ -133,9 +131,7 @@ GLUI_Checkbox *CHECKBOX_use_customview=NULL;
 GLUI_Checkbox *CHECKBOX_custom_view = NULL;
 GLUI_Checkbox *CHECKBOX_clip_show_rotation_center = NULL;
 GLUI_Checkbox *CHECKBOX_render360 = NULL;
-#ifdef pp_RENDER360_DEBUG
 GLUI_Checkbox *CHECKBOX_screenview = NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_show_rotation_center=NULL;
 GLUI_Checkbox *CHECKBOX_clip_rendered_scene=NULL;
 GLUI_Checkbox *CHECKBOX_general_rotation=NULL;
@@ -143,9 +139,7 @@ GLUI_Checkbox *CHECKBOX_blockpath=NULL;
 GLUI_Checkbox *CHECKBOX_gslice_data=NULL;
 GLUI_Checkbox *CHECKBOX_showgravity_vector=NULL;
 GLUI_Checkbox *CHECKBOX_overwrite_movie = NULL;
-#ifdef pp_RENDER360_DEBUG
 GLUI_Checkbox **CHECKBOX_screenvis = NULL;
-#endif
 
 #ifdef ROTATE_TRANSLATE
 GLUI_Translation *ROTATE_2axis = NULL;
@@ -187,10 +181,8 @@ GLUI_Button *BUTTON_motion_2=NULL;
 GLUI_Button *BUTTON_make_movie = NULL;
 GLUI_Button *BUTTON_play_movie = NULL;
 GLUI_Button *BUTTON_ouput_ffmpeg_command = NULL;
-#ifdef pp_RENDER360_DEBUG
 GLUI_Button *BUTTON_screen_hideall = NULL;
 GLUI_Button *BUTTON_screen_showall = NULL;
-#endif
 GLUI_Button *BUTTON_flip = NULL;
 
 GLUI_EditText *EDIT_view_label=NULL;
@@ -856,9 +848,7 @@ extern "C" void GLUIViewpointCB(int var){
   char *label;
   cameradata *prev, *next;
   int view_id;
-#ifdef pp_RENDER360_DEBUG
   int i;
-#endif
 
   switch(var){
   case GEOM_FACTORS:
@@ -867,7 +857,6 @@ extern "C" void GLUIViewpointCB(int var){
     void ResetDefaultMenu(int var);
     ResetDefaultMenu(2);
     break;
-#ifdef pp_RENDER360_DEBUG
   case SHOWALL_SCREENS:
     for(i = 0;i < nscreeninfo;i++){
       screenvis[i] = 1;
@@ -880,7 +869,6 @@ extern "C" void GLUIViewpointCB(int var){
       CHECKBOX_screenvis[i]->set_int_val(screenvis[i]);
     }
     break;
-#endif
   case RESTORE_EXTERIOR_VIEW:
     SetViewPoint(var);
     break;
@@ -1517,7 +1505,6 @@ extern "C" void GLUIMotionSetup(int main_window){
   RenderCB(RENDER_360CB);
   glui_motion->add_spinner_to_panel(PANEL_360, "margin", GLUI_SPINNER_INT, &margin360_size);
 
-#ifdef pp_RENDER360_DEBUG
   PANEL_360_debug = glui_motion->add_panel_to_panel(PANEL_360, "grid", true);
   glui_motion->add_checkbox_to_panel(PANEL_360_debug, "show", &debug_360);
   SPINNER_360_skip_x = glui_motion->add_spinner_to_panel(PANEL_360_debug, "horizontal skip", GLUI_SPINNER_INT, &debug_360_skip_x, RENDER_DEBUG_360, RenderCB);
@@ -1569,7 +1556,6 @@ extern "C" void GLUIMotionSetup(int main_window){
   CHECKBOX_screenvis[25] = glui_motion->add_checkbox_to_panel(ROLLOUT_screenvis, "top", screenvis + 25);
   BUTTON_screen_showall = glui_motion->add_button_to_panel(ROLLOUT_screenvis, "Show all", SHOWALL_SCREENS, GLUIViewpointCB);
   BUTTON_screen_hideall = glui_motion->add_button_to_panel(ROLLOUT_screenvis, "Hide all", HIDEALL_SCREENS, GLUIViewpointCB);
-#endif
 
   GLUIUpdateFileLabel(render_label_type);
 
@@ -2682,7 +2668,6 @@ void RenderCB(int var){
     case RENDER_SKIP:
     case RENDER_LABEL:
       break;
-#ifdef pp_RENDER360_DEBUG
     case RENDER_DEBUG_360:
       if(debug_360_skip_x<2){
         debug_360_skip_x = 2;
@@ -2693,7 +2678,6 @@ void RenderCB(int var){
         SPINNER_360_skip_y->set_int_val(2);
       }
       break;
-#endif
     case RENDER_MULTIPLIER:
       {
         int width_low, height_low, width_high, height_high;
