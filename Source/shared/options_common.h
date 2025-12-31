@@ -43,6 +43,8 @@
 #endif
 #endif
 
+//#define pp_UNICODE_PATHS
+
 //*** options: windows
 
 #ifdef _WIN32
