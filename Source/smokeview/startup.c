@@ -1259,7 +1259,7 @@ void InitVars(void){
 //*** define slurm queues
 
   queue_list = getenv("SMV_QUEUES");
-#ifdef pp_MOVIE_BATCH_DEBUG
+#ifdef _DEBUG
   if(queue_list==NULL)queue_list = "batch"; // placeholder for debugging slurm queues on the PC
 #endif
 
