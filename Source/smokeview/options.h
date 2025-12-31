@@ -22,13 +22,11 @@
 //*** options: Linux
 
 #ifdef __linux__
-#define pp_REFRESH          // refresh glui dialogs when they change size
 #endif
 
 //*** options: OSX
 
 #ifdef pp_OSX
-#define pp_REFRESH      // refresh glui dialogs when they change size
 #endif
 
 //*** options: for debugging

@@ -1611,12 +1611,10 @@ void DialogMenu(int value){
     break;
   }
   updatemenu=1;
-#ifdef pp_REFRESH
   refresh_glui_dialogs = 1;
   SetMainWindow();
   GLUIRefreshDialogs();
   glutPostRedisplay();
-#endif
 }
 
 /* ------------------ ZoomMenu ------------------------ */
@@ -2781,7 +2779,6 @@ void PeriodicReloads(int value){
   }
 }
 
-#ifdef pp_REFRESH
 /* ------------------ PeriodicRefresh ------------------------ */
 
 void PeriodicRefresh(int value){
@@ -2793,7 +2790,6 @@ void PeriodicRefresh(int value){
     }
   }
 }
-#endif
 
 /* ------------------ ScriptMenu2 ------------------------ */
 

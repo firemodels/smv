@@ -2649,10 +2649,8 @@ void SetLoadedPartBounds(int *list, int nlist){
 //----------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
 
-#ifdef pp_REFRESH
 extern GLUI *glui_clip, *glui_colorbar, *glui_labels, *glui_geometry, *glui_motion, *glui_device;
 extern GLUI *glui_shooter, *glui_tour, *glui_stereo, *glui_trainer;
-#endif
 
 #define MEMCHECK 1
 
@@ -3143,7 +3141,6 @@ extern "C" void GLUIUpdatePlot2DSize2(void){
   if(SPINNER_plot2d_dt !=NULL)SPINNER_plot2d_dt->set_float_val(plot2d_time_average);
 }
 
-#ifdef pp_REFRESH
 /* ------------------ GLUIRefreshDialogs ------------------------ */
 
 extern "C" void GLUIRefreshDialogs(void){
@@ -3159,7 +3156,6 @@ extern "C" void GLUIRefreshDialogs(void){
   if(glui_tour!=NULL)glui_tour->refresh();
   if(glui_trainer!=NULL)glui_trainer->refresh();
 }
-#endif
 
 /* ------------------ GLUIUpdateSliceSkip ------------------------ */
 

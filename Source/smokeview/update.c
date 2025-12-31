@@ -1821,7 +1821,6 @@ int GetPlotState(int choice){
   int plot_state;
 
   plot_state = GetPlotStateSub(choice);
-#ifdef pp_REFRESH
   if(plot_state==DYNAMIC_PLOTS){
     periodic_refresh = 0;
   }
@@ -1831,7 +1830,6 @@ int GetPlotState(int choice){
       PeriodicRefresh(refresh_interval);
     }
   }
-#endif
   if(plot_state!=DYNAMIC_PLOTS&&last_time_paused==1){
     last_time_paused = 0;
   }
@@ -2221,14 +2219,12 @@ void BoundBoundCB(int var);
     GLUIUpdateMovieParms();
     END_SHOW_UPDATE(update_movie_parms);
   }
-#ifdef pp_REFRESH
   if(update_refresh==1){
     SHOW_UPDATE(update_refresh);
     update_refresh = 0;
     PeriodicRefresh(refresh_interval);
     END_SHOW_UPDATE(update_refresh);
   }
-#endif
   if(update_glui_devices==1){
     SHOW_UPDATE(update_glui_devices);
     update_glui_devices = 0;
@@ -3002,12 +2998,10 @@ void UpdateDisplay(void){
     update_windrose = 0;
     DeviceData2WindRose(nr_windrose, ntheta_windrose);
   }
-#ifdef pp_REFRESH
   if(refresh_glui_dialogs>=-1){
     refresh_glui_dialogs--;
     GLUIRefreshDialogs();
   }
-#endif
 }
 
 /* ------------------ ShiftColorbars ------------------------ */
