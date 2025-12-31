@@ -3680,7 +3680,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
   slicefile_labelindex = GetSliceBoundsIndex(sd);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
-#ifdef pp_RECOMPUTE_DEBUG
+#ifdef pp_BOUND_DEBUG
   int recompute = 0;
 #endif
   if(sd->finalize==1){
@@ -3694,7 +3694,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     float qmin_save, qmax_save;
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin_save, &qmin_save, &set_valmax_save, &qmax_save);
     if(force_bound_update==1||slice_bounds_defined==0|| BuildGbndFile(BOUND_SLICE) ==1){
-#ifdef pp_RECOMPUTE_DEBUG
+#ifdef pp_BOUND_DEBUG
       recompute = 1;
 #endif
       GetGlobalSliceBounds(1, DONOT_SET_MINMAX_FLAG, sd->label.shortlabel);
@@ -3847,7 +3847,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       PRINTF("Loaded %.0f KB/%.1f s\n", (float)file_size / 1000., total_time);
     }
   }
-#ifdef pp_RECOMPUTE_DEBUG
+#ifdef pp_BOUND_DEBUG
   if(recompute==1)printf("***recomputing bounds\n");
 #endif
 
