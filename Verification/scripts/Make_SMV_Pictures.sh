@@ -32,8 +32,6 @@ echo "-h - display this message"
 echo "-i - use installed version of smokeview"
 echo "-q q - queue used to generate images"
 echo "-t - use test version of smokeview"
-echo "-W - only generate WUI case images"
-echo "-Y - generate SMV and WUI case images"
 exit
 }
 
@@ -128,8 +126,6 @@ COMPILER=intel
 DEBUG=
 TEST=
 use_installed=
-RUN_SMV=1
-RUN_WUI=1
 QUEUE=batch
 CPUS_PER_TASK=
 
@@ -161,12 +157,8 @@ case $OPTION  in
    CPUS_PER_TASK="-T $OPTARG" 
    ;;
   W)
-   RUN_SMV=0
-   RUN_WUI=1
    ;;
   Y)
-   RUN_SMV=1
-   RUN_WUI=1
    ;;
 esac
 done
@@ -261,8 +253,6 @@ make_helpinfo_files $SMVUG/SCRIPT_FIGURES
 
 $SMV -version > smokeview.version
 
-if [ "$RUN_SMV" == "1" ]; then
-
 # precompute FED slices
   cd $GITROOT/smv/Verification/Visualization
   $FDS2FED plume5c            &
@@ -328,15 +318,6 @@ if [ "$RUN_SMV" == "1" ]; then
   cd $GITROOT/smv/Verification
   scripts/SMV_DIFF_Cases.sh
   cd $CURDIDR
-
-fi
-
-# generate geometry images
-
-if [ "$RUN_WUI" == "1" ] ; then
-  cd $GITROOT/smv/Verification
-  scripts/WUI_Cases.sh
-fi
 
 wait_cases_end
 

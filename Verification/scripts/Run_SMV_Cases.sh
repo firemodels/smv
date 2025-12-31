@@ -8,8 +8,6 @@ DEBUG=
 OPENMP_OPTS=
 FDS_DEBUG=0
 nthreads=1
-RUN_SMV=1
-RUN_WUI=1
 STOPFDS=
 COMPILER="intel"
 WAIT=0
@@ -66,12 +64,9 @@ echo "-o nthreads - run OpenMP version of FDS with a specified number of threads
 echo "-q queue - run cases using the queue named queue"
 echo "     default: batch"
 echo "     other options: vis"
-echo "-r - run only regular smokeview cases"
 echo "-s - stop FDS runs"
 echo "-u - use installed versions of utilities background and wind2fds"
 echo "-w - wait for cases to complete before returning"
-echo "-W - run only WUI cases"
-echo "-Y - run SMV and WUI cases"
 exit
 }
 
@@ -131,7 +126,6 @@ case $OPTION in
    QUEUE="$OPTARG"
    ;;
   r)
-   RUN_SMV=1
    ;;
   s)
    stop_cases=true
@@ -144,12 +138,9 @@ case $OPTION in
    WAIT="1"
    ;;
   W)
-   RUN_SMV=0
-   RUN_WUI=1
    ;;
   Y)
-   RUN_SMV=1
-   RUN_WUI=1
+   ;;
 esac
 #shift
 done
@@ -204,7 +195,6 @@ if [[ ! $stop_cases ]] ; then
   scripts/RESTART1_Cases.sh
   scripts/RESTART2_Cases.sh
   scripts/SMV_Cases.sh
-  scripts/WUI_Cases.sh
   echo "FDS/CFAST output files removed"
 fi
 
@@ -224,24 +214,16 @@ echo "" | $FDSEXE 2> $GITROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.vers
 
 if [[ ! $stop_cases ]] ; then
   if [ "$FDS_DEBUG" == "0" ] ; then
-    if [ "$RUN_WUI" == "1" ] ; then
-      is_file_installed $WIND2FDS
-      cd $VDIR/WUI
-      echo Converting wind data
-      $WIND2FDS -prefix sd11 -offset " 100.0  100.0 0.0" wind_data1a.csv wind_test1_exp.csv
-    fi
+    is_file_installed $WIND2FDS
+    cd $VDIR/WUI
+    echo Converting wind data
+    $WIND2FDS -prefix sd11 -offset " 100.0  100.0 0.0" wind_data1a.csv wind_test1_exp.csv
   fi
 fi
 
-if [ "$RUN_SMV" == "1" ] ; then
-  cd $VDIR
-  scripts/RESTART1_Cases.sh
-  scripts/SMV_Cases.sh
-fi
-if [ "$RUN_WUI" == "1" ] ; then
-  cd $VDIR
-  scripts/WUI_Cases.sh
-fi
+cd $VDIR
+scripts/RESTART1_Cases.sh
+scripts/SMV_Cases.sh
 if [ "$WAIT" == "1" ] ; then
   wait_cases_end
 fi
