@@ -190,10 +190,4 @@
 #define pp_OSX_HIGHRES
 #endif
 
-//*** options: for debugging
-
-#ifdef _DEBUG
-//#define pp_MEM_DEBUG_PRINT // output file/line number for each memory allocation call
-#endif
-
 #endif
