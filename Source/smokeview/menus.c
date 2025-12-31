@@ -829,7 +829,7 @@ void LabelMenu(int value){
     vis_title_gversion =1;
     visFramerate=1;
     vismemload = 1;
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
     vismemusage = 0;
 #endif
     visaxislabels=1;
@@ -862,7 +862,7 @@ void LabelMenu(int value){
     if(global_scase.ntickinfo>0)visFDSticks=0;
     visgridloc=0;
     vismemload=0;
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
     vismemusage = 0;
 #endif
     break;
@@ -897,11 +897,11 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_memload:
      vismemload = 1 - vismemload;
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
      if(vismemload==1)vismemusage=0;
 #endif
      break;
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
    case MENU_LABEL_memusage:
      vismemusage = 1 - vismemusage;
      if(vismemusage==1)vismemload=0;
@@ -10225,7 +10225,7 @@ static int menu_count=0;
   }
   if(vismemload == 1)glutAddMenuEntry("*Memory load", MENU_LABEL_memload);
   if(vismemload == 0)glutAddMenuEntry("Memory load", MENU_LABEL_memload);
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
   if(vismemusage == 1)glutAddMenuEntry("*Memory usage", MENU_LABEL_memusage);
   if(vismemusage == 0)glutAddMenuEntry("Memory usage", MENU_LABEL_memusage);
 #endif

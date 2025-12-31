@@ -1577,7 +1577,7 @@ SVEXTERN int SVDECL(ntargets,0);
 SVEXTERN int SVDECL(mainwindow_id,0);
 
 SVEXTERN float SVDECL(max_mem_GB,0.0);
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
 SVEXTERN int SVDECL(vismemusage,0);
 #endif
 SVEXTERN int SVDECL(vismemload, 0);

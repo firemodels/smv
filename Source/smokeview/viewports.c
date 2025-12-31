@@ -283,7 +283,7 @@ void GetViewportInfo(void){
   }
   if(show_horizontal_colorbar == 1
     ||vismemload==1
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
      || vismemusage == 1
 #endif
   )
@@ -311,7 +311,7 @@ void GetViewportInfo(void){
     temp_height = text_height + v_space;
     if(visFramelabel==1||vis_hrr_label==1
       ||vismemload==1
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
        || vismemusage == 1
 #endif
     )
@@ -1189,7 +1189,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
   int time_width=0, hrr_width=0, frame_width=0;
   int framerate_width = 0;
   int memload_width = 0;
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
   int memusage_width = 0;
 #endif
   int delta = TIMEBAR_HEIGHT;
@@ -1205,7 +1205,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
   timebar_right_width = 0;
   if(visFramerate==1&&showtime==1)framerate_width = GetStringWidth("Frame rate: 99.99");
   timebar_right_width = framerate_width;
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
   if(vismemusage == 1) {
     memusage_width = GetStringWidth("Mem Usage: 9999 MBx");
     timebar_right_width = MAX(timebar_right_width, memusage_width);
@@ -1292,7 +1292,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
       }
     }
   }
-#ifdef pp_memusage
+#ifdef pp_MEMDEBUG
   if(vismemusage==1){
       char MEMlabel[128];
 
