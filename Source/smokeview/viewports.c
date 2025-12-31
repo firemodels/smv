@@ -2548,21 +2548,12 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 // Y axis fixed
 // Z axis -> X axis
 
-#ifdef pp_WIN_CLANG
-      float     x_axis[3] = {0.0,  0.0, -1.0};
-      float neg_x_axis[3] = {0.0,  0.0,  1.0};
-      float     z_axis[3] = {1.0,  0.0,  0.0};
-#else
       float     x_axis[3] = { 1.0, 0.0, 0.0};
       float neg_x_axis[3] = {-1.0, 0.0, 0.0};
       float     z_axis[3] = { 0.0, 0.0, 1.0};
-#endif
       float     y_axis[3] = {0.0,  1.0,  0.0};
       float neg_y_axis[3] = {0.0, -1.0,  0.0};
 
-#ifdef pp_WIN_CLANG
-      glRotatef(-90.0, y_axis[0], y_axis[1], y_axis[2]);
-#endif
       if(use_tour == 0){
         float azimuth, elevation;
 
