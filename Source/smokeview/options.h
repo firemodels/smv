@@ -31,6 +31,7 @@
 
 #ifdef pp_OSX
 #define pp_REFRESH      // refresh glui dialogs when they change size
+#define pp_DIALOG_SHORTCUTS
 #endif
 
 //*** options: for debugging
