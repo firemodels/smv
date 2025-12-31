@@ -298,10 +298,8 @@ void GetGitInfo(char *githash, char *gitdate, int *gittest){
 
     *gittest = 1;
     strcpy(revcopy, rev);
-//#define pp_GITTEST
-#ifdef pp_GITTEST
-    strcpy(revcopy, "%s", "SMV-6.10.6-12-gc216-dirty-ppbeta");
-#endif
+//uncomment following line to test parsing revision string (-0 is release >0 test)
+//    strcpy(revcopy, "%s", "SMV-6.10.6-12-gc216-dirty-ppbeta");
     testtoken = strtok(revcopy, "-");
     if(testtoken != NULL)testtoken = strtok(NULL, "-");
     if(testtoken != NULL)testtoken = strtok(NULL, "-");
