@@ -43,7 +43,7 @@
 #endif
 #endif
 
-//#define pp_UNICODE_PATHS
+#define pp_UNICODE_PATHS
 
 //*** options: windows
 
