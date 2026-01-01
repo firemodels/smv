@@ -33,7 +33,6 @@
 
 #ifdef _DEBUG
 #define pp_BOUND_DEBUG       // output debug message in some bound routines and if bounds are recomputed
-#define pp_SNIFF_ERROR
 #endif
 
 #endif
