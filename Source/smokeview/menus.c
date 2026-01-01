@@ -11713,61 +11713,59 @@ static int menu_count=0;
   CREATEMENU(aboutmenu,AboutMenu);
   glutAddMenuEntry(release_title,1);
   {
-#ifdef pp_GPU
-    char version_label[256];
-#endif
     char menulabel[1024];
     char compiler_version_label[1024];
 
-    sprintf(menulabel,"  Smokeview build: %s",smv_githash);
+    sprintf(menulabel,"Smokeview version: %s",smv_githash);
     glutAddMenuEntry(menulabel,1);
-    strcpy(compiler_version_label, "    Compiler version:");
+
+    if(global_scase.fds_version!=NULL){
+      sprintf(menulabel, "FDS version: %s", global_scase.fds_version);
+      glutAddMenuEntry(menulabel, 1);
+    }
+
+    strcpy(compiler_version_label, "Compiler version:");
     strcat(compiler_version_label, " ");
     strcat(compiler_version_label, pp_COMPVER);
     glutAddMenuEntry(compiler_version_label, 1);
-    if(global_scase.fds_version!=NULL){
-      sprintf(menulabel, "  FDS version: %s", global_scase.fds_version);
-      glutAddMenuEntry(menulabel, 1);
-    }
-    if(global_scase.fds_githash!=NULL){
-      sprintf(menulabel,"  FDS build: %s",global_scase.fds_githash);
-      glutAddMenuEntry(menulabel,1);
-    }
+
 #ifdef pp_GPU
-    strcpy(version_label,"  OpenGL version:");
+    char version_label[256];
+    strcpy(version_label,"OpenGL version:");
     strcat(version_label," ");
     strcat(version_label,(char *)glGetString(GL_VERSION));
     glutAddMenuEntry(version_label,1);
+
     if(gpuactive==1){
       if(usegpu==1){
-        strcpy(menulabel,"  GPU activated. (Press G to deactivate)");
+        strcpy(menulabel,"GPU activated. (Press G to deactivate)");
       }
       else{
-        strcpy(menulabel,"  GPU available but not in use. (Press G to activate)");
+        strcpy(menulabel,"GPU available but not in use. (Press G to activate)");
       }
     }
     else{
-      strcpy(menulabel,"  GPU not available");
+      strcpy(menulabel,"GPU not available");
     }
     glutAddMenuEntry(menulabel,1);
 #endif
 #ifdef _WIN32
-    glutAddMenuEntry("  Platform: WIN64", 1);
+    glutAddMenuEntry("Platform: WIN64", 1);
 #endif
 #ifdef pp_OSX
 #ifdef pp_OSX
     if(double_scale==1){
-      glutAddMenuEntry("  Platform: OSX64(high res fonts)", 1);
+      glutAddMenuEntry("Platform: OSX64(high res fonts)", 1);
     }
     else{
-      glutAddMenuEntry("  Platform: OSX64", 1);
+      glutAddMenuEntry("Platform: OSX64", 1);
     }
 #else
-    glutAddMenuEntry("  Platform: OSX64", 1);
+    glutAddMenuEntry("Platform: OSX64", 1);
 #endif
 #endif
 #ifdef __linux__
-    glutAddMenuEntry("  Platform: LINUX64", 1);
+    glutAddMenuEntry("Platform: LINUX64", 1);
 #endif
     GLUTADDSUBMENU("Disclaimer",disclaimermenu);
     glutAddMenuEntry("Data transfer test", ABOUT_DATA_TRANSFER_TEST);

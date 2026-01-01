@@ -51,16 +51,16 @@ int clearTitleLines(titledata *titleinfo_ptr){
 
 int initialiseInfoHeader(titledata *titleinfo_ptr,
                          char *release_title_string, char *smv_githash_string,
-                         char *fds_githash_string, char *chidfilebase_string, char *fds_title_arg){
+                         char *fds_version_string, char *chidfilebase_string, char *fds_title_arg){
   char line[MAX_TITLE_LINE_LENGTH];
 
   strncpy(titleinfo_ptr->titleline, release_title_string, MAX_TITLE_LINE_LENGTH);
 
-  snprintf(line,MAX_TITLE_LINE_LENGTH,"Smokeview build: %s",smv_githash_string);
+  snprintf(line,MAX_TITLE_LINE_LENGTH,"Smokeview version: %s",smv_githash_string);
   strncpy(titleinfo_ptr->smvbuildline, line, MAX_TITLE_LINE_LENGTH);
 
-  if(global_scase.fds_githash!=NULL){
-    snprintf(line,MAX_TITLE_LINE_LENGTH,"FDS build: %s",fds_githash_string);
+  if(fds_version_string!=NULL){
+    snprintf(line,MAX_TITLE_LINE_LENGTH,"FDS version: %s",fds_version_string);
     strncpy(titleinfo_ptr->fdsbuildline, line, MAX_TITLE_LINE_LENGTH);
   }
   else{

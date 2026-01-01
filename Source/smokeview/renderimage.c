@@ -841,7 +841,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
           int skip=3, channel=2;
           char fds_label[256], smv_label[256];
 
-          strcpy(fds_label, global_scase.fds_githash);
+          strcpy(fds_label, global_scase.fds_version);
           if(strcmp(fds_label, "unknown") == 0){
             if(global_scase.nzoneinfo == 0){
               strcpy(fds_label, "FDS revision: unknown");

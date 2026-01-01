@@ -208,7 +208,7 @@ void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int ski
 void DisplayVersionInfo(char *progname, common_opts *opts){
   PRINTVERSION(progname, opts);
   if(global_scase.fds_version!=NULL){
-    PRINTF("FDS Build        : %s\n",global_scase.fds_githash);
+    PRINTF("FDS Build        : %s\n",global_scase.fds_version);
   }
   char *smv_progname = GetBinPath();
   PRINTF("Smokeview        : %s\n",smv_progname);
