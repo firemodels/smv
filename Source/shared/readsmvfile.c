@@ -5183,15 +5183,11 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       lenbuffer = strlen(buffptr);
       if(lenbuffer>0){
         NewMemory((void **)&scase->fds_version,lenbuffer+1);
-        NewMemory((void **)&scase->fds_githash, lenbuffer+1);
         strcpy(scase->fds_version,buffer);
-        strcpy(scase->fds_githash, buffer);
       }
       else{
         NewMemory((void **)&scase->fds_version,7+1);
-        NewMemory((void **)&scase->fds_githash, 7+1);
         strcpy(scase->fds_version,"unknown");
-        strcpy(scase->fds_githash, "unknown");
       }
       continue;
     }
@@ -5418,10 +5414,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
  if(scase->fds_version==NULL){
    NewMemory((void **)&scase->fds_version,7+1);
    strcpy(scase->fds_version,"unknown");
- }
- if(scase->fds_githash==NULL){
-   NewMemory((void **)&scase->fds_githash,7+1);
-   strcpy(scase->fds_githash,"unknown");
  }
  if(scase->nisoinfo>0&&scase->meshescoll.nmeshes>0)nisos_per_mesh = MAX(scase->nisoinfo / scase->meshescoll.nmeshes,1);
  NewMemory((void **)&scase->csvcoll.csvfileinfo,(scase->csvcoll.ncsvfileinfo+CFAST_CSV_MAX+2)*sizeof(csvfiledata));

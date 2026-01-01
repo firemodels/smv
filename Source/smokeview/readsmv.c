@@ -8470,13 +8470,10 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout,"\n\n");
     fprintf(fileout,"# FDS/Smokeview Environment\n");
     fprintf(fileout,"# -------------------------\n\n");
-    fprintf(fileout,"# Smokeview Build: %s\n",githash);
+    fprintf(fileout,"# Smokeview version: %s\n",githash);
     fprintf(fileout,"# Smokeview Build Date: %s\n",__DATE__);
     if(global_scase.fds_version!=NULL){
       fprintf(fileout,"# FDS Version: %s\n",global_scase.fds_version);
-    }
-    if(global_scase.fds_githash!=NULL){
-      fprintf(fileout, "# FDS Build: %s\n", global_scase.fds_githash);
     }
     fprintf(fileout,"# Platform: WIN64\n");
 #ifdef pp_OSX

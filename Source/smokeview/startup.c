@@ -318,7 +318,7 @@ int SetupCase(char *filename){
     GLUIShowAlert();
   }
   // initialize info header
-  initialiseInfoHeader(&titleinfo, release_title, smv_githash, global_scase.fds_githash, global_scase.chidfilebase, global_scase.fds_title);
+  initialiseInfoHeader(&titleinfo, release_title, smv_githash, global_scase.fds_version, global_scase.chidfilebase, global_scase.fds_title);
   PRINT_TIMER(timer_start, "glut routines");
   return 0;
 }

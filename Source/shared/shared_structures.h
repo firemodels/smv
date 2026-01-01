@@ -1708,9 +1708,6 @@ typedef struct {
   char *fds_title;
   /// @brief The value of FDSVERSION in the *.smv file.
   char *fds_version;
-  /// @brief The value of FDSVERSION in the *.smv file. Currently this is simply
-  /// a copy of fds_version.
-  char *fds_githash;
   char *results_dir;
 
   colordata *firstcolor;
