@@ -17,7 +17,7 @@
 #endif
 
 /* ------------------ _Sniff_Errors ------------------------ */
-#ifdef pp_SNIFF_ERROR
+#ifdef _DEBUG
 void _Sniff_Errors(const char *whereat, const char *file, int line){
   int error;
 

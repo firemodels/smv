@@ -1,6 +1,6 @@
 #ifndef SMOKEVIEWDEFS_H_DEFINED
 #define SMOKEVIEWDEFS_H_DEFINED
-#ifdef pp_SNIFF_ERROR
+#ifdef _DEBUG
 EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define SNIFF_ERRORS(f) _Sniff_Errors(f,__FILE__,__LINE__)
 #else
