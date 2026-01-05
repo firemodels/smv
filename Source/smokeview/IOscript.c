@@ -268,131 +268,129 @@ void InitKeywords(void){
 
   InitKeyword("dummy", -999, 0);         // dummy entry used to report errors
 // 3d smoke
-  InitKeyword("LOAD3DSMOKE",         SCRIPT_LOAD3DSMOKE, 1);         // documented
-  InitKeyword("LOADVOLSMOKE",        SCRIPT_LOADVOLSMOKE, 1);        // documented
-  InitKeyword("LOADVOLSMOKEFRAME",   SCRIPT_LOADVOLSMOKEFRAME, 1);   // documented
+  InitKeyword("LOAD3DSMOKE",         SCRIPT_LOAD3DSMOKE, 1);
+  InitKeyword("LOADVOLSMOKE",        SCRIPT_LOADVOLSMOKE, 1);
+  InitKeyword("LOADVOLSMOKEFRAME",   SCRIPT_LOADVOLSMOKEFRAME, 1);
 
 // boundary files
-  InitKeyword("LOADBOUNDARY",        SCRIPT_LOADBOUNDARY, 1);        // documented
-  InitKeyword("LOADBOUNDARYM",       SCRIPT_LOADBOUNDARYM, 2);       // documented
-  InitKeyword("SETBOUNDBOUNDS",      SCRIPT_SETBOUNDBOUNDS, 1);      // documented
+  InitKeyword("LOADBOUNDARY",        SCRIPT_LOADBOUNDARY, 1);
+  InitKeyword("LOADBOUNDARYM",       SCRIPT_LOADBOUNDARYM, 2);
+  InitKeyword("SETBOUNDBOUNDS",      SCRIPT_SETBOUNDBOUNDS, 1);
 
 // general files
-  InitKeyword("LOADFILE",            SCRIPT_LOADFILE, 1);            // documented
-  InitKeyword("LOADINIFILE",         SCRIPT_LOADINIFILE, 1);         // documented
-  InitKeyword("UNLOADALL",           SCRIPT_UNLOADALL, 0);           // documented
-
-  // general files
-  InitKeyword("LOADSMV", SCRIPT_LOADSMV, 1);
+  InitKeyword("LOADFILE",            SCRIPT_LOADFILE, 1);
+  InitKeyword("LOADINIFILE",         SCRIPT_LOADINIFILE, 1);
+  InitKeyword("LOADSMV",             SCRIPT_LOADSMV, 1);
+  InitKeyword("UNLOADALL",           SCRIPT_UNLOADALL, 0);
 
 // hvac files
 
-  InitKeyword("HIDEHVACVALS",        SCRIPT_HIDEHVACVALS, 0);        // documented
-  InitKeyword("SHOWHVACDUCTVAL",     SCRIPT_SHOWHVACDUCTVAL, 1);     // documented
-  InitKeyword("SHOWHVACNODEVAL",     SCRIPT_SHOWHVACNODEVAL, 1);     // documented
-  InitKeyword("LOADHVAC",            SCRIPT_LOADHVAC, 0);            // documented
+  InitKeyword("HIDEHVACVALS",        SCRIPT_HIDEHVACVALS, 0);
+  InitKeyword("LOADHVAC", SCRIPT_LOADHVAC, 0);
+  InitKeyword("SHOWHVACDUCTVAL",     SCRIPT_SHOWHVACDUCTVAL, 1);
+  InitKeyword("SHOWHVACNODEVAL",     SCRIPT_SHOWHVACNODEVAL, 1);
 
 // slice and vector slice files
-  InitKeyword("LOADSLCF",            SCRIPT_LOADSLCF, 1);            // documented
-  InitKeyword("LOADSLICE",           SCRIPT_LOADSLICE, 2);           // documented
-  InitKeyword("LOADSLICEM",          SCRIPT_LOADSLICEM, 3);          // documented
-  InitKeyword("LOADVFILE",           SCRIPT_LOADVFILE, 1);           // documented
-  InitKeyword("LOADVSLICE",          SCRIPT_LOADVSLICE, 2);          // documented
-  InitKeyword("LOADVSLICEM",         SCRIPT_LOADVSLICEM, 3);         // documented
-  InitKeyword("SETSLICEBOUNDS",      SCRIPT_SETSLICEBOUNDS, 1);      // documented
-  InitKeyword("SETSLICEAVERAGE",     SCRIPT_SETSLICEAVERAGE, 2);     // documented
-  InitKeyword("OUTPUTSLICEDATA",     SCRIPT_OUTPUTSLICEDATA, 1);     // documented
+  InitKeyword("LOADSLCF",            SCRIPT_LOADSLCF, 1);
+  InitKeyword("LOADSLICE",           SCRIPT_LOADSLICE, 2);
+  InitKeyword("LOADSLICEM",          SCRIPT_LOADSLICEM, 3);
+  InitKeyword("LOADVFILE",           SCRIPT_LOADVFILE, 1);
+  InitKeyword("LOADVSLICE",          SCRIPT_LOADVSLICE, 2);
+  InitKeyword("LOADVSLICEM",         SCRIPT_LOADVSLICEM, 3);
+  InitKeyword("OUTPUTSLICEDATA",     SCRIPT_OUTPUTSLICEDATA, 1);
+  InitKeyword("SETSLICEAVERAGE",     SCRIPT_SETSLICEAVERAGE, 2);
+  InitKeyword("SETSLICEBOUNDS",      SCRIPT_SETSLICEBOUNDS, 1);
 
 // particle files
-  InitKeyword("LOADPARTICLES",       SCRIPT_LOADPARTICLES, 0);       // documented
-  InitKeyword("PARTCLASSCOLOR",      SCRIPT_PARTCLASSCOLOR, 1);      // documented
-  InitKeyword("PARTCLASSTYPE",       SCRIPT_PARTCLASSTYPE, 1);       // documented
+  InitKeyword("LOADPARTICLES",       SCRIPT_LOADPARTICLES, 0);
+  InitKeyword("PARTCLASSCOLOR",      SCRIPT_PARTCLASSCOLOR, 1);
+  InitKeyword("PARTCLASSTYPE",       SCRIPT_PARTCLASSTYPE, 1);
 
 // plot3d files
-  InitKeyword("LOADPLOT3D",          SCRIPT_LOADPLOT3D, 1);          // documented
-  InitKeyword("PLOT3DPROPS",         SCRIPT_PLOT3DPROPS, 1);         // documented
-  InitKeyword("SHOWPLOT3DDATA",      SCRIPT_SHOWPLOT3DDATA, 1);      // documented
+  InitKeyword("LOADPLOT3D",          SCRIPT_LOADPLOT3D, 1);
+  InitKeyword("PLOT3DPROPS",         SCRIPT_PLOT3DPROPS, 1);
+  InitKeyword("SHOWPLOT3DDATA",      SCRIPT_SHOWPLOT3DDATA, 1);
 
 // isosurface files
-  InitKeyword("LOADISO",             SCRIPT_LOADISO, 1);             // documented
-  InitKeyword("LOADISOM",            SCRIPT_LOADISOM, 2);            // documented
+  InitKeyword("LOADISO",             SCRIPT_LOADISO, 1);
+  InitKeyword("LOADISOM",            SCRIPT_LOADISOM, 2);
 
 // show/hide devices
-  InitKeyword("HIDEALLDEVS",         SCRIPT_HIDEALLDEVS, 0);         // documented
-  InitKeyword("HIDEDEV",             SCRIPT_HIDEDEV, 1);             // documented
-  InitKeyword("SHOWALLDEVS",         SCRIPT_SHOWALLDEVS, 0);         // documented
-  InitKeyword("SHOWDEV",             SCRIPT_SHOWDEV, 1);             // documented
-  InitKeyword("SHOWSMOKESENSORS",    SCRIPT_OUTPUTSMOKESENSORS, 0);  // documented
-  InitKeyword("OUTPUTSMOKESENSORS",  SCRIPT_OUTPUTSMOKESENSORS, 0);  // documented
+  InitKeyword("HIDEALLDEVS",         SCRIPT_HIDEALLDEVS, 0);
+  InitKeyword("HIDEDEV",             SCRIPT_HIDEDEV, 1);
+  InitKeyword("SHOWALLDEVS",         SCRIPT_SHOWALLDEVS, 0);
+  InitKeyword("SHOWDEV",             SCRIPT_SHOWDEV, 1);
+  InitKeyword("OUTPUTSMOKESENSORS",  SCRIPT_OUTPUTSMOKESENSORS, 0);
+  InitKeyword("SHOWSMOKESENSORS",    SCRIPT_OUTPUTSMOKESENSORS, 0);
 
 // colorbar
-  InitKeyword("CBARNORMAL",          SCRIPT_CBARNORMAL, 0);          // documented
-  InitKeyword("CBARFLIP",            SCRIPT_CBARFLIP, 0);            // documented
-  InitKeyword("HIDECBAREDIT",        SCRIPT_HIDECBAREDIT, 0);        // documented
-  InitKeyword("SHOWCBAREDIT",        SCRIPT_SHOWCBAREDIT, 0);        // documented
-  InitKeyword("SETCBAR",             SCRIPT_SETCBAR, 1);             // documented
-  InitKeyword("SETCBARLAB",          SCRIPT_SETCBARLAB, 0);          // documented
-  InitKeyword("SETCBARRGB",          SCRIPT_SETCBARRGB, 0);          // documented
-  InitKeyword("HILIGHTMINVALS",      SCRIPT_HILIGHTMINVALS, 4);      // documented
-  InitKeyword("HILIGHTMAXVALS",      SCRIPT_HILIGHTMAXVALS, 4);      // documented
+  InitKeyword("CBARFLIP",            SCRIPT_CBARFLIP, 0);
+  InitKeyword("CBARNORMAL",          SCRIPT_CBARNORMAL, 0);
+  InitKeyword("HILIGHTMINVALS",      SCRIPT_HILIGHTMINVALS, 4);
+  InitKeyword("HILIGHTMAXVALS",      SCRIPT_HILIGHTMAXVALS, 4);
+  InitKeyword("HIDECBAREDIT",        SCRIPT_HIDECBAREDIT, 0);
+  InitKeyword("SHOWCBAREDIT",        SCRIPT_SHOWCBAREDIT, 0);
+  InitKeyword("SETCBAR",             SCRIPT_SETCBAR, 1);
+  InitKeyword("SETCBARLAB",          SCRIPT_SETCBARLAB, 0);
+  InitKeyword("SETCBARRGB",          SCRIPT_SETCBARRGB, 0);
 
 // tour
-  InitKeyword("LOADTOUR",            SCRIPT_LOADTOUR, 1);            // documented
-  InitKeyword("SETTOURKEYFRAME",     SCRIPT_SETTOURKEYFRAME, 1);     // documented
-  InitKeyword("SETTOURVIEW",         SCRIPT_SETTOURVIEW, 1);         // documented
-  InitKeyword("UNLOADTOUR",          SCRIPT_UNLOADTOUR, 0);          // documented
+  InitKeyword("LOADTOUR",            SCRIPT_LOADTOUR, 1);
+  InitKeyword("SETTOURKEYFRAME",     SCRIPT_SETTOURKEYFRAME, 1);
+  InitKeyword("SETTOURVIEW",         SCRIPT_SETTOURVIEW, 1);
+  InitKeyword("UNLOADTOUR",          SCRIPT_UNLOADTOUR, 0);
 
 // controlling the scene
-  InitKeyword("EXIT",                SCRIPT_EXIT, 0);                // documented
-  InitKeyword("NOEXIT",              SCRIPT_NOEXIT, 0);              // documented
-  InitKeyword("GSLICEORIEN",         SCRIPT_GSLICEORIEN, 1);         // documented
-  InitKeyword("GSLICEPOS",           SCRIPT_GSLICEPOS, 1);           // documented
-  InitKeyword("GSLICEVIEW",          SCRIPT_GSLICEVIEW, 1);          // documented
-  InitKeyword("KEYBOARD",            SCRIPT_KEYBOARD, 1);            // documented
-  InitKeyword("PROJECTION",          SCRIPT_PROJECTION, 1);          // documented
-  InitKeyword("SCENECLIP",           SCRIPT_SCENECLIP, 1);           // documented
-  InitKeyword("SETCLIPMODE",         SCRIPT_SETCLIPMODE, 1);         // documented
-  InitKeyword("SETCLIPX",            SCRIPT_SETCLIPX, 1);            // documented
-  InitKeyword("SETCLIPY",            SCRIPT_SETCLIPY, 1);            // documented
-  InitKeyword("SETCLIPZ",            SCRIPT_SETCLIPZ, 1);            // documented
+  InitKeyword("EXIT",                SCRIPT_EXIT, 0);
+  InitKeyword("GSLICEORIEN",         SCRIPT_GSLICEORIEN, 1);
+  InitKeyword("GSLICEPOS",           SCRIPT_GSLICEPOS, 1);
+  InitKeyword("GSLICEVIEW",          SCRIPT_GSLICEVIEW, 1);
+  InitKeyword("KEYBOARD",            SCRIPT_KEYBOARD, 1);
+  InitKeyword("NOEXIT",              SCRIPT_NOEXIT, 0);
+  InitKeyword("PROJECTION",          SCRIPT_PROJECTION, 1);
+  InitKeyword("SCENECLIP",           SCRIPT_SCENECLIP, 1);
+  InitKeyword("SETCLIPMODE",         SCRIPT_SETCLIPMODE, 1);
+  InitKeyword("SETCLIPX",            SCRIPT_SETCLIPX, 1);
+  InitKeyword("SETCLIPY",            SCRIPT_SETCLIPY, 1);
+  InitKeyword("SETCLIPZ",            SCRIPT_SETCLIPZ, 1);
   InitKeyword("SETDEMOMODE",         SCRIPT_SETDEMOMODE, 1);
+  InitKeyword("SETTIMEVAL",          SCRIPT_SETTIMEVAL, 1);
+  InitKeyword("SETVIEWPOINT",        SCRIPT_SETVIEWPOINT, 1);
   InitKeyword("SMOKEPROP",           SCRIPT_SMOKEPROP, 1);
-  InitKeyword("SETTIMEVAL",          SCRIPT_SETTIMEVAL, 1);          // documented
-  InitKeyword("SETVIEWPOINT",        SCRIPT_SETVIEWPOINT, 1);        // documented
-  InitKeyword("VIEWXMIN",            SCRIPT_VIEWXMIN, 0);            // documented
-  InitKeyword("VIEWXMAX",            SCRIPT_VIEWXMAX, 0);            // documented
-  InitKeyword("VIEWYMIN",            SCRIPT_VIEWYMIN, 0);            // documented
-  InitKeyword("VIEWYMAX",            SCRIPT_VIEWYMAX, 0);            // documented
-  InitKeyword("VIEWZMIN",            SCRIPT_VIEWZMIN, 0);            // documented
-  InitKeyword("VIEWZMAX",            SCRIPT_VIEWZMAX, 0);            // documented
-  InitKeyword("XYZVIEW",             SCRIPT_XYZVIEW, 1);             // documented
-  InitKeyword("XSCENECLIP",          SCRIPT_XSCENECLIP, 1);          // documented
-  InitKeyword("YSCENECLIP",          SCRIPT_YSCENECLIP, 1);          // documented
-  InitKeyword("ZSCENECLIP",          SCRIPT_ZSCENECLIP, 1);          // documented
+  InitKeyword("VIEWXMIN",            SCRIPT_VIEWXMIN, 0);
+  InitKeyword("VIEWXMAX",            SCRIPT_VIEWXMAX, 0);
+  InitKeyword("VIEWYMIN",            SCRIPT_VIEWYMIN, 0);
+  InitKeyword("VIEWYMAX",            SCRIPT_VIEWYMAX, 0);
+  InitKeyword("VIEWZMIN",            SCRIPT_VIEWZMIN, 0);
+  InitKeyword("VIEWZMAX",            SCRIPT_VIEWZMAX, 0);
+  InitKeyword("XSCENECLIP",          SCRIPT_XSCENECLIP, 1);
+  InitKeyword("XYZVIEW",             SCRIPT_XYZVIEW, 1);
+  InitKeyword("YSCENECLIP",          SCRIPT_YSCENECLIP, 1);
+  InitKeyword("ZSCENECLIP",          SCRIPT_ZSCENECLIP, 1);
 
 // rendering images
 
-  InitKeyword("ISORENDERALL",        SCRIPT_ISORENDERALL, 2);        // documented
-  InitKeyword("LOADSLICERENDER",     SCRIPT_LOADSLICERENDER, 4);     // documented
-  InitKeyword("LOADSMOKERENDER",     SCRIPT_LOADSMOKERENDER, 3);     // documented
-  InitKeyword("MAKEMOVIE",           SCRIPT_MAKEMOVIE, 3);           // documented
-  InitKeyword("MOVIETYPE",           SCRIPT_MOVIETYPE, 1);           // documented
-  InitKeyword("RENDER360ALL",        SCRIPT_RENDER360ALL, 2);        // documented
-  InitKeyword("RENDERALL",           SCRIPT_RENDERALL, 2);           // documented
-  InitKeyword("RENDERCLIP",          SCRIPT_RENDERCLIP, 1);          // documented
-  InitKeyword("RENDERDIR",           SCRIPT_RENDERDIR, 1);           // documented
-  InitKeyword("RENDERDOUBLEONCE",    SCRIPT_RENDERDOUBLEONCE, 1);    // documented
-  InitKeyword("RENDERONCE",          SCRIPT_RENDERONCE, 1);          // documented
-  InitKeyword("RENDERSIZE",          SCRIPT_RENDERSIZE, 1);          // documented
-  InitKeyword("RENDERSTART",         SCRIPT_RENDERSTART, 1);         // documented
-  InitKeyword("RENDERTYPE",          SCRIPT_RENDERTYPE, 1);          // documented
-  InitKeyword("VOLSMOKERENDERALL",   SCRIPT_VOLSMOKERENDERALL, 2);   // documented
+  InitKeyword("ISORENDERALL",        SCRIPT_ISORENDERALL, 2);
+  InitKeyword("LOADSLICERENDER",     SCRIPT_LOADSLICERENDER, 4);
+  InitKeyword("LOADSMOKERENDER",     SCRIPT_LOADSMOKERENDER, 3);
+  InitKeyword("MAKEMOVIE",           SCRIPT_MAKEMOVIE, 3);
+  InitKeyword("MOVIETYPE",           SCRIPT_MOVIETYPE, 1);
+  InitKeyword("RENDER360ALL",        SCRIPT_RENDER360ALL, 2);
+  InitKeyword("RENDERALL",           SCRIPT_RENDERALL, 2);
+  InitKeyword("RENDERCLIP",          SCRIPT_RENDERCLIP, 1);
+  InitKeyword("RENDERDIR",           SCRIPT_RENDERDIR, 1);
+  InitKeyword("RENDERDOUBLEONCE",    SCRIPT_RENDERDOUBLEONCE, 1);
+  InitKeyword("RENDERONCE",          SCRIPT_RENDERONCE, 1);
+  InitKeyword("RENDERSIZE",          SCRIPT_RENDERSIZE, 1);
+  InitKeyword("RENDERSTART",         SCRIPT_RENDERSTART, 1);
+  InitKeyword("RENDERTYPE",          SCRIPT_RENDERTYPE, 1);
+  InitKeyword("VOLSMOKERENDERALL",   SCRIPT_VOLSMOKERENDERALL, 2);
 
 // miscellaneous
 
-  InitKeyword("GPUOFF",              SCRIPT_GPUOFF, 0);              // documented
-  InitKeyword("LABEL",               SCRIPT_LABEL, 1);               // documented
-  InitKeyword("RGBTEST",             SCRIPT_RGBTEST, 1);             // documented
+  InitKeyword("GPUOFF",              SCRIPT_GPUOFF, 0);
+  InitKeyword("LABEL",               SCRIPT_LABEL, 1);
+  InitKeyword("RGBTEST",             SCRIPT_RGBTEST, 1);
   InitKeyword("UNLOADPLOT2D",        SCRIPT_UNLOADPLOT2D, 0);
 
   ResizeMemory((void **)&keywordinfo, nkeywordinfo * sizeof(keyworddata));

@@ -909,7 +909,7 @@ Guide~\cite{FDS_Users_Guide}.
 \label{section:particles}\ Particle files contain the locations of
 tracer particles used to visualize the flow field. Figure
 \ref{figparticle}\ shows several snapshots of a developing kitchen
-fire visualized using particles colored black. 
+fire visualized using particles colored black.
 If present, sprinkler water droplets are colored blue.
 Particles are stored in files having the extension {\tt .prt5}\
 and are displayed by selecting the particle file entry from
@@ -3850,14 +3850,20 @@ rendered smoke for all meshes is loaded.
 \blist
 
 %%+++++++++++++++++++++++
-\hitemssf{LOADBOUNDARY, LOADBOUNDARYM}\ Load a boundary file of a particular type.
+\hitemssf{LOADBOUNDARY}\ Load a boundary file of a particular type.
 The type is the same as what Smokeview displays in the Load menus for boundary files.
-{\tt LOADBOUNDARY}\ loads boundary files for all meshes, {\tt LOADBOUNDARYM}\
-loads a boundary file for one mesh.
+{\tt LOADBOUNDARY}\ loads boundary files for all meshes.
 Usage:
 \begin{lstlisting}
 LOADBOUNDARY
    type (char)
+\end{lstlisting}
+
+\hitemssf{LOADBOUNDARYM}\ Load a boundary file of a particular type.
+The type is the same as what Smokeview displays in the Load menus for boundary files.
+{\tt LOADBOUNDARYM}\ loads a boundary file for one mesh.
+Usage:
+\begin{lstlisting}
 LOADBOUNDARYM
    type (char)
    mesh_number (int)
@@ -4021,14 +4027,16 @@ LOADSLCF
 \end{lstlisting}
 
 %%+++++++++++++++++++++++
-\hitemssf{LOADSLICE, LOADSLICEM} Loads slice files.  The LOADSLICE keyword loads slice files for
-all meshes where the slice occurs.  The LOADSLICEM keyword loads the slice for a specified mesh. LOADSLICE usage:
+\hitemssf{LOADSLICE} Loads slice files.  The LOADSLICE keyword loads slice files for
+all meshes where the slice occurs.
+LOADSLICE usage:
 \begin{lstlisting}
 LOADSLICE
   quantity (char)
   1/2/3 (int)dir  (float)position
 \end{lstlisting}
 
+\hitemssf{LOADSLICEM} Loads slice files.  The LOADSLICEM keyword loads the slice for a specified mesh.
 \noindent LOADSLICEM usage:
 \begin{lstlisting}
 LOADSLICEM
@@ -4048,12 +4056,14 @@ LOADVFILE
 \end{lstlisting}
 
 %%+++++++++++++++++++++++
-\hitemssf{LOADVSLICE, LOADVSLICEM}Loads vector slice files.  The LOADVSLICE keyword loads vector slice files for all meshes where the vector slice occurs.  The LOADVSLICDM keyword loads the vector slice for a specified mesh. LOADVSLICE usage:
+\hitemssf{LOADVSLICE}Loads vector slice files.  The LOADVSLICE keyword loads vector slice files for all meshes where the vector slice occurs.  LOADVSLICE usage:
 \begin{lstlisting}
 LOADVSLICE
   quantity (char)
   1/2/3 (int)dir  (float)position
 \end{lstlisting}
+
+\hitemssf{LOADVSLICEM}Loads vector slice files.  The LOADVSLICDM keyword loads the vector slice for a specified mesh.
 
 \noindent LOADVSLICEM usage:
 \begin{lstlisting}
@@ -4220,21 +4230,31 @@ LOADISOM
 \blist
 
 %%+++++++++++++++++++++++
-\hitemssf{HIDEALLDEVS, SHOWALLDEVS}Hides or shows all devices.
+\hitemssf{HIDEALLDEVS}Hides all devices.
 Usage:
 \begin{lstlisting}
  HIDEALLDEVS
- SHOWALLDEVS
-
 \end{lstlisting}
 
 %%+++++++++++++++++++++++
-\hitemssf{HIDEDEV, SHOWDEV}Hide or shows a device with specified device id.
+\hitemssf{HIDEDEV}Hides a device with specified device id.
 Usage:
 \begin{lstlisting}
  HIDEALLDEVS
    device_id
+\end{lstlisting}
 
+%%+++++++++++++++++++++++
+\hitemssf{SHOWALLDEVS}Shows all devices.
+Usage:
+\begin{lstlisting}
+ SHOWALLDEVS
+\end{lstlisting}
+
+%%+++++++++++++++++++++++
+\hitemssf{SHOWDEV}Shows a device with specified device id.
+Usage:
+\begin{lstlisting}
  SHOWDEV
    device_id
 \end{lstlisting}
@@ -4308,16 +4328,24 @@ Usage:
 \end{lstlisting}
 
 %%+++++++++++++++++++++++
-\hitemssf{SHOWCBAREDIT, HIDECBAREDIT}Show or hide the colorbar edit dialog box.
+\hitemssf{HIDECBAREDIT}Hides the colorbar edit dialog box.
 Usage:
 \begin{lstlisting}
- SHOWCBAREDIT
-
  HIDECBAREDIT
 \end{lstlisting}
 
 %%+++++++++++++++++++++++
-\hitemssfN{SETCBARLAB, SETCBARRGB}
+\hitemssf{SHOWCBAREDIT}Shows the colorbar edit dialog box.
+Usage:
+\begin{lstlisting}
+ SHOWCBAREDIT
+\end{lstlisting}
+
+%%+++++++++++++++++++++++
+\hitemssfN{SETCBARLAB}
+
+%%+++++++++++++++++++++++
+\hitemssfN{SETCBARRGB}
 
 \elist
 
@@ -4425,7 +4453,16 @@ Usage:
 \end{lstlisting}
 
 %%+++++++++++++++++++++++
-\hitemssf{SETCLIPMODE, SCENECLIP}Sets clipping mode 0 - clipping off, 1 - clip blockages and data,
+\hitemssf{SETCLIPMODE}Sets clipping mode 0 - clipping off, 1 - clip blockages and data,
+2 - clip only blockages, 3 - clip only data.
+Usage:
+\begin{lstlisting}
+ SETCLIPMODE
+  (0/1/2/3)
+\end{lstlisting}
+
+%%+++++++++++++++++++++++
+\hitemssf{SCENECLIP}Sets clipping mode 0 - clipping off, 1 - clip blockages and data,
 2 - clip only blockages, 3 - clip only data.
 Usage:
 \begin{lstlisting}
@@ -4435,13 +4472,28 @@ Usage:
 
 
 %%+++++++++++++++++++++++
-\hitemssf{SETCLIPX, SETCLIPY, SETCLIPZ}Set or unset the x, y, z min or max clipping plane positions.
+\hitemssf{SETCLIPX}Set or unset the x  min or max clipping plane positions.
 Usage:
 \begin{lstlisting}
  SETCLIPX
   0/1 min position (float) 0/1 max position (float)
 \end{lstlisting}
-The SETCLIPY and SETCLIPZ are defined similarly.
+
+%%+++++++++++++++++++++++
+\hitemssf{SETCLIPY}Set or unset the y  min or max clipping plane positions.
+Usage:
+\begin{lstlisting}
+ SETCLIPY
+  0/1 min position (float) 0/1 max position (float)
+\end{lstlisting}
+
+%%+++++++++++++++++++++++
+\hitemssf{SETCLIPX}Set or unset the z  min or max clipping plane positions.
+Usage:
+\begin{lstlisting}
+ SETCLIPZ
+  0/1 min position (float) 0/1 max position (float)
+\end{lstlisting}
 
 %%+++++++++++++++++++++++
 \hitemssf{SETTIMEVAL}Set the time for displaying data to a specified value.
@@ -4469,13 +4521,41 @@ XYZVIEW
 \end{lstlisting}
 
 %%+++++++++++++++++++++++
-\hitemssf{VIEWXMIN,VIEWYMIN,VIEWZMIN}The {\tt VIEWXMIN}\ script keyword sets the view so that the scene
+\hitemssf{VIEWXMAX}The {\tt VIEWXMAX}\ script keyword sets the view so that the scene
+is viewed towards the XMAX direction.  It sets
+the scene view location to (x,ymid,zmid)
+and the scene view direction to $(+1.0,0.0,0.0)$ where
+x is chosen so that the entire scene is in view and ymid, zmid
+are the middle of the scene along y and z directions.
+Usage:
+\begin{lstlisting}
+VIEWXMAX
+\end{lstlisting}
+
+%%+++++++++++++++++++++++
+\hitemssf{VIEWYMAX}Same as the {\tt VIEWXMAX}\ script keyword but sets the view so that the scene
+is viewed towards the YMAX direction.
+Usage:
+\begin{lstlisting}
+VIEWYMAX
+\end{lstlisting}
+
+%%+++++++++++++++++++++++
+\hitemssf{VIEWZMAX}Same as the {\tt VIEWXMAX}\ script keyword but sets the view so that the scene
+is viewed towards the ZMAX direction.
+Usage:
+\begin{lstlisting}
+VIEWZMAX
+\end{lstlisting}
+
+%%+++++++++++++++++++++++
+\hitemssf{VIEWXMIN}The {\tt VIEWXMIN}\ script keyword sets the view so that the scene
 is viewed towards the XMIN direction.  It sets
 the scene view location to (x,ymid,zmid)
 and the scene view direction to $(-1.0,0.0,0.0)$ where
 x is chosen so that the entire scene is in view and ymid, zmid
-are the middle of the scene along y and z directions.  The {\tt VIEWYMIN}\ and {\tt VIEWZMIN}\ script
-keywords are defined similarly.  Usage:
+are the middle of the scene along y and z directions.
+Usage:
 \begin{lstlisting}
 VIEWXMIN
 VIEWYMIN
@@ -4483,35 +4563,46 @@ VIEWZMIN
 \end{lstlisting}
 
 %%+++++++++++++++++++++++
-\hitemssf{VIEWXMAX,VIEWYMAX,VIEWZMAX}The {\tt VIEWXMAX}\ script keyword sets the view so that the scene
-is viewed towards the XMAX direction.  It sets
-the scene view location to (x,ymid,zmid)
-and the scene view direction to $(+1.0,0.0,0.0)$ where
-x is chosen so that the entire scene is in view and ymid, zmid
-are the middle of the scene along y and z directions.  The {\tt VIEWYMAX}\ and {\tt VIEWZMAX}\ script
-keywords are defined similarly.  Usage:
+\hitemssf{VIEWYMIN}Same as the {\tt VIEWXMIN}\ script keyword but sets the view so that the scene
+is viewed towards the YMIN direction.
+Usage:
 \begin{lstlisting}
-VIEWXMAX
-VIEWYMAX
-VIEWZMAX
+VIEWYMIN
 \end{lstlisting}
 
 %%+++++++++++++++++++++++
-\hitemssf{XSCENECLIP, YSCENECLIP, ZSCENECLIP}\ Sets clipping planes along the X, Y or Z axis.
+\hitemssf{VIEWZMIN}Same as the {\tt VIEWXMIN}\ script keyword but sets the view so that the scene
+is viewed towards the ZMIN direction.
+Usage:
+\begin{lstlisting}
+VIEWZMIN
+\end{lstlisting}
+
+%%+++++++++++++++++++++++
+\hitemssf{XSCENECLIP}\ Sets clipping planes along the X axis.
 Portions of the scene before {\tt min}\
 or after {\tt max}\ planes are hidden if the corresponding setmin or setmax are set to 1 respectively.
 Usage:
 \begin{lstlisting}
   XSCENECLIP
     setxmin xmin setxmax xmax
+\end{lstlisting}
 
+%%+++++++++++++++++++++++
+\hitemssf{YSCENECLIP}\ Same as the XSCENECLIP keyword but sets clipping planes along the Y axis.
+Usage:
+\begin{lstlisting}
   YSCENECLIP
     setymin ymin setymax ymax
+\end{lstlisting}
 
+%%+++++++++++++++++++++++
+\hitemssf{ZSCENECLIP}\ Same as the XSCENECLIP keyword but sets clipping planes along the Z axis.
+Usage:
+\begin{lstlisting}
   ZSCENECLIP
     setzmin zmin setzmax zmax
 \end{lstlisting}
-
 \elist
 
 %%-----------------------------------------------------------------------
@@ -4522,8 +4613,8 @@ Usage:
 \blist
 
 %%+++++++++++++++++++++++
-\hitemssf{ISORENDERALL, LOADSLICERENDER, LOADSMOKERENDER}\ Render a sequence
-of isosurface, slice or 3D smoke frames. As with {\tt RENDERALL}, this command by default
+\hitemssf{ISORENDERALL}\ Render a sequence
+of isosurface frames. As with {\tt RENDERALL}, this command by default
 renders every frame starting with the first. One may also specify
 a starting frame index (default: 0) and a skip value (default: 1)
 indicating the difference in indices between rendered frames.
@@ -4540,6 +4631,9 @@ ISORENDERALL
   file name base (char)
 \end{lstlisting}
 
+%%+++++++++++++++++++++++
+\hitemssf{LOADSLICERENDER}\ This command is the same as ISORENDERALL but for slice files.
+
 \begin{lstlisting}
 LOADSLICERENDER
   quantity (char)
@@ -4548,8 +4642,11 @@ LOADSLICERENDER
   skip (int) first (int)
 \end{lstlisting}
 
+%%+++++++++++++++++++++++
+\hitemssf{LOADSMOKERENDER}\ This command is the same as ISORENDERALL but for 3D smoke files.
+
 \begin{lstlisting}
-LOADSLICERENDER
+LOADSMOKERENDER
   quantity (char)
   1/2/3 position(float)
   file name base (char)
@@ -4700,7 +4797,7 @@ VOLSMOKERENDERALL
 \blist
 
 %%+++++++++++++++++++++++
-\hitemssf{GPUOFF}Turn off the GPU if is active and being used (in smokeview)
+\hitemssf{GPUOFF}Disable the GPU.
 \begin{lstlisting}
   GPUOFF
 \end{lstlisting}
@@ -4713,7 +4810,7 @@ LABEL
 \end{lstlisting}
 
 %%+++++++++++++++++++++++
-\hitemssf{RGBTEST}Test color value at an $(x,y,z)$ location. Usage:
+\hitemssf{RGBTEST}Test color value at the location $(x,y,z)$ location. Usage:
 \begin{lstlisting}
 RGBTEST
   x y z r g b delta
@@ -4721,12 +4818,6 @@ RGBTEST
 \noindent where r, g and b are red green and blue color components each ranging from 0 to 255 and delta is an error tolerance.
 If any color component difference is found to be greater than delta, a warning message is output.
 
-%%+++++++++++++++++++++++
-\hitemssf{SETTOURKEYFRAME}Set the time position along the current tour to time. Usage:
-\begin{lstlisting}
-SETTOURKEYFRAME
-  time (float)
-\end{lstlisting}
 
 \elist
 
