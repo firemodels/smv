@@ -4209,14 +4209,19 @@ If 6 is specified then smokeview constructs a velocity component if any of the U
 \blist
 
 %%+++++++++++++++++++++++
-\hitemssf{LOADISO, LOADISOM}Load iso-surface files for a specified type for all meshes if LOADISO is used and for
-a specified mesh if LOADISOM is used.
+\hitemssf{LOADISO}Load iso-surface files for a specified type for all meshes.
 The type is the same as what Smokeview displays in the Load menus for iso-surface files.
 Usage:
 \begin{lstlisting}
 LOADISO
   type (char)
+\end{lstlisting}
 
+%%+++++++++++++++++++++++
+\hitemssf{LOADISOM}Load iso-surface files for a specified mesh.
+The type is the same as what Smokeview displays in the Load menus for iso-surface files.
+Usage:
+\begin{lstlisting}
 LOADISOM
   type (char)
   mesh number (int)
@@ -4488,7 +4493,7 @@ Usage:
 \end{lstlisting}
 
 %%+++++++++++++++++++++++
-\hitemssf{SETCLIPX}Set or unset the z  min or max clipping plane positions.
+\hitemssf{SETCLIPZ}Set or unset the z  min or max clipping plane positions.
 Usage:
 \begin{lstlisting}
  SETCLIPZ
