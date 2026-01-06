@@ -229,7 +229,7 @@ intel_win : $(objwin)
 
 clang_win_db : INC       += -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/glui_gl -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
 clang_win_db : CFLAGS    = -m64 -g -D GLEW_STATIC -D NDEBUG  -D BGDWIN32 -D PTW32_STATIC_LIB  $(GITINFO) $(GNU_COMPINFO) $(SMV_PROFILEFLAG)
-clang_win_db : CFLAGS   += -g -fsanitize=address -fsanitize=undefined
+clang_win_db : CFLAGS   += -g -D pp_SANITIZE -fsanitize=address -fsanitize=undefined
 clang_win_db : LFLAGS    = -m64 $(SMV_LIBS_CLANG) $(SMV_PROFILEFLAG) $(WIN32_LIBS)
 clang_win_db : LFLAGS   += -fsanitize=address -fsanitize=undefined
 clang_win_db : CC        = clang-cl
