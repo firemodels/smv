@@ -271,6 +271,7 @@ void InitKeywords(void){
   InitKeyword("LOAD3DSMOKE",         SCRIPT_LOAD3DSMOKE, 1);
   InitKeyword("LOADVOLSMOKE",        SCRIPT_LOADVOLSMOKE, 1);
   InitKeyword("LOADVOLSMOKEFRAME",   SCRIPT_LOADVOLSMOKEFRAME, 1);
+  InitKeyword("SMOKEPROP",           SCRIPT_SMOKEPROP, 1);
 
 // boundary files
   InitKeyword("LOADBOUNDARY",        SCRIPT_LOADBOUNDARY, 1);
@@ -318,10 +319,9 @@ void InitKeywords(void){
 // show/hide devices
   InitKeyword("HIDEALLDEVS",         SCRIPT_HIDEALLDEVS, 0);
   InitKeyword("HIDEDEV",             SCRIPT_HIDEDEV, 1);
+  InitKeyword("OUTPUTSMOKESENSORS",  SCRIPT_OUTPUTSMOKESENSORS, 0);
   InitKeyword("SHOWALLDEVS",         SCRIPT_SHOWALLDEVS, 0);
   InitKeyword("SHOWDEV",             SCRIPT_SHOWDEV, 1);
-  InitKeyword("OUTPUTSMOKESENSORS",  SCRIPT_OUTPUTSMOKESENSORS, 0);
-  InitKeyword("SHOWSMOKESENSORS",    SCRIPT_OUTPUTSMOKESENSORS, 0);
 
 // colorbar
   InitKeyword("CBARFLIP",            SCRIPT_CBARFLIP, 0);
@@ -356,7 +356,6 @@ void InitKeywords(void){
   InitKeyword("SETDEMOMODE",         SCRIPT_SETDEMOMODE, 1);
   InitKeyword("SETTIMEVAL",          SCRIPT_SETTIMEVAL, 1);
   InitKeyword("SETVIEWPOINT",        SCRIPT_SETVIEWPOINT, 1);
-  InitKeyword("SMOKEPROP",           SCRIPT_SMOKEPROP, 1);
   InitKeyword("VIEWXMIN",            SCRIPT_VIEWXMIN, 0);
   InitKeyword("VIEWXMAX",            SCRIPT_VIEWXMAX, 0);
   InitKeyword("VIEWYMIN",            SCRIPT_VIEWYMIN, 0);
@@ -845,7 +844,7 @@ int CompileScript(char *scriptfile){
         SETfval;
         break;
 
-        // SHOWALLDEVS
+// SHOWALLDEVS
       case SCRIPT_SHOWALLDEVS:
         break;
 
@@ -4225,3 +4224,4 @@ int RunScriptCommand(scriptdata *script_command){
   GLUTPOSTREDISPLAY;
   return returnval;
 }
+ 

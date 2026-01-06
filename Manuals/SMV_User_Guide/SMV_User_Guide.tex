@@ -3843,6 +3843,14 @@ If the mesh\_index is positive then volume rendered smoke for that
 mesh index is loaded. If the mesh\_index is negative then volume
 rendered smoke for all meshes is loaded.
 
+%%+++++++++++++++++++++++
+\hitemssf{SMOKEPROP}Set the smoke mass extinction coefficient.
+Usage:
+\begin{lstlisting}
+SMOKEPROP
+  fval (float)
+\end{lstlisting}
+
 \elist
 
 \subsubsection{Boundary Files}
@@ -3909,6 +3917,15 @@ Use LOADINIFILE to load a configuration ({\tt .ini}) file.
 Usage:
 \begin{lstlisting}
 LOADINIFILE
+  file (char)
+\end{lstlisting}
+
+%%+++++++++++++++++++++++
+\hitemssf{LOADSMV}
+Load an smv file.
+Usage:
+\begin{lstlisting}
+LOADSMV
   file (char)
 \end{lstlisting}
 
@@ -4250,6 +4267,13 @@ Usage:
 \end{lstlisting}
 
 %%+++++++++++++++++++++++
+\hitemssf{OUTPUTSMOKESENSORS}Output smoke sensor data to a csv file named casename\_ss.csv.
+Usage:
+\begin{lstlisting}
+ OUTPUTSMOKESENSORS
+\end{lstlisting}
+
+%%+++++++++++++++++++++++
 \hitemssf{SHOWALLDEVS}Shows all devices.
 Usage:
 \begin{lstlisting}
@@ -4263,14 +4287,6 @@ Usage:
  SHOWDEV
    device_id
 \end{lstlisting}
-
-%%+++++++++++++++++++++++
-\hitemssf{OUTPUTSMOKESENSORS}Output smoke sensor data to a csv file named casename\_ss.csv.
-Usage:
-\begin{lstlisting}
- OUTPUTSMOKESENSORS
-\end{lstlisting}
-
 
 \elist
 %%-----------------------------------------------------------------------
@@ -4498,6 +4514,14 @@ Usage:
 \begin{lstlisting}
  SETCLIPZ
   0/1 min position (float) 0/1 max position (float)
+\end{lstlisting}
+
+%%+++++++++++++++++++++++
+\hitemssf{SETDEMOMODE}Set demo mode from 0 to 5.
+Usage:
+\begin{lstlisting}
+ SETDEMOMODE
+  mode (int)
 \end{lstlisting}
 
 %%+++++++++++++++++++++++
@@ -4823,6 +4847,11 @@ RGBTEST
 \noindent where r, g and b are red green and blue color components each ranging from 0 to 255 and delta is an error tolerance.
 If any color component difference is found to be greater than delta, a warning message is output.
 
+%%+++++++++++++++++++++++
+\hitemssf{UNLOADPLOT2D}Unload 2D plots if they are visible. Usage:
+\begin{lstlisting}
+UNLOADPLOT2D
+\end{lstlisting}
 
 \elist
 
