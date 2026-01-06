@@ -3,7 +3,6 @@
 set curdir=%CD%
 set git_drive=c:
 set DEBUG=
-set TEST=
 set SCRIPT_DIR=%CD%
 set runsmvcases=1
 set runwuicases=1
@@ -39,7 +38,7 @@ if %useinstalled% == 1 (
   set BACKGROUND=%GITROOT%\smv\Build\background\intel_win\background.exe
   set SMOKEDIFF=%GITROOT%\smv\Build\smokediff\intel_win\smokediff_win.exe
   set FDS2FED=%GITROOT%\smv\Build\fds2fed\intel_win\fds2fed_win.exe
-  set SMOKEVIEW=%GITROOT%\smv\Build\smokeview\intel_win\smokeview_win%TEST%%DEBUG%.exe -bindir %GITROOT%\smv\for_bundle
+  set SMOKEVIEW=%GITROOT%\smv\Build\smokeview\intel_win\smokeview_win%DEBUG%.exe -bindir %GITROOT%\smv\for_bundle
   set  SMOKEZIP=%GITROOT%\smv\Build\smokezip\intel_win\smokezip_win.exe
   set  WIND2FDS=%GITROOT%\smv\Build\wind2fds\intel_win\wind2fds_win.exe
 )
@@ -225,10 +224,6 @@ goto eof
    set runsmvcases=0
    set runwuicases=1
  )
- if /I "%1" EQU "-test" (
-   set valid=1
-   set TEST=_test
- )
  if /I "%1" EQU "-installed" (
    set valid=1
    set useinstalled=1
@@ -252,7 +247,6 @@ echo.
 echo -help  - display this message
 echo -debug - run with debug Smokeview
 echo -installed - use installed Smokeview
-echo -test - use test Smokeview
 echo -wui   - run only Wui cases
 exit /b
   
