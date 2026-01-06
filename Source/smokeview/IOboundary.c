@@ -1808,8 +1808,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       qvalptrs[i] = meshi->patchval + i * data_per_timestep;
     }
     sprintf(average_label, "averaging boundary file data - mesh: %i", blocknumber+1);
-    if(TimeAverageData(average_label, qvalptrs, qvalptrs, ndata, 
-          data_per_timestep, meshi->patch_times, ntimes_local, 
+    if(TimeAverageData(average_label, qvalptrs, qvalptrs, ndata,
+          data_per_timestep, meshi->patch_times, ntimes_local,
           boundary_average_interval) == 1
       ){
       show_boundary_average = 0; // averaging failed

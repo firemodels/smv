@@ -4,7 +4,7 @@
 // processing directives defined by compilers to identify the platform (windows, Linux or OSX) or compiler
 // __linux__   use instead of pp_LINUX
 // __GNUC__    use instead of pp_GCC
-// defined(__APPLE__) && defined(__MACH__)   __MACH__ is included to exclude iOS, use instead of pp_OSX 
+// defined(__APPLE__) && defined(__MACH__)   __MACH__ is included to exclude iOS, use instead of pp_OSX
 // _WIN32      use instead of WIN32
 // _WIN64      use instead of X64
 // __cplusplus use instead of CPP

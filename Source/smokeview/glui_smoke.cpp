@@ -687,7 +687,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   ROLLOUT_skip = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoke3d, "Planes", false, SKIP_ROLLOUT, SmokeRolloutCB);
   TOGGLE_ROLLOUT(smokeprocinfo, nsmokeprocinfo, ROLLOUT_skip, SKIP_ROLLOUT, glui_3dsmoke);
 
-  
+
   PANEL_skip_planes = glui_3dsmoke->add_panel_to_panel(ROLLOUT_skip, "skip planes");
   SPINNER_smoke3d_skip   = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "yz/xz/xy", GLUI_SPINNER_INT, &smoke3d_skip,   SMOKE_SKIP_XYZ, GLUISmoke3dCB);
   SPINNER_smoke3d_skipxy = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "yz/xz",   GLUI_SPINNER_INT, &smoke3d_skipxy, SMOKE_SKIP_XY,  GLUISmoke3dCB);
