@@ -16,11 +16,14 @@
 {\input{../Bibliography/gitrevision}}
 {\newcommand{\gitrevision}{unknown} }
 
-% command to double space
-%\linespread{2.0}
+\addbibresource{../../../fds/Manuals/Bibliography/FDS_refs.bib}
+\addbibresource{../../../fds/Manuals/Bibliography/FDS_general.bib}
+\addbibresource{../../../fds/Manuals/Bibliography/FDS_mathcomp.bib}
+\addbibresource{../Bibliography/sv_fire.bib}
+\addbibresource{../Bibliography/sv_graphics.bib}
+
 \begin{document}
 
-\bibliographystyle{unsrt}
 \pagestyle{empty}
 
 \newcommand{\vvprocess}{}
@@ -1845,8 +1848,7 @@ glasses are required to see the 3D stereo effect. }
 \end{center}
 \end{figure}
 
-\bibliography{../../../fds/Manuals/Bibliography/FDS_refs,../../../fds/Manuals/Bibliography/FDS_general,../../../fds/Manuals/Bibliography/FDS_mathcomp,../Bibliography/sv_fire,../Bibliography/sv_graphics}
-\addcontentsline{toc}{chapter}{References}
+\printbibliography[heading=bibintoc,title={References}]
 
 \appendix
 \addcontentsline{toc}{chapter}{Appendices}

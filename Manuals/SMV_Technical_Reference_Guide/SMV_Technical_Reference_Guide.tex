@@ -9,13 +9,14 @@
 {\input{../Bibliography/gitrevision}}
 {\newcommand{\gitrevision}{unknown} }
 
+\addbibresource{../../../fds/Manuals/Bibliography/FDS_refs.bib}
+\addbibresource{../../../fds/Manuals/Bibliography/FDS_general.bib}
+\addbibresource{../../../fds/Manuals/Bibliography/FDS_mathcomp.bib}
+\addbibresource{../Bibliography/sv_fire.bib}
+\addbibresource{../Bibliography/sv_graphics.bib}
 
-
-% command to double space
-%\linespread{2.0}
 \begin{document}
 
-\bibliographystyle{unsrt}
 \pagestyle{empty}
 %
 % ----------------------  first cover/title page --------------------------
@@ -1841,8 +1842,7 @@ incorporate updated results as they are computed.
 % -------------------  References ------------------------
 %
 
-\bibliography{../../../fds/Manuals/Bibliography/FDS_general,../../../fds/Manuals/Bibliography/FDS_refs,../../../fds/Manuals/Bibliography/FDS_mathcomp,../Bibliography/sv_fire,../Bibliography/sv_graphics}
-\addcontentsline{toc}{chapter}{References}
+\printbibliography[heading=bibintoc,title={References}]
 
 %
 % -------------------  Appendices ------------------------
