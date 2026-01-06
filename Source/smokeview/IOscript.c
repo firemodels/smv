@@ -271,6 +271,7 @@ void InitKeywords(void){
   InitKeyword("LOAD3DSMOKE",         SCRIPT_LOAD3DSMOKE, 1);
   InitKeyword("LOADVOLSMOKE",        SCRIPT_LOADVOLSMOKE, 1);
   InitKeyword("LOADVOLSMOKEFRAME",   SCRIPT_LOADVOLSMOKEFRAME, 1);
+  InitKeyword("SMOKEPROP",           SCRIPT_SMOKEPROP, 1);
 
 // boundary files
   InitKeyword("LOADBOUNDARY",        SCRIPT_LOADBOUNDARY, 1);
@@ -320,8 +321,7 @@ void InitKeywords(void){
   InitKeyword("HIDEDEV",             SCRIPT_HIDEDEV, 1);
   InitKeyword("SHOWALLDEVS",         SCRIPT_SHOWALLDEVS, 0);
   InitKeyword("SHOWDEV",             SCRIPT_SHOWDEV, 1);
-  InitKeyword("OUTPUTSMOKESENSORS",  SCRIPT_OUTPUTSMOKESENSORS, 0);
-  InitKeyword("SHOWSMOKESENSORS",    SCRIPT_OUTPUTSMOKESENSORS, 0);
+  InitKeyword("SHOWSMOKESENSORS",    SCRIPT_SHOWSMOKESENSORS, 0);
 
 // colorbar
   InitKeyword("CBARFLIP",            SCRIPT_CBARFLIP, 0);
@@ -356,7 +356,6 @@ void InitKeywords(void){
   InitKeyword("SETDEMOMODE",         SCRIPT_SETDEMOMODE, 1);
   InitKeyword("SETTIMEVAL",          SCRIPT_SETTIMEVAL, 1);
   InitKeyword("SETVIEWPOINT",        SCRIPT_SETVIEWPOINT, 1);
-  InitKeyword("SMOKEPROP",           SCRIPT_SMOKEPROP, 1);
   InitKeyword("VIEWXMIN",            SCRIPT_VIEWXMIN, 0);
   InitKeyword("VIEWXMAX",            SCRIPT_VIEWXMAX, 0);
   InitKeyword("VIEWYMIN",            SCRIPT_VIEWYMIN, 0);
@@ -795,8 +794,8 @@ int CompileScript(char *scriptfile){
       case SCRIPT_CBARNORMAL:
         break;
 
-// OUTPUTSMOKESENSORS
-      case SCRIPT_OUTPUTSMOKESENSORS:
+// SHOWSMOKESENSORS
+      case SCRIPT_SHOWSMOKESENSORS:
         break;
 
 // SHOWHVACDUCTVAL
@@ -845,7 +844,7 @@ int CompileScript(char *scriptfile){
         SETfval;
         break;
 
-        // SHOWALLDEVS
+// SHOWALLDEVS
       case SCRIPT_SHOWALLDEVS:
         break;
 
@@ -2945,9 +2944,9 @@ void ScriptHideHVACVals(void){
   HVACMenu(MENU_HVAC_HIDE_ALL_VALUES);
 }
 
-/* ------------------ ScriptOutputSmokeSensors ------------------------ */
+/* ------------------ ScriptShowSmokeSensors ------------------------ */
 
-void ScriptOutputSmokeSensors(void){
+void ScriptShowSmokeSensors(void){
   int i,j;
   FILE *stream_smokesensors;
   int nsmokesensors;
@@ -4043,8 +4042,8 @@ int RunScriptCommand(scriptdata *script_command){
     case SCRIPT_HIDEHVACVALS:
       ScriptHideHVACVals();
       break;
-    case SCRIPT_OUTPUTSMOKESENSORS:
-      ScriptOutputSmokeSensors();
+    case SCRIPT_SHOWSMOKESENSORS:
+      ScriptShowSmokeSensors();
       break;
     case SCRIPT_SHOWALLDEVS:
       ShowDevicesMenu(MENU_DEVICES_SHOWALL);
@@ -4225,3 +4224,4 @@ int RunScriptCommand(scriptdata *script_command){
   GLUTPOSTREDISPLAY;
   return returnval;
 }
+ 

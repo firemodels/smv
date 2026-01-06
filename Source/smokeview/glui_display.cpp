@@ -1301,7 +1301,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
     SPINNER_zenith_color[i]->set_int_limits(0,255);
     SPINNER_ground_color[i]->set_int_limits(0,255);
   }
-  
+
   SPINNER_sky_diam = glui_labels->add_spinner_to_panel(PANEL_sphere, "diameter", GLUI_SPINNER_FLOAT, &sky_diam, SKY_BOX, GLUISkyCB);
   if(global_scase.sky_texture != NULL){
     glui_labels->add_checkbox_to_panel(PANEL_sphere, "show texture", &visSkySpheretexture, SKY_SPHERE, GLUISkyCB);
