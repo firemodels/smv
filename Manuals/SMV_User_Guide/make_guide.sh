@@ -11,9 +11,10 @@ gitrevision=`git describe --abbrev=7 --long --dirty`
 echo "\\newcommand{\\gitrevision}{$gitrevision}" > ../Bibliography/gitrevision.tex
 
 pdflatex -interaction nonstopmode SMV_User_Guide &> SMV_User_Guide.err
-biber                             SMV_User_Guide &> SMV_User_Guide.err
+biber                             SMV_User_Guide &> SMV_User_Guide_biber.err
 pdflatex -interaction nonstopmode SMV_User_Guide &> SMV_User_Guide.err
 pdflatex -interaction nonstopmode SMV_User_Guide &> SMV_User_Guide.err
+cat SMV_User_Guide_biber.err >> SMV_User_Guide.err
 
 # Scan and report any errors in the LaTeX build process
 if [[ `grep -E "Undefined control sequence|Error:|Fatal error|! LaTeX Error:|Paragraph ended before|Missing \\\$ inserted|Misplaced" -I SMV_User_Guide.err | grep -v "xpdf supports version 1.5"` == "" ]]
@@ -27,13 +28,13 @@ if [[ `grep -E "Undefined control sequence|Error:|Fatal error|! LaTeX Error:|Par
 fi
 
 # Check for LaTeX warnings (undefined references or duplicate labels)
-if [[ `grep -E "undefined|multiply defined|multiply-defined" -I SMV_User_Guide.err` == "" ]]
+if [[ `grep -E "undefined|WARN|multiply defined|multiply-defined" -I SMV_User_Guide.err` == "" ]]
    then
       # Continue along
       :
    else
       echo "LaTeX warnings detected:"
-      grep -E "undefined|multiply defined|multiply-defined" -I SMV_User_Guide.err
+      grep -E "undefined|WARN|multiply defined|multiply-defined" -I SMV_User_Guide.err
       clean_build=0
 fi
 
