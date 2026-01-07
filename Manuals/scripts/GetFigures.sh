@@ -1,196 +1,44 @@
 #!/bin/bash
-GH_OWNER=firemodels
-GH_REPO=test_bundles
-
-#---------------------------------------------
-#                   usage
-#---------------------------------------------
-
-function usage {
-echo "Usage:"
-echo "GetFigures.sh options"
-echo ""
-echo "Download FDS and/or Smokeview manual figures from github and copy to their"
-echo "respecitve manual SCRIPT_DIRS directories"
-echo ""
-echo "./GetFigures.sh -a    download all FDS and smokeview figures"
-echo "./GetFigures.sh -F    download all FDS figures"
-echo "./GetFigures.sh -S    download all Smokeview figures"
-echo ""
-echo "Options:"
-echo "-a - copy all FDS and Smokeview manual figures"
-echo "-f - copy FDS figures for manuals specified by -u, -v, -V and or -t options"
-echo "-F - copy FDS figures for all guides"
-echo "-h - display this message"
-echo "-f - copy Smokeview figures for manuals specified by -u and/or -v options"
-echo "-S - copy Smokeview figures for both user and verification guides"
-echo "-t - copy FDS technical guide figures"
-echo "-u - copy user guide figures  (also specify either -f or -s)"
-echo "-v - copy verification guide figures  (also specify either -f or -s)"
-echo "-V - copy FDS validation guide figures"
-exit 0
-}
-
-#*** parse command line options
-
-FDS=
-SMV=
-USE=
-VER=
-VAL=
-TECH=
-while getopts 'afFhsStuvV' OPTION
-do
-case $OPTION  in
-  a)
-  FDS=1
-  SMV=1
-  USE=1
-  VER=1
-  VAL=1
-  TECH=1
-  ;;
-  f)
-  FDS=1
-  ;;
-  F)
-  FDS=1
-  USE=1
-  VER=1
-  VAL=1
-  TECH=1
-  ;;
-  h)
-   usage;
-   ;;
-  s)
-  SMV=1
-  ;;
-  S)
-  SMV=1
-  USE=1
-  VER=1
-  ;;
-  t)
-  FDS=1
-  TECH=1
-  ;;
-  u)
-  USE=1
-  ;;
-  v)
-  VER=1
-  ;;
-  V)
-  FDS=1
-  VAL=1
-  ;;
-  \?)
-  echo "***error: unknown option entered. aborting firebot"
-  exit 1
-  ;;
-esac
-done
-shift $(($OPTIND-1))
-
-if [[ "$FDS" == "" ]] && [[ "$SMV" == "" ]]; then
-  FDS=1
-fi
-
-if [ "SMV" != "" ]; then
-  if [[ "$USE" == "" ]] && [[ "$VER" == "" ]]; then
-    USE=1
-  fi
-fi
-
-if [ "FDS" != "" ]; then
-  if [[ "$USE" == "" ]] && [[ "$VER" == "" ]] && [[ "$VAL" == "" ]] && [[ "$TECH" == "" ]]; then
-    USE=1
-  fi
-fi
-
-CURDIR=`pwd`
-
-cd files
-FILESDIR=`pwd`
-
-git clean -dxf >& /dev/null
-
-cd $CURDIR
-
-DOWNLOADFILE ()
+DOWNLOADFIGURES ()
 {
-  TAG=$1
-  FILE=$2
-  echo ""
-  echo downloading $FILE using:
-  echo gh release download $TAG -p $FILE -D $FILESDIR  -R github.com/$GH_OWNER/$GH_REPO
-  gh release download $TAG -p $FILE -D $FILESDIR  -R github.com/$GH_OWNER/$GH_REPO
-}
-
-COPYFILES ()
-{
-  TODIR=$1
-  FILE=$2
-  if [ -d $TODIR ]; then
-    echo "untarring $FILE to $TODIR"
-    cd $TODIR
-    if [ -e $FILESDIR/$FILE ]; then
-      tar xf $FILESDIR/$FILE > /dev/null 2>&1
-    else
-      echo "***error: $FILESDIR/$FILE does not exist"
-    fi
+  FILE=$1_figures
+  echo ***Downloading $FILE.tar.gz
+  gh release download SMOKEVIEW_TEST -p $FILE.tar.gz -R github.com/firemodels/test_bundles --clobber
+  if [ ! -e $FILE.tar.gz ]; then
+    echo ***error: $FILE.tar.gz failed to download
+    echo command: gh release download FDS_TEST -p $FILE.tar.gz -R github.com/firemodels/test_bundles --clobber
   else
-    echo ***error: $TODIR does not exist
+    echo "   successful"
   fi
 }
+DOWNLOADFIGURES SMV_UG
+DOWNLOADFIGURES SMV_VG
 
-ROOT=../../..
-cd $ROOT
-ROOT=`pwd`
+SCRIPTDIR=`pwd`
+cd ..
+MANDIR=`pwd`
 
-SMVREPO=$ROOT/smv
-cd $SMVREPO
-SMVREPO=`pwd`
-cd $CURDIR
+cd $SCRIPTDIR
+rm -rf FIGS
+mkdir FIGS
+mkdir FIGS/SMV_UG
+mkdir FIGS/SMV_VG
 
-if [ "$SMV" != "" ]; then
-  if [ "$USE" != "" ]; then
-    DOWNLOADFILE SMOKEVIEW_TEST SMV_UG_figures.tar.gz
-    COPYFILES $SMVREPO//Manuals/SMV_User_Guide/SCRIPT_FIGURES        SMV_UG_figures.tar.gz
-  fi
+SBUG=$SCRIPTDIR/FIGS/SMV_UG
+SBVG=$SCRIPTDIR/FIGS/SMV_VG
 
-  if [ "$VER" != "" ]; then
-    DOWNLOADFILE SMOKEVIEW_TEST SMV_VG_figures.tar.gz
-    COPYFILES $SMVREPO/Manuals/SMV_Verification_Guide/SCRIPT_FIGURES SMV_VG_figures.tar.gz
-  fi
+# Copy User's Guide Figures
+if [ -e $SCRIPTDIR/SMV_UG_figures.tar.gz ]; then
+  cd $SBUG
+  tar xf $SCRIPTDIR/SMV_UG_figures.tar.gz
+  cp * $MANDIR/SMV_User_Guide/SCRIPT_FIGURES/
+  echo Smokeview Users Guide figures copied to SMV_User_Guide/SCRIPT_FIGURES
 fi
 
-FDSREPO=$ROOT/fds
-cd $FDSREPO
-FDSREPO=`pwd`
-cd $CURDIR
-
-if [ "$FDS" != "" ]; then
-  if [ "$USE" != "" ]; then
-    DOWNLOADFILE  FDS_TEST FDS_UG_figures.tar.gz
-    COPYFILES $FDSREPO/Manuals/FDS_User_Guide/SCRIPT_FIGURES                FDS_UG_figures.tar.gz
-  fi
-
-  if [ "$TECH" != "" ]; then
-    DOWNLOADFILE  FDS_TEST FDS_TG_figures.tar.gz
-    COPYFILES $FDSREPO/Manuals/FDS_Technical_Reference_Guide/SCRIPT_FIGURES FDS_TG_figures.tar.gz
-  fi
-
-  if [ "$VER" != "" ]; then
-    DOWNLOADFILE  FDS_TEST FDS_VERG_figures.tar.gz
-    COPYFILES $FDSREPO/Manuals/FDS_Verification_Guide/SCRIPT_FIGURES        FDS_VERG_figures.tar.gz
-  fi
-
-  if [ "$VAL" != "" ]; then
-    DOWNLOADFILE  FDS_TEST FDS_VALG_figures.tar.gz
-    COPYFILES $FDSREPO/Manuals/FDS_Validation_Guide/SCRIPT_FIGURES          FDS_VALG_figures.tar.gz
-  fi
+# Copy Verification Guide Figures
+if [ -e $SCRIPTDIR/SMV_VG_figures.tar.gz ]; then
+  cd $SBVG
+  tar xf $SCRIPTDIR/SMV_VG_figures.tar.gz
+  cp * $MANDIR/SMV_Verification_Guide/SCRIPT_FIGURES/.
+  echo SMV Verification Guide figures copied to SMV_Verification_Guide_Guide/SCRIPT_FIGURES
 fi
-cd $CURDIR
-exit 0
