@@ -1714,8 +1714,7 @@ void InitCellMeshInfo(void){
   int i, *nxyz, ntotal;
   float *xyzminmax, *dxyz;
   float *x, *y, *z;
-  meshdata **cellmeshes;
-
+  meshdata **cellmeshes, *mesh0;
   if(cellmeshinfo!=NULL){
     nxyz = cellmeshinfo->nxyz;
     ntotal = nxyz[0]*nxyz[1]*nxyz[2];
@@ -1734,19 +1733,20 @@ void InitCellMeshInfo(void){
   dxyz      = cellmeshinfo->dxyz;
   nxyz      = cellmeshinfo->nxyz;
 
-  x = global_scase.meshescoll.meshinfo->xplt_fds;
-  y = global_scase.meshescoll.meshinfo->yplt_fds;
-  z = global_scase.meshescoll.meshinfo->zplt_fds;
+  mesh0 = global_scase.meshescoll.meshinfo;
+  x = mesh0->xplt_fds;
+  y = mesh0->yplt_fds;
+  z = mesh0->zplt_fds;
 
   xyzminmax[0] = x[0];
-  xyzminmax[1] = x[global_scase.meshescoll.meshinfo->ibar];
+  xyzminmax[1] = x[mesh0->ibar];
   xyzminmax[2] = y[0];
-  xyzminmax[3] = y[global_scase.meshescoll.meshinfo->jbar];
+  xyzminmax[3] = y[mesh0->jbar];
   xyzminmax[4] = z[0];
-  xyzminmax[5] = z[global_scase.meshescoll.meshinfo->kbar];
-  dxyz[0] = x[global_scase.meshescoll.meshinfo->ibar] - x[0];
-  dxyz[1] = y[global_scase.meshescoll.meshinfo->jbar] - y[0];
-  dxyz[2] = z[global_scase.meshescoll.meshinfo->kbar] - z[0];
+  xyzminmax[5] = z[mesh0->kbar];
+  dxyz[0] = x[mesh0->ibar] - x[0];
+  dxyz[1] = y[mesh0->jbar] - y[0];
+  dxyz[2] = z[mesh0->kbar] - z[0];
 
   for(i = 1; i<global_scase.meshescoll.nmeshes;i++){
     meshdata *meshi;
@@ -1757,14 +1757,14 @@ void InitCellMeshInfo(void){
     z = meshi->zplt_fds;
 
     xyzminmax[0] = MIN(xyzminmax[0], x[0]);
-    xyzminmax[1] = MAX(xyzminmax[1], x[global_scase.meshescoll.meshinfo->ibar]);
+    xyzminmax[1] = MAX(xyzminmax[1], x[meshi->ibar]);
     xyzminmax[2] = MIN(xyzminmax[2], y[0]);
-    xyzminmax[3] = MAX(xyzminmax[3], y[global_scase.meshescoll.meshinfo->jbar]);
+    xyzminmax[3] = MAX(xyzminmax[3], y[meshi->jbar]);
     xyzminmax[4] = MIN(xyzminmax[4], z[0]);
-    xyzminmax[5] = MAX(xyzminmax[5], z[global_scase.meshescoll.meshinfo->kbar]);
-    dxyz[0] = MIN(dxyz[0], x[global_scase.meshescoll.meshinfo->ibar] - x[0]);
-    dxyz[1] = MIN(dxyz[1], y[global_scase.meshescoll.meshinfo->jbar] - y[0]);
-    dxyz[2] = MIN(dxyz[2], z[global_scase.meshescoll.meshinfo->kbar] - z[0]);
+    xyzminmax[5] = MAX(xyzminmax[5], z[meshi->kbar]);
+    dxyz[0] = MIN(dxyz[0], x[meshi->ibar] - x[0]);
+    dxyz[1] = MIN(dxyz[1], y[meshi->jbar] - y[0]);
+    dxyz[2] = MIN(dxyz[2], z[meshi->kbar] - z[0]);
   }
   dxyz[0] /= (float)CELLMESH_FACTOR;
   dxyz[1] /= (float)CELLMESH_FACTOR;
