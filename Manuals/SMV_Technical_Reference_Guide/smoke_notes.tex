@@ -28,7 +28,7 @@ suited for quantitatively analyzing data.
 
 Complete methods for visualizing smoke and fire data taking into
 account interactions between light and smoke require the solution
-of the radiation transport equation (RTE)~\cite{Siegel:2001} also
+of the radiation transport equation (RTE)~\cite{Howell:2021} also
 called the volume rendering equation in visualization
 literature.~\cite{levoy:1988} This equation models how light is
 affected after interacting with smoke, a participating medium. In
@@ -111,7 +111,7 @@ given.
 
 \section{Radiation Transport Equation}
 The model used here to visualize smoke is the radiation transport
-equation (RTE)~\cite{Siegel:2001}.  This equation uses radiance to
+equation (RTE)~\cite{Howell:2021}.  This equation uses radiance to
 represent smoke appearance.  Radiance has units of Watts per
 square meter per unit solid angle~\si{W/(sr.m^2)}.  The solid
 angle accounts for the fact that a light source appears brighter
@@ -145,7 +145,7 @@ this section models the change in radiance due to these factors.
 
 The radiation transport equation is used to calculate radiance due
 to one or more light sources within a region possibly containing a
-participating medium such as smoke~\cite{Siegel:2001}. The change
+participating medium such as smoke~\cite{Howell:2021}. The change
 in radiance along a ray with direction $\omega$ at any one instant
 and wavelength may be expressed using
 
@@ -572,7 +572,7 @@ extinction coefficient.  Light losses are assumed to be from both
 absorption and scattering. The obscuration is computed along each
 ray one grid plane at a time, using the Beer-Lambert law as
 follows.  The $\alpha=1-\tau$ values are pre-computed by FDS using
-the Beer-Lambert law~\cite{Siegel:2001}
+the Beer-Lambert law~\cite{Howell:2021}
 
 \begin{equation}
 \label{eq:alpha}
