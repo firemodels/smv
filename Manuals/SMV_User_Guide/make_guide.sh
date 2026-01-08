@@ -28,13 +28,13 @@ if [[ `grep -E "Undefined control sequence|Error:|Fatal error|! LaTeX Error:|Par
 fi
 
 # Check for LaTeX warnings (undefined references or duplicate labels)
-if [[ `grep -E "undefined|WARN|multiply defined|multiply-defined" -I SMV_User_Guide.err` == "" ]]
+if [[ `grep -E "undefined|ERROR|WARNING|multiply defined|multiply-defined" -I SMV_User_Guide.err` == "" ]]
    then
       # Continue along
       :
    else
       echo "LaTeX warnings detected:"
-      grep -E "undefined|WARN|multiply defined|multiply-defined" -I SMV_User_Guide.err
+      grep -E "undefined|WARNING|ERROR|multiply defined|multiply-defined" -I SMV_User_Guide.err
       clean_build=0
 fi
 
