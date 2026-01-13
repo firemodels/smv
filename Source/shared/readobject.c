@@ -1049,8 +1049,11 @@ int GetTokenId(char *token, int *opptr, int *num_opptr, int *num_outopptr){
 int GetObjectFrameTokenLoc(char *var, sv_object_frame *frame){
   int i;
 
-  assert(var!=NULL);
-  if(var == NULL)return -1;
+  if(var == NULL){
+    printf("***warning: encountered NULL token while parsing %s object", frame->device->label);
+    assert(FFALSE);
+    return -1;
+  }
   for(i = 0; i < frame->nsymbols; i++){
     int ii;
     tokendata *toki;
