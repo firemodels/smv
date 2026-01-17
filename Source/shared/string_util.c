@@ -2081,7 +2081,7 @@ int IsCommonOption(char *argi){
 
 common_opts ParseCommonOptions(int argc, char **argv){
   int i, no_minus,first_arg=0;
-  common_opts opts = {.hash_option = HASH_SHA1,};
+  common_opts opts = {.hash_option = HASH_SHA256,};
 
   no_minus = 0;
   for(i = 1; i<argc; i++){
