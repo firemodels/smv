@@ -2722,6 +2722,13 @@ void DrawSmokeFrame(void){
       }
       if(smoke3di->smokeframe_loaded!=NULL&&smoke3di->smokeframe_loaded[smoke3di->ismoke3d_time]==0)continue;
     }
+#ifdef pp_OPACITY_DEBUG
+    char alabel[256];
+    float *xyz;
+    sprintf(alabel, "%i\n", smoke3di->fire_alpha);
+    xyz = smokemesh->boxmiddle_smv;
+    Output3Text(foregroundcolor, xyz[0], xyz[1], xyz[2], alabel);
+#endif
 #ifdef pp_GPU
     if(usegpu_local == 1) {
       DrawSmoke3DGPU(smoke3di);
