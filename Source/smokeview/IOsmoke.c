@@ -1304,28 +1304,25 @@ void InitAlphas(unsigned char *smokealphanew, unsigned char *firealphanew, float
     return;
   }
   if(smoke3d_frame_inc != 1)new_dx *= (float)smoke3d_frame_inc;
-  if(use_smoke_density == 1){;
-    for(i = 1; i < 255; i++){
-      float soot_density, soot_opacity;
-      int soot_alpha, fire_alpha;
+  for(i = 1; i < 255; i++){
+    float soot_density, soot_opacity;
+    int soot_alpha;
 
+    if(use_smoke_density == 1){;
       soot_density     = maxval*(float)i/255.0;
-      soot_opacity     = 254.0*(1.0 - exp(-new_extinct*new_dx*soot_density));
-      soot_alpha       = CLAMP(soot_opacity+0.5, 0, 254);
-      smokealphanew[i] = (unsigned char)soot_alpha;
-      fire_alpha       = CLAMP(emission_factor*soot_opacity+0.5, 0, 254);
-      firealphanew[i]  = (unsigned char)fire_alpha;
     }
-  }
-  else{
-    for(i = 1; i<255; i++){
-      float soot_density, soot_opacity;
-      int soot_alpha, fire_alpha;
-
+    else{
       soot_density     = -log(1.0-(float)i/254.0)/(base_extinct*base_dx);
-      soot_opacity     = 254.0*(1.0-exp(-new_extinct*new_dx*soot_density))+0.5;
-      soot_alpha       = CLAMP(soot_opacity+0.5, 0, 254);
-      smokealphanew[i] = (unsigned char)soot_alpha;
+    }
+    soot_opacity     = 254.0*(1.0 - exp(-new_extinct*new_dx*soot_density));
+    soot_alpha       = CLAMP(soot_opacity+0.5, 0, 254);
+    smokealphanew[i] = (unsigned char)soot_alpha;
+    if(use_opacity_depth==1){
+      firealphanew[i]  = (unsigned char)i;
+    }
+    else{
+      int fire_alpha;
+
       fire_alpha       = CLAMP(emission_factor*soot_opacity+0.5, 0, 254);
       firealphanew[i]  = (unsigned char)fire_alpha;
     }
@@ -2722,6 +2719,13 @@ void DrawSmokeFrame(void){
       }
       if(smoke3di->smokeframe_loaded!=NULL&&smoke3di->smokeframe_loaded[smoke3di->ismoke3d_time]==0)continue;
     }
+#ifdef pp_OPACITY_DEBUG
+    char alabel[256];
+    float *xyz;
+    sprintf(alabel, "%i\n", smoke3di->fire_alpha);
+    xyz = smokemesh->boxmiddle_smv;
+    Output3Text(foregroundcolor, xyz[0], xyz[1], xyz[2], alabel);
+#endif
 #ifdef pp_GPU
     if(usegpu_local == 1) {
       DrawSmoke3DGPU(smoke3di);
