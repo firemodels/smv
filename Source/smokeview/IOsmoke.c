@@ -1304,44 +1304,27 @@ void InitAlphas(unsigned char *smokealphanew, unsigned char *firealphanew, float
     return;
   }
   if(smoke3d_frame_inc != 1)new_dx *= (float)smoke3d_frame_inc;
-  if(use_smoke_density == 1){;
-    for(i = 1; i < 255; i++){
-      float soot_density, soot_opacity;
-      int soot_alpha;
+  for(i = 1; i < 255; i++){
+    float soot_density, soot_opacity;
+    int soot_alpha;
 
+    if(use_smoke_density == 1){;
       soot_density     = maxval*(float)i/255.0;
-      soot_opacity     = 254.0*(1.0 - exp(-new_extinct*new_dx*soot_density));
-      soot_alpha       = CLAMP(soot_opacity+0.5, 0, 254);
-      smokealphanew[i] = (unsigned char)soot_alpha;
-      if(use_opacity_depth==1){
-        firealphanew[i]  = (unsigned char)i;
-      }
-      else{
-        int fire_alpha;
-
-        fire_alpha       = CLAMP(emission_factor*soot_opacity+0.5, 0, 254);
-        firealphanew[i]  = (unsigned char)fire_alpha;
-      }
     }
-  }
-  else{
-    for(i = 1; i<255; i++){
-      float soot_density, soot_opacity;
-      int soot_alpha;
-
+    else{
       soot_density     = -log(1.0-(float)i/254.0)/(base_extinct*base_dx);
-      soot_opacity     = 254.0*(1.0-exp(-new_extinct*new_dx*soot_density))+0.5;
-      soot_alpha       = CLAMP(soot_opacity+0.5, 0, 254);
-      smokealphanew[i] = (unsigned char)soot_alpha;
-      if(use_opacity_depth == 1){
-        firealphanew[i]  = (unsigned char)i;
-      }
-      else{
-        int fire_alpha;
+    }
+    soot_opacity     = 254.0*(1.0 - exp(-new_extinct*new_dx*soot_density));
+    soot_alpha       = CLAMP(soot_opacity+0.5, 0, 254);
+    smokealphanew[i] = (unsigned char)soot_alpha;
+    if(use_opacity_depth==1){
+      firealphanew[i]  = (unsigned char)i;
+    }
+    else{
+      int fire_alpha;
 
-        fire_alpha       = CLAMP(emission_factor*soot_opacity+0.5, 0, 254);
-        firealphanew[i]  = (unsigned char)fire_alpha;
-      }
+      fire_alpha       = CLAMP(emission_factor*soot_opacity+0.5, 0, 254);
+      firealphanew[i]  = (unsigned char)fire_alpha;
     }
   }
 }
