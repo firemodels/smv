@@ -828,7 +828,7 @@ SVEXTERN int SVDECL(show_boundary_outline, 0);
 SVEXTERN int SVDECL(show_boundary_points, 0);
 
 SVEXTERN int SVDECL(show_iso_shaded,1);
-SVEXTERN int SVDECL(show_iso_outline,1);
+SVEXTERN int SVDECL(show_iso_outline,0);
 SVEXTERN int SVDECL(show_iso_points,0);
 
 SVEXTERN int SVDECL(show_faces_shaded, 1);
