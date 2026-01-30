@@ -2178,9 +2178,9 @@ extern "C" void GLUIPartBoundsCPP_CB(int var){
   }
 }
 
-/* ------------------ HavePatchData ------------------------ */
+/* ------------------ HaveAnyPatchData ------------------------ */
 
-int HavePatchData(void){
+int HaveAnyPatchData(void){
   int i;
 
   for(i = 0; i<global_scase.npatchinfo; i++){
@@ -2193,10 +2193,10 @@ int HavePatchData(void){
       case PATCH_STRUCTURED_NODE_CENTER:
       case PATCH_STRUCTURED_CELL_CENTER:
         meshi = global_scase.meshescoll.meshinfo+patchi->blocknumber;
-        if(meshi->patchval==NULL||meshi->cpatchval==NULL)return 0;
+        if(meshi->patchval!=NULL||meshi->cpatchval!=NULL)return 1;
         break;
       case PATCH_GEOMETRY_BOUNDARY:
-        if(patchi->geom_vals==NULL)return 0;
+        if(patchi->geom_vals!=NULL)return 1;
         break;
       case PATCH_GEOMETRY_SLICE:
         break;
@@ -2205,7 +2205,7 @@ int HavePatchData(void){
       break;
     }
   }
-  return 1;
+  return 0;
 }
 
 /* ------------------ patch callback: GLUIPatchBoundsCPP_CB ------------------------ */
@@ -2252,7 +2252,7 @@ extern "C" void GLUIPatchBoundsCPP_CB(int var){
       break;
     case BOUND_DONTUPDATE_COLORS:
     case BOUND_UPDATE_COLORS:
-      if(HavePatchData()==1){
+      if(HaveAnyPatchData()==1){
         SetLoadedPatchBounds(NULL, 0);
         if(var==BOUND_DONTUPDATE_COLORS){
           UpdateAllBoundaryColors(0);
@@ -2260,9 +2260,6 @@ extern "C" void GLUIPatchBoundsCPP_CB(int var){
         else{
           UpdateAllBoundaryColors(1);
         }
-      }
-      else{
-        GLUIPatchBoundsCPP_CB(BOUND_RELOAD_DATA);
       }
       break;
     case BOUND_RELOAD_DATA:
