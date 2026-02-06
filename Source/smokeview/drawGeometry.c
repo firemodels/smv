@@ -2046,7 +2046,7 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
         }
       }
       if(vi!=NULL){
-        if(ABS(vi->type)==99){
+        if(ABS(vi->type)==99||vi->type==-1){
           faceptr->type=face_surf->type;
         }
         else{
