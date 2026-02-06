@@ -365,7 +365,7 @@ void UpdateShow(void){
   int showhvacflag;
 
   UpdateFileLoad();
-  if(global_scase.have_removable_obsts==1{
+  if(global_scase.have_removable_obsts==1){
     if(nplot3dloaded > 0 || npatchloaded > 0)updatefacelists = 1;
   }
   showtime             = 0;
