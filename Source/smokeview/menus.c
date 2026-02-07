@@ -11814,6 +11814,7 @@ static int menu_count=0;
     glutAddMenuEntry("  0: reset animation to the initial time", MENU_DUMMY);
     glutAddMenuEntry("  1-9: number of frames to skip", MENU_DUMMY);
     glutAddMenuEntry("  a/ALT a: increase/decrease flow vector length by 1.5", MENU_DUMMY);
+    glutAddMenuEntry("  f/ALT f: increase/decrease 50% fire opacity depth by 1.25", MENU_DUMMY);
     glutAddMenuEntry("  H: toggle  slice and vector slice visibility", MENU_DUMMY);
     glutAddMenuEntry("  I: toggle  visibility of slices in blockages", MENU_DUMMY);
     glutAddMenuEntry("  N: force bound update when loading files (assume fds is running)", MENU_DUMMY);
