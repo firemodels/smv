@@ -1886,6 +1886,24 @@ void Keyboard(unsigned char key, int flag){
         break;
       }
       break;
+#ifdef pp_OPACITY_SHORTCUTS
+    case 'f':
+    case 'F':
+      if(use_opacity_depth == 0){
+        use_opacity_depth = 1;
+        GLUISmoke3dCB(USE_OPACITY_DEPTH);
+        GLUIUpdateUseOpacityDepth();
+      }
+      if(key2 == 'F' || keystate == GLUT_ACTIVE_ALT){
+        fire_halfdepth *= 1.25;
+      }
+      else{
+        fire_halfdepth /= 1.25;
+      }
+      GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
+      printf("50%% opacity at depth: %f (m)\n", fire_halfdepth);
+      break;
+#else
     case 'f':
       alt_ctrl_key_state = KEY_ALT;
       break;
@@ -1894,6 +1912,7 @@ void Keyboard(unsigned char key, int flag){
       GLUIUpdateShowHideButtons();
       glutPostRedisplay();
       break;
+#endif
     case 'g':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
