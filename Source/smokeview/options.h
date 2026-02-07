@@ -13,7 +13,8 @@
 
 //#define pp_SHOW_UPDATE      // show what is being updated in the UpdateShowScene routine
 //#define pp_TERRAIN_HIDE     // hide terrain when hiding internal blockages
-//#define pp_OPACITY_DEBUG // output hrrpuv opacity in center of each mesh
+//#define pp_OPACITY_DEBUG    // output hrrpuv opacity in center of each mesh
+#define pp_OPACITY_SHORTCUTS  // add shortcuts for increasing/decreasing opacity depth
 
 //*** options: windows
 

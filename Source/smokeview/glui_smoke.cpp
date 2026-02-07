@@ -328,6 +328,14 @@ extern "C" void GLUICreateVolTourList(void){
   }
 }
 
+#ifdef pp_OPACITY_SHORTCUTS
+/* ------------------ GLUIUpdateUseOpacityDepth ------------------------ */
+
+extern "C" void GLUIUpdateUseOpacityDepth(void){
+  CHECKBOX_use_opacity_depth->set_int_val(use_opacity_depth);
+}
+#endif
+
 /* ------------------ UpdateCombineMeshes ------------------------ */
 
 void UpdateCombineMeshes(void){
@@ -610,7 +618,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   SPINNER_emission_factor = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "opacity multiplier:", GLUI_SPINNER_FLOAT, &emission_factor, USE_FIRE_ALPHA, GLUISmoke3dCB);
   glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "off axis planes", &smoke_offaxis);
   glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "adjust opacities", &smoke_adjust);
-  SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.01, 100.0);
+  SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.001, 1000.0);
   CHECKBOX_force_alpha_opaque = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "force opaque", &force_alpha_opaque, FORCE_ALPHA_OPAQUE, GLUISmoke3dCB);
   GLUISmoke3dCB(USE_OPACITY_DEPTH);
 

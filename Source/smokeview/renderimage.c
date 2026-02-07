@@ -836,7 +836,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
             }
           }
 
-          char infobuffer[100];
+          char infobuffer[512];
           int ninfobuffer;
           int skip=3, channel=2;
           char fds_label[256], smv_label[256];
