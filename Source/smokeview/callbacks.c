@@ -1889,6 +1889,10 @@ void Keyboard(unsigned char key, int flag){
 #ifdef pp_OPACITY_SHORTCUTS
     case 'f':
     case 'F':
+      if(global_scase.smoke3dcoll.nsmoke3dinfo<=0){
+        printf("***warning: 3D smoke files not present, fire opacity setting not changed\n");
+        break;
+      }
       if(use_opacity_depth == 0){
         use_opacity_depth = 1;
         GLUISmoke3dCB(USE_OPACITY_DEPTH);
@@ -2110,12 +2114,30 @@ void Keyboard(unsigned char key, int flag){
         if(visTimebar==1)PRINTF("Time bar visible\n");
       }
       break;
+#ifdef pp_OPACITY_SHORTCUTS
+    case 'l':
+    case 'L':
+      if(global_scase.smoke3dcoll.nsmoke3dinfo<=0){
+        printf("***warning: 3D smoke files are present, smoke opacity setting not changed\n");
+        break;
+      }
+      if(key2 == 'L' || keystate == GLUT_ACTIVE_ALT){
+        glui_mass_extinct *= 1.25;
+      }
+      else{
+        glui_mass_extinct /= 1.25;
+      }
+      GLUISmoke3dCB(SMOKE_EXTINCT);
+      printf("Mass extinction : %f (m2/kg)\n", glui_mass_extinct);
+      break;
+#else
     case 'l':
     case 'L':
 #ifdef pp_MEMDEBUG
       printf("memory blocks: %i total size: %i\n", COUNTMEMORYBLOCKS(0), (int)GETTOTALMEMORY);
 #endif
       break;
+#endif
     case 'm':
       switch(keystate){
       case GLUT_ACTIVE_ALT:

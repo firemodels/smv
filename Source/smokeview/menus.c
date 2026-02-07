@@ -11817,6 +11817,7 @@ static int menu_count=0;
     glutAddMenuEntry("  f/ALT f: increase/decrease 50% fire opacity depth by 1.25", MENU_DUMMY);
     glutAddMenuEntry("  H: toggle  slice and vector slice visibility", MENU_DUMMY);
     glutAddMenuEntry("  I: toggle  visibility of slices in blockages", MENU_DUMMY);
+    glutAddMenuEntry("  l/ALT l: increase/decrease mass extinction coef by 1.25", MENU_DUMMY);
     glutAddMenuEntry("  N: force bound update when loading files (assume fds is running)", MENU_DUMMY);
     glutAddMenuEntry("  p,P: increment particle variable displayed", MENU_DUMMY);
     glutAddMenuEntry("  s,S: increase/decrease interval between adjacent vectors", MENU_DUMMY);
