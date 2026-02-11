@@ -4656,7 +4656,7 @@ void DrawUserTicks(void){
     glBegin(GL_LINES);
     glColor3fv(foregroundcolor);
     for(i=0;i<user_tick_nxyz[0];i++){
-      xyz[0]=tick_origin[0] + i*step[0];
+      xyz[0]=user_tick_min[0] + i*step[0];
       if(
         (step[0]>0.0&&xyz[0]>user_tick_max[0])||
         (step[0]<0.0&&xyz[0]<user_tick_min[0])
@@ -4691,7 +4691,7 @@ void DrawUserTicks(void){
     if(user_tick_sub>1){
       for(i=1;i<user_tick_nxyz[0]*user_tick_sub;i++){
         if(i%user_tick_sub==0)continue;
-        xyz[0]=tick_origin[0] + i*step[0]/(float)user_tick_sub;
+        xyz[0]=user_tick_min[0] + i*step[0]/(float)user_tick_sub;
         if(
           (step[0]>0.0&&xyz[0]>user_tick_max[0])||
           (step[0]<0.0&&xyz[0]<user_tick_min[0])
@@ -4717,7 +4717,7 @@ void DrawUserTicks(void){
     for(i=0;i<user_tick_nxyz[0];i++){
       char label[128];
 
-      xyz[0]=tick_origin[0] + i*step[0];
+      xyz[0]=user_tick_min[0] + i*step[0];
       if((step[0]>0.0&&xyz[0]>user_tick_max[0])||(step[0]<0.0&&xyz[0]<user_tick_min[0]))continue;
       xyz[1]=tick_origin[1];
       xyz[2]=tick_origin[2];
@@ -4754,7 +4754,7 @@ void DrawUserTicks(void){
     glColor3fv(foregroundcolor);
     for(i=0;i<user_tick_nxyz[1];i++){
       xyz[0]=tick_origin[0];
-      xyz[1]=tick_origin[1] + i*step[1];
+      xyz[1]=user_tick_min[1] + i*step[1];
       if(
         (step[1]>0.0&&xyz[1]>user_tick_max[1])||
         (step[1]<0.0&&xyz[1]<user_tick_min[1])
@@ -4789,7 +4789,7 @@ void DrawUserTicks(void){
       for(i=1;i<user_tick_nxyz[1]*user_tick_sub;i++){
         if(i%user_tick_sub==0)continue;
         xyz[0]=tick_origin[0];
-        xyz[1]=tick_origin[1] + i*step[1]/(float)user_tick_sub;
+        xyz[1]=user_tick_min[1] + i*step[1]/(float)user_tick_sub;
         if(
           (step[1]>0.0&&xyz[1]>user_tick_max[1])||
           (step[1]<0.0&&xyz[1]<user_tick_min[1])
@@ -4815,7 +4815,7 @@ void DrawUserTicks(void){
       char label[128];
 
       xyz[0]=tick_origin[0];
-      xyz[1]=tick_origin[1] + i*step[1];
+      xyz[1]=user_tick_min[1] + i*step[1];
       if(
         (step[1]>0.0&&xyz[1]>user_tick_max[1])||
         (step[1]<0.0&&xyz[1]<user_tick_min[1])
@@ -4855,7 +4855,7 @@ void DrawUserTicks(void){
     for(i=0;i<user_tick_nxyz[2];i++){
       xyz[0]=tick_origin[0];
       xyz[1]=tick_origin[1];
-      xyz[2]=tick_origin[2] + i*step[2];
+      xyz[2]=user_tick_min[2] + i*step[2];
       if(
         (step[2]>0.0&&xyz[2]>user_tick_max[2])||
         (step[2]<0.0&&xyz[2]<user_tick_min[2])
@@ -4889,7 +4889,7 @@ void DrawUserTicks(void){
         if(i%user_tick_sub==0)continue;
         xyz[0]=tick_origin[0];
         xyz[1]=tick_origin[1];
-        xyz[2]=tick_origin[2] + i*step[2]/(float)user_tick_sub;
+        xyz[2]=user_tick_min[2] + i*step[2]/(float)user_tick_sub;
         if(
           (step[2]>0.0&&xyz[2]>user_tick_max[2])||
           (step[2]<0.0&&xyz[2]<user_tick_min[2])
@@ -4914,7 +4914,7 @@ void DrawUserTicks(void){
 
       xyz[0]=tick_origin[0];
       xyz[1]=tick_origin[1];
-      xyz[2]=tick_origin[2] + i*step[2];
+      xyz[2]=user_tick_min[2] + i*step[2];
       if(
         (step[2]>0.0&&xyz[2]>user_tick_max[2])||
         (step[2]<0.0&&xyz[2]<user_tick_min[2])
