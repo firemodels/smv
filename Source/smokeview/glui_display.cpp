@@ -48,19 +48,13 @@ GLUI_Spinner *SPINNER_LB_blue=NULL;
 GLUI_Spinner *SPINNER_LB_x=NULL;
 GLUI_Spinner *SPINNER_LB_y=NULL;
 GLUI_Spinner *SPINNER_LB_z=NULL;
-GLUI_Spinner *SPINNER_tick_xmin=NULL;
-GLUI_Spinner *SPINNER_tick_ymin=NULL;
-GLUI_Spinner *SPINNER_tick_zmin=NULL;
-GLUI_Spinner *SPINNER_tick_xmax=NULL;
-GLUI_Spinner *SPINNER_tick_ymax=NULL;
-GLUI_Spinner *SPINNER_tick_zmax=NULL;
+GLUI_Spinner *SPINNER_tick_min[3];
+GLUI_Spinner *SPINNER_tick_max[3];
 GLUI_Spinner *SPINNER_gridlinewidth = NULL;
 GLUI_Spinner *SPINNER_ticklinewidth = NULL;
 GLUI_Spinner *SPINNER_linewidth=NULL;
 GLUI_Spinner *SPINNER_zone_hvac_diam = NULL;
-GLUI_Spinner *SPINNER_tick_x0=NULL;
-GLUI_Spinner *SPINNER_tick_y0=NULL;
-GLUI_Spinner *SPINNER_tick_z0=NULL;
+GLUI_Spinner *SPINNER_tick_origin[3];
 GLUI_Spinner *SPINNER_tick_dx0=NULL;
 GLUI_Spinner *SPINNER_tick_dy0=NULL;
 GLUI_Spinner *SPINNER_tick_dz0=NULL;
@@ -190,7 +184,9 @@ GLUI_Panel *PANEL_label2=NULL;
 GLUI_Panel *PANEL_tick1;
 GLUI_Panel *PANEL_tick1a;
 GLUI_Panel *PANEL_tick1b;
+GLUI_Panel *PANEL_tick2a;
 GLUI_Panel *PANEL_tick2;
+GLUI_Panel *PANEL_tick2b;
 GLUI_Panel *PANEL_transparency = NULL;
 GLUI_Panel *PANEL_font2d=NULL;
 GLUI_Panel *PANEL_font3d=NULL;
@@ -224,6 +220,12 @@ GLUI_Button *BUTTON_label_1=NULL;
 GLUI_Button *BUTTON_label_2=NULL;
 GLUI_Button *BUTTON_label_3=NULL;
 GLUI_Button *BUTTON_label_4=NULL;
+
+#define USERTICKS_ORIGIN    0
+#define USERTICKS_MIN       1
+#define USERTICKS_MAX       2
+#define USERTICKSMIN2ORIGIN 3
+#define USERTICKSMAX2ORIGIN 4
 
 #define TEXTURE_SHOWALL 0
 #define TEXTURE_HIDEALL 1
@@ -812,6 +814,62 @@ extern "C" void GLUISkyCB(int var){
   }
 }
 
+/* ------------------ GLUIUserTicksCB ------------------------ */
+
+extern "C" void GLUIUserTicksCB(int var){
+  int i;
+
+  switch(var){
+  case USERTICKS_ORIGIN:
+    for(i=0; i<3; i++){
+      int reset;
+
+      reset = 0;
+      if(user_tick_origin[i]<user_tick_min[i]){
+        user_tick_origin[i] = user_tick_min[i];
+        reset = 1;
+      }
+      if(user_tick_origin[i]>user_tick_max[i]){
+        user_tick_origin[i] = user_tick_max[i];
+        reset = 1;
+      }
+      if(reset == 1)SPINNER_tick_origin[i]->set_float_val(user_tick_origin[i]);
+    }
+    break;
+  case USERTICKS_MIN:
+    for(i=0; i<3; i++){
+      if(user_tick_origin[i]<user_tick_min[i]){
+        user_tick_min[i] = user_tick_origin[i];
+        SPINNER_tick_min[i]->set_float_val(user_tick_min[i]);
+      }
+    }
+    break;
+  case USERTICKS_MAX:
+    for(i=0; i<3; i++){
+      if(user_tick_origin[i]>user_tick_max[i]){
+        user_tick_max[i] = user_tick_origin[i];
+        SPINNER_tick_max[i]->set_float_val(user_tick_max[i]);
+      }
+    }
+    break;
+  case USERTICKSMIN2ORIGIN:
+    for(i=0; i<3; i++){
+      user_tick_origin[i] = user_tick_min[i];
+      SPINNER_tick_origin[i]->set_float_val(user_tick_origin[i]);
+    }
+    break;
+  case USERTICKSMAX2ORIGIN:
+    for(i=0; i<3; i++){
+      user_tick_origin[i] = user_tick_max[i];
+      SPINNER_tick_origin[i]->set_float_val(user_tick_origin[i]);
+    }
+    break;
+  default:
+    assert(FFALSE);
+    break;
+  }
+}
+
 /* ------------------ GLUIDisplaySetup ------------------------ */
 
 extern "C" void GLUIDisplaySetup(int main_window){
@@ -1121,27 +1179,32 @@ extern "C" void GLUIDisplaySetup(int main_window){
   SPINNER_subtick->set_int_limits(1, 10, GLUI_LIMIT_CLAMP);
 
   PANEL_tick2 = glui_labels->add_panel_to_panel(ROLLOUT_user_tick,"Parameters",true);
-  glui_labels->add_statictext_to_panel(PANEL_tick2,"                    x");
-  SPINNER_tick_x0=glui_labels->add_spinner_to_panel(PANEL_tick2,"origin",GLUI_SPINNER_FLOAT,user_tick_origin);
-  SPINNER_tick_xmin=glui_labels->add_spinner_to_panel(PANEL_tick2,"Min",GLUI_SPINNER_FLOAT,user_tick_min);
-  SPINNER_tick_xmax=glui_labels->add_spinner_to_panel(PANEL_tick2,"Max",GLUI_SPINNER_FLOAT,user_tick_max);
-  SPINNER_tick_dx0=glui_labels->add_spinner_to_panel(PANEL_tick2,"Step",GLUI_SPINNER_FLOAT,user_tick_step);
+  PANEL_tick2a = glui_labels->add_panel_to_panel(PANEL_tick2,"",false);
+  glui_labels->add_statictext_to_panel(PANEL_tick2a,"                    x");
+  SPINNER_tick_origin[0] = glui_labels->add_spinner_to_panel(PANEL_tick2a, "origin", GLUI_SPINNER_FLOAT,user_tick_origin, USERTICKS_ORIGIN, GLUIUserTicksCB);
+  SPINNER_tick_min[0]    = glui_labels->add_spinner_to_panel(PANEL_tick2a, "Min",    GLUI_SPINNER_FLOAT,user_tick_min,    USERTICKS_MIN,    GLUIUserTicksCB);
+  SPINNER_tick_max[0]    = glui_labels->add_spinner_to_panel(PANEL_tick2a, "Max",    GLUI_SPINNER_FLOAT,user_tick_max,    USERTICKS_MAX,    GLUIUserTicksCB);
+  SPINNER_tick_dx0       = glui_labels->add_spinner_to_panel(PANEL_tick2a, "Step",   GLUI_SPINNER_FLOAT,user_tick_step);
 
-  glui_labels->add_column_to_panel(PANEL_tick2,false);
+  glui_labels->add_column_to_panel(PANEL_tick2a,false);
 
-  glui_labels->add_statictext_to_panel(PANEL_tick2,"                    y");
-  SPINNER_tick_y0=glui_labels->add_spinner_to_panel(PANEL_tick2,"",GLUI_SPINNER_FLOAT,user_tick_origin+1);
-  SPINNER_tick_ymin=glui_labels->add_spinner_to_panel(PANEL_tick2,"",GLUI_SPINNER_FLOAT,user_tick_min+1);
-  SPINNER_tick_ymax=glui_labels->add_spinner_to_panel(PANEL_tick2,"",GLUI_SPINNER_FLOAT,user_tick_max+1);
-  SPINNER_tick_dy0=glui_labels->add_spinner_to_panel(PANEL_tick2,"",GLUI_SPINNER_FLOAT,user_tick_step+1);
+  glui_labels->add_statictext_to_panel(PANEL_tick2a,"                    y");
+  SPINNER_tick_origin[1] = glui_labels->add_spinner_to_panel(PANEL_tick2a, "", GLUI_SPINNER_FLOAT, user_tick_origin+1, USERTICKS_ORIGIN, GLUIUserTicksCB);
+  SPINNER_tick_min[1]    = glui_labels->add_spinner_to_panel(PANEL_tick2a, "", GLUI_SPINNER_FLOAT, user_tick_min+1,    USERTICKS_MIN,    GLUIUserTicksCB);
+  SPINNER_tick_max[1]    = glui_labels->add_spinner_to_panel(PANEL_tick2a, "", GLUI_SPINNER_FLOAT, user_tick_max+1,    USERTICKS_MAX,    GLUIUserTicksCB);
+  SPINNER_tick_dy0       = glui_labels->add_spinner_to_panel(PANEL_tick2a, "", GLUI_SPINNER_FLOAT, user_tick_step+1);
 
-  glui_labels->add_column_to_panel(PANEL_tick2,false);
+  glui_labels->add_column_to_panel(PANEL_tick2a,false);
 
-  glui_labels->add_statictext_to_panel(PANEL_tick2,"                    z");
-  SPINNER_tick_z0=glui_labels->add_spinner_to_panel(PANEL_tick2,"",GLUI_SPINNER_FLOAT,user_tick_origin+2);
-  SPINNER_tick_zmin=glui_labels->add_spinner_to_panel(PANEL_tick2,"",GLUI_SPINNER_FLOAT,user_tick_min+2);
-  SPINNER_tick_zmax=glui_labels->add_spinner_to_panel(PANEL_tick2,"",GLUI_SPINNER_FLOAT,user_tick_max+2);
-  SPINNER_tick_dz0=glui_labels->add_spinner_to_panel(PANEL_tick2,"",GLUI_SPINNER_FLOAT,user_tick_step+2);
+  glui_labels->add_statictext_to_panel(PANEL_tick2a,"                    z");
+  SPINNER_tick_origin[2] = glui_labels->add_spinner_to_panel(PANEL_tick2a, "", GLUI_SPINNER_FLOAT, user_tick_origin+2, USERTICKS_ORIGIN, GLUIUserTicksCB);
+  SPINNER_tick_min[2]    = glui_labels->add_spinner_to_panel(PANEL_tick2a, "", GLUI_SPINNER_FLOAT, user_tick_min+2,    USERTICKS_MIN,    GLUIUserTicksCB);
+  SPINNER_tick_max[2]    = glui_labels->add_spinner_to_panel(PANEL_tick2a, "", GLUI_SPINNER_FLOAT, user_tick_max+2,    USERTICKS_MAX,    GLUIUserTicksCB);
+  SPINNER_tick_dz0       = glui_labels->add_spinner_to_panel(PANEL_tick2a, "", GLUI_SPINNER_FLOAT, user_tick_step+2);
+  PANEL_tick2b = glui_labels->add_panel_to_panel(PANEL_tick2,"",false);
+  glui_labels->add_button_to_panel(PANEL_tick2b,"Min -> origin",USERTICKSMIN2ORIGIN,GLUIUserTicksCB);
+  glui_labels->add_column_to_panel(PANEL_tick2b,false);
+  glui_labels->add_button_to_panel(PANEL_tick2b,"Max -> origin",USERTICKSMAX2ORIGIN,GLUIUserTicksCB);
 
   // -------------- User sphere settings -------------------
 
