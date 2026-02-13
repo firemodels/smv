@@ -1886,28 +1886,6 @@ void Keyboard(unsigned char key, int flag){
         break;
       }
       break;
-#ifdef pp_OPACITY_SHORTCUTS
-    case 'f':
-    case 'F':
-      if(global_scase.smoke3dcoll.nsmoke3dinfo<=0){
-        printf("***warning: 3D smoke files not present, fire opacity setting not changed\n");
-        break;
-      }
-      if(use_opacity_depth == 0){
-        use_opacity_depth = 1;
-        GLUISmoke3dCB(USE_OPACITY_DEPTH);
-        GLUIUpdateUseOpacityDepth();
-      }
-      if(key2 == 'F' || keystate == GLUT_ACTIVE_ALT){
-        fire_halfdepth *= 1.25;
-      }
-      else{
-        fire_halfdepth /= 1.25;
-      }
-      GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
-      printf("50%% opacity at depth: %f (m)\n", fire_halfdepth);
-      break;
-#else
     case 'f':
       alt_ctrl_key_state = KEY_ALT;
       break;
@@ -1916,7 +1894,6 @@ void Keyboard(unsigned char key, int flag){
       GLUIUpdateShowHideButtons();
       glutPostRedisplay();
       break;
-#endif
     case 'g':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
@@ -2090,6 +2067,53 @@ void Keyboard(unsigned char key, int flag){
         updatemenu = 1;
       }
       break;
+#ifdef pp_OPACITY_SHORTCUTS
+    case 'k':
+      if(keystate == GLUT_ACTIVE_ALT){
+        select_device = 1-select_device;
+        updatemenu = 1;
+        if(select_device==1){
+          printf("device selection on\n");
+        }
+        else{
+          printf("device selection off\n");
+        }
+        break;
+      }
+      if(keystate == GLUT_ACTIVE_CTRL){
+        visTimebar = 1 - visTimebar;
+        if(visTimebar==0)PRINTF("Time bar hidden\n");
+        if(visTimebar==1)PRINTF("Time bar visible\n");
+        break;
+      }
+      if(global_scase.smoke3dcoll.nsmoke3dinfo<=0){
+        printf("***warning: 3D smoke files not present, fire opacity setting not changed\n");
+        break;
+      }
+      if(use_opacity_depth == 0){
+        use_opacity_depth = 1;
+        GLUISmoke3dCB(USE_OPACITY_DEPTH);
+        GLUIUpdateUseOpacityDepth();
+      }
+      fire_halfdepth /= 1.25;
+      GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
+      printf("50%% opacity at depth: %f (m)\n", fire_halfdepth);
+      break;
+    case 'K':
+      if(global_scase.smoke3dcoll.nsmoke3dinfo<=0){
+        printf("***warning: 3D smoke files not present, fire opacity setting not changed\n");
+        break;
+      }
+      if(use_opacity_depth == 0){
+        use_opacity_depth = 1;
+        GLUISmoke3dCB(USE_OPACITY_DEPTH);
+        GLUIUpdateUseOpacityDepth();
+      }
+      fire_halfdepth *= 1.25;
+      GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
+      printf("50%% opacity at depth: %f (m)\n", fire_halfdepth);
+      break;
+#else
     case 'K':
       fix_window_aspect = 1 - fix_window_aspect;
       if(fix_window_aspect == 1)printf("fix window aspect ratio: on\n");
@@ -2114,6 +2138,7 @@ void Keyboard(unsigned char key, int flag){
         if(visTimebar==1)PRINTF("Time bar visible\n");
       }
       break;
+#endif
 #ifdef pp_OPACITY_SHORTCUTS
     case 'l':
     case 'L':
@@ -2122,10 +2147,10 @@ void Keyboard(unsigned char key, int flag){
         break;
       }
       if(key2 == 'L' || keystate == GLUT_ACTIVE_ALT){
-        glui_mass_extinct *= 1.25;
+        glui_mass_extinct /= 1.25;
       }
       else{
-        glui_mass_extinct /= 1.25;
+        glui_mass_extinct *= 1.25;
       }
       GLUISmoke3dCB(SMOKE_EXTINCT);
       printf("Mass extinction : %f (m2/kg)\n", glui_mass_extinct);
