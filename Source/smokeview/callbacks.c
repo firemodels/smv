@@ -2147,10 +2147,10 @@ void Keyboard(unsigned char key, int flag){
         break;
       }
       if(key2 == 'L' || keystate == GLUT_ACTIVE_ALT){
-        glui_mass_extinct *= 1.25;
+        glui_mass_extinct /= 1.25;
       }
       else{
-        glui_mass_extinct /= 1.25;
+        glui_mass_extinct *= 1.25;
       }
       GLUISmoke3dCB(SMOKE_EXTINCT);
       printf("Mass extinction : %f (m2/kg)\n", glui_mass_extinct);
