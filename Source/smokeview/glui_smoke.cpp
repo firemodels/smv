@@ -350,7 +350,7 @@ extern "C" void GLUIUpdateSmoke3dFlags(void){
 #endif
   if(SPINNER_smoke3d_frame_inc!=NULL)SPINNER_smoke3d_frame_inc->set_int_val(smoke3d_frame_inc);
   GLUISmoke3dCB(VOL_SMOKE);
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
 }
 
 /* ------------------ GLUISmoke3dColorbarCB ------------------------ */
@@ -453,7 +453,7 @@ extern "C" void GLUISmoke3dColorbarCB(int var){
   }
   ForceIdle();
   UpdateSmokeColormap();
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
 }
 
 /* ------------------ GLUI3dSmokeSetup ------------------------ */
@@ -919,7 +919,7 @@ extern "C" void GLUISmoke3dCB(int var){
       SPINNER_emission_factor->set_float_val(emission_factor);
     }
     GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     break;
   case USE_OPACITY_DEPTH_CHECK:
     use_opacity_ini = 0;
@@ -1012,7 +1012,7 @@ extern "C" void GLUISmoke3dCB(int var){
     UpdateCO2Colormap();
     GLUISmoke3dCB(CO2COLORMAP_TYPE);
     GLUISmoke3dCB(UPDATE_SMOKECOLORS);
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     break;
   case LOAD_SMOKEFRAME:
     LoadSmokeFrame(-1, smoke_framenumber);
@@ -1331,7 +1331,7 @@ extern "C" void GLUISmoke3dCB(int var){
     GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
     break;
   case UPDATE_SMOKEFIRE_COLORS_COMMON:
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     force_redisplay = 1;
     UpdateRGBColors(colorbar_select_index);
     UpdateSmokeColormap();
@@ -1345,7 +1345,7 @@ extern "C" void GLUISmoke3dCB(int var){
       meshi = global_scase.meshescoll.meshinfo + i;
       meshi->update_smoke3dcolors=1;
     }
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     force_redisplay=1;
     UpdateSmokeColormap();
     IdleCB();
@@ -1378,14 +1378,13 @@ extern "C" void GLUISmoke3dCB(int var){
      break;
 #ifdef pp_GPU
   case SMOKE_RTHICK:
-
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     force_redisplay=1;
     IdleCB();
     break;
 #endif
   case VOL_NGRID:
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     break;
 
   case VOL_SMOKE:

@@ -162,8 +162,12 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define NO_SMOKE -1
 #define NO_FIRE  -1
 
-#define GLUTPOSTREDISPLAY  if(use_graphics==1)glutPostRedisplay()
-#define GLUTSETCURSOR(val) if(use_graphics==1)glutSetCursor(val)
+#define GLUTPOSTREDISPLAY  if(use_graphics==1&&opengl_finalized==1){\
+  glutPostRedisplay();\
+}
+#define GLUTSETCURSOR(val) if(use_graphics==1&&opengl_finalized==1){\
+     glutSetCursor(val);\
+   }
 
 #define ENABLE_LIGHTING if(use_lighting==1&&lighting_on==0){glEnable(GL_LIGHTING);lighting_on=1;}
 #define DISABLE_LIGHTING if(use_lighting==1&&lighting_on==1){glDisable(GL_LIGHTING);lighting_on=0;}

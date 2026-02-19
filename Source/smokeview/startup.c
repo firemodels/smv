@@ -295,6 +295,7 @@ int SetupCase(char *filename){
   GLUIAlertSetup(mainwindow_id);
   GLUIStereoSetup(mainwindow_id);
   GLUI3dSmokeSetup(mainwindow_id);
+  opengl_finalized = 1;
   PRINT_TIMER(timer_start, "all dialogs");
 
   UpdateLights(light_position0, light_position1);
@@ -642,7 +643,6 @@ void InitOpenGL(int option){
     nblueshift=8-nbluebits;
     if(nblueshift<0)nblueshift=0;
   }
-  opengldefined=1;
   if(option==PRINT){
     if(verbose_output==1)PRINTF("%s\n\n", "complete");
   }

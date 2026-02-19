@@ -2105,7 +2105,7 @@ SVEXTERN float SVDECL(*plot3dtimelist,NULL);
 SVEXTERN blockagedata SVDECL(*bchighlight,NULL),SVDECL(*bchighlight_old,NULL);
 
 SVEXTERN int SVDECL(buffertype,DOUBLE_BUFFER);
-SVEXTERN int SVDECL(opengldefined,0);
+SVEXTERN int SVDECL(opengl_finalized,0);
 SVEXTERN int SVDECL(restart_time,0);
 SVEXTERN int SVDECL(*isosubmenus,NULL), nisosubmenus;
 SVEXTERN int SVDECL(*loadpatchsubmenus,NULL), nloadpatchsubmenus;

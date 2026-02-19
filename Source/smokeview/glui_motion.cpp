@@ -795,7 +795,7 @@ extern "C" void GLUISetCurrentViewPoint(char *viewpoint_label){
     if(strcmp(ca->name, viewpoint_label)==0){
       LIST_viewpoints->set_int_val(ca->view_id);
       GLUIViewpointCB(LIST_VIEW);
-      glutPostRedisplay();
+      GLUTPOSTREDISPLAY;
       break;
     }
   }
@@ -1808,7 +1808,7 @@ extern "C" void GLUIUpdateRotationIndex(int val){
 
   GLUIUpdateMeshList1(val);
 
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
 }
 
 /* ------------------ GLUIUpdateProjectionType ------------------------ */
@@ -2395,7 +2395,7 @@ extern "C" void GLUISceneMotionCB(int var){
         if(LIST_viewpoints!=NULL)LIST_viewpoints->set_int_val(EXTERNAL_LIST_ID);
         GLUIViewpointCB(LIST_VIEW);
         updatemenu = 1;
-        glutPostRedisplay();
+        GLUTPOSTREDISPLAY;
       }
       break;
     case ZAXIS_UP:

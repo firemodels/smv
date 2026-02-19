@@ -544,7 +544,7 @@ FILE_SIZE ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     STRCPY(p->timelabel, "");
   }
   show_plot3dfiles = 1;
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
   return file_size;
 }
 

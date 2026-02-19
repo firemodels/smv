@@ -743,6 +743,7 @@ int GetColorbarIndex(int x, int y){
 int GlutGetModifiersNew(void){
   int modifier=0;
 
+  if(opengl_finalized == 0)return KEY_NONE;
   switch(alt_ctrl_key_state){
   case KEY_NONE:
     modifier = glutGetModifiers();
@@ -1056,7 +1057,7 @@ void MouseCBWorker(int button, int state, int xm, int ym){
     colorbar_splitdrag=0;
     GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
     GLUIUpdateTrainerMoves();
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     return;
   }
 
@@ -1094,7 +1095,7 @@ void MouseCBWorker(int button, int state, int xm, int ym){
     if(visColorbarVertical == 1 || visColorbarHorizontal == 1){
       if(showtime == 1 || showplot3d == 1){
         if(ColorbarClick(xm, ym) == 1){
-          glutPostRedisplay();
+          GLUTPOSTREDISPLAY;
           return;
         }
       }
@@ -1149,7 +1150,7 @@ void MouseCBWorker(int button, int state, int xm, int ym){
     mouse_down_xy0[0]=xm;
     mouse_down_xy0[1]=ym;
   }
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
   if(blockageSelect == 1){
     GLUIGetGeomDialogState();
     if(structured_isopen == 1 && unstructured_isopen == 0)DisplayCB();
@@ -1486,34 +1487,34 @@ void MouseDragCB(int xm, int ym){
 
   if( colorbar_drag==1&&(showtime==1 || showplot3d==1)){
     ColorbarDrag(xm,ym);
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     return;
   }
   if(timebar_drag==1){
     TimebarDrag(xm);
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     return;
   }
   if(move_gslice==1){
     MoveGenSlice(xm,ym);
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     return;
   }
   if(tour_drag==1){
     DragTourNode(xm,ym);
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     return;
   }
   if(colorbaredit_drag==1){
     DragColorbarEditNode(xm, ym);
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     return;
   }
   if(rotation_type==ROTATION_3AXIS&&(key_state == KEY_NONE||key_state == KEY_SHIFT)){
     UpdateMouseInfo(MOUSE_MOTION,xm,ym);
   }
   MoveScene(xm,ym);
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
 }
 
 /* ------------------ KeyboardUpCB ------------------------ */
@@ -1657,7 +1658,7 @@ void Keyboard(unsigned char key, int flag){
   else if(flag==FROM_SMOKEVIEW_ALT){
     keystate=GLUT_ACTIVE_ALT;
   }
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
   key2 = (char)key;
 
   switch(key2){
@@ -1892,7 +1893,7 @@ void Keyboard(unsigned char key, int flag){
     case 'F':
       hide_overlaps=1-hide_overlaps;
       GLUIUpdateShowHideButtons();
-      glutPostRedisplay();
+      GLUTPOSTREDISPLAY;
       break;
     case 'g':
       switch(keystate){
@@ -2306,7 +2307,7 @@ void Keyboard(unsigned char key, int flag){
         if(outline_mode!=SCENE_OUTLINE_HIDDEN){
           updatefacelists = 1;
           updatemenu = 1;
-          glutPostRedisplay();
+          GLUTPOSTREDISPLAY;
         }
         if(outline_mode>2&&global_scase.noutlineinfo>0)outline_mode=SCENE_OUTLINE_HIDDEN;
         if(outline_mode>1&&global_scase.noutlineinfo==0)outline_mode=SCENE_OUTLINE_HIDDEN;
@@ -3075,7 +3076,7 @@ void Keyboard(unsigned char key, int flag){
       plotiso[plotn-1] += FlowDir;
       UpdateSurface();
     }
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
   }
   if(iplot_state!=0)UpdatePlotSlice(iplot_state);
 }
@@ -3084,7 +3085,7 @@ void Keyboard(unsigned char key, int flag){
 
 void KeyboardCB(unsigned char key, int x, int y){
   Keyboard(key,FROM_CALLBACK);
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
   updatemenu=1;
 }
 
@@ -3182,7 +3183,7 @@ void SpecialKeyboardCB(int key, int x, int y){
 
   special_modifier = glutGetModifiers() & GLUT_ACTIVE_SHIFT;
 
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
 
   if(rotation_type==EYE_CENTERED){
     keymode=EYE_MODE;
@@ -4078,7 +4079,7 @@ void DoScript(void){
     if(current_script_command!=NULL&&current_script_command->command==SCRIPT_RENDERONCE){
       nrenderonce++;
     }
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
   }
   else{
     first_frame_index=0;
@@ -4276,5 +4277,5 @@ void ResizeWindow(int width, int height){
     }
   }
   glutReshapeWindow(width,height);
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
 }
