@@ -2168,7 +2168,7 @@ extern "C" void GLUISceneMotionCB(int var){
       SnapScene(45);
       break;
     case WINDOW_PRESERVE:
-      if(fix_window_aspect==1){
+      if(fix_window_aspect==1 && opengl_finalized==1){
         float width, height;
 
         width  = (float)glutGet(GLUT_WINDOW_WIDTH);

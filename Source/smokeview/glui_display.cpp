@@ -1485,7 +1485,7 @@ extern "C" void GLUILabelsCB(int var){
       break;
   case LABELS_hide_overlaps:
     updatefacelists=1;
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     break;
   case LABELS_drawface:
     updatefacelists=1;
