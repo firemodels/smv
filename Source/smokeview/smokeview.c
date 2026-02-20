@@ -211,7 +211,11 @@ void DisplayVersionInfo(char *progname, common_opts *opts){
     PRINTF("FDS Build        : %s\n",global_scase.fds_version);
   }
   char *smv_progname = GetBinPath();
+#ifdef _DEBUG
+  PRINTF("Smokeview        : %s(debug)\n",smv_progname);
+#else
   PRINTF("Smokeview        : %s\n",smv_progname);
+#endif
   FREEMEMORY(smv_progname);
   if(verbose_output == 1){
     if(smokezippath!=NULL)PRINTF("Smokezip path    : %s\n",smokezippath);
