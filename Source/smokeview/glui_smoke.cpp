@@ -110,7 +110,9 @@ GLUI_Checkbox *CHECKBOX_plane_single = NULL;
 GLUI_Checkbox *CHECKBOX_freeze = NULL;
 GLUI_Checkbox *CHECKBOX_combine_meshes = NULL;
 GLUI_Checkbox *CHECKBOX_test_smokesensors = NULL;
+#ifdef pp_GPU
 GLUI_Checkbox *CHECKBOX_smokeGPU = NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_zlib = NULL;
 GLUI_Checkbox **CHECKBOX_meshvisptr = NULL;
 GLUI_Checkbox *CHECKBOX_meshvis = NULL;
@@ -1067,7 +1069,9 @@ extern "C" void GLUISmoke3dCB(int var){
   case GPU_VOL_FACTOR:
     break;
   case COMBINE_MESHES:
+#ifdef pp_GPU
     DefineVolsmokeTextures();
+#endif
     break;
   case SHOW_FIRECOLORMAP:
     UpdateSmokeColormap();
@@ -1394,12 +1398,18 @@ extern "C" void GLUISmoke3dCB(int var){
 
       vr = global_scase.meshescoll.meshinfo->volrenderinfo;
       if(vr!=NULL&&vr->smokeslice!=NULL&&vr->smokeslice->slice_filetype==SLICE_CELL_CENTER){
-        if(usegpu==1&&combine_meshes==1){
+#ifdef pp_GPU
+        if(usegpu == 1 && combine_meshes == 1){
           combine_meshes=0;
           UpdateCombineMeshes();
           GLUISmoke3dCB(COMBINE_MESHES);
         }
+#endif
+#ifdef pp_GPU
         if(usegpu==0&&combine_meshes==0){
+#else
+        if(combine_meshes == 0){
+#endif
           combine_meshes=1;
           UpdateCombineMeshes();
           GLUISmoke3dCB(COMBINE_MESHES);

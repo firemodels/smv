@@ -3960,7 +3960,7 @@ void UpdateSlice3DTexture(meshdata *meshi, slicedata *slicei, float *valdata){
 }
 
 /* ------------------ DrawGSliceDataGpu ------------------------ */
-
+#ifdef pp_GPU
 void DrawGSliceDataGpu(slicedata *slicei){
   meshdata *meshi;
   int j;
@@ -4017,6 +4017,7 @@ void DrawGSliceDataGpu(slicedata *slicei){
   if(cullfaces == 1)glEnable(GL_CULL_FACE);
   glPopMatrix();
 }
+#endif
 
 /* ------------------ DrawVolSliceCellFaceCenter ------------------------ */
 
