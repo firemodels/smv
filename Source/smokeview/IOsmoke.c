@@ -110,9 +110,9 @@ void UpdateSmoke3dFileParms(void){
     glVertex3f(XX,YY,ZZ);                                \
   }
 
-// -------------------------- DRAWVERTEXTERRAIN ----------------------------------
+// -------------------------- DRAWTERRAINVERTEX ----------------------------------
 
-#define DRAWVERTEXTERRAIN(XX,YY,ZZ)        \
+#define DRAWTERRAINVERTEX(XX,YY,ZZ)        \
   value[0] = smokealpha_map[alphaf_ptr[n11]]; \
   value[1] = smokealpha_map[alphaf_ptr[n12]]; \
   value[2] = smokealpha_map[alphaf_ptr[n22]]; \
@@ -149,7 +149,7 @@ void UpdateSmoke3dFileParms(void){
   }
 
 // -------------------------- DRAWVERTEXGPU ----------------------------------
-
+#ifdef pp_GPU
 #define DRAWVERTEXGPU(XX,YY,ZZ) \
   value[0] = smokealpha_map[alphaf_in[n11]]; \
   value[1] = smokealpha_map[alphaf_in[n12]]; \
@@ -195,9 +195,9 @@ void UpdateSmoke3dFileParms(void){
     glVertex3f(XX, YY, ZZ);                                \
   }
 
-  // -------------------------- DRAWVERTEXGPUTERRAIN ----------------------------------
+  // -------------------------- DRAWTERRAINVERTEXGPU ----------------------------------
 
-#define DRAWVERTEXGPUTERRAIN(XX,YY,ZZ) \
+#define DRAWTERRAINVERTEXGPU(XX,YY,ZZ) \
   if(znode_offset==NULL)continue;\
   z_offset[XXX]=znode_offset[m11];\
   z_offset[YYY]=znode_offset[m12];\
@@ -245,7 +245,7 @@ void UpdateSmoke3dFileParms(void){
     glVertexAttrib1f(GPU_hrr,(float)fvalue[mm]);\
     glVertex3f(XX,YY,ZZ+z_offset[mm]);                                \
   }
-
+#endif
 
 /* ------------------ GetCellindex ------------------------ */
 
@@ -559,7 +559,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
             m12 = m11+nx;
             m22 = m12;
             m21 = m22-nx;
-            DRAWVERTEXGPUTERRAIN(constval, ynode[mm], znode[mm])
+            DRAWTERRAINVERTEXGPU(constval, ynode[mm], znode[mm])
           }
           else{
             DRAWVERTEXGPU(constval, ynode[mm], znode[mm])
@@ -633,7 +633,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
             m12 = m11+1;
             m22 = m12;
             m21 = m22-1;
-            DRAWVERTEXGPUTERRAIN(xnode[mm], constval, znode[mm])
+            DRAWTERRAINVERTEXGPU(xnode[mm], constval, znode[mm])
           }
           else{
             DRAWVERTEXGPU(xnode[mm], constval, znode[mm])
@@ -702,7 +702,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
             m12 = m11+1;
             m22 = m12+nx;
             m21 = m22-1;
-            DRAWVERTEXGPUTERRAIN(xnode[mm], ynode[mm], constval)
+            DRAWTERRAINVERTEXGPU(xnode[mm], ynode[mm], constval)
           }
           else{
             DRAWVERTEXGPU(xnode[mm], ynode[mm], constval)
@@ -794,7 +794,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
             m12 = m11-nx+1;
             m22 = m12;
             m21 = m11-nx;
-            DRAWVERTEXGPUTERRAIN(xnode[mm], ynode[mm], znode[mm])
+            DRAWTERRAINVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
           }
           else{
             DRAWVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
@@ -890,7 +890,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
             m12 = m11+nx+1;
             m22 = m12;
             m21 = m11;
-            DRAWVERTEXGPUTERRAIN(xnode[mm], ynode[mm], znode[mm])
+            DRAWTERRAINVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
           }
           else{
             DRAWVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
@@ -982,7 +982,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
             m12 = m11+nx;
             m22 = m12+1;
             m21 = m22-nx;
-            DRAWVERTEXGPUTERRAIN(xnode[mm], ynode[mm], znode[mm])
+            DRAWTERRAINVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
           }
           else{
             DRAWVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
@@ -1078,7 +1078,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
             m12 = m11+nx;
             m22 = m12+1;
             m21 = m22-nx;
-            DRAWVERTEXGPUTERRAIN(xnode[mm], ynode[mm], znode[mm])
+            DRAWTERRAINVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
           }
           else{
             DRAWVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
@@ -1171,7 +1171,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
             m12 = m11+1;
             m22 = m12+nx;
             m21 = m22-1;
-            DRAWVERTEXGPUTERRAIN(xnode[mm], ynode[mm], znode[mm])
+            DRAWTERRAINVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
           }
           else{
             DRAWVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
@@ -1267,7 +1267,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
             m12 = m11+1;
             m22 = m12+nx;
             m21 = m22-1;
-            DRAWVERTEXGPUTERRAIN(xnode[mm], ynode[mm], znode[mm])
+            DRAWTERRAINVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
           }
           else{
             DRAWVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
@@ -1562,7 +1562,7 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
             m12 = m11+joffset*nx;
             m22 = m12;
             m21 = m22-joffset*nx;
-            DRAWVERTEXTERRAIN(constval, ynode[mm], znode[mm])
+            DRAWTERRAINVERTEX(constval, ynode[mm], znode[mm])
           }
           else{
             DRAWVERTEX(constval, ynode[mm], znode[mm])
@@ -1653,7 +1653,7 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
             m12 = m11+ioffset;
             m22 = m12;
             m21 = m22-ioffset;
-            DRAWVERTEXTERRAIN(xnode[mm], constval, znode[mm])
+            DRAWTERRAINVERTEX(xnode[mm], constval, znode[mm])
           }
           else{
             DRAWVERTEX(xnode[mm], constval, znode[mm])
@@ -1739,7 +1739,7 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
             m12 = m11+ioffset;
             m22 = m12+joffset*nx;
             m21 = m22-ioffset;
-            DRAWVERTEXTERRAIN(xnode[mm], ynode[mm], constval)
+            DRAWTERRAINVERTEX(xnode[mm], ynode[mm], constval)
           }
           else{
             DRAWVERTEX(xnode[mm], ynode[mm], constval)
@@ -1865,7 +1865,7 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
             m12 = m11-nx+1;
             m22 = m12;
             m21 = m11;
-            DRAWVERTEXTERRAIN(xnode[mm], ynode[mm], znode[mm])
+            DRAWTERRAINVERTEX(xnode[mm], ynode[mm], znode[mm])
           }
           else{
             DRAWVERTEX(xnode[mm], ynode[mm], znode[mm])
@@ -1995,7 +1995,7 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
             m12 = m11+nx+1;
             m22 = m12;
             m21 = m11-nx;
-            DRAWVERTEXTERRAIN(xnode[mm], ynode[mm], znode[mm])
+            DRAWTERRAINVERTEX(xnode[mm], ynode[mm], znode[mm])
           }
           else{
             DRAWVERTEX(xnode[mm], ynode[mm], znode[mm])
@@ -2121,7 +2121,7 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
             m12 = m11+nx;
             m22 = m12+1;
             m21 = m22-nx;
-            DRAWVERTEXTERRAIN(xnode[mm], ynode[mm], znode[mm])
+            DRAWTERRAINVERTEX(xnode[mm], ynode[mm], znode[mm])
           }
           else{
             DRAWVERTEX(xnode[mm], ynode[mm], znode[mm])
@@ -2250,7 +2250,7 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
             m12 = m11+nx;
             m22 = m12+1;
             m21 = m22-nx;
-            DRAWVERTEXTERRAIN(xnode[mm], ynode[mm], znode[mm])
+            DRAWTERRAINVERTEX(xnode[mm], ynode[mm], znode[mm])
           }
           else{
             DRAWVERTEX(xnode[mm], ynode[mm], znode[mm])
@@ -2376,7 +2376,7 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
             m12 = m11+1;
             m22 = m12+nx;
             m21 = m22-1;
-            DRAWVERTEXTERRAIN(xnode[mm], ynode[mm], znode[mm])
+            DRAWTERRAINVERTEX(xnode[mm], ynode[mm], znode[mm])
           }
           else{
             DRAWVERTEX(xnode[mm], ynode[mm], znode[mm])
@@ -2506,7 +2506,7 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
             m12 = m11+1;
             m22 = m12+nx;
             m21 = m22-1;
-            DRAWVERTEXTERRAIN(xnode[mm], ynode[mm], znode[mm])
+            DRAWTERRAINVERTEX(xnode[mm], ynode[mm], znode[mm])
           }
           else{
             DRAWVERTEX(xnode[mm], ynode[mm], znode[mm])
@@ -2673,12 +2673,16 @@ void DrawSmokeFrame(void){
   int i;
   int blend_mode;
   int nsmoke_triangles=0;
+#ifdef pp_GPU
   int usegpu_local;
+#endif
 
   if(use_tload_begin==1 && global_times[itimes]<global_scase.tload_begin)return;
   if(use_tload_end==1   && global_times[itimes]>global_scase.tload_end)return;
 
+#ifdef pp_GPU
   usegpu_local = usegpu;
+#endif
   triangle_count = 0;
 #ifdef pp_GPU
   if(usegpu_local == 1) {
@@ -2690,7 +2694,11 @@ void DrawSmokeFrame(void){
   float smoke3d_timer;
   START_TIMER(smoke3d_timer);
   blend_mode = 0;
-  if(usegpu_local==0&&hrrpuv_max_blending==1){
+#ifdef pp_GPU
+  if(usegpu_local == 0 && hrrpuv_max_blending == 1){
+#else
+  if(hrrpuv_max_blending==1){
+#endif
     blend_mode = 1;
     glBlendEquation(GL_MAX);
   }

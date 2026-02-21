@@ -193,14 +193,14 @@ typedef struct _meshdata {
   float *znodes_complete;
   int nznodes;
   struct _meshdata *floor_mesh;
-#ifdef pp_GPU
   GLuint blockage_texture_id;
   struct _smoke3ddata *smoke3d_soot, *smoke3d_hrrpuv, *smoke3d_temp, *smoke3d_co2;
   GLuint volsmoke_texture_id, volfire_texture_id;
   float *volsmoke_texture_buffer, *volfire_texture_buffer;
   int voltest_update;
-  GLuint slice3d_texture_id;
   float *slice3d_c_buffer;
+#ifdef pp_GPU
+  GLuint slice3d_texture_id;
 #ifdef pp_WINGPU
   float *slice3d_texture_buffer;
 #endif
@@ -362,11 +362,9 @@ typedef struct _cellmeshdata {
 /* --------------------------  supermeshdata -------------------------------- */
 
 typedef struct _supermeshdata {
-#ifdef pp_GPU
+  float *volsmoke_texture_buffer, *volfire_texture_buffer;
   GLuint blockage_texture_id;
   GLuint volsmoke_texture_id, volfire_texture_id;
-  float *volsmoke_texture_buffer, *volfire_texture_buffer;
-#endif
   float *f_iblank_cell;
   float boxmin_smv[3], boxmax_smv[3];
   int drawsides[7];

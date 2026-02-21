@@ -1940,6 +1940,10 @@ void Keyboard(unsigned char key, int flag){
       }
       PrintGPUState();
       return;
+#else
+    case 'G':
+      printf("***warning: GPU not available in this version of smokeview\n");
+      return;
 #endif
     case 'h':
       switch(keystate){

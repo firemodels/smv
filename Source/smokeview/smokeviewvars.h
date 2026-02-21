@@ -793,10 +793,11 @@ SVEXTERN int SVDECL(ngeominfoptrs,0);
 
 SVEXTERN char startup_lang_code[3];
 
+SVEXTERN int SVDECL(MOTIONnframes,0);
+SVEXTERN float SVDECL(thisMOTIONtime,0.0), SVDECL(lastMOTIONtime,0.0);
 #ifdef pp_GPU
   SVEXTERN float SVDECL(thisGPUtime,0.0), SVDECL(lastGPUtime,0.0);
-  SVEXTERN float SVDECL(thisMOTIONtime,0.0), SVDECL(lastMOTIONtime,0.0);
-  SVEXTERN int SVDECL(GPUnframes,0),SVDECL(MOTIONnframes,0);
+  SVEXTERN int SVDECL(GPUnframes,0);
 #endif
 SVEXTERN int SVDECL(mouse_down,0);
 SVEXTERN int SVDECL(show_volsmoke_moving,1);
@@ -949,8 +950,9 @@ SVEXTERN char opengl_version_label[256];
 SVEXTERN int SVDECL(cull_meshes, 1);
 
 SVEXTERN int SVDECL(usevolrender,1);
+SVEXTERN int SVDECL(gpuactive, 0);
 #ifdef pp_GPU
-SVEXTERN int SVDECL(usegpu,0),SVDECL(gpuactive,0);
+SVEXTERN int SVDECL(usegpu, 0);
 SVEXTERN int GPU_skip, GPU_hrrcutoff, GPU_hrr, GPU_global_hrrpuv_max, GPU_global_hrrpuv_cb_min;
 SVEXTERN int GPU_fire_alpha, GPU_firecolor, GPU_force_alpha_opaque, GPU_have_smoke, GPU_smokecolormap;
 SVEXTERN int GPU_have_fire;

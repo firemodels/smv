@@ -2379,6 +2379,7 @@ void UpdateVolsmokeTexture(meshdata *meshi){
 
 /* ------------------ DrawSmoke3dGpuVol ------------------------ */
 
+#ifdef pp_GPU
 void DrawSmoke3DGPUVol(void){
 
   int iwall;
@@ -2591,6 +2592,7 @@ void DrawSmoke3DGPUVol(void){
   SNIFF_ERRORS("after DrawSmoke3dGpuVol after loop");
   if(use_transparency_data==1)TransparentOff();
 }
+#endif
 
 /* ------------------ GetVolsmokeFrameTime ------------------------ */
 
@@ -3150,7 +3152,6 @@ void InitVolsmokeTexture(meshdata *meshi){
   FFLUSH();
 }
 
-#ifdef pp_GPU
 /* ------------------ DefineVolsmokeTextures ------------------------ */
 
 void DefineVolsmokeTextures(void){
@@ -3230,5 +3231,3 @@ void UnloadVolsmokeTextures(void){
     FREEMEMORY(meshi->volfire_texture_buffer);
   }
 }
-
-#endif
