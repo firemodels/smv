@@ -280,6 +280,10 @@ intel_linux : LFLAGS    = -m64 $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
 ifeq ($(SANITIZE),1)
 intel_linux : LFLAGS   += $(SANITIZE_OPTIONS)
 endif
+ifeq ($(GLUT),freeglut)
+intel_linux : LFLAGS   += -L$(FREEGLUT_DIR)/lib
+intel_linux : CFLAGS   += -D pp_FREEGLUT -I$(FREEGLUT_DIR)/include
+endif
 intel_linux : CC        = icx
 intel_linux : CPP       = icpx
 intel_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
