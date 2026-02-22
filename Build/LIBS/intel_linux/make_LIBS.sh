@@ -22,7 +22,7 @@ cd $DIR
 OPTS="-I $*"
 source ../../../Source/scripts/setopts.sh $OPTS
 
-rm -f *.a *.out *.wrn
+git clean -dxf
 if [ "$target" == "clean" ]; then
   exit
 fi
