@@ -7,7 +7,7 @@ CPP=${COMPILER2}
 LIB=lib
 
 ifeq ($(GLUT),freeglut)
-  INCS = -I ../freeglut3.0.0/include
+  INCS = -I ../../../libs/freeglut/include
   NOCLOSE=-D FREEGLUT_STATIC -D pp_FREEGLUT
 else
   INCS = -I ../glui_gl
