@@ -257,7 +257,7 @@ clang_win : $(objwin)
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
 SMV_LIBS_LINUX= -lglui -lglut -lgd -ljpeg -lpng -lz
-SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm -lrt
+SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lXi -lGLU -lGL -lm -lrt
 
 # to profile smokeview on linux
 # 1.  cd smv/Build/smokeview/intel_linux
