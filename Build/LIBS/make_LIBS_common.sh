@@ -3,9 +3,9 @@
 GET_FREEGLUT_WARNINGS()
 {
   if [ -e $LIBDIR/../../../../libs/freeglut/lib/libglut.a ]; then
-    echo "*** freeglut(glut) library built"
+    echo "*** glut(freeglutt) library built"
   else
-    echo "*** warning: freeglut(glut) library not built"
+    echo "*** warning: glut(freeglut) library not built"
   fi
 }
 
@@ -71,10 +71,15 @@ pid_gd=$!
 # GLUT
 
 if [ "$GLUT" == "freeglut" ]; then
-  echo "*** building freeglut"
-  cd $BUILDDIR/freeglut/clang_linux
-  ./make_freeglut.sh $OPTS >& $LIBDIR/freeglut.out &
-  pid_glut=$!
+  if [ -d $LIBDIR/../../../../freeglut ]; then
+    echo "*** building freeglut"
+    cd $BUILDDIR/freeglut/clang_linux
+    ./make_freeglut.sh $OPTS >& $LIBDIR/freeglut.out &
+    pid_glut=$!
+  else
+    echo "*** error: the freeglut repo does not exist. Clone the "
+    echo "           freeglut repo by using bot/Scripts/setup_repos.sh -3 "
+  fi
 else
   if [ "`uname`" == "Darwin" ]; then
     echo "*** using OSX provided glut"
