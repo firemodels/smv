@@ -307,6 +307,10 @@ intel_linux_db : LFLAGS    = -m64 -static-intel $(INTEL_LIBS_LINUX) $(SMV_PROFIL
 ifeq ($(SANITIZE),1)
 intel_linux_db : LFLAGS   += $(SANITIZE_OPTIONS)
 endif
+ifeq ($(GLUT),freeglut)
+intel_linux_db : LFLAGS   += -L$(FREEGLUT_DIR)/lib
+intel_linux_db : CFLAGS   += -D pp_FREEGLUT -I$(FREEGLUT_DIR)/include
+endif
 intel_linux_db : CC        = icx
 intel_linux_db : CPP       = icpx
 intel_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
@@ -321,6 +325,10 @@ gnu_linux_db : CFLAGS    = -O0  -m64 -ggdb -Wall -Wunreachable-code -Wswitch-def
 gnu_linux_db : C_STANDARD    = -std=gnu99
 gnu_linux_db : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 gnu_linux_db : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
+ifeq ($(GLUT),freeglut)
+gnu_linux_db : LFLAGS   += -L$(FREEGLUT_DIR)/lib
+gnu_linux_db : CFLAGS   += -D pp_FREEGLUT -I$(FREEGLUT_DIR)/include
+endif
 gnu_linux_db : CC        = gcc
 gnu_linux_db : CPP       = g++
 gnu_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
@@ -337,6 +345,10 @@ gnu_linux : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragm
 gnu_linux : C_STANDARD    = -std=gnu99
 gnu_linux : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 gnu_linux : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
+ifeq ($(GLUT),freeglut)
+gnu_linux : LFLAGS   += -L$(FREEGLUT_DIR)/lib
+gnu_linux : CFLAGS   += -D pp_FREEGLUT -I$(FREEGLUT_DIR)/include
+endif
 gnu_linux : CC        = gcc
 gnu_linux : CPP       = g++
 gnu_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -352,6 +364,10 @@ clang_linux_db : CFLAGS    = -O0  -m64 -ggdb -Wall -Wunreachable-code -Wswitch-d
 clang_linux_db : C_STANDARD    = -std=gnu99
 clang_linux_db : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 clang_linux_db : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
+ifeq ($(GLUT),freeglut)
+clang_linux_db : LFLAGS   += -L$(FREEGLUT_DIR)/lib
+clang_linux_db : CFLAGS   += -D pp_FREEGLUT -I$(FREEGLUT_DIR)/include
+endif
 clang_linux_db : CC        = clang
 clang_linux_db : CPP       = clang++
 clang_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
@@ -367,6 +383,10 @@ clang_linux : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pra
 clang_linux : C_STANDARD    = -std=gnu99
 clang_linux : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 clang_linux : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
+ifeq ($(GLUT),freeglut)
+clang_linux : LFLAGS   += -L$(FREEGLUT_DIR)/lib
+clang_linux : CFLAGS   += -D pp_FREEGLUT -I$(FREEGLUT_DIR)/include
+endif
 clang_linux : CC        = clang
 clang_linux : CPP       = clang++
 clang_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
