@@ -9,7 +9,8 @@ echo "*** removing old files"
 echo "*** configuring"
  cmake ../../../../freeglut  -DCMAKE_INSTALL_PREFIX=../../../../libs/freeglut \
                           -DCMAKE_BUILD_TYPE=Release \
-			  -DCMAKE_C_COMPILER=clang   \
+                          -DFREEGLUT_BUILD_DEMOS=OFF \
+			              -DCMAKE_C_COMPILER=clang   \
                           -DFREEGLUT_BUILD_SHARED_LIBS=OFF \
                           -DFREEGLUT_BUILD_STATIC_LIBS=ON
 
