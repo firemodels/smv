@@ -8,14 +8,14 @@ mkdir ..\..\..\..\libs\freeglut
 
 ::*** configure
 echo *** configuring
-cmake ..\../../../freeglut ^
+cmake ../../../../freeglut ^
   -G "Ninja" ^
   -DCMAKE_INSTALL_PREFIX=../../../../libs/freeglut ^
   -DCMAKE_BUILD_TYPE=Release ^
-  -DFREEGLUT_BUILD_DEMOS=OFF ^
+  -DCMAKE_C_COMPILER=gcc ^
   -DFREEGLUT_BUILD_SHARED_LIBS=OFF ^
   -DFREEGLUT_BUILD_STATIC_LIBS=ON ^
-  -DFREEGLUT_BUILD_DEMOS=OFF::
+  -DFREEGLUT_BUILD_DEMOS=OFF
 
 echo *** building
 ninja

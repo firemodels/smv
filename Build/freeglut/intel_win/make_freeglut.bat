@@ -1,9 +1,10 @@
 @echo off
 
 :: setup compiler environment
-if x%from% == xbot goto skip1
-call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
-:skip1
+if not defined ONEAPI_ROOT call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat > Nul
+if defined ONEAPI_ROOT echo *** environment for icx defined
+if not defined ONEAPI_ROOT echo ***error: setup for icx failed
+if not defined ONEAPI_ROOT exit /b
 
 ::*** clean old files
 echo *** removing old files

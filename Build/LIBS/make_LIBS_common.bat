@@ -4,8 +4,11 @@ set bot=%2
 set freegluttype=%3
 
 :: setup compiler environment
-if x%bot% == xbot goto skip1
-call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
+if NOT %COMPILER% == icx goto skip1
+if not defined ONEAPI_ROOT call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat > Nul
+if defined ONEAPI_ROOT echo *** environment for icx defined
+if not defined ONEAPI_ROOT echo ***error: setup for icx failed
+if not defined ONEAPI_ROOT exit /b
 :skip1
 
 set LIBDIR=%CD%
