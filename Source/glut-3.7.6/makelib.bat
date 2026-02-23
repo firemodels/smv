@@ -1,8 +1,8 @@
 @echo off
 setlocal
 call ..\scripts\setopts %*
-title Building windows glut library
-erase *.o *.obj libglutwin.a libglutwin.lib
+title Building glut library
+git clean -dxf
 
 set target=libglutwin.lib
 if %COMPILER% == gcc set target=libglutwin.a

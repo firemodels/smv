@@ -1,8 +1,8 @@
 @echo off
 setlocal
 call ..\scripts\setopts %*
-title Building windows png library
-erase *.o *.obj libpng.a libpng.lib
+title Building png library
+git clean -dxf
 set target=libpng.lib
 if %COMPILER% == gcc set target=libpng.a
 if exist finished erase finished

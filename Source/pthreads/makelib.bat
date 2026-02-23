@@ -1,8 +1,8 @@
 @echo off
 setlocal
 call ..\scripts\setopts %*
-title Building windows pthread library
-erase *.o *.obj libpthread.a libpthreads.lib
+title Building pthreads library
+git clean -dxf
 set target=libpthreads.lib
 set CFLAGS=
 if %COMPILER% == gcc set target=libpthreads.a

@@ -1,8 +1,8 @@
 @echo off
 setlocal
 call ..\scripts\setopts %*
-title Building windows gd library
-erase *.o *.obj libgd.a libgd.lib
+title Building gd library
+git clean -dxf
 set target=libgd.lib
 if %COMPILER% == gcc set target=libgd.a
 if exist finished erase finished

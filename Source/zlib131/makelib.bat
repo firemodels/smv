@@ -1,8 +1,8 @@
 @echo off
 setlocal
 call ..\scripts\setopts %*
-title Building windows zlib library
-erase *.o *.obj libz.a libz.lib
+title Building zlib library
+git clean -dxf
 set target=libz.lib
 if %COMPILER% == gcc set target=libz.a
 if exist finished erase finished

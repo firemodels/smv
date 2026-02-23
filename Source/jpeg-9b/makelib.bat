@@ -1,8 +1,8 @@
 @echo off
 setlocal
 call ..\scripts\setopts %*
-title Building windows jpeg library
-erase *.o *.obj libjpeg.a libjpeg.lib
+title Building jpeg library
+git clean -dxf
 set target=libjpeg.lib
 if %COMPILER% == gcc set target=libjpeg.a
 if exist finished erase finished
