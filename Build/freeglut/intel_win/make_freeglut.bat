@@ -1,9 +1,7 @@
 @echo off
 
 :: setup compiler environment
-if not defined ONEAPI_ROOT call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat > Nul
-if defined ONEAPI_ROOT echo *** environment for icx defined
-if not defined ONEAPI_ROOT echo ***error: setup for icx failed
+call ..\..\..\Utilities\Scripts\setup_compilers.bat intel
 if not defined ONEAPI_ROOT exit /b
 
 ::*** clean old files

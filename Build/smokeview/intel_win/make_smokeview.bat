@@ -1,23 +1,16 @@
 @echo off
-
 call ..\..\scripts\set_smv_opts %*
 
 :: setup compiler environment
-if x%from% == xbot goto skip1
-call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
-:skip1
+call ..\..\..\Utilities\Scripts\setup_compilers.bat intel
 
-Title Building icx smokeview
+Title Building icx windows smokeview
 
 if NOT x%GLUT% == xfreeglut set GLUT=glut
 
-if x%ONEAPI_FORT_CAPS% == x1 set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_WIN_ONEAPI
-
-if x%inc% == xinc goto skip_inc
-erase *.obj *.mod *.exe 2> Nul
-:skip_inc
+if not x%inc% == xinc erase *.obj *.exe 2> Nul
 
 :: build libraries if one is missing
 call ..\..\scripts\test_libs.bat ..\..\LIBS\intel_win
 
-make -j %NUMBER_OF_PROCESSORS% ICON="%ICON%" GLUT="%GLUT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG%" -f ..\Makefile intel_win%debug%
+make -j %NUMBER_OF_PROCESSORS% ICON="%ICON%" GLUT="%GLUT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG%" -f ..\Makefile intel_win

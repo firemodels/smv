@@ -1,21 +1,7 @@
 @echo off
 
-::*** setup environment for clang-cl
-
-if defined VSCMD_VER goto skip_setup
-  set "VSINSTALL=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build"
-  if defined VSCMD_USER set "VSINSTALL=%VSCMD_USER%"
-  if exist "%VSINSTALL%\vcvars64.bat" goto skip_errorout
-    echo ***error: clang-cl setup file
-    echo           "%VSINSTALL%\vcvars64.bat"
-    echo           does not exist. compilation aborted.
-    exit /b
-  :skip_errorout
-  call "%VSINSTALL%\vcvars64.bat"
-  if not defined VSCMD_VER echo ***error: clang-cl setup failed. compilation aborted.
-  if not defined VSCMD_VER exit /b
-:skip_setup
-echo *** environment for clang-cl setup
+:: setup compiler environment
+call ..\..\..\Utilities\Scripts\setup_compilers.bat clang
 
 ::*** clean old files
 echo *** removing old files
@@ -40,4 +26,4 @@ ninja
 
 ::*** install
 echo *** installing
-ninja install
+ninja install 

@@ -1,11 +1,6 @@
 @echo off
 set COMPILER_TYPE=%1
-set freegluttype=%2
-
-:: setup compiler environment
-if NOT %COMPILER_TYPE% == i goto skip_setup
-  call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat > Nul
-:skip_setup
+set freeglutdir=%2
 
 set LIBDIR=%CD%
 echo *** Cleaning %CD%
@@ -17,8 +12,7 @@ set SRCDIR=%CD%
 cd ..\Build
 set BUILDDIR=%CD%
 
-cd %BUILDDIR%\..\..\libs\freeglut\lib
-set FREEGLUTLIBDIR=%CD%
+set FREEGLUTLIBDIR=%BUILDDIR%\..\..\libs\freeglut\lib
 
 cd %LIBDIR%\..
 set COMMON=%CD%
@@ -49,7 +43,7 @@ echo *** building pthreads
 start "building pthreads"  cmd /c "%COMMON%\lib_wrapper pthreads %LIBDIR% makelib %COMPILER_TYPE%  > %LIBDIR%\pthreads.out 2>&1"
 
 :: GLUT%
-if NOT x%freegluttype% == x goto skip_glut
+if NOT x%freeglutdir% == x goto skip_glut
   cd %SRCDIR%\glut-3.7.6
   echo *** building glut
   start "building glut" /WAIT cmd /c "makelib %COMPILER_TYPE%  > %LIBDIR%\glut.out 2>&1"
@@ -58,8 +52,8 @@ if NOT x%freegluttype% == x goto skip_glut
 :skip_glut
 
 :: freeglut
-if x%freegluttype% == x goto skip_freeglut
-  cd %BUILDDIR%\freeglut\%freegluttype%
+if x%freeglutdir% == x goto skip_freeglut
+  cd %BUILDDIR%\freeglut\%freeglutdir%
   echo *** building freeglut
   start "building freeglut" /WAIT cmd /c "make_freeglut %COMPILER_TYPE%  > %LIBDIR%\freeglut.out 2>&1"
   echo *** freeglut built
@@ -95,9 +89,9 @@ call :COPY %SRCDIR%\jpeg-9b\libjpeg.lib       %LIBDIR%\jpeg.lib
 call :COPY %SRCDIR%\png-1.6.48\libpng.lib     %LIBDIR%\png.lib
 call :COPY %SRCDIR%\gd-2.3.3\libgd.lib        %LIBDIR%\gd.lib
 
-if x%freegluttype% == x call :COPY %SRCDIR%\glut-3.7.6\libglutwin.lib %LIBDIR%\glut32.lib
+if x%freeglutdir% == x call :COPY %SRCDIR%\glut-3.7.6\libglutwin.lib %LIBDIR%\glut32.lib
 
-if x%freegluttype% == x goto skip_freeglut
+if x%freeglutdir% == x goto skip_freeglut
 call :COPY %FREEGLUTLIBDIR%\freeglut_static.lib %LIBDIR%\freeglut.lib
 :skip_freeglut
 
