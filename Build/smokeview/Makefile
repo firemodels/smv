@@ -143,7 +143,7 @@ no_target:
 
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win
 ifeq ($(GLUT),freeglut)
-  GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\freeglut_staticd.lib $(SMV_WIN_LIBDIR)\glut32.lib
+  GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\freeglut.lib
 else
   GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\glut32.lib
 endif

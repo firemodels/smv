@@ -1,22 +1,21 @@
 @echo off
 
-:: setup file
-if not defined VSCMD_VER (
-  for /f "usebackq tokens=*" %%i in (
-    `"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" ^
-     -latest ^
-     -products * ^
-     -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 ^
-     -property installationPath`
-  ) do set "VSINSTALL=%%i"
-  if "x%VSINSTALL%" == "x" echo ***error: clang-cl not installed or not available 
-  if "x%VSINSTALL%" == "x" exit /b 
-  if NOT exist "%VSINSTALL%\VC\Auxiliary\Build\vcvars64.bat" ***error: clang-cl not installed or not available  
+::*** setup environment for clang-cl
 
-  echo ***setting up environment for clang-cl
-  call "%VSINSTALL%\VC\Auxiliary\Build\vcvars64.bat" > Nul
-)
-if defined VSCMD_VER echo *** environment for clang-cl setup
+if defined VSCMD_VER goto skip_setup
+  set "VSINSTALL=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build"
+  if defined VSCMD_USER set "VSINSTALL=%VSCMD_USER%"
+  if exist "%VSINSTALL%\vcvars64.bat" goto skip_errorout
+    echo ***error: clang-cl setup file
+    echo           "%VSINSTALL%\vcvars64.bat"
+    echo           does not exist. compilation aborted.
+    exit /b
+  :skip_errorout
+  call "%VSINSTALL%\vcvars64.bat"
+  if not defined VSCMD_VER echo ***error: clang-cl setup failed. compilation aborted.
+  if not defined VSCMD_VER exit /b
+:skip_setup
+echo *** environment for clang-cl setup
 
 ::*** clean old files
 echo *** removing old files
