@@ -6,7 +6,7 @@ set CURDIR=%CD%
 cd %LIBDIR%
 if NOT exist %LIBDIR%\gd.lib       goto BUILDLIBS
 if NOT exist %LIBDIR%\glui.lib     goto BUILDLIBS
-if NOT exist %LIBDIR%\glut32.lib   goto BUILDLIBS
+::if NOT exist %LIBDIR%\glut32.lib   goto BUILDLIBS
 if NOT exist %LIBDIR%\jpeg.lib     goto BUILDLIBS
 if NOT exist %LIBDIR%\png.lib      goto BUILDLIBS
 if NOT exist %LIBDIR%\pthreads.lib goto BUILDLIBS

@@ -141,25 +141,33 @@ no_target:
 
 #--- Intel
 
-SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win
 ifeq ($(GLUT),freeglut)
-  GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\freeglut.lib
+  GLUT_WIN_LIB = freeglut.lib
 else
-  GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\glut32.lib
+  GLUT_WIN_LIB = glut32.lib
 endif
-SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(GLUT_WIN_LIB) $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
+
+SMV_WIN_LIBDIR = $(LIB_DIR)\intel_win
+SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(SMV_WIN_LIBDIR)\gd.lib   $(SMV_WIN_LIBDIR)\jpeg.lib     \
+               $(SMV_WIN_LIBDIR)\png.lib  $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib \
+               $(SMV_WIN_LIBDIR)\$(GLUT_WIN_LIB)
 
 #--- clang
 
 SMV_CLANG_LIBDIR = $(LIB_DIR)\clang_win
-SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\glui.lib $(SMV_CLANG_LIBDIR)\gd.lib $(SMV_CLANG_LIBDIR)\jpeg.lib $(SMV_CLANG_LIBDIR)\png.lib  $(SMV_CLANG_LIBDIR)\zlib.lib $(SMV_CLANG_LIBDIR)\pthreads.lib $(SMV_CLANG_LIBDIR)\glut32.lib
+SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\glui.lib $(SMV_CLANG_LIBDIR)\gd.lib   $(SMV_CLANG_LIBDIR)\jpeg.lib     \
+                 $(SMV_CLANG_LIBDIR)\png.lib  $(SMV_CLANG_LIBDIR)\zlib.lib $(SMV_CLANG_LIBDIR)\pthreads.lib \
+                 $(SMV_CLANG_LIBDIR)\$(GLUT_WIN_LIB)
 
 WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 
 # ------------- intel_win_san ----------------
-
+ 
 intel_win_san : DYNLIB_EXT = .dll
-intel_win_san : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
+intel_win_san : INC      += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
+ifeq ($(GLUT),freeglut)
+intel_win_san : CFLAGS   += -D pp_FREEGLUT
+endif
 intel_win_san : CFLAGS    = /Od /W4 /Wno-cast-function-type-mismatch /Wno-unused-function /Wno-unused-parameter
 intel_win_san : CFLAGS   += /debug:full /Zi  -D pp_INTEL -D _DEBUG -D _CONSOLE -D GLEW_STATIC
 intel_win_san : CFLAGS   += -D PTW32_STATIC_LIB -D BGDWIN32 $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
@@ -181,7 +189,10 @@ intel_win_san : $(objwin)
 # ------------- intel_win_db ----------------
 
 intel_win_db : DYNLIB_EXT = .dll
-intel_win_db : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
+intel_win_db : INC   += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
+ifeq ($(GLUT),freeglut)
+intel_win_db : INC      += -I$(FREEGLUT_DIR)/include
+endif
 intel_win_db : CFLAGS    = /Od /W4 /Wno-cast-function-type-mismatch /Wno-unused-function /Wno-unused-parameter /debug:full /Zi  -D pp_INTEL -D _DEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB -D BGDWIN32 $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(SANITIZE),1)
 intel_win_db : CFLAGS   += $(SANITIZE_OPTIONS)
@@ -189,7 +200,7 @@ endif
 intel_win_db : C_STANDARD    = -Qstd=gnu99
 
 ifeq ($(GLUT),freeglut)
-intel_win_db : CFLAGS   += -D FREEGLUT_STATIC
+intel_win_db : CFLAGS    += -D pp_FREEGLUT
 endif
 intel_win_db : LFLAGS    = /F32768000 /traceback /Zi /DEBUG
 ifeq ($(SANITIZE),1)
@@ -206,14 +217,17 @@ intel_win_db : $(objwin)
 # ------------- intel_win ----------------
 
 intel_win : DYNLIB_EXT = .dll
-intel_win : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
+intel_win : INC      += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
+ifeq ($(GLUT),freeglut)
+intel_win : INC      += -I$(FREEGLUT_DIR)/include
+endif
 intel_win : CFLAGS    = -O1 -D pp_INTEL -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB -D BGDWIN32 -D NONDLL $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(SANITIZE),1)
 intel_win : CFLAGS   += $(SANITIZE_OPTIONS) -g
 endif
 intel_win : C_STANDARD    = -Qstd=gnu99
 ifeq ($(GLUT),freeglut)
-intel_win : CFLAGS   += -D FREEGLUT_STATIC
+intel_win : CFLAGS   += -D pp_FREEGLUT
 endif
 intel_win : LFLAGS    = /F32768000 -D FREEGLUT_STATIC
 ifeq ($(SANITIZE),1)
@@ -229,10 +243,16 @@ intel_win : $(objwin)
 # ------------- clang_win_db ----------------
 
 clang_win_db : INC       += -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/glui_gl -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
+ifeq ($(GLUT),freeglut)
+clang_win_db : INC       += -I$(FREEGLUT_DIR)/include
+endif
 clang_win_db : CFLAGS    = -m64 -g -D GLEW_STATIC -D NDEBUG  -D BGDWIN32 -D PTW32_STATIC_LIB  $(GITINFO) $(GNU_COMPINFO) $(SMV_PROFILEFLAG)
 clang_win_db : CFLAGS   += -g -D pp_SANITIZE -fsanitize=address -fsanitize=undefined
 clang_win_db : LFLAGS    = -m64 $(SMV_LIBS_CLANG) $(SMV_PROFILEFLAG) $(WIN32_LIBS)
 clang_win_db : LFLAGS   += -fsanitize=address -fsanitize=undefined
+ifeq ($(GLUT),freeglut)
+clang_win_db : CFLAGS   += -D pp_FREEGLUT
+endif
 clang_win_db : CC        = clang-cl
 clang_win_db : CPP       = clang-cl
 clang_win_db : exe       = smokeview_win$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -243,8 +263,14 @@ clang_win_db : $(objwin)
 # ------------- clang_win ----------------
 
 clang_win : INC       += -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/glui_gl -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
+ifeq ($(GLUT),freeglut)
+clang_win : INC       += -I$(FREEGLUT_DIR)/include
+endif
 clang_win : CFLAGS    = -m64 -D GLEW_STATIC -D NDEBUG  -D BGDWIN32 -D PTW32_STATIC_LIB  $(GITINFO) $(GNU_COMPINFO) $(SMV_PROFILEFLAG)
 clang_win : LFLAGS    = -m64 $(SMV_LIBS_CLANG) $(SMV_PROFILEFLAG) $(WIN32_LIBS)
+ifeq ($(GLUT),freeglut)
+clang_win : CFLAGS   += -D pp_FREEGLUT
+endif
 clang_win : CC        = clang-cl
 clang_win : CPP       = clang-cl
 clang_win : exe       = smokeview_win$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -275,7 +301,6 @@ ifeq ($(SANITIZE),1)
 intel_linux : CFLAGS   += $(SANITIZE_OPTIONS)
 endif
 intel_linux : C_STANDARD    = -std=gnu99
-intel_linux : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 intel_linux : LFLAGS    = -m64 $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
 ifeq ($(SANITIZE),1)
 intel_linux : LFLAGS   += $(SANITIZE_OPTIONS)
@@ -283,6 +308,8 @@ endif
 ifeq ($(GLUT),freeglut)
 intel_linux : LFLAGS   += -L$(FREEGLUT_DIR)/lib
 intel_linux : CFLAGS   += -D pp_FREEGLUT -I$(FREEGLUT_DIR)/include
+else
+intel_linux : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 endif
 intel_linux : CC        = icx
 intel_linux : CPP       = icpx

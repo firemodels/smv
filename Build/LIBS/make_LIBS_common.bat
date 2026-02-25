@@ -55,14 +55,15 @@ if NOT x%freeglutdir% == x goto skip_glut
 if x%freeglutdir% == x goto skip_freeglut
   cd %BUILDDIR%\freeglut\%freeglutdir%
   echo *** building freeglut
-  start "building freeglut" /WAIT cmd /c "make_freeglut %COMPILER_TYPE%  > %LIBDIR%\freeglut.out 2>&1"
+  start "building freeglut" /WAIT cmd /c "COMMON%\lib_wrapper make_freeglut  %LIBDIR%  %COMPILER_TYPE%  > %LIBDIR%\freeglut.out 2>&1"
+  call :WAIT freeglut.running
   echo *** freeglut built
 :skip_freeglut
 
 :: GLUI
 cd %SRCDIR%\glui_v2_1_beta
 echo *** building glui
-start "building glui"  cmd /c "%COMMON%\lib_wrapper glui %LIBDIR% makelib %COMPILER_TYPE%  > %LIBDIR%\glui.out 2>&1"
+start "building glui"  cmd /c "%COMMON%\lib_wrapper glui %LIBDIR% makelib %COMPILER_TYPE%  %freeglutdir% > %LIBDIR%\glui.out 2>&1"
 
 call :WAIT zlib.running
 echo *** zlib built
@@ -92,7 +93,7 @@ call :COPY %SRCDIR%\gd-2.3.3\libgd.lib        %LIBDIR%\gd.lib
 if x%freeglutdir% == x call :COPY %SRCDIR%\glut-3.7.6\libglutwin.lib %LIBDIR%\glut32.lib
 
 if x%freeglutdir% == x goto skip_freeglut
-call :COPY %FREEGLUTLIBDIR%\freeglut_static.lib %LIBDIR%\freeglut.lib
+call :COPY %FREEGLUTLIBDIR%\freeglut_static.lib %LIBDIR%\freeglut_static.lib
 :skip_freeglut
 
 call :COPY %SRCDIR%\pthreads\libpthreads.lib   %LIBDIR%\pthreads.lib
