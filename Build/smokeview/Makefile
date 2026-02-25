@@ -158,6 +158,7 @@ SMV_CLANG_LIBDIR = $(LIB_DIR)\clang_win
 SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\glui.lib $(SMV_CLANG_LIBDIR)\gd.lib   $(SMV_CLANG_LIBDIR)\jpeg.lib     \
                  $(SMV_CLANG_LIBDIR)\png.lib  $(SMV_CLANG_LIBDIR)\zlib.lib $(SMV_CLANG_LIBDIR)\pthreads.lib \
                  $(SMV_CLANG_LIBDIR)\$(GLUT_WIN_LIB)
+#                 $(SMV_CLANG_LIBDIR)\freeglut_staticd.lib $(SMV_CLANG_LIBDIR)\freeglut_static.lib
 
 WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 

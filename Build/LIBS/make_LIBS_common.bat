@@ -12,8 +12,6 @@ set SRCDIR=%CD%
 cd ..\Build
 set BUILDDIR=%CD%
 
-set FREEGLUTLIBDIR=%BUILDDIR%\..\..\libs\freeglut\lib
-
 cd %LIBDIR%\..
 set COMMON=%CD%
 
@@ -92,7 +90,11 @@ call :COPY %SRCDIR%\gd-2.3.3\libgd.lib        %LIBDIR%\gd.lib
 
 if x%freeglutdir% == x call :COPY %SRCDIR%\glut-3.7.6\libglutwin.lib %LIBDIR%\glut32.lib
 
+set FREEGLUTLIBDIR=
 if x%freeglutdir% == x goto skip_freeglut
+set FREEGLUTLIBDIR=%BUILDDIR%\..\..\libs\freeglut\lib
+call :COPY %FREEGLUTLIBDIR%\freeglut_static.lib %LIBDIR%\freeglut.lib
+call :COPY %FREEGLUTLIBDIR%\freeglut_static.lib %LIBDIR%\freeglut_staticd.lib
 call :COPY %FREEGLUTLIBDIR%\freeglut_static.lib %LIBDIR%\freeglut_static.lib
 :skip_freeglut
 
