@@ -93,8 +93,6 @@ if x%freeglutdir% == x call :COPY %SRCDIR%\glut-3.7.6\libglutwin.lib %LIBDIR%\gl
 set FREEGLUTLIBDIR=
 if x%freeglutdir% == x goto skip_freeglut
 set FREEGLUTLIBDIR=%BUILDDIR%\..\..\libs\freeglut\lib
-call :COPY %FREEGLUTLIBDIR%\freeglut_static.lib %LIBDIR%\freeglut.lib
-call :COPY %FREEGLUTLIBDIR%\freeglut_static.lib %LIBDIR%\freeglut_staticd.lib
 call :COPY %FREEGLUTLIBDIR%\freeglut_static.lib %LIBDIR%\freeglut_static.lib
 :skip_freeglut
 

@@ -53,11 +53,11 @@ gnu_osx: CFLAGS=-m64 $(NOCLOSE) -fpermissive
 gnu_osx: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
-intel_win: CFLAGS+= $(NOCLOSE)
+intel_win: CFLAGS+= $(NOCLOSE) -DNDEBUG -U_DEBUG
 intel_win : $(GLUI_OBJSWIN)
 	$(LIB) $(GLUI_OBJSWIN) -OUT:libglui.lib
 
-clang_win: CFLAGS= $(NOCLOSE)
+clang_win: CFLAGS= $(NOCLOSE)  -DNDEBUG -U_DEBUG
 clang_win : $(GLUI_OBJSWIN)
 	$(LIB) $(GLUI_OBJSWIN) -OUT:libglui.lib
 

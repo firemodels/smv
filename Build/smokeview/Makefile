@@ -139,26 +139,19 @@ no_target:
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV  Windows VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
-#--- Intel
+#*** library list
 
 ifeq ($(GLUT),freeglut)
-  GLUT_WIN_LIB = freeglut.lib
+  GLUT_WIN_LIB = freeglut_static.lib
 else
   GLUT_WIN_LIB = glut32.lib
 endif
+SMV_LIB_LIST = glui.lib gd.lib jpeg.lib png.lib zlib.lib pthreads.lib $(GLUT_WIN_LIB)
 
 SMV_WIN_LIBDIR = $(LIB_DIR)\intel_win
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(SMV_WIN_LIBDIR)\gd.lib   $(SMV_WIN_LIBDIR)\jpeg.lib     \
                $(SMV_WIN_LIBDIR)\png.lib  $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib \
                $(SMV_WIN_LIBDIR)\$(GLUT_WIN_LIB)
-
-#--- clang
-
-SMV_CLANG_LIBDIR = $(LIB_DIR)\clang_win
-SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\glui.lib $(SMV_CLANG_LIBDIR)\gd.lib   $(SMV_CLANG_LIBDIR)\jpeg.lib     \
-                 $(SMV_CLANG_LIBDIR)\png.lib  $(SMV_CLANG_LIBDIR)\zlib.lib $(SMV_CLANG_LIBDIR)\pthreads.lib \
-                 $(SMV_CLANG_LIBDIR)\$(GLUT_WIN_LIB)
-#                 $(SMV_CLANG_LIBDIR)\freeglut_staticd.lib $(SMV_CLANG_LIBDIR)\freeglut_static.lib
 
 WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 
@@ -213,11 +206,10 @@ intel_win_db : CPP       = icx
 intel_win_db : exe       = smokeview_win$(SMV_TESTSTRING)_db
 
 intel_win_db : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(SMV_LIBS_WIN)
+	$(CPP) -o $(bin)/$(exe)  -m64 $(objwin) $(SMV_LIB_LIST) $(WIN32_LIBS) $(LFLAGS)
 
 # ------------- intel_win ----------------
 
-intel_win : DYNLIB_EXT = .dll
 intel_win : INC      += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
 ifeq ($(GLUT),freeglut)
 intel_win : INC      += -I$(FREEGLUT_DIR)/include
@@ -227,19 +219,23 @@ ifeq ($(SANITIZE),1)
 intel_win : CFLAGS   += $(SANITIZE_OPTIONS) -g
 endif
 intel_win : C_STANDARD    = -Qstd=gnu99
-ifeq ($(GLUT),freeglut)
-intel_win : CFLAGS   += -D pp_FREEGLUT
-endif
-intel_win : LFLAGS    = /F32768000 -D FREEGLUT_STATIC
+intel_win : LFLAGS    =
 ifeq ($(SANITIZE),1)
 intel_win : LFLAGS   += $(SANITIZE_OPTIONS)
+endif
+ifeq ($(GLUT),freeglut)
+intel_win : CFLAGS   += -D pp_FREEGLUT -DFREEGLUT_STATIC
+intel_win : LFLAGS   =  /link /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:freeglut.lib /NODEFAULTLIB:freeglut_staticd.lib \
+                             /LIBPATH:$(LIB_DIR)/intel_win
+else
+intel_win : LFLAGS   =  /link /NODEFAULTLIB:msvcrt.lib /LIBPATH:$(LIB_DIR)/intel_win
 endif
 intel_win : CC        = icx
 intel_win : CPP       = icx
 intel_win : exe       = smokeview_win$(SMV_TESTSTRING)
 
 intel_win : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(SMV_LIBS_WIN)
+	$(CPP) -o $(bin)/$(exe)  -m64 $(objwin) $(SMV_LIB_LIST) $(WIN32_LIBS) $(LFLAGS)
 
 # ------------- clang_win_db ----------------
 
@@ -268,9 +264,11 @@ ifeq ($(GLUT),freeglut)
 clang_win : INC       += -I$(FREEGLUT_DIR)/include
 endif
 clang_win : CFLAGS    = -m64 -D GLEW_STATIC -D NDEBUG  -D BGDWIN32 -D PTW32_STATIC_LIB  $(GITINFO) $(GNU_COMPINFO) $(SMV_PROFILEFLAG)
-clang_win : LFLAGS    = -m64 $(SMV_LIBS_CLANG) $(SMV_PROFILEFLAG) $(WIN32_LIBS)
+clang_win : LFLAGS    = -m64 $(SMV_PROFILEFLAG) \
+                        /link /NODEFAULTLIB:msvcrt.lib \
+                        /LIBPATH:$(LIB_DIR)/clang_win $(SMV_LIB_LIST) $(WIN32_LIBS)
 ifeq ($(GLUT),freeglut)
-clang_win : CFLAGS   += -D pp_FREEGLUT
+clang_win : CFLAGS   += -D pp_FREEGLUT -DFREEGLUT_STATIC
 endif
 clang_win : CC        = clang-cl
 clang_win : CPP       = clang-cl

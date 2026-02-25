@@ -16,13 +16,12 @@ cmake ../../../../freeglut ^
   -DCMAKE_INSTALL_PREFIX=../../../../libs/freeglut ^
   -DCMAKE_BUILD_TYPE=Release ^
   -DCMAKE_C_COMPILER=clang-cl ^
-  -DCMAKE_C_FLAGS="/utf-8 /MT /O2 /Gy" ^
-  -DCMAKE_CXX_FLAGS="/utf-8 /MT /O2 /Gy" ^
+  -DCMAKE_C_FLAGS="/utf-8 /O2 /Gy" ^
+  -DCMAKE_CXX_FLAGS="/utf-8 /O2 /Gy" ^
   -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded ^
   -DFREEGLUT_BUILD_SHARED_LIBS=OFF ^
   -DFREEGLUT_BUILD_STATIC_LIBS=ON ^
-  -DFREEGLUT_BUILD_DEMOS=OFF ^
-  -DCMAKE_EXE_LINKER_FLAGS="/MT  /OPT:REF /OPT:ICF"
+  -DFREEGLUT_BUILD_DEMOS=OFF
 echo *** building
 ninja
 
