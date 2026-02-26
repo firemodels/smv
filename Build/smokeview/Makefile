@@ -129,14 +129,6 @@ ifeq ($(GLUT),freeglut)
   LFLAG_WIN  +=  /NODEFAULTLIB:freeglut.lib /NODEFAULTLIB:freeglut_staticd.lib
 endif
 
-ifeq ($(GLUT),freeglut)
-  GLUTLIB_WIN = freeglut_static.lib
-else
-  GLUTLIB_WIN = glut32.lib
-endif
-SMVLIBS_WIN = glui.lib gd.lib jpeg.lib png.lib zlib.lib pthreads.lib $(GLUTLIB_WIN)
-WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
-
 #*** General Purpose Rules ***
 
 no_target:
@@ -173,6 +165,14 @@ no_target:
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV  Windows VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
+ifeq ($(GLUT),freeglut)
+  GLUTLIB_WIN = freeglut_static.lib
+else
+  GLUTLIB_WIN = glut32.lib
+endif
+SMV_LIBS_WIN = glui.lib gd.lib jpeg.lib png.lib zlib.lib pthreads.lib $(GLUTLIB_WIN)
+SYSTEM_LIBS_WIN = user32.lib gdi32.lib comdlg32.lib shell32.lib
+
 # ------------- intel_win_db ----------------
 
 intel_win_db : DYNLIB_EXT = .dll
@@ -187,59 +187,41 @@ intel_win_db : CPP       = icx
 intel_win_db : exe       = smokeview_win$(SMV_TESTSTRING)_db
 
 intel_win_db : $(objwin)
-	$(CPP) -o $(bin)/$(exe)  -m64 $(objwin) $(SMVLIBS_WIN) $(WIN32_LIBS) $(LFLAGS)
+	$(CPP) -o $(bin)/$(exe)  -m64 $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
 
 # ------------- intel_win ----------------
 
 intel_win : CFLAGS    = -O1 -D pp_INTEL -D NDEBUG -D _CONSOLE -D NONDLL $(INTEL_COMPINFO) $(CFLAG_COM)
 intel_win : C_STANDARD    = -Qstd=gnu99
-intel_win : LFLAGS   =  $(LFLAG_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/intel_win
+intel_win : LFLAGS    = $(LFLAG_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/intel_win
 intel_win : CC        = icx
 intel_win : CPP       = icx
 intel_win : exe       = smokeview_win$(SMV_TESTSTRING)
 
 intel_win : $(objwin)
-	$(CPP) -o $(bin)/$(exe)  -m64 $(objwin) $(SMVLIBS_WIN) $(WIN32_LIBS) $(LFLAGS)
+	$(CPP) -o $(bin)/$(exe)  -m64 $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
 
 # ------------- clang_win_db ----------------
 
-clang_win_db : INC       += -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/glui_gl -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-ifeq ($(GLUT),freeglut)
-clang_win_db : INC       += -I$(FREEGLUT_DIR)/include
-endif
-clang_win_db : CFLAGS    = -m64 -g -D GLEW_STATIC -D NDEBUG  -D BGDWIN32 -D PTW32_STATIC_LIB  $(GITINFO) $(GNU_COMPINFO) $(SMV_PROFILEFLAG)
-clang_win_db : CFLAGS   += -g -D pp_SANITIZE -fsanitize=address -fsanitize=undefined
-clang_win_db : LFLAGS    = -m64 $(SMV_LIBS_CLANG) $(SMV_PROFILEFLAG) $(WIN32_LIBS)
-clang_win_db : LFLAGS   += -fsanitize=address -fsanitize=undefined
-ifeq ($(GLUT),freeglut)
-clang_win_db : CFLAGS   += -D pp_FREEGLUT
-endif
+clang_win_db : CFLAGS    = -D NDEBUG -D _CONSOLE -D NONDLL $(GNU_COMPINFO) $(CFLAG_COM)
+clang_win_db : LFLAGS    = $(LFLAG_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/clang_win
 clang_win_db : CC        = clang-cl
 clang_win_db : CPP       = clang-cl
 clang_win_db : exe       = smokeview_win$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 clang_win_db : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin) $(LFLAGS)
+	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
 
 # ------------- clang_win ----------------
 
-clang_win : INC       += -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/glui_gl -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-ifeq ($(GLUT),freeglut)
-clang_win : INC       += -I$(FREEGLUT_DIR)/include
-endif
-clang_win : CFLAGS    = -m64 -D GLEW_STATIC -D NDEBUG  -D BGDWIN32 -D PTW32_STATIC_LIB  $(GITINFO) $(GNU_COMPINFO) $(SMV_PROFILEFLAG)
-clang_win : LFLAGS    = -m64 $(SMV_PROFILEFLAG) \
-                        /link /NODEFAULTLIB:msvcrt.lib \
-                        /LIBPATH:$(LIB_DIR)/clang_win $(SMVLIBS_WIN) $(WIN32_LIBS)
-ifeq ($(GLUT),freeglut)
-clang_win : CFLAGS   += -D pp_FREEGLUT -DFREEGLUT_STATIC
-endif
+clang_win : CFLAGS    = -D NDEBUG -D _CONSOLE -D NONDLL $(GNU_COMPINFO) $(CFLAG_COM)
+clang_win : LFLAGS    = $(LFLAG_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/clang_win
 clang_win : CC        = clang-cl
 clang_win : CPP       = clang-cl
 clang_win : exe       = smokeview_win$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 clang_win : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin) $(LFLAGS)
+	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV  Linux VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
