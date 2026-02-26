@@ -2,8 +2,10 @@
 
 GET_FREEGLUT_WARNINGS()
 {
-  if [ -e $LIBDIR/../../../../libs/freeglut/lib/libglut.a ]; then
+  FREEGLUTLIBDIR=$LIBDIR/../../../../libs/freeglut/lib64
+  if [ -e $FREEGLUTLIBDIR/libglut.a ]; then
     echo "*** glut(freeglutt) library built"
+    cp $FREEGLUTLIBDIR/libglut.a $LIBDIR/libfreeglut.a
   else
     echo "*** warning: glut(freeglut) library not built"
   fi
@@ -73,7 +75,15 @@ pid_gd=$!
 if [ "$GLUT" == "freeglut" ]; then
   if [ -d $LIBDIR/../../../../freeglut ]; then
     echo "*** building freeglut"
-    cd $BUILDDIR/freeglut/clang_linux
+    if [ "$COMPILER" == "icx" ]; then
+      cd $BUILDDIR/freeglut/intel_linux
+    else
+      if [ "$COMPILER" == "gcc" ]; then
+        cd $BUILDDIR/freeglut/gnu_linux
+      else
+        cd $BUILDDIR/freeglut/clang_linux
+      fi
+    fi
     ./make_freeglut.sh $OPTS >& $LIBDIR/freeglut.out &
     pid_glut=$!
   else

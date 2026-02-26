@@ -7,13 +7,15 @@ echo "*** removing old files"
 
 #*** configure
 echo "*** configuring"
- cmake ../../../../freeglut  -DCMAKE_INSTALL_PREFIX=../../../../libs/freeglut \
-                          -DCMAKE_BUILD_TYPE=Release \
-                          -DFREEGLUT_BUILD_DEMOS=OFF \
-			              -DCMAKE_C_COMPILER=clang   \
-                          -DFREEGLUT_COCOA=ON   \
-                          -DFREEGLUT_BUILD_SHARED_LIBS=OFF \
-                          -DFREEGLUT_BUILD_STATIC_LIBS=ON
+cmake ../../../../freeglut \
+                           -G "Unix Makefiles" \
+                           -DCMAKE_INSTALL_PREFIX=../../../../libs/freeglut \
+                           -DCMAKE_BUILD_TYPE=Release \
+                           -DFREEGLUT_BUILD_DEMOS=OFF \
+			               -DCMAKE_C_COMPILER=clang   \
+                           -DFREEGLUT_COCOA=ON   \
+                           -DFREEGLUT_BUILD_SHARED_LIBS=OFF \
+                           -DFREEGLUT_BUILD_STATIC_LIBS=ON
 
 #*** build
 echo "*** building"
