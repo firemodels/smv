@@ -36,9 +36,6 @@ SANITIZE_OPTIONS=-fsanitize=address -fsanitize=undefined -D pp_SANITIZE
 %.obj : %.rc
 	windres $< -o $@
 
-#----------------------------------------------------------------------------
-# Should not need to edit lines below except to add or 'debug' target entries
-
 # The variable VPATH defines the source code directory relative to the current directory
 
 VPATH = $(SOURCE_DIR)/smokeview:$(SOURCE_DIR)/shared:$(SOURCE_DIR)/glew
@@ -198,7 +195,7 @@ intel_win_db : CPP       = icx
 intel_win_db : exe       = smokeview_win$(SMV_TESTSTRING)_db
 
 intel_win_db : $(objwin)
-	$(CPP) -o $(bin)/$(exe)  -m64 $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
+	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
 
 # ------------- intel_win ----------------
 
@@ -209,7 +206,7 @@ intel_win : CPP       = icx
 intel_win : exe       = smokeview_win$(SMV_TESTSTRING)
 
 intel_win : $(objwin)
-	$(CPP) -o $(bin)/$(exe)  -m64 $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
+	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
 
 # ------------- clang_win_db ----------------
 
@@ -291,7 +288,7 @@ gnu_linux_db : $(obj)
 
 # ------------- gnu_linux ----------------
 
-gnu_linux : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D NDEBUG \
+gnu_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D NDEBUG \
                               $(CFLAG_COM) $(GNU_COMPINFO) \
 gnu_linux : CC        = gcc
 gnu_linux : CPP       = g++
@@ -302,7 +299,7 @@ gnu_linux : $(obj)
 
 # ------------- clang_linux_db ----------------
 
-clang_linux_db : CFLAGS    = -O0  -m64 -ggdb -Wall -Wunreachable-code -Wswitch-default \
+clang_linux_db : CFLAGS    = -O0 -ggdb -Wall -Wunreachable-code -Wswitch-default \
                              -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized \
                              -Wno-address -Wno-undef -Wno-parentheses -Wno-unknown-pragmas \
                              -Wno-comment -Wno-write-strings -D _DEBUG \
@@ -316,7 +313,7 @@ clang_linux_db : $(obj)
 
 # ------------- clang_linux ----------------
 
-clang_linux : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings \
+clang_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings \
                            $(CFLAG_COM) $(GNU_COMPINFO) \
 clang_linux : CC        = clang
 clang_linux : CPP       = clang++
@@ -331,7 +328,7 @@ clang_linux : $(obj)
 
 # ------------- gnu_linux_check ----------------
 
-gnu_linux_check : CFLAGS    = -O2 -m64 -Wall
+gnu_linux_check : CFLAGS    = -O2 -Wall
 gnu_linux_check : $(src)
 	clang-tidy $^ --  $(CFLAGS) $(INC)
 
@@ -356,8 +353,8 @@ SMV_LIBS_OSX =  -lglui -lgd -ljpeg -lpng -lz
 
 # ------------- gnu_osx_db ----------------
 
-gnu_osx_db : CFLAGS    = -O0 -ggdb -m64 -D _DEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
-gnu_osx_db : LFLAGS    = -m64 -L$(LIB_DIR)/gnu_osx $(SMV_LIBS_OSX) $(GLIBDIROPT) $(SMV_PROFILEFLAG)
+gnu_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
+gnu_osx_db : LFLAGS    = -L$(LIB_DIR)/gnu_osx $(SMV_LIBS_OSX) $(SMV_PROFILEFLAG)
 ifeq ($(GLUT),freeglut)
 gnu_osx_db : LFLAGS   += -framework CoreVideo -framework Cocoa -framework OpenGL
 gnu_osx_db : LFLAGS   += -L$(FREEGLUT_DIR)/lib -lglut
@@ -374,8 +371,8 @@ gnu_osx_db : $(obj)
 
 # ------------- gnu_osx ----------------
 
-gnu_osx : CFLAGS    = -O0 -m64              -D NDEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
-gnu_osx : LFLAGS    = -m64 -L$(LIB_DIR)/gnu_osx $(SMV_LIBS_OSX) $(GLIBDIROPT) $(SMV_PROFILEFLAG)
+gnu_osx : CFLAGS    = -O0 -D NDEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
+gnu_osx : LFLAGS    = -L$(LIB_DIR)/gnu_osx $(SMV_LIBS_OSX) $(SMV_PROFILEFLAG)
 ifeq ($(GLUT),freeglut)
 gnu_osx : LFLAGS   += -framework CoreVideo -framework Cocoa -framework OpenGL
 gnu_osx : LFLAGS   += -L$(FREEGLUT_DIR)/lib -lglut
@@ -392,8 +389,8 @@ gnu_osx : $(obj)
 
 # ------------- clang_osx_db ----------------
 
-clang_osx_db : CFLAGS    = -O0 -ggdb -m64 -D _DEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
-clang_osx_db : LFLAGS    = -m64 -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX) $(GLIBDIROPT) $(SMV_PROFILEFLAG)
+clang_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
+clang_osx_db : LFLAGS    = -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX) $(SMV_PROFILEFLAG)
 ifeq ($(GLUT),freeglut)
 clang_osx_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 clang_osx_db : CFLAGS   += -D FREEGLUT_STATIC
@@ -409,8 +406,8 @@ clang_osx_db : $(obj)
 
 # ------------- clang_osx ----------------
 
-clang_osx : CFLAGS    = -O0 -m64 -D NDEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
-clang_osx : LFLAGS    = -m64 -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX) $(GLIBDIROPT) $(SMV_PROFILEFLAG)
+clang_osx : CFLAGS    = -O0 -D NDEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
+clang_osx : LFLAGS    = -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX) $(SMV_PROFILEFLAG)
 ifeq ($(GLUT),freeglut)
 clang_osx : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 clang_osx : CFLAGS   += -D FREEGLUT_STATIC
@@ -424,7 +421,7 @@ clang_osx : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 clang_osx : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-#-------------- Clean Target to remove Object and Module files -----------
+#-------------- Clean Target to remove Object -----------
 
 .PHONY : clean
 clean:
