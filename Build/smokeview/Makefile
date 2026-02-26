@@ -188,7 +188,6 @@ SYSTEM_LIBS_WIN = user32.lib gdi32.lib comdlg32.lib shell32.lib
 
 # ------------- intel_win_db ----------------
 
-intel_win_db : DYNLIB_EXT = .dll
 intel_win_db : CFLAGS    = /Od -D pp_INTEL -D _DEBUG -D _CONSOLE \
                            /Zi /W4 /Wno-cast-function-type-mismatch /Wno-unused-function /Wno-unused-parameter /debug:full \
                            $(INTEL_COMPINFO) $(CFLAG_WIN_COM)
@@ -254,7 +253,6 @@ SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lXi -lGLU -lGL -lm -lrt
 
 # ------------- intel_linux ----------------
 
-intel_linux : DYNLIB_EXT = .so
 intel_linux : CPP_STANDARD = -std=c++11 -stdlib=libc++
 intel_linux : CFLAGS    = -O0 -traceback -D NDEBUG $(CFLAG_COM) $(INTEL_COMPINFO)
 intel_linux : CC        = icx
@@ -280,8 +278,6 @@ intel_linux_db : $(obj)
 
 # ------------- gnu_linux_db ----------------
 
-gnu_linux_db : DYNLIB_EXT = .so
-gnu_linux_db : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux
 gnu_linux db: CFLAGS    = -O0  -ggdb -Wall -Wunreachable-code -Wswitch-default -Wshadow -Winit-self -Wundef \
                           -Wpointer-arith -Wuninitialized -Wno-address -Wno-format-overflow -Wno-format-truncation \
                           -Wno-undef -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG \
@@ -295,8 +291,6 @@ gnu_linux_db : $(obj)
 
 # ------------- gnu_linux ----------------
 
-gnu_linux : DYNLIB_EXT = .so
-gnu_linux : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux
 gnu_linux : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D NDEBUG \
                               $(CFLAG_COM) $(GNU_COMPINFO) \
 gnu_linux : CC        = gcc
@@ -308,7 +302,6 @@ gnu_linux : $(obj)
 
 # ------------- clang_linux_db ----------------
 
-clang_linux_db : LIB_DIR_PLAT = $(LIB_DIR)/clang_linux
 clang_linux_db : CFLAGS    = -O0  -m64 -ggdb -Wall -Wunreachable-code -Wswitch-default \
                              -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized \
                              -Wno-address -Wno-undef -Wno-parentheses -Wno-unknown-pragmas \
@@ -323,7 +316,6 @@ clang_linux_db : $(obj)
 
 # ------------- clang_linux ----------------
 
-clang_linux : LIB_DIR_PLAT = $(LIB_DIR)/clang_linux
 clang_linux : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings \
                            $(CFLAG_COM) $(GNU_COMPINFO) \
 clang_linux : CC        = clang
@@ -436,7 +428,7 @@ clang_osx : $(obj)
 
 .PHONY : clean
 clean:
-	rm -f *.o *.mod *.dll *.so
+	rm *.o
 
 #-------------- force compilation of string_util.c -----------
 
