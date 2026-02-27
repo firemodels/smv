@@ -26,6 +26,6 @@ fi
 cd $CURDIR
 
 if [ "$BUILD_ALL" == "1" ]; then
-  rm -f *.o *.mod smokeview_osx*
+  rm -f *.o smokeview_osx*
 fi
 eval make COMPILER=${COMPILER} COMPILER2=${COMPILER2} GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile clang_osx

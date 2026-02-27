@@ -117,12 +117,12 @@ CFLAG_WIN_COM   += -D pp_FREEGLUT -DFREEGLUT_STATIC
 endif
 CFLAG_WIN_COM   += -D GLEW_STATIC -D PTW32_STATIC_LIB -D BGDWIN32
 
-CFLAG_COM=$(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO)
+CFLAGS_COM=$(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO)
 ifeq ($(SANITIZE),1)
-CFLAG_COM   += $(SANITIZE_OPTIONS)
+CFLAGS_COM   += $(SANITIZE_OPTIONS)
 endif
 ifeq ($(GLUT),freeglut)
-CFLAG_COM   += -D pp_FREEGLUT
+CFLAGS_COM   += -D pp_FREEGLUT
 endif
 
 #------------------------------------------------------------
@@ -251,7 +251,7 @@ SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lXi -lGLU -lGL -lm -lrt
 # ------------- intel_linux ----------------
 
 intel_linux : CPP_STANDARD = -std=c++11 -stdlib=libc++
-intel_linux : CFLAGS    = -O0 -traceback -D NDEBUG $(CFLAG_COM) $(INTEL_COMPINFO)
+intel_linux : CFLAGS    = -O0 -traceback -D NDEBUG $(CFLAGS_COM) $(INTEL_COMPINFO)
 intel_linux : CC        = icx
 intel_linux : CPP       = icpx
 intel_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -262,7 +262,7 @@ intel_linux : $(obj)
 # ------------- intel_linux_db ----------------
 
 intel_linux_db : CPP_STANDARD = -std=c++11 -stdlib=libc++
-intel_linux_db : CFLAGS    = -O0 -traceback $(CFLAG_COM) $(INTEL_COMPINFO) \
+intel_linux_db : CFLAGS    = -O0 -traceback $(CFLAGS_COM) $(INTEL_COMPINFO) \
 	                         -fstack-protector -fno-omit-frame-pointer -traceback -debug variable-locations \
 	                         -Wall -Wextra -Wuninitialized -Wunused-function -Wunused-variable \
 	                         -Wno-sign-compare -Wno-unused-parameter
@@ -278,7 +278,7 @@ intel_linux_db : $(obj)
 gnu_linux db: CFLAGS    = -O0  -ggdb -Wall -Wunreachable-code -Wswitch-default -Wshadow -Winit-self -Wundef \
                           -Wpointer-arith -Wuninitialized -Wno-address -Wno-format-overflow -Wno-format-truncation \
                           -Wno-undef -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG \
-                              $(CFLAG_COM) $(GNU_COMPINFO) \
+                              $(CFLAGS_COM) $(GNU_COMPINFO) \
 gnu_linux_db : CC        = gcc
 gnu_linux_db : CPP       = g++
 gnu_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -289,7 +289,7 @@ gnu_linux_db : $(obj)
 # ------------- gnu_linux ----------------
 
 gnu_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D NDEBUG \
-                              $(CFLAG_COM) $(GNU_COMPINFO) \
+                              $(CFLAGS_COM) $(GNU_COMPINFO) \
 gnu_linux : CC        = gcc
 gnu_linux : CPP       = g++
 gnu_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -303,18 +303,18 @@ clang_linux_db : CFLAGS    = -O0 -ggdb -Wall -Wunreachable-code -Wswitch-default
                              -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized \
                              -Wno-address -Wno-undef -Wno-parentheses -Wno-unknown-pragmas \
                              -Wno-comment -Wno-write-strings -D _DEBUG \
-                              $(CFLAG_COM) $(GNU_COMPINFO) \
+                              $(CFLAGS_COM) $(GNU_COMPINFO) \
 clang_linux_db : CC        = clang
 clang_linux_db : CPP       = clang++
 clang_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
 
 clang_linux_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/clang_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/clang_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
 
 # ------------- clang_linux ----------------
 
 clang_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings \
-                           $(CFLAG_COM) $(GNU_COMPINFO) \
+                           $(CFLAGS_COM) $(GNU_COMPINFO) \
 clang_linux : CC        = clang
 clang_linux : CPP       = clang++
 clang_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -348,13 +348,14 @@ win_check : $(win_chk)
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   OSX   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-
 SMV_LIBS_OSX =  -lglui -lgd -ljpeg -lpng -lz
+ifeq ($(GLUT),freeglut)
+  SMV_LIBS_OSX += -lfreeglut
+endif
 
 # ------------- gnu_osx_db ----------------
 
 gnu_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
-gnu_osx_db : LFLAGS    = -L$(LIB_DIR)/gnu_osx $(SMV_LIBS_OSX) $(SMV_PROFILEFLAG)
 ifeq ($(GLUT),freeglut)
 gnu_osx_db : LFLAGS   += -framework CoreVideo -framework Cocoa -framework OpenGL
 gnu_osx_db : LFLAGS   += -L$(FREEGLUT_DIR)/lib -lglut
@@ -367,30 +368,28 @@ gnu_osx_db : CPP       = ${COMPILER2}
 gnu_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
 
 gnu_osx_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)  -L$(LIB_DIR)/gnu_osx $(SMV_LIBS_OSX) 
 
 # ------------- gnu_osx ----------------
 
-gnu_osx : CFLAGS    = -O0 -D NDEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
+gnu_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings \
+                      $(CFLAGS_COM) $(GNU_COMPINFO)
 gnu_osx : LFLAGS    = -L$(LIB_DIR)/gnu_osx $(SMV_LIBS_OSX) $(SMV_PROFILEFLAG)
 ifeq ($(GLUT),freeglut)
-gnu_osx : LFLAGS   += -framework CoreVideo -framework Cocoa -framework OpenGL
-gnu_osx : LFLAGS   += -L$(FREEGLUT_DIR)/lib -lglut
-gnu_osx : CFLAGS   += -D pp_FREEGLUT -I$(FREEGLUT_DIR)/include
+gnu_osx : LFLAGS_OSX   = -framework CoreVideo -framework Cocoa -framework OpenGL
 else
-gnu_osx : LFLAGS   += -framework OpenGL -framework GLUT
+gnu_osx : LFLAGS_OSX   = -framework OpenGL -framework GLUT
 endif
 gnu_osx : CC        = ${COMPILER}
 gnu_osx : CPP       = ${COMPILER2}
 gnu_osx : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 gnu_osx : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -L $(LIB_DIR)/gnu_osx $(SMV_LIBS_OSX)
 
 # ------------- clang_osx_db ----------------
 
 clang_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
-clang_osx_db : LFLAGS    = -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX) $(SMV_PROFILEFLAG)
 ifeq ($(GLUT),freeglut)
 clang_osx_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 clang_osx_db : CFLAGS   += -D FREEGLUT_STATIC
@@ -406,20 +405,19 @@ clang_osx_db : $(obj)
 
 # ------------- clang_osx ----------------
 
-clang_osx : CFLAGS    = -O0 -D NDEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
-clang_osx : LFLAGS    = -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX) $(SMV_PROFILEFLAG)
+clang_osx : CFLAGS    = -O0 -D NDEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings \
+                        $(CFLAGS_COM) $(GNU_COMPINFO)
 ifeq ($(GLUT),freeglut)
-clang_osx : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
-clang_osx : CFLAGS   += -D FREEGLUT_STATIC
+clang_osx : LFLAGS_OSX   = -framework CoreVideo -framework Cocoa -framework OpenGL -framework GLUT
 else
-clang_osx : LFLAGS   += -framework OpenGL -framework GLUT
+clang_osx : LFLAGS_OSX   =                                       -framework OpenGL -framework GLUT
 endif
 clang_osx : CC        = ${COMPILER}
 clang_osx : CPP       = ${COMPILER2}
 clang_osx : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 clang_osx : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX)
 
 #-------------- Clean Target to remove Object -----------
 

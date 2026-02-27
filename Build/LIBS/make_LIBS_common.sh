@@ -2,7 +2,12 @@
 
 GET_FREEGLUT_WARNINGS()
 {
-  FREEGLUTLIBDIR=$LIBDIR/../../../../libs/freeglut/lib64
+  if [ `uname` == "Darwin" ]; then
+    FREEGLUTLIB=lib
+  else
+    FREEGLUTLIB=lib64
+  fi
+  FREEGLUTLIBDIR=$LIBDIR/../../../../libs/freeglut/$FREEGLUTLIB
   if [ -e $FREEGLUTLIBDIR/libglut.a ]; then
     echo "*** glut(freeglutt) library built"
     cp $FREEGLUTLIBDIR/libglut.a $LIBDIR/libfreeglut.a
