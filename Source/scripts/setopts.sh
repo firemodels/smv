@@ -9,12 +9,13 @@ export COMPILER=$INTEL_ICC
 export COMPILER2=$INTEL_ICPP
 
 PLATFORM=""
+XQUARTZ=
 GLUT=glut
 LUA=
 FOREC_g=
 FOREC_i=
 target=all
-while getopts 'CfgGhiILlt:T' OPTION
+while getopts 'CfgGhiILlt:TX' OPTION
 do
 case $OPTION in
   C)
@@ -77,6 +78,9 @@ case $OPTION in
   T)
    dummy=1
   ;;
+  X)
+   XQUARTZ=1
+  ;;
 esac
 done
 shift $(($OPTIND-1))
@@ -93,3 +97,4 @@ export PLATFORM
 export GLUT
 export LUA
 export target
+export XQUARTZ

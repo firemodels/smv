@@ -34,6 +34,7 @@ GET_WARNINGS()
   fi
 }
 
+export XQUARTZ=
 OPTS="$*"
 source ../../../Source/scripts/setopts.sh $OPTS
 

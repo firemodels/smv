@@ -1,5 +1,4 @@
 #!/bin/bash
-OPTION=$1
 #*** clean old files
 echo "*** removing old files"
  git clean -dxf
@@ -8,7 +7,7 @@ echo "*** removing old files"
 
 #*** configure
 echo "*** configuring"
-if [ "$OPTION" == "XQUARTZ" ]; then
+if [ "$XQUARTZ" != "" ]; then
   XQ_PREFIX="/opt/X11"
 
   cmake ../../../../freeglut \
