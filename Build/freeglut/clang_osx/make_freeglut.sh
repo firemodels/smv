@@ -1,4 +1,5 @@
 #!/bin/bash
+OPTION=$1
 #*** clean old files
 echo "*** removing old files"
  git clean -dxf
@@ -7,7 +8,25 @@ echo "*** removing old files"
 
 #*** configure
 echo "*** configuring"
-cmake ../../../../freeglut \
+if [ "$OPTION" == "XQUARTZ" ]; then
+  XQ_PREFIX="/opt/X11"
+
+  cmake ../../../../freeglut \
+  -G "Unix Makefiles" \
+  -DCMAKE_INSTALL_PREFIX=../../../../libs/freeglut \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DFREEGLUT_BUILD_DEMOS=OFF \
+  -DCMAKE_C_COMPILER=clang \
+  -DFREEGLUT_COCOA=OFF \
+  -DFREEGLUT_X11=ON \
+  -DX11_INCLUDE_DIR=${XQ_PREFIX}/include \
+  -DX11_LIBRARIES=${XQ_PREFIX}/lib/libX11.dylib \
+  -DCMAKE_PREFIX_PATH=${XQ_PREFIX} \
+  -DCMAKE_EXE_LINKER_FLAGS="-L${XQ_PREFIX}/lib -Wl,-rpath,${XQ_PREFIX}/lib" \
+  -DFREEGLUT_BUILD_SHARED_LIBS=OFF \
+  -DFREEGLUT_BUILD_STATIC_LIBS=ON
+else
+  cmake ../../../../freeglut \
                            -G "Unix Makefiles" \
                            -DCMAKE_INSTALL_PREFIX=../../../../libs/freeglut \
                            -DCMAKE_BUILD_TYPE=Release \
@@ -16,6 +35,7 @@ cmake ../../../../freeglut \
                            -DFREEGLUT_COCOA=ON   \
                            -DFREEGLUT_BUILD_SHARED_LIBS=OFF \
                            -DFREEGLUT_BUILD_STATIC_LIBS=ON
+fi
 
 #*** build
 echo "*** building"
