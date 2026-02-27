@@ -352,17 +352,16 @@ SMV_LIBS_OSX =  -lglui -lgd -ljpeg -lpng -lz
 ifeq ($(GLUT),freeglut)
   SMV_LIBS_OSX += -lfreeglut
 endif
+ifeq ($(GLUT),freeglut)
+  LFLAGS_OSX   = -framework CoreVideo -framework Cocoa -framework OpenGL
+else
+  LFLAGS_OSX   = -framework OpenGL -framework GLUT
+endif
 
 # ------------- gnu_osx_db ----------------
 
 gnu_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-comment -Wno-deprecated-declarations \
                          $(CFLAGS_COM) $(GNU_COMPINFO)
-ifeq ($(GLUT),freeglut)
-gnu_osx_db : LFLAGS   += -framework CoreVideo -framework Cocoa -framework OpenGL
-gnu_osx_db : LFLAGS   += -L$(FREEGLUT_DIR)/lib -lglut
-else
-gnu_osx_db : LFLAGS   += -framework OpenGL -framework GLUT
-endif
 gnu_osx_db : CC        = ${COMPILER}
 gnu_osx_db : CPP       = ${COMPILER2}
 gnu_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
@@ -374,11 +373,6 @@ gnu_osx_db : $(obj)
 
 gnu_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings \
                       $(CFLAGS_COM) $(GNU_COMPINFO)
-ifeq ($(GLUT),freeglut)
-gnu_osx : LFLAGS_OSX   = -framework CoreVideo -framework Cocoa -framework OpenGL
-else
-gnu_osx : LFLAGS_OSX   = -framework OpenGL -framework GLUT
-endif
 gnu_osx : CC        = ${COMPILER}
 gnu_osx : CPP       = ${COMPILER2}
 gnu_osx : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -390,11 +384,6 @@ gnu_osx : $(obj)
 
 clang_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings \
                         $(CFLAGS_COM) $(GNU_COMPINFO)
-ifeq ($(GLUT),freeglut)
-clang_osx_db : LFLAGS_OSX   = -framework CoreVideo -framework Cocoa -framework OpenGL
-else
-clang_osx_db : LFLAGS_OSX   = -framework OpenGL -framework GLUT
-endif
 clang_osx_db : CC        = ${COMPILER}
 clang_osx_db : CPP       = ${COMPILER2}
 clang_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -406,11 +395,6 @@ clang_osx_db : $(obj)
 
 clang_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings \
                         $(CFLAGS_COM) $(GNU_COMPINFO)
-ifeq ($(GLUT),freeglut)
-clang_osx : LFLAGS_OSX   = -framework CoreVideo -framework Cocoa -framework OpenGL
-else
-clang_osx : LFLAGS_OSX   = -framework OpenGL -framework GLUT
-endif
 clang_osx : CC        = ${COMPILER}
 clang_osx : CPP       = ${COMPILER2}
 clang_osx : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
