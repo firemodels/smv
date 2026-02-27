@@ -15,7 +15,6 @@ SMV_PROFILESTRING =
 # Intel compiler definitions
 include ../../scripts/intel_compiler.mak
 
-COMP_VERSION =
 ifeq ($(shell echo "check_quotes"),"check_quotes")
   GIT_HASH   := $(shell ..\..\..\Utilities\Scripts\githash)
   GIT_DATE   := $(shell ..\..\..\Utilities\Scripts\gitlog)
@@ -185,9 +184,8 @@ SYSTEM_LIBS_WIN = user32.lib gdi32.lib comdlg32.lib shell32.lib
 
 # ------------- intel_win_db ----------------
 
-intel_win_db : CFLAGS    = /Od -D pp_INTEL -D _DEBUG -D _CONSOLE \
-                           /Zi /W4 /Wno-cast-function-type-mismatch /Wno-unused-function /Wno-unused-parameter /debug:full \
-                           $(INTEL_COMPINFO) $(CFLAG_WIN_COM)
+intel_win_db : CFLAGS    = /Od -D pp_INTEL -D _DEBUG -D _CONSOLE /Zi /W4 /Wno-cast-function-type-mismatch \
+                           /Wno-unused-function /Wno-unused-parameter /debug:full $(CFLAG_WIN_COM)
 intel_win_db : LFLAGS   =   /traceback /Zi /DEBUG \
                            $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/intel_win
 intel_win_db : CC        = icx
@@ -199,7 +197,7 @@ intel_win_db : $(objwin)
 
 # ------------- intel_win ----------------
 
-intel_win : CFLAGS    = -O1 -D pp_INTEL -D NDEBUG -D _CONSOLE -D NONDLL $(INTEL_COMPINFO) $(CFLAG_WIN_COM)
+intel_win : CFLAGS    = -O1 -D pp_INTEL -D NDEBUG -D _CONSOLE -D NONDLL $(CFLAG_WIN_COM)
 intel_win : LFLAGS    = $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/intel_win
 intel_win : CC        = icx
 intel_win : CPP       = icx
@@ -210,7 +208,7 @@ intel_win : $(objwin)
 
 # ------------- clang_win_db ----------------
 
-clang_win_db : CFLAGS    = -D NDEBUG -D _CONSOLE -D NONDLL $(GNU_COMPINFO) $(CFLAG_WIN_COM)
+clang_win_db : CFLAGS    = -D NDEBUG -D _CONSOLE -D NONDLL $(CFLAG_WIN_COM)
 clang_win_db : LFLAGS    = $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/clang_win
 clang_win_db : CC        = clang-cl
 clang_win_db : CPP       = clang-cl
@@ -221,7 +219,7 @@ clang_win_db : $(objwin)
 
 # ------------- clang_win ----------------
 
-clang_win : CFLAGS    = -D NDEBUG -D _CONSOLE -D NONDLL $(GNU_COMPINFO) $(CFLAG_WIN_COM)
+clang_win : CFLAGS    = -D NDEBUG -D _CONSOLE -D NONDLL $(CFLAG_WIN_COM)
 clang_win : LFLAGS    = $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/clang_win
 clang_win : CC        = clang-cl
 clang_win : CPP       = clang-cl
@@ -251,7 +249,7 @@ SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lXi -lGLU -lGL -lm -lrt
 # ------------- intel_linux ----------------
 
 intel_linux : CPP_STANDARD = -std=c++11 -stdlib=libc++
-intel_linux : CFLAGS    = -O0 -traceback -D NDEBUG $(CFLAGS_COM) $(INTEL_COMPINFO)
+intel_linux : CFLAGS    = -O0 -traceback -D NDEBUG $(CFLAGS_COM)
 intel_linux : CC        = icx
 intel_linux : CPP       = icpx
 intel_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -262,10 +260,9 @@ intel_linux : $(obj)
 # ------------- intel_linux_db ----------------
 
 intel_linux_db : CPP_STANDARD = -std=c++11 -stdlib=libc++
-intel_linux_db : CFLAGS    = -O0 -traceback $(CFLAGS_COM) $(INTEL_COMPINFO) \
-	                         -fstack-protector -fno-omit-frame-pointer -traceback -debug variable-locations \
+intel_linux_db : CFLAGS    = -O0 -traceback  -fstack-protector -fno-omit-frame-pointer -debug variable-locations \
 	                         -Wall -Wextra -Wuninitialized -Wunused-function -Wunused-variable \
-	                         -Wno-sign-compare -Wno-unused-parameter
+	                         -Wno-sign-compare -Wno-unused-parameter $(CFLAGS_COM)
 intel_linux_db : CC        = icx
 intel_linux_db : CPP       = icpx
 intel_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
@@ -278,7 +275,7 @@ intel_linux_db : $(obj)
 gnu_linux db: CFLAGS    = -O0  -ggdb -Wall -Wunreachable-code -Wswitch-default -Wshadow -Winit-self -Wundef \
                           -Wpointer-arith -Wuninitialized -Wno-address -Wno-format-overflow -Wno-format-truncation \
                           -Wno-undef -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG \
-                              $(CFLAGS_COM) $(GNU_COMPINFO) \
+                           $(CFLAGS_COM)
 gnu_linux_db : CC        = gcc
 gnu_linux_db : CPP       = g++
 gnu_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -288,8 +285,8 @@ gnu_linux_db : $(obj)
 
 # ------------- gnu_linux ----------------
 
-gnu_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D NDEBUG \
-                              $(CFLAGS_COM) $(GNU_COMPINFO) \
+gnu_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings \
+                        -D NDEBUG  $(CFLAGS_COM)
 gnu_linux : CC        = gcc
 gnu_linux : CPP       = g++
 gnu_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -302,8 +299,7 @@ gnu_linux : $(obj)
 clang_linux_db : CFLAGS    = -O0 -ggdb -Wall -Wunreachable-code -Wswitch-default \
                              -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized \
                              -Wno-address -Wno-undef -Wno-parentheses -Wno-unknown-pragmas \
-                             -Wno-comment -Wno-write-strings -D _DEBUG \
-                              $(CFLAGS_COM) $(GNU_COMPINFO) \
+                             -Wno-comment -Wno-write-strings -D _DEBUG $(CFLAGS_COM)
 clang_linux_db : CC        = clang
 clang_linux_db : CPP       = clang++
 clang_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
@@ -313,8 +309,7 @@ clang_linux_db : $(obj)
 
 # ------------- clang_linux ----------------
 
-clang_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings \
-                           $(CFLAGS_COM) $(GNU_COMPINFO) \
+clang_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings $(CFLAGS_COM)
 clang_linux : CC        = clang
 clang_linux : CPP       = clang++
 clang_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -348,11 +343,10 @@ win_check : $(win_chk)
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   OSX   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+
 SMV_LIBS_OSX =  -lglui -lgd -ljpeg -lpng -lz
 ifeq ($(GLUT),freeglut)
   SMV_LIBS_OSX += -lfreeglut
-endif
-ifeq ($(GLUT),freeglut)
   LFLAGS_OSX   = -framework CoreVideo -framework Cocoa -framework OpenGL
 else
   LFLAGS_OSX   = -framework OpenGL -framework GLUT
@@ -360,8 +354,7 @@ endif
 
 # ------------- gnu_osx_db ----------------
 
-gnu_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-comment -Wno-deprecated-declarations \
-                         $(CFLAGS_COM) $(GNU_COMPINFO)
+gnu_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-comment -Wno-deprecated-declarations$(CFLAGS_COM)
 gnu_osx_db : CC        = ${COMPILER}
 gnu_osx_db : CPP       = ${COMPILER2}
 gnu_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
@@ -371,8 +364,7 @@ gnu_osx_db : $(obj)
 
 # ------------- gnu_osx ----------------
 
-gnu_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings \
-                      $(CFLAGS_COM) $(GNU_COMPINFO)
+gnu_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(CFLAGS_COM)
 gnu_osx : CC        = ${COMPILER}
 gnu_osx : CPP       = ${COMPILER2}
 gnu_osx : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -382,8 +374,7 @@ gnu_osx : $(obj)
 
 # ------------- clang_osx_db ----------------
 
-clang_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings \
-                        $(CFLAGS_COM) $(GNU_COMPINFO)
+clang_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(CFLAGS_COM)
 clang_osx_db : CC        = ${COMPILER}
 clang_osx_db : CPP       = ${COMPILER2}
 clang_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -393,8 +384,7 @@ clang_osx_db : $(obj)
 
 # ------------- clang_osx ----------------
 
-clang_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings \
-                        $(CFLAGS_COM) $(GNU_COMPINFO)
+clang_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(CFLAGS_COM)
 clang_osx : CC        = ${COMPILER}
 clang_osx : CPP       = ${COMPILER2}
 clang_osx : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
