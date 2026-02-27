@@ -84,7 +84,11 @@ if [ "$GLUT" == "freeglut" ]; then
     if [ "`uname`" == "Darwin" ]; then
       PLATFORM=osx
     fi
-    echo "*** building freeglut"
+    XQ=
+    if [ "$XQUARTZ" != "" ]; then
+      XQ="(XQuartz)"
+    fi
+    echo "*** building freeglut$XQ"
     if [ "$COMPILER" == "icx" ]; then
       cd $BUILDDIR/freeglut/intel_$PLATFORM
     elif [ "$COMPILER" == "gcc" ]; then
