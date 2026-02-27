@@ -32,7 +32,7 @@ void DrawCircVentsApproxSolid(int option){
     int j;
     meshdata *meshi;
     float *xplt, *yplt, *zplt;
-    float dx, dy, dz, dxyz;
+    float dx, dxyz;
 
     meshi = global_scase.meshescoll.meshinfo + i;
     xplt = meshi->xplt_smv;
@@ -182,7 +182,7 @@ void DrawCircVentsApproxOutline(int option){
     int j;
     meshdata *meshi;
     float *xplt, *yplt, *zplt;
-    float dx, dy, dz, dxyz;
+    float dx, dxyz;
 
     meshi = global_scase.meshescoll.meshinfo + i;
     xplt = meshi->xplt_smv;
