@@ -41,7 +41,7 @@ void DrawCircVentsApproxSolid(int option){
     dx = xplt[1] - xplt[0];
     dy = yplt[1] - yplt[0];
     dz = zplt[1] - zplt[0];
-    dxyz = MIN(MIN(dx, dy), dz)/10.0;
+    dxyz = SCALE2SMV(xyzmaxdiff/400.0);
 
     for(j=0;j<meshi->ncvents;j++){
       cventdata *cvi;
@@ -195,7 +195,7 @@ void DrawCircVentsApproxOutline(int option){
     dx = xplt[1] - xplt[0];
     dy = yplt[1] - yplt[0];
     dz = zplt[1] - zplt[0];
-    dxyz = MIN(MIN(dx, dy), dz)/10.0;
+    dxyz = SCALE2SMV(xyzmaxdiff/400.0);
 
     for(j=0;j<meshi->ncvents;j++){
       cventdata *cvi;
@@ -374,7 +374,6 @@ void DrawCircVentsExactSolid(int option){
       cventdata *cvi;
       float x0, yy0, z0;
       unsigned char vcolor[3];
-      float delta;
       float *color;
       float width, height;
 
@@ -396,14 +395,37 @@ void DrawCircVentsExactSolid(int option){
         z0 = cvi->zmin;
       }
 
-      delta=0.001;
+      float delta, deltax = 0.0, deltay = 0.0, deltaz = 0.0;
+        
+      delta = xyzmaxdiff / 400.0;
+      switch(cvi->dir){
+      case DOWN_X:
+        deltax = -delta;
+        break;
+      case UP_X:
+        deltax = delta;
+        break;
+      case DOWN_Y:
+        deltay = -delta;
+        break;
+      case UP_Y:
+        deltay = delta;
+        break;
+      case DOWN_Z:
+        deltaz = -delta;
+        break;
+      case UP_Z:
+        deltaz = delta;
+        break;
+      }
       color=cvi->color;
       vcolor[0]=color[0]*255;
       vcolor[1]=color[1]*255;
       vcolor[2]=color[2]*255;
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
-      glTranslatef(-global_scase.xbar0,-global_scase.ybar0,-global_scase.zbar0);
+      glTranslatef(-global_scase.xbar0+deltax,
+        -global_scase.ybar0+deltay,-global_scase.zbar0+deltaz);
       if(option==VENT_CIRCLE){
         clipdata circleclip;
         float *ventmin, *ventmax;
@@ -420,36 +442,30 @@ void DrawCircVentsExactSolid(int option){
       height = 0.0;
       switch(cvi->dir){
         case DOWN_X:
-          glTranslatef(-delta,0.0,0.0);
           glRotatef(-90.0,0.0,1.0,0.0);
           width  += cvi->ymax-cvi->ymin;
           height += cvi->zmax-cvi->zmin;
           break;
         case UP_X:
-          glTranslatef(delta,0.0,0.0);
           glRotatef(-90.0,0.0,1.0,0.0);
           width  += cvi->ymax-cvi->ymin;
           height += cvi->zmax-cvi->zmin;
           break;
         case DOWN_Y:
-          glTranslatef(0.0,-delta,0.0);
           glRotatef(90.0,1.0,0.0,0.0);
           width  += cvi->xmax-cvi->xmin;
           height += cvi->zmax-cvi->zmin;
           break;
         case UP_Y:
-          glTranslatef(0.0,delta,0.0);
           glRotatef(90.0,1.0,0.0,0.0);
           width  += cvi->xmax-cvi->xmin;
           height += cvi->zmax-cvi->zmin;
           break;
         case DOWN_Z:
-          glTranslatef(0.0,0.0,-delta);
           width  += cvi->xmax-cvi->xmin;
           height += cvi->ymax-cvi->ymin;
           break;
         case UP_Z:
-          glTranslatef(0.0,0.0,delta);
           width  += cvi->xmax-cvi->xmin;
           height += cvi->ymax-cvi->ymin;
           break;
@@ -487,7 +503,6 @@ void DrawCircVentsExactOutline(int option){
       cventdata *cvi;
       float x0, yy0, z0;
       unsigned char vcolor[3];
-      float delta;
       float *color;
       float width, height;
 
@@ -509,14 +524,36 @@ void DrawCircVentsExactOutline(int option){
         z0 = cvi->zmin;
       }
 
-      delta=0.001;
+      float delta, deltax = 0.0, deltay = 0.0, deltaz = 0.0;
+        
+      delta = xyzmaxdiff / 400.0;
+      switch(cvi->dir){
+      case DOWN_X:
+        deltax = -delta;
+        break;
+      case UP_X:
+        deltax = delta;
+        break;
+      case DOWN_Y:
+        deltay = -delta;
+        break;
+      case UP_Y:
+        deltay = delta;
+        break;
+      case DOWN_Z:
+        deltaz = -delta;
+        break;
+      case UP_Z:
+        deltaz = delta;
+        break;
+      }
       color=cvi->color;
       vcolor[0]=color[0]*255;
       vcolor[1]=color[1]*255;
       vcolor[2]=color[2]*255;
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
-      glTranslatef(-global_scase.xbar0,-global_scase.ybar0,-global_scase.zbar0);
+      glTranslatef(-global_scase.xbar0+deltax,-global_scase.ybar0+deltay,-global_scase.zbar0+deltaz);
       if(option==VENT_CIRCLE){
         clipdata circleclip;
         float *ventmin, *ventmax;
