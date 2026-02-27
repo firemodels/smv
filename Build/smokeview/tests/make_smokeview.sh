@@ -13,13 +13,13 @@ fi
 GLUTTYPE=
 if [ "$GLUT" != "glut" ]; then
   GLUT=freeglut
-  GLUTTYPE=f
+  GLUTTYPE=-f
 fi
 echo "*** build smokeview using $COMPILE and $GLUT"
 echo "*** cleaning repo"
 cd ../../..
 git clean -dxf > Nul
-cd Build/smokeview/$COMPILE_$PLATFORM
-./make_smokeview -"$GLUTTYPE"
+cd Build/smokeview/${COMPILE}_${PLATFORM}
+./make_smokeview.sh $GLUTTYPE
 ./smokeview_$PLATFORM -v
 echo "*** build complete"
