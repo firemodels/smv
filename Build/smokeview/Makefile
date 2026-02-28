@@ -96,6 +96,9 @@ INC  = -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR
 
 ifeq ($(GLUT),freeglut)
   INC += -I $(FREEGLUT_DIR)/include
+else
+  INC += -I $(FREEGLUT_DIR)/include
+  #INC += -I $(SOURCE_DIR)/glut_gl
 endif
 ifeq ($(shell echo "check_quotes"),"check_quotes")
   INC += -I $(SOURCE_DIR)/pthreads
