@@ -274,10 +274,6 @@ intel_linux_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/intel_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
 
 # ------------- gnu_linux_db ----------------
-#gnu_linux db: CFLAGS    = -O0  -ggdb -Wall -Wunreachable-code -Wswitch-default -Wshadow -Winit-self -Wundef \
-#                          -Wpointer-arith -Wuninitialized -Wno-address -Wno-format-overflow -Wno-format-truncation \
-#                          -Wno-undef -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG \
-#                           $(CFLAGS_COM)
 
 gnu_linux_db = -O0 -ggdb -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion \
                -Wformat=2 -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition \
