@@ -34,7 +34,6 @@ GET_WARNINGS()
   fi
 }
 
-export XQUARTZ=
 OPTS="$*"
 source ../../../Source/scripts/setopts.sh $OPTS
 
@@ -84,11 +83,7 @@ if [ "$GLUT" == "freeglut" ]; then
     if [ "`uname`" == "Darwin" ]; then
       PLATFORM=osx
     fi
-    XQ=
-    if [ "$XQUARTZ" != "" ]; then
-      XQ="(XQuartz)"
-    fi
-    echo "*** building freeglut$XQ"
+    echo "*** building freeglut$(GLTYPE)"
     if [ "$COMPILER" == "icx" ]; then
       cd $BUILDDIR/freeglut/intel_$PLATFORM
     elif [ "$COMPILER" == "gcc" ]; then

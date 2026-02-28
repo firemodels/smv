@@ -27,4 +27,4 @@ cd $CURDIR
 if [ "$BUILD_ALL" == "1" ]; then
   rm -f *.o *.mod smokeview_osx*
 fi
-eval make COMPILER=${COMPILER} COMPILER2=${COMPILER2} GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile gnu_osx_db
+eval make COMPILER=${COMPILER} COMPILER2=${COMPILER2} GLTYPE="$GLTYPE" GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile gnu_osx_db

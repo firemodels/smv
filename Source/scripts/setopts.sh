@@ -9,7 +9,7 @@ export COMPILER=$INTEL_ICC
 export COMPILER2=$INTEL_ICPP
 
 PLATFORM=""
-XQUARTZ=
+GLTYPE=COCOA
 GLUT=glut
 LUA=
 FOREC_g=
@@ -79,7 +79,7 @@ case $OPTION in
    dummy=1
   ;;
   X)
-   XQUARTZ=1
+   GLTYPE=XQUARTZ
   ;;
 esac
 done
@@ -97,4 +97,5 @@ export PLATFORM
 export GLUT
 export LUA
 export target
-export XQUARTZ
+explort GLTYPE
+ 

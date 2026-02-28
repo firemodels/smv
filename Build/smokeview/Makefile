@@ -345,11 +345,16 @@ win_check : $(win_chk)
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
 SMV_LIBS_OSX =  -lglui -lgd -ljpeg -lpng -lz
+LFLAGS_OSX   = -framework OpenGL -framework CoreVideo 
 ifeq ($(GLUT),freeglut)
   SMV_LIBS_OSX += -lfreeglut
-  LFLAGS_OSX   = -framework CoreVideo -framework Cocoa -framework OpenGL
+  ifeq ($(GLTYPE),XQUARTZ)
+    LFLAGS_OSX   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
+  else
+    LFLAGS_OSX   += -framework Cocoa
+  endif
 else
-  LFLAGS_OSX   = -framework OpenGL -framework GLUT
+  LFLAGS_OSX   += -framework GLUT
 endif
 
 # ------------- gnu_osx_db ----------------

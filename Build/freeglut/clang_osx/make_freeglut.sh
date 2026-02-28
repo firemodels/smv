@@ -1,8 +1,6 @@
 #!/bin/bash
 ARG=$1
-if [ "$ARG$" == "XQUARTZ" ]; then
-  XQUARTZ=1
-fi
+
 #*** clean old files
 echo "*** removing old files"
  git clean -dxf
@@ -11,7 +9,7 @@ echo "*** removing old files"
 
 #*** configure
 echo "*** configuring"
-if [ "$XQUARTZ" != "" ]; then
+if [[ "$GLTYPE" == "XQUARTZ" ]] || [[ "$ARG" == "XQUARTZ" ]]; then
   XQ_PREFIX="/opt/X11"
 
   cmake ../../../../freeglut \
