@@ -96,6 +96,9 @@ INC  = -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR
 
 ifeq ($(GLUT),freeglut)
   INC += -I $(FREEGLUT_DIR)/include
+else
+  INC += -I $(FREEGLUT_DIR)/include
+  #INC += -I $(SOURCE_DIR)/glut_gl
 endif
 ifeq ($(shell echo "check_quotes"),"check_quotes")
   INC += -I $(SOURCE_DIR)/pthreads
@@ -290,7 +293,7 @@ gnu_linux_db : $(obj)
 
 # ------------- gnu_linux ----------------
 
-gnu_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings \
+gnu_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas \
                         -D NDEBUG  $(CFLAGS_COM)
 gnu_linux : CC        = gcc
 gnu_linux : CPP       = g++
@@ -304,7 +307,7 @@ gnu_linux : $(obj)
 clang_linux_db : CFLAGS    = -O0 -ggdb -Wall -Wunreachable-code -Wswitch-default \
                              -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized \
                              -Wno-address -Wno-undef -Wno-parentheses -Wno-unknown-pragmas \
-                             -Wno-comment -Wno-write-strings -D _DEBUG $(CFLAGS_COM)
+                             -D _DEBUG $(CFLAGS_COM)
 clang_linux_db : CC        = clang
 clang_linux_db : CPP       = clang++
 clang_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
@@ -314,7 +317,7 @@ clang_linux_db : $(obj)
 
 # ------------- clang_linux ----------------
 
-clang_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings $(CFLAGS_COM)
+clang_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas $(CFLAGS_COM)
 clang_linux : CC        = clang
 clang_linux : CPP       = clang++
 clang_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -364,7 +367,7 @@ endif
 
 # ------------- gnu_osx_db ----------------
 
-gnu_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-comment -Wno-deprecated-declarations$(CFLAGS_COM)
+gnu_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-deprecated-declarations$(CFLAGS_COM)
 gnu_osx_db : CC        = ${COMPILER}
 gnu_osx_db : CPP       = ${COMPILER2}
 gnu_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
@@ -374,7 +377,7 @@ gnu_osx_db : $(obj)
 
 # ------------- gnu_osx ----------------
 
-gnu_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(CFLAGS_COM)
+gnu_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-deprecated-declarations $(CFLAGS_COM)
 gnu_osx : CC        = ${COMPILER}
 gnu_osx : CPP       = ${COMPILER2}
 gnu_osx : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -384,7 +387,7 @@ gnu_osx : $(obj)
 
 # ------------- clang_osx_db ----------------
 
-clang_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(CFLAGS_COM)
+clang_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-deprecated-declarations $(CFLAGS_COM)
 clang_osx_db : CC        = ${COMPILER}
 clang_osx_db : CPP       = ${COMPILER2}
 clang_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
@@ -394,7 +397,7 @@ clang_osx_db : $(obj)
 
 # ------------- clang_osx ----------------
 
-clang_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(CFLAGS_COM)
+clang_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-deprecated-declarations $(CFLAGS_COM)
 clang_osx : CC        = ${COMPILER}
 clang_osx : CPP       = ${COMPILER2}
 clang_osx : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
