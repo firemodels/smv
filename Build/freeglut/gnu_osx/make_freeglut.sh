@@ -1,11 +1,13 @@
 #!/bin/bash
 ARG=$1
 
+FREEGLUTFILE=../../../../libs/freeglut/lib/libglut.a
+
 #*** clean old files
 echo "*** removing old files"
  git clean -dxf
- rm -rf  ../../../../libs/freeglut
- mkdir -p ../../../../libs/freeglut
+ rm -rf  $FREEGLUT
+ mkdir -p $FREEGLUT
 
 #*** configure
 echo "*** configuring"
@@ -14,6 +16,8 @@ if [[ "$GLTYPE" == "XQUARTZ" ]] || [[ "$ARG" == "XQUARTZ" ]]; then
 
   cmake ../../../../freeglut \
   -G "Unix Makefiles" \
+  -DFREEGLUT_BUILD_GAMEMODE=OFF \
+  -DFREEGLUT_USE_XF86VM=OFF \
   -DCMAKE_INSTALL_PREFIX=../../../../libs/freeglut \
   -DCMAKE_BUILD_TYPE=Release \
   -DFREEGLUT_BUILD_DEMOS=OFF \
@@ -41,3 +45,11 @@ make
 #*** install
 echo "*** installing"
 make install
+
+if [ -e $FREEGLUTFILE ]; then
+  ar -t $FREEGLUTFILE | awk '/gamemode/ {print $0}' | xargs -I{} ar d $FREEGLUTFILE {}
+  ranlib $FREEGLUTFILE
+  ar -t $FREEGLUTFILE | grep gamemode || echo "No gamemode objects found"
+else
+  echo ***error: freeglut file, $FREEGLUTFILE, does not exist
+fi
