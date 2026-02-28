@@ -3,14 +3,11 @@ source ../../scripts/setopts.sh $*
 
 curdir=`pwd`
 LIBDIR=../../LIBS/intel_linux/
-if [ "$BUILD_LIBS" == "1" ]; then
+if [ "1" == "1" ]; then
   cd $LIBDIR
-  ./make_LIBS.sh
+  ./make_LIBS.sh $*
   cd $curdir
-else
-  eval make -C ${LIBDIR} ${SMV_MAKE_OPTS} -f make_LIBS.make all
 fi
-
 if [ "$BUILD_ALL" == "1" ]; then
   make -f ../Makefile clean
 fi

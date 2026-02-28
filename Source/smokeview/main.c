@@ -750,3 +750,27 @@ int main(int argc, char **argv){
   FreeVars();
   return 0;
 }
+
+#if defined(__linux__) && defined(pp_FREEGLUT)
+#include <GL/freeglut.h>
+
+/* Stub implementations to avoid GameMode backend */
+
+int FGAPIENTRY glutEnterGameMode(void)
+{
+    return 0;
+}
+
+void FGAPIENTRY glutLeaveGameMode(void)
+{
+}
+
+void FGAPIENTRY glutGameModeString(const char *string)
+{
+}
+
+int FGAPIENTRY glutGameModeGet(GLenum query)
+{
+    return 0;
+}
+#endif

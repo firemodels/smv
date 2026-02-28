@@ -98,4 +98,7 @@ export GLUT
 export LUA
 export target
 export GLTYPE
+if [ "`uname`" != "Darwin" ]; then
+  GLTYPE=
+fi
  

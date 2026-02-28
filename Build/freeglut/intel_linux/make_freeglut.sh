@@ -1,5 +1,5 @@
 #!/bin/bash
-FREEGLUTFILE=../../../../libs/freeglut/lib/libglut.a
+FREEGLUTFILE=../../../../libs/freeglut/lib64/libglut.a
 
 #*** clean old files
 echo "*** removing old files"
@@ -10,6 +10,8 @@ echo "*** removing old files"
 #*** configure
 echo "*** configuring"
 cmake ../../../../freeglut -DCMAKE_INSTALL_PREFIX=../../../../libs/freeglut \
+                           -DHAVE_X11_XF86VMODE=0 \
+                           -DHAVE_X11_XRANDR=0
                            -DFREEGLUT_BUILD_GAMEMODE=OFF \
                            -DCMAKE_BUILD_TYPE=Release \
                            -DFREEGLUT_BUILD_DEMOS=OFF \
