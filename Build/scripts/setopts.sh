@@ -28,11 +28,12 @@ inc=
 BUILD_LIBS=
 BUILD_ALL=1
 FULL_BUILD=
+GLTYPE=COCOA
 if [ "$BUILD_ALL" == "1" ]; then
   FULL_BUILD="[default]"
 fi
 TESTOPT=
-while getopts 'AfCGhiLmprS' OPTION
+while getopts 'AfCGhiLmprSX' OPTION
 do
 case $OPTION in
   A)
@@ -76,6 +77,9 @@ case $OPTION in
   S)
    SANITIZE=1
   ;;
+  X)
+   GLTYPE=XQUARTZ
+  ;;
 esac
 done
 
@@ -83,6 +87,7 @@ export SMV_MAKE_OPTS
 export GLUT
 export TEST
 export SANITIZE
+export GLTYPE
 
 # this parameter is only for the mac
 if [ "`uname`" == "Darwin" ]; then

@@ -132,7 +132,7 @@ endif
 
 LFLAGS_COM    = $(SMV_PROFILEFLAG)
 ifeq ($(SANITIZE),1)
-LFLAGS_COM   += $(SANITIZE_OPTIONS)
+  LFLAGS_COM   += $(SANITIZE_OPTIONS)
 endif
 
 LFLAG_WIN   =  /link /STACK:32768000 /NODEFAULTLIB:msvcrt.lib
@@ -349,17 +349,17 @@ win_check : $(win_chk)
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
 SMV_LIBS_OSX =  -lglui -lgd -ljpeg -lpng -lz
-LFLAGS_OSX   = -framework OpenGL -framework CoreVideo 
+LFLAGS_OSX   =
 ifeq ($(GLUT),freeglut)
-  SMV_LIBS_OSX += -lfreeglut
   ifeq ($(GLTYPE),XQUARTZ)
-    LFLAGS_OSX   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
+    LFLAGS_OSX   += -L /opt/X11/lib -lfreeglut -lXrandr -lXxf86vm -lXext -lXmu -lX11 -lGLU -lGL
   else
     LFLAGS_OSX   += -framework Cocoa
   endif
 else
   LFLAGS_OSX   += -framework GLUT
 endif
+LFLAGS_OSX   += -framework OpenGL -framework CoreVideo 
 
 # ------------- gnu_osx_db ----------------
 

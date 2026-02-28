@@ -97,5 +97,5 @@ export PLATFORM
 export GLUT
 export LUA
 export target
-explort GLTYPE
+export GLTYPE
  

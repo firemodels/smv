@@ -83,7 +83,7 @@ if [ "$GLUT" == "freeglut" ]; then
     if [ "`uname`" == "Darwin" ]; then
       PLATFORM=osx
     fi
-    echo "*** building freeglut$(GLTYPE)"
+    echo "*** building freeglut(${GLTYPE})"
     if [ "$COMPILER" == "icx" ]; then
       cd $BUILDDIR/freeglut/intel_$PLATFORM
     elif [ "$COMPILER" == "gcc" ]; then
