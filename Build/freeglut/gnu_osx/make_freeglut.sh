@@ -1,8 +1,6 @@
 #!/bin/bash
 ARG=$1
 
-FREEGLUTFILE=../../../../libs/freeglut/lib/libglut.a
-
 #*** clean old files
 echo "*** removing old files"
  git clean -dxf
@@ -16,9 +14,9 @@ if [[ "$GLTYPE" == "XQUARTZ" ]] || [[ "$ARG" == "XQUARTZ" ]]; then
 
   cmake ../../../../freeglut \
   -G "Unix Makefiles" \
+  -DCMAKE_INSTALL_PREFIX=../../../../libs/freeglut \
   -DFREEGLUT_BUILD_GAMEMODE=OFF \
   -DFREEGLUT_USE_XF86VM=OFF \
-  -DCMAKE_INSTALL_PREFIX=../../../../libs/freeglut \
   -DCMAKE_BUILD_TYPE=Release \
   -DFREEGLUT_BUILD_DEMOS=OFF \
   -DFREEGLUT_COCOA=OFF \
@@ -30,7 +28,11 @@ if [[ "$GLTYPE" == "XQUARTZ" ]] || [[ "$ARG" == "XQUARTZ" ]]; then
   -DFREEGLUT_BUILD_SHARED_LIBS=OFF \
   -DFREEGLUT_BUILD_STATIC_LIBS=ON
 else
- cmake ../../../../freeglut -G "Unix Makefiles"  -DCMAKE_INSTALL_PREFIX=../../../../libs/freeglut \
+ cmake ../../../../freeglut \
+                           -G "Unix Makefiles"  \
+                          -DCMAKE_INSTALL_PREFIX=../../../../libs/freeglut \
+                          -DFREEGLUT_BUILD_GAMEMODE=OFF \
+                          -DFREEGLUT_USE_XF86VM=OFF \
                           -DCMAKE_BUILD_TYPE=Release \
                           -DFREEGLUT_BUILD_DEMOS=OFF \
                           -DFREEGLUT_COCOA=ON   \
@@ -46,6 +48,7 @@ make
 echo "*** installing"
 make install
 
+FREEGLUTFILE=../../../../libs/freeglut/lib/libglut.a
 if [ -e $FREEGLUTFILE ]; then
   ar -t $FREEGLUTFILE | awk '/gamemode/ {print $0}' | xargs -I{} ar d $FREEGLUTFILE {}
   ranlib $FREEGLUTFILE
