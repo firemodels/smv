@@ -53,3 +53,6 @@ if [ -e $FREEGLUTFILE ]; then
 else
   echo ***error: freeglut file, $FREEGLUTFILE, does not exist
 fi
+#fg_joystick.c.o
+#fg_xinput_x11.c.o
+#fg_xrandr.c.o
