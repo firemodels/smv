@@ -55,7 +55,7 @@ if NOT x%freeglutdir% == x goto skip_glut
   cd %SRCDIR%\glut-3.7.6
   echo *** building glut
   start "building glut" /WAIT cmd /c "makelib %COMPILER_TYPE%  > %LIBDIR%\glut.out 2>&1"
-  echo *** glut built
+  echo *** glut build complete
   timeout /t 1 > Nul
 :skip_glut
 
@@ -67,7 +67,7 @@ if x%freeglutdir% == x goto skip_freeglut
   cd %BUILDDIR%\freeglut\%freeglutdir%
   echo *** building freeglut
   call make_freeglut
-  echo *** freeglut built
+  echo *** freeglut build complete
 :skip_freeglut
 
 :: GLUI
@@ -76,22 +76,22 @@ echo *** building glui
 start "building glui"  cmd /c "%COMMON%\lib_wrapper glui %LIBDIR% makelib %COMPILER_TYPE%  %freeglutdir% > %LIBDIR%\glui.out 2>&1"
 
 call :WAIT zlib.running
-echo *** zlib built
+echo *** zlib build complete
 
 call :WAIT jpeg.running
-echo *** jpeg built
+echo *** jpeg build complete
 
 call :WAIT png.running
-echo *** png built
+echo *** png build complete
 
 call :WAIT gd.running
-echo *** gd built
+echo *** gd build complete
 
 call :WAIT pthreads.running
-echo *** pthreads built
+echo *** pthreads build complete
 
 call :WAIT glui.running
-echo *** glui built
+echo *** glui build complete
 
 cd %LIBDIR%
 

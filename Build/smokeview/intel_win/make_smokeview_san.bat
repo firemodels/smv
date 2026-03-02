@@ -1,4 +1,5 @@
 @echo off
+setlocal
 call ..\..\scripts\set_smv_opts %*
 
 :: setup compiler environment

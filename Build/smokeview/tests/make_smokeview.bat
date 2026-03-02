@@ -9,7 +9,9 @@ echo *** build smokeview using %compile% and %glut%
 echo *** cleaning repo
 cd ..\..\..
 git clean -dxf > Nul
+if exist ..\libs\freeglut echo *** remove freeglut installation directory
+if exist ..\libs\freeglut rmdir /s /q ..\libs\freeglut
 cd Build\smokeview\%compile%_win
-start "building %compile% using %glut%" /wait cmd /c  "make_smokeview -%glut%  > %CURDIR%\smokeview_%compile%_%glut%.out"
+start "building %compile% using %glut%" /wait cmd /c  "make_smokeview -%glut%  > %CURDIR%\smokeview_%compile%_%glut%.out 2>&1"
 smokeview_win -v
 echo *** build complete
