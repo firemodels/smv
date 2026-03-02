@@ -352,10 +352,10 @@ LFLAGS_OSX   =
 ifeq ($(GLUT),freeglut)
   ifeq ($(GLTYPE),XQUARTZ)
     LFLAGS_OSX   += -L /opt/X11/lib -lGL -lGLU -lX11 -lXext -lXmu -lXrandr -lXxf86vm
-    SMV_LIBS_OSX += -lfreeglut
   else
-    LFLAGS_OSX   += -framework Cocoa -framework CoreVideo -framework GLUT -framework OpenGL
+    LFLAGS_OSX   += -framework Cocoa -framework CoreVideo -framework OpenGL
   endif
+  SMV_LIBS_OSX += -lfreeglut
 else
   LFLAGS_OSX   += -framework GLUT -framework OpenGL
 endif

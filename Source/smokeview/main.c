@@ -787,4 +787,16 @@ int FGAPIENTRY glutGameModeGet(GLenum query)
 {
     return 0;
 }
+#ifdef __cplusplus 
+extern "C" { 
+#endif 
+int fgPlatformGetGameModeVMaxExtent(void){
+  return 0; 
+} 
+int fgPlatformGetGameModeHMaxExtent(void){ 
+  return 0; 
+} 
+#ifdef __cplusplus 
+  } 
+#endif
 #endif
