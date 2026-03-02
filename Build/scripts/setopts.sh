@@ -32,7 +32,7 @@ BUILD_LIBS=
 BUILD_ALL=1
 GLTYPE=COCOA
 TESTOPT=
-while getopts 'CfGhil:LprSX' OPTION
+while getopts 'CfGhiIl:LprSX' OPTION
 do
 case $OPTION in
   C)
@@ -58,6 +58,10 @@ case $OPTION in
   ;;
   i)
    BUILD_ALL=
+  ;;
+  I)
+   COMPILER=$INTEL_ICC
+   COMPILER2=$INTEL_ICPP
   ;;
   l)
    export SMV_LIBDIR=$LIBSDIR/"$OPTARG";
