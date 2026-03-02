@@ -5,6 +5,10 @@ cd  ../../../Source
 SOURCE_DIR=`pwd`
 cd $CURDIR
 
+cd ../../../Build/LIBS
+LIBSDIR=`pwd`
+cd $CURDIR
+
 SMV_MAKE_OPTS=
 TEST=
 SANITIZE=
@@ -24,21 +28,13 @@ source $SOURCE_DIR/scripts/set_compilers.sh
 export COMPILER=$INTEL_ICC
 export COMPILER2=$INTEL_ICPP
 
-inc=
 BUILD_LIBS=
 BUILD_ALL=1
-FULL_BUILD=
 GLTYPE=COCOA
-if [ "$BUILD_ALL" == "1" ]; then
-  FULL_BUILD="[default]"
-fi
 TESTOPT=
-while getopts 'AfCGhiLmprSX' OPTION
+while getopts 'CfGhil:LprSX' OPTION
 do
 case $OPTION in
-  A)
-   BUILD_ALL=1
-  ;;
   C)
    COMPILER=clang
    COMPILER2=clang++
@@ -53,7 +49,6 @@ case $OPTION in
   h)
   echo ""
   echo "options:"
-  echo "-a - full build $FULL_BUILD"
   echo "-h - show this help info"
   echo "-i - incremental build"
   echo "-L - rebuild all libraries"
@@ -62,8 +57,10 @@ case $OPTION in
   exit
   ;;
   i)
-   inc=1
    BUILD_ALL=
+  ;;
+  l)
+   export SMV_LIBDIR=$LIBSDIR/"$OPTARG";
   ;;
   L)
    BUILD_LIBS=1

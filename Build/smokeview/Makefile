@@ -351,14 +351,14 @@ SMV_LIBS_OSX =  -lglui -lgd -ljpeg -lpng -lz
 LFLAGS_OSX   =
 ifeq ($(GLUT),freeglut)
   ifeq ($(GLTYPE),XQUARTZ)
-    LFLAGS_OSX   += -L /opt/X11/lib -lfreeglut -lXrandr -lXxf86vm -lXext -lXmu -lX11 -lGLU -lGL
+    LFLAGS_OSX   += -L /opt/X11/lib -lGL -lGLU -lX11 -lXext -lXmu -lXrandr -lXxf86vm
+    SMV_LIBS_OSX += -lfreeglut
   else
-    LFLAGS_OSX   += -framework Cocoa
+    LFLAGS_OSX   += -framework Cocoa -framework CoreVideo -framework GLUT -framework OpenGL
   endif
 else
-  LFLAGS_OSX   += -framework GLUT
+  LFLAGS_OSX   += -framework GLUT -framework OpenGL
 endif
-LFLAGS_OSX   += -framework OpenGL -framework CoreVideo 
 
 # ------------- gnu_osx_db ----------------
 
@@ -385,7 +385,7 @@ gnu_osx : $(obj)
 clang_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-deprecated-declarations $(CFLAGS_COM)
 clang_osx_db : CC        = ${COMPILER}
 clang_osx_db : CPP       = ${COMPILER2}
-clang_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
+clang_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
 
 clang_osx_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX)

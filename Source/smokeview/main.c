@@ -751,7 +751,21 @@ int main(int argc, char **argv){
   return 0;
 }
 
-#if defined(__linux__) && defined(pp_FREEGLUT)
+#ifdef pp_FREEGLUT
+
+#ifdef __linux__
+#define GAME_STUBS
+#endif
+
+#ifndef GAME_STUBS
+#ifdef pp_OSX
+#define GAME_STUBS
+#endif
+#endif
+
+#endif
+
+#ifdef GAME_STUBS
 #include <GL/freeglut.h>
 
 /* Stub implementations to avoid GameMode backend */
