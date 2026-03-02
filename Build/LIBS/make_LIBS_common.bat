@@ -12,8 +12,15 @@ set SRCDIR=%CD%
 cd ..\Build
 set BUILDDIR=%CD%
 
+cd ..\Utilities
+set UTILDIR=%CD%
+
 cd %LIBDIR%\..
 set COMMON=%CD%
+
+setlocal
+if %COMPILER_TYPE% == i call %UTILDIR%\Scripts\setup_intel_compilers.bat
+if %COMPILER_TYPE% == c call %UTILDIR%\Scripts\setup_clang_compilers.bat
 
 :: ZLIB
 cd %SRCDIR%\zlib131
@@ -42,6 +49,9 @@ start "building pthreads"  cmd /c "%COMMON%\lib_wrapper pthreads %LIBDIR% makeli
 
 :: GLUT%
 if NOT x%freeglutdir% == x goto skip_glut
+  endlocal
+  if %COMPILER_TYPE% == i call %UTILDIR%\Scripts\setup_intel_compilers.bat
+  if %COMPILER_TYPE% == c call %UTILDIR%\Scripts\setup_clang_compilers.bat force
   cd %SRCDIR%\glut-3.7.6
   echo *** building glut
   start "building glut" /WAIT cmd /c "makelib %COMPILER_TYPE%  > %LIBDIR%\glut.out 2>&1"
@@ -51,10 +61,12 @@ if NOT x%freeglutdir% == x goto skip_glut
 
 :: freeglut
 if x%freeglutdir% == x goto skip_freeglut
+  endlocal
+  if %COMPILER_TYPE% == i call %UTILDIR%\Scripts\setup_intel_compilers.bat
+  if %COMPILER_TYPE% == c call %UTILDIR%\Scripts\setup_clang_compilers.bat force
   cd %BUILDDIR%\freeglut\%freeglutdir%
   echo *** building freeglut
-  start "building freeglut" /WAIT cmd /c "COMMON%\lib_wrapper make_freeglut  %LIBDIR%  %COMPILER_TYPE%  > %LIBDIR%\freeglut.out 2>&1"
-  call :WAIT freeglut.running
+  call make_freeglut
   echo *** freeglut built
 :skip_freeglut
 
