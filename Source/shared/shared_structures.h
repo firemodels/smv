@@ -686,6 +686,7 @@ typedef struct _vslicedata {
   int finalize;
   int loaded,display;
   float valmin, valmax;
+  int cellvec_comp;
   int vslice_filetype;
   int vslicefile_labelindex;
   char menulabel[128];
