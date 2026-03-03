@@ -35,7 +35,7 @@ GET_WARNINGS()
 }
 
 OPTS="$*"
-source ../../../Source/scripts/setopts.sh $OPTS
+source ../scripts/setopts.sh $OPTS
 
 git clean -dxf
 if [ "$target" == "clean" ]; then

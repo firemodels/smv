@@ -1,5 +1,5 @@
 #!/bin/bash
 git clean -dxf
-source ../scripts/setopts.sh $*
+source ../../Build/scripts/setopts.sh $*
 
 eval make -j 4 COMPILER=${COMPILER} SIZE=${SIZE} libz.a
