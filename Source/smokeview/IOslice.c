@@ -2497,6 +2497,7 @@ void *UpdateVSlices(void *arg){
 
     sdi = global_scase.slicecoll.sliceinfo+i;
     sdi->vec_comp=0;
+    sdi->cellvec_comp = 0;
     if(strncmp(sdi->label.shortlabel,"U-VEL",5)==0){
        sdi->vec_comp=1;
        continue;
@@ -2507,6 +2508,18 @@ void *UpdateVSlices(void *arg){
     }
     if(strncmp(sdi->label.shortlabel,"W-VEL",5)==0){
       sdi->vec_comp=3;
+      continue;
+    }
+    if(strncmp(sdi->label.shortlabel, "u_p", 3) == 0){
+      sdi->cellvec_comp = 1;
+      continue;
+    }
+    if(strncmp(sdi->label.shortlabel, "v_p", 3) == 0){
+      sdi->cellvec_comp = 2;
+      continue;
+    }
+    if(strncmp(sdi->label.shortlabel, "w_p", 3) == 0){
+      sdi->cellvec_comp = 3;
       continue;
     }
   }
@@ -2544,6 +2557,11 @@ void *UpdateVSlices(void *arg){
         if(sdj->vec_comp==1)vd->iu=sdj-global_scase.slicecoll.sliceinfo;
         if(sdj->vec_comp==2)vd->iv=sdj-global_scase.slicecoll.sliceinfo;
         if(sdj->vec_comp==3)vd->iw=sdj-global_scase.slicecoll.sliceinfo;
+        if(sdi->cellvec_comp != 0){
+          if(sdj->cellvec_comp == 1)vd->iu = sdj - global_scase.slicecoll.sliceinfo;
+          if(sdj->cellvec_comp == 2)vd->iv = sdj - global_scase.slicecoll.sliceinfo;
+          if(sdj->cellvec_comp == 3)vd->iw = sdj - global_scase.slicecoll.sliceinfo;
+        }
       }
     }
     else if(vd->vslice_filetype == SLICE_GEOM){
