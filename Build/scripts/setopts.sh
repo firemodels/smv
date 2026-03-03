@@ -1,13 +1,12 @@
 #!/bin/bash
-
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 CURDIR=`pwd`
-cd  ../../../Source
-SOURCE_DIR=`pwd`
-cd $CURDIR
 
-cd ../../../Build/LIBS
+cd $SCRIPTDIR/../../Source
+SOURCE_DIR=`pwd`
+
+cd $SCRIPTDIR/../../Build/LIBS
 LIBSDIR=`pwd`
-cd $CURDIR
 
 SMV_MAKE_OPTS=
 TEST=

@@ -34,9 +34,6 @@ GET_WARNINGS()
   fi
 }
 
-OPTS="$*"
-source ../scripts/setopts.sh $OPTS
-
 git clean -dxf
 if [ "$target" == "clean" ]; then
   exit
@@ -50,6 +47,9 @@ SRCDIR=`pwd`
 
 cd ../Build
 BUILDDIR=`pwd`
+
+OPTS="$*"
+source $BUILDDIR/scripts/setopts.sh $OPTS
 
 # ZLIB
 echo "*** building zlib"

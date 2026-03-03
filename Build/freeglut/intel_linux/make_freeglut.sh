@@ -1,5 +1,6 @@
 #!/bin/bash
-FREEGLUTFILE=../../../../libs/freeglut/lib64/libglut.a
+GLUTFILE=../../../../libs/freeglut/lib/libglut.a
+GLUTFILE64=../../../../libs/freeglut/lib64/libglut.a
 
 #*** clean old files
 echo "*** removing old files"
@@ -26,7 +27,16 @@ make
 #*** install
 echo "*** installing"
 make install
-if [ -e $FREEGLUTFILE ]; then
+
+FREEGLUTFILE=
+if [ -e $GLUTFILE ]; then
+  FREEGLUTFILE=$GLUTFILE
+else
+  if [ -e $GLUTFILE64 ]; then
+    FREEGLUTFILE=$GLUTFILE64
+  fi
+fi
+if [[ $FREEGLUTFILE != "" ]] && [[ -e $FREEGLUTFILE ]]; then
   ar -t $FREEGLUTFILE | awk '/gamemode/ {print $0}' | xargs -I{} ar d $FREEGLUTFILE {}
   ranlib $FREEGLUTFILE
   ar -t $FREEGLUTFILE | grep gamemode || echo "No gamemode objects found"

@@ -4,6 +4,7 @@ DIR=${CURDIR##*/}
 OPTS="-I -l $DIR $*"
 
 source ../../scripts/setopts.sh $OPTS
+cd $CURDIR
 
 if [ "$BUILD_LIBS" == "1" ]; then
   rm -f $SMV_LIBDIR/*.a
