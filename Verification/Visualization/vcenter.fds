@@ -3,7 +3,8 @@
   same as plume5a except there is a blockage in the middle of the scene to block the flow
   The purpose of this case is to demonstrate the curved flow (via streak lines) that results.
 
-&MESH IJK=16,16,32, XB=0.0,1.6,0.0,1.6,0.0,3.2 /
+&MESH IJK=16,16,16 XB=0.0,1.6,0.0,1.6,0.0,1.6 /
+&MESH IJK=16,16,16 XB=0.0,1.6,0.0,1.6,3.2 /
 
 &MISC IBLANK_SMV=.TRUE. /
 
@@ -37,6 +38,7 @@
 &SLCF PBY=0.8, QUANTITY='CELL W', CELL_CENTERED=T/
 
 &SLCF PBY=0.8,QUANTITY='TEMPERATURE',VECTOR=.TRUE. /
+&SLCF PBY=0.8,QUANTITY='TEMPERATURE',CELL_CENTERED=.TRUE.VECTOR=.TRUE. /
 
 
 &TAIL /
