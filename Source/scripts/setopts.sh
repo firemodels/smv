@@ -1,0 +1,102 @@
+#!/bin/bash
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+# define INTEL_ICC, INTEL_ICPP, GCC and GXX variables
+source $SCRIPT_DIR/set_compilers.sh
+
+export COMPILER=$INTEL_ICC
+export COMPILER2=$INTEL_ICPP
+
+PLATFORM=""
+GLTYPE=COCOA
+GLUT=glut
+FOREC_g=
+FOREC_i=
+target=all
+while getopts 'CfgGhiILl:t:TX' OPTION
+do
+case $OPTION in
+  C)
+   COMPILER=clang
+   COMPILER2=clang++
+  ;;
+  f)
+   GLUT="freeglut"
+  ;;
+  g)
+   if [ "$FORCE_i" == "" ]; then
+     COMPILER=$GCC
+     COMPILER2=$GXX
+   fi
+  ;;
+  G)
+   COMPILER=$GCC
+   COMPILER2=$GXX
+   FORCE_g=1
+  ;;
+  h)
+  echo "options:"
+  echo "-f - use freeglut (not glut)"
+  echo "-g - use the gnu gcc compiler"
+  echo "-i - use the Intel icc compiler"
+  echo "-q - on the Mac use the X11 include files and libraries supplied by Quartz"
+  echo "-t target - makefile target"
+  exit
+  ;;
+  i)
+   if [ "$FORCE_g" == "" ]; then
+     if [ "`uname`" == "Darwin" ]; then
+       COMPILER="icc"
+       COMPILER2="icpc"
+     else
+       COMPILER=$INTEL_ICC
+       COMPILER2=$INTEL_ICPP
+     fi
+   fi
+  ;;
+  I)
+    if [ "`uname`" == "Darwin" ]; then
+     COMPILER="icc"
+     COMPILER2="icpc"
+   else
+     COMPILER=$INTEL_ICC
+     COMPILER2=$INTEL_ICPP
+   fi
+   FORCE_i=1
+  ;;
+  l)
+   dummy="$OPTARG"
+  ;;
+  L)
+   dummy=1
+  ;;
+  t)
+   target="$OPTARG"
+  ;;
+  T)
+   dummy=1
+  ;;
+  X)
+   GLTYPE=XQUARTZ
+  ;;
+esac
+done
+shift $(($OPTIND-1))
+
+if [ "`uname`" == "Darwin" ]; then
+  PLATFORM="-D pp_OSX"
+  if [ "$LOWRES" != "" ]; then
+    PLATFORM="$PLATFORM -D pp_OSX_LOWRES"
+  fi
+fi
+export COMPILER
+export COMPILER2
+export PLATFORM
+export GLUT
+export target
+export GLTYPE
+if [ "`uname`" != "Darwin" ]; then
+  GLTYPE=
+fi
+ 

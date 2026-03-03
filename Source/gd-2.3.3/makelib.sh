@@ -1,5 +1,5 @@
 #!/bin/bash
-source ../../Build/scripts/setopts.sh $*
+source ../scripts/setopts.sh $*
 git clean -dxf
 STDINT="-DHAVE_STDINT_H -DNONDLL -DENABLE_FREETYPE=OFF -DBUILD_SHARED_LIBS=OFF"
 if [ "$COMPILER" == "icx" ]; then

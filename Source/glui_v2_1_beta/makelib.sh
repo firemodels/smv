@@ -1,6 +1,6 @@
 #!/bin/bash
 git clean -dxf
-source ../../Build/scripts/setopts.sh $*
+source ../scripts/setopts.sh $*
 
 
 # If target has been specified, use that, otherwise use default
