@@ -23,7 +23,10 @@ else
 fi
 
 # define INTEL_ICC, INTEL_ICPP, GCC and GXX variables
-source $SOURCE_DIR/scripts/set_compilers.sh
+export INTEL_ICC=icx
+export INTEL_ICPP=icpx
+export GCC=gcc
+export GXX=g++
 
 export COMPILER=$INTEL_ICC
 export COMPILER2=$INTEL_ICPP
