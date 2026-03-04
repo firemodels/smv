@@ -2497,6 +2497,7 @@ void *UpdateVSlices(void *arg){
 
     sdi = global_scase.slicecoll.sliceinfo+i;
     sdi->vec_comp=0;
+    sdi->cellvec_comp = 0;
     if(strncmp(sdi->label.shortlabel,"U-VEL",5)==0){
        sdi->vec_comp=1;
        continue;
@@ -2507,6 +2508,18 @@ void *UpdateVSlices(void *arg){
     }
     if(strncmp(sdi->label.shortlabel,"W-VEL",5)==0){
       sdi->vec_comp=3;
+      continue;
+    }
+    if(strncmp(sdi->label.shortlabel, "u_p", 3) == 0){
+      sdi->cellvec_comp = 1;
+      continue;
+    }
+    if(strncmp(sdi->label.shortlabel, "v_p", 3) == 0){
+      sdi->cellvec_comp = 2;
+      continue;
+    }
+    if(strncmp(sdi->label.shortlabel, "w_p", 3) == 0){
+      sdi->cellvec_comp = 3;
       continue;
     }
   }
@@ -2532,6 +2545,7 @@ void *UpdateVSlices(void *arg){
     vd->ival=i;
     vd->vslicefile_labelindex=sdi->slicefile_labelindex;
     vd->vslice_filetype=sdi->slice_filetype;
+    vd->cellvec_comp = sdi->cellvec_comp;
     if(vd->vslice_filetype==SLICE_CELL_CENTER){
       for(j=0;j<meshi->nsliceinfo;j++){
         slicedata *sdj;
@@ -2541,9 +2555,16 @@ void *UpdateVSlices(void *arg){
         if(sdi->blocknumber!=sdj->blocknumber)continue;
         if(sdi->is1!=sdj->is1||sdi->is2!=sdj->is2||sdi->js1!=sdj->js1)continue;
         if(sdi->js2!=sdj->js2||sdi->ks1!=sdj->ks1||sdi->ks2!=sdj->ks2)continue;
-        if(sdj->vec_comp==1)vd->iu=sdj-global_scase.slicecoll.sliceinfo;
-        if(sdj->vec_comp==2)vd->iv=sdj-global_scase.slicecoll.sliceinfo;
-        if(sdj->vec_comp==3)vd->iw=sdj-global_scase.slicecoll.sliceinfo;
+        if(sdi->cellvec_comp == 0){
+          if(sdj->vec_comp == 1)vd->iu = sdj - global_scase.slicecoll.sliceinfo;
+          if(sdj->vec_comp == 2)vd->iv = sdj - global_scase.slicecoll.sliceinfo;
+          if(sdj->vec_comp == 3)vd->iw = sdj - global_scase.slicecoll.sliceinfo;
+        }
+        else{
+          if(sdj->cellvec_comp == 1)vd->iu = sdj - global_scase.slicecoll.sliceinfo;
+          if(sdj->cellvec_comp == 2)vd->iv = sdj - global_scase.slicecoll.sliceinfo;
+          if(sdj->cellvec_comp == 3)vd->iw = sdj - global_scase.slicecoll.sliceinfo;
+        }
       }
     }
     else if(vd->vslice_filetype == SLICE_GEOM){
@@ -6840,16 +6861,22 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   u = vd->u;
   v = vd->v;
   w = vd->w;
+  
+//*** YZ plane
+
+//--- lines
+
   if((vd->volslice == 1 && plotx > 0 && visx_all == 1) || (vd->volslice == 0 && sd->idir == XDIR)){
     int j;
     float xhalf;
+    int plotxm1;
+
     if(plotx > 0){
       xhalf = (xplttemp[plotx] + xplttemp[plotx - 1]) / 2.0;
     }
     else{
       xhalf = xplttemp[plotx];
     }
-    int plotxm1;
     plotxm1 = MAX(plotx-1, 0);
 
     constval = xhalf + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
@@ -6869,10 +6896,13 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         yy2 = yy1;
       }
       yhalf = (yy1+yy2) / 2.0;
-    for(kk = 0; kk < sd->n_kmap; kk++){
-      k = sd->kmap[kk];
+      if(vd->cellvec_comp!=0)yy1 = yhalf;
+
+      for(kk = 0; kk < sd->n_kmap; kk++){
+        k = sd->kmap[kk];
         float zhalf, z1;
         int in_solid, in_gas;
+        float dy, dz;
 
         in_gas=1;
         if(iblank_cell != NULL&&iblank_cell[IJKCELL(plotxm1, j, k)] != GAS)in_gas=0;
@@ -6886,36 +6916,56 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         z1 = zplttemp[k];
         zhalf = z1;
         if(k + 1 != sd->nslicek)zhalf = (zplttemp[k] + zplttemp[k + 1]) / 2.0;
+        if(vd->cellvec_comp!=0)z1 = zhalf;
 
         //       n = (j-sd->js1)*sd->nslicek - 1;
         //       n += (plotx-sd->is1)*sd->nslicej*sd->nslicek;
 
         if(k != sd->ks2){
           int index_v;
-          float dy;
 
  //         index_v = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
           index_v = IJK_SLICE(plotx, j, k+1);
           GET_VEC_DXYZ(v, dy, index_v);
           ADJUST_VEC_DX(dy);
-          glVertex3f(constval, yy1 - dy, zhalf);
-          glVertex3f(constval, yy1 + dy, zhalf);
         }
         if(j + 1 <= sd->js2){
           int index_w;
-          float dz;
 
 //          index_w = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1 + 1)*sd->nslicek + k - sd->ks1;
           index_w = IJK_SLICE(plotx, j, k);
           GET_VEC_DXYZ(w, dz, index_w);
           ADJUST_VEC_DX(dz);
-          glVertex3f(constval, yhalf, z1 - dz);
-          glVertex3f(constval, yhalf, z1 + dz);
+        }
+        if(vd->cellvec_comp == 0){
+          if(k != sd->ks2){
+            glVertex3f(constval, yy1 - dy, zhalf);
+            glVertex3f(constval, yy1 + dy, zhalf);
+          }
+          if(j + 1 <= sd->js2){
+            glVertex3f(constval, yhalf, z1 - dz);
+            glVertex3f(constval, yhalf, z1 + dz);
+          }
+        }
+        else{
+          if(j < sd->js2 && k < sd->ks2){
+            float dx = 0.0;
+            int index_u;
+
+          //          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
+            index_u = IJK_SLICE(plotx, j, k);
+            GET_VEC_DXYZ(u, dx, index_u);
+            ADJUST_VEC_DX(dx);
+            glVertex3f(constval-dx, yy1 - dy, z1 - dz);
+            glVertex3f(constval+dx, yy1 + dy, z1 + dz);
+          }
         }
       }
     }
     glEnd();
     SNIFF_ERRORS("after DrawVVolSliceCellCenter:lines dir=1");
+
+//--- points
 
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
@@ -6933,12 +6983,14 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         yy2 = yy1;
       }
       yhalf = (yy1+yy2) / 2.0;
-    for(kk = 0; kk < sd->n_kmap; kk++){
-      k = sd->kmap[kk];
+      if(vd->cellvec_comp != 0)yy1 = yhalf;
+
+      for(kk = 0; kk < sd->n_kmap; kk++){
         float zhalf, z1;
-
         int in_solid, in_gas;
+        float dy, dz;
 
+        k = sd->kmap[kk];
         in_gas=1;
         if(iblank_cell != NULL&&iblank_cell[IJKCELL(plotxm1, j, k)] != GAS)in_gas=0;
         in_solid = 1 - in_gas;
@@ -6951,32 +7003,55 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         z1 = zplttemp[k];
         zhalf = z1;
         if(k + 1 != sd->nslicek)zhalf = (zplttemp[k] + zplttemp[k + 1]) / 2.0;
+        if(vd->cellvec_comp != 0)z1 = zhalf;
 
         if(k != sd->ks2){
           int index_v;
-          float dy;
 
 //          index_v = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek + k - sd->ks1 + 1;
           index_v = IJK_SLICE(plotx, j, k+1);
           GET_VEC_DXYZ(v, dy, index_v);
           ADJUST_VEC_DX(dy);
-          glVertex3f(constval, yy1 + dy, zhalf);
         }
         if(j + 1 <= sd->js2){
           int index_w;
-          float dz;
 
 //          index_w = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1 + 1)*sd->nslicek + k - sd->ks1;
           index_w = IJK_SLICE(plotx, j, k);
           GET_VEC_DXYZ(w, dz, index_w);
           ADJUST_VEC_DX(dz);
-          glVertex3f(constval, yhalf, z1 + dz);
+        }
+        if(vd->cellvec_comp == 0){
+          if(k != sd->ks2){
+            glVertex3f(constval, yy1 + dy, zhalf);
+          }
+          if(j + 1 <= sd->js2){
+            glVertex3f(constval, yhalf, z1 + dz);
+          }
+        }
+        else{
+          if(j < sd->js2 && k < sd->ks2){
+            float dx = 0.0;
+            int index_u;
+
+          //          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
+            index_u = IJK_SLICE(plotx, j, k);
+            GET_VEC_DXYZ(u, dx, index_u);
+            ADJUST_VEC_DX(dx);
+            glVertex3f(constval+dx, yy1 + dy, z1 + dz);
+          }
         }
       }
     }
     glEnd();
     SNIFF_ERRORS("after DrawVVolSliceCellCenter:points dir=1");
   }
+  
+//*** XZ plane
+
+
+//--- lines
+
   if((vd->volslice == 1 && ploty > 0 && visy_all == 1) || (vd->volslice == 0 && sd->idir == YDIR)){
     float yhalf;
 
@@ -7003,11 +7078,13 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       x1 = xplttemp[i];
       xhalf = x1;
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
+      if(vd->cellvec_comp!=0)x1 = xhalf;
 
       for(kk = 0; kk < sd->n_kmap; kk++){
         k = sd->kmap[kk];
         float zhalf, z1;
         int in_solid, in_gas;
+        float dx, dz;
 
         in_gas=1;
         if(iblank_cell != NULL&&iblank_cell[IJKCELL(i, ploty-1, k)] != GAS)in_gas=0;
@@ -7021,33 +7098,54 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         z1 = zplttemp[k];
         zhalf = z1;
         if(k + 1 != sd->nslicek)zhalf = (zplttemp[k] + zplttemp[k + 1]) / 2.0;
+        if(vd->cellvec_comp!=0)z1 = zhalf;
 
         if(k + 1 != sd->nslicek){
           int index_u;
-          float dx;
 
-//          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
-          index_u = IJK_SLICE(i, ploty, k+1);
+          //          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
+          index_u = IJK_SLICE(i, ploty, k + 1);
           GET_VEC_DXYZ(u, dx, index_u);
           ADJUST_VEC_DX(dx);
-          glVertex3f(x1 - dx, constval, zhalf);
-          glVertex3f(x1 + dx, constval, zhalf);
         }
         if(i + 1 != sd->nslicei){
           int index_w;
-          float dz;
 
-//          index_w = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k - sd->ks1;
-          index_w = IJK_SLICE(i+1, ploty, k);
+          //          index_w = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k - sd->ks1;
+          index_w = IJK_SLICE(i + 1, ploty, k);
           GET_VEC_DXYZ(w, dz, index_w);
           ADJUST_VEC_DX(dz);
-          glVertex3f(xhalf, constval, z1 - dz);
-          glVertex3f(xhalf, constval, z1 + dz);
+        }
+        if(vd->cellvec_comp == 0){
+          if(k + 1 != sd->nslicek){
+            glVertex3f(x1 - dx, constval, zhalf);
+            glVertex3f(x1 + dx, constval, zhalf);
+          }
+          if(i + 1 != sd->nslicei){
+            glVertex3f(xhalf, constval, z1 - dz);
+            glVertex3f(xhalf, constval, z1 + dz);
+          }
+        }
+        else{
+          if(k+1 < sd->nslicek&& i +1< sd->nslicei){
+            float dy = 0.0;
+            int index_v;
+
+//          index_v = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek + k - sd->ks1 + 1;
+            index_v = IJK_SLICE(i, ploty, k);
+            GET_VEC_DXYZ(v, dy, index_v);
+            ADJUST_VEC_DX(dy);
+            glVertex3f(x1 - dx, constval-dy, z1 - dz);
+            glVertex3f(x1 + dx, constval-dy, z1 + dz);
+          }
         }
       }
     }
     glEnd();
     SNIFF_ERRORS("after DrawVVolSliceCellCenter:lines dir=2");
+
+//--- points
+
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
     glColor4fv(foregroundcolor);
@@ -7062,11 +7160,13 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       x1 = xplttemp[i];
       xhalf = x1;
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
+      if(vd->cellvec_comp != 0)x1 = xhalf;
 
       for(kk = 0; kk < sd->n_kmap; kk++){
         k = sd->kmap[kk];
         float zhalf, z1;
         int in_solid, in_gas;
+        float dx, dz;
 
         in_gas=1;
         if(iblank_cell != NULL&&iblank_cell[IJKCELL(i, ploty-1, k)] != GAS)in_gas=0;
@@ -7080,32 +7180,54 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         z1 = zplttemp[k];
         zhalf = z1;
         if(k + 1 != sd->nslicek)zhalf = (zplttemp[k] + zplttemp[k + 1]) / 2.0;
+        if(vd->cellvec_comp != 0)z1 = zhalf;
 
         if(k +1 != sd->nslicek){
           int index_u;
-          float dx;
 
 //          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
           index_u = IJK_SLICE(i, ploty, k+1);
           GET_VEC_DXYZ(u, dx, index_u);
           ADJUST_VEC_DX(dx);
-          glVertex3f(x1 + dx, constval, zhalf);
         }
         if(i + 1 != sd->nslicei){
           int index_w;
-          float dz;
 
 //          index_w = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k - sd->ks1;
           index_w = IJK_SLICE(i+1, ploty, k);
           GET_VEC_DXYZ(w, dz, index_w);
           ADJUST_VEC_DX(dz);
-          glVertex3f(xhalf, constval, z1 + dz);
+        }
+        if(vd->cellvec_comp == 0){
+          if(k +1 != sd->nslicek){
+            glVertex3f(x1 + dx, constval, zhalf);
+          }
+          if(i + 1 != sd->nslicei){
+            glVertex3f(xhalf, constval, z1 + dz);
+          }
+        }
+        else{
+          if(i+1 < sd->nslicei && k < sd->nslicek){
+            float dy = 0.0;
+            int index_v;
+
+//          index_v = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek + k - sd->ks1 + 1;
+            index_v = IJK_SLICE(i, ploty, k);
+            GET_VEC_DXYZ(v, dy, index_v);
+            ADJUST_VEC_DX(dy);
+            glVertex3f(x1 + dx, constval+dy, z1+dz);
+          }
         }
       }
     }
     glEnd();
     SNIFF_ERRORS("after DrawVVolSliceCellCenter:points dir=2");
   }
+  
+//*** XY plane
+
+//--- lines
+
   if((vd->volslice == 1 && plotz > 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
     float zhalf;
 
@@ -7125,13 +7247,16 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       float xhalf;
       float x1;
       int j;
-
+      float dx, dy;
+      
       //      n = (i-sd->is1)*sd->nslicej*sd->nslicek - sd->nslicek;
       //      n += (plotz-sd->ks1);
 
       x1 = xplttemp[i];
       xhalf = x1;
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
+      if(vd->cellvec_comp!=0)x1 = xhalf;
+      
       for(jj = 0; jj < sd->n_jmap; jj++){
         j = sd->jmap[jj];
         float yhalf;
@@ -7150,33 +7275,53 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         yy1 = yplttemp[j];
         yhalf = yy1;
         if(j + 1 != sd->nslicej)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;
+        if(vd->cellvec_comp!=0)yy1 = yhalf;
 
         if(j + 1 != sd->nslicej){
           int index_u;
-          float dx;
 
 //          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j + 1 - sd->js1)*sd->nslicek;
           index_u = IJK_SLICE(i, j+1, plotz);
           GET_VEC_DXYZ(u, dx, index_u);
           ADJUST_VEC_DX(dx);
-          glVertex3f(x1 - dx, yhalf, constval);
-          glVertex3f(x1 + dx, yhalf, constval);
         }
         if(i + 1 != sd->nslicei){
           int index_v;
-          float dy;
 
 //          index_v = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j - sd->js1)*sd->nslicek;
           index_v = IJK_SLICE(i+1, j, plotz);
           GET_VEC_DXYZ(v, dy, index_v);
           ADJUST_VEC_DX(dy);
-          glVertex3f(xhalf, yy1 - dy, constval);
-          glVertex3f(xhalf, yy1 + dy, constval);
+        }
+        if(vd->cellvec_comp==0){
+          if(j + 1 != sd->nslicej){
+            glVertex3f(x1 - dx, yhalf, constval);
+            glVertex3f(x1 + dx, yhalf, constval);
+          }
+          if(i + 1 != sd->nslicei){
+            glVertex3f(xhalf, yy1 - dy, constval);
+            glVertex3f(xhalf, yy1 + dy, constval);
+          }
+        }
+        else{
+          if(j < sd->nslicej && i+1 < sd->nslicei){
+            float dz = 0.0;
+              int index_w;
+
+          //          index_w = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k - sd->ks1;
+            index_w = IJK_SLICE(i, j, plotz);
+            GET_VEC_DXYZ(w, dz, index_w);
+            ADJUST_VEC_DX(dz);
+            glVertex3f(x1 - dx, yy1-dy, constval-dz);
+            glVertex3f(x1 + dx, yy1+dy, constval+dz);
+          }
         }
       }
     }
     glEnd();
     SNIFF_ERRORS("after DrawVVolSliceCellCenter:lines dir=3");
+
+//--- points
 
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
@@ -7193,11 +7338,14 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       x1 = xplttemp[i];
       xhalf = x1;
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
+      if(vd->cellvec_comp!=0)x1 = xhalf;
+      
       for(jj = 0; jj < sd->n_jmap; jj++){
         j = sd->jmap[jj];
         float yhalf;
         float yy1;
         int in_solid, in_gas;
+        float dx, dy;
 
         in_gas=1;
         if(iblank_cell != NULL&&iblank_cell[IJKCELL(i, j, plotz-1)] != GAS)in_gas=0;
@@ -7211,26 +7359,43 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         yy1 = yplttemp[j];
         yhalf = yy1;
         if(j + 1 != sd->nslicej)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;
+        if(vd->cellvec_comp!=0)yy1 = yhalf;
 
         if(j + 1 != sd->nslicej){
           int index_u;
-          float dx;
 
 //          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j + 1 - sd->js1)*sd->nslicek;
           index_u = IJK_SLICE(i, j+1, plotz);
           GET_VEC_DXYZ(u, dx, index_u);
           ADJUST_VEC_DX(dx);
-          glVertex3f(x1 + dx, yhalf, constval);
         }
         if(i + 1 != sd->nslicei){
           int index_v;
-          float dy;
 
 //          index_v = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j - sd->js1)*sd->nslicek;
           index_v = IJK_SLICE(i+1, j, plotz);
           GET_VEC_DXYZ(v, dy, index_v);
           ADJUST_VEC_DX(dy);
-          glVertex3f(xhalf, yy1 + dy, constval);
+        }
+        if(vd->cellvec_comp==0){
+          if(j + 1 != sd->nslicej){
+            glVertex3f(x1 + dx, yhalf, constval);
+          }
+          if(i + 1 != sd->nslicei){
+            glVertex3f(xhalf, yy1 + dy, constval);
+          }
+        }
+        else{
+          if(j +1< sd->nslicej && i +1< sd->nslicei){
+            float dz = 0.0;
+            int index_w;
+
+          //          index_w = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k - sd->ks1;
+            index_w = IJK_SLICE(i, j, plotz);
+            GET_VEC_DXYZ(w, dz, index_w);
+            ADJUST_VEC_DX(dz);
+            glVertex3f(x1 + dx, yy1 + dy, constval+dz);
+          }
         }
       }
     }

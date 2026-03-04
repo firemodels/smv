@@ -598,7 +598,7 @@ typedef struct _slicedata {
   float position_orig;
   int blocknumber;
   int cell_center_edge;
-  int vec_comp;
+  int vec_comp, cellvec_comp;
   int skipdup;
   int setvalmin, setvalmax;
   float globalmin_slice, globalmax_slice;
@@ -686,6 +686,7 @@ typedef struct _vslicedata {
   int finalize;
   int loaded,display;
   float valmin, valmax;
+  int cellvec_comp;
   int vslice_filetype;
   int vslicefile_labelindex;
   char menulabel[128];
