@@ -4546,11 +4546,11 @@ void UnloadMultiVSliceMenu(int value){
   if(value>=0){
     mvslicei = global_scase.slicecoll.multivsliceinfo + value;
     for(i=0;i<mvslicei->nvslices;i++){
-      UnloadSliceMenu(mvslicei->ivslices[i]);
+      UnloadVSliceMenu(mvslicei->ivslices[i]);
     }
   }
   else{
-    UnloadSliceMenu(UNLOAD_ALL);
+    UnloadVSliceMenu(UNLOAD_ALL);
   }
 }
 
