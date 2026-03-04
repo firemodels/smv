@@ -96,3 +96,4 @@ export GLTYPE
 if [ "`uname`" == "Darwin" ]; then
   export GLIBDIROPT
 fi
+cd $CURDIR
