@@ -6885,17 +6885,12 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glColor4fv(foregroundcolor);
     for(jj = 0; jj < sd->n_jmap; jj++){
       j = sd->jmap[jj];
-      float yy1, yy2, yhalf;
+      float yy1, yhalf;
       int k;
 
       yy1 = yplttemp[j];
-      if(j + 1 <= sd->js2){
-        yy2 = yplttemp[j + 1];
-      }
-      else{
-        yy2 = yy1;
-      }
-      yhalf = (yy1+yy2) / 2.0;
+      yhalf = yy1;
+      if(j + 1 <= sd->js2)yhalf = (yplttemp[j]+yplttemp[j + 1]);
       if(vd->cellvec_comp!=0)yy1 = yhalf;
 
       for(kk = 0; kk < sd->n_kmap; kk++){
@@ -6972,17 +6967,11 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glColor4fv(foregroundcolor);
     for(jj = 0; jj < sd->n_jmap; jj++){
       j = sd->jmap[jj];
-      float yy1, yy2, yhalf;
+      float yy1, yhalf;
       int k;
 
       yy1 = yplttemp[j];
-      if(j + 1 <= sd->js2){
-        yy2 = yplttemp[j + 1];
-      }
-      else{
-        yy2 = yy1;
-      }
-      yhalf = (yy1+yy2) / 2.0;
+      if(j + 1 <= sd->js2)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;
       if(vd->cellvec_comp != 0)yy1 = yhalf;
 
       for(kk = 0; kk < sd->n_kmap; kk++){
@@ -7022,12 +7011,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           ADJUST_VEC_DX(dz);
         }
         if(vd->cellvec_comp == 0){
-          if(k != sd->ks2){
-            glVertex3f(constval, yy1 + dy, zhalf);
-          }
-          if(j + 1 <= sd->js2){
-            glVertex3f(constval, yhalf, z1 + dz);
-          }
+          if(k != sd->ks2)glVertex3f(constval, yy1 + dy, zhalf);
+          if(j + 1 <= sd->js2)glVertex3f(constval, yhalf, z1 + dz);
         }
         else{
           if(j < sd->js2 && k < sd->ks2){
@@ -7199,12 +7184,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           ADJUST_VEC_DX(dz);
         }
         if(vd->cellvec_comp == 0){
-          if(k +1 != sd->nslicek){
-            glVertex3f(x1 + dx, constval, zhalf);
-          }
-          if(i + 1 != sd->nslicei){
-            glVertex3f(xhalf, constval, z1 + dz);
-          }
+          if(k +1 != sd->nslicek)glVertex3f(x1 + dx, constval, zhalf);
+          if(i + 1 != sd->nslicei)glVertex3f(xhalf, constval, z1 + dz);
         }
         else{
           if(i+1 < sd->nslicei && k < sd->nslicek){
@@ -7378,12 +7359,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           ADJUST_VEC_DX(dy);
         }
         if(vd->cellvec_comp==0){
-          if(j + 1 != sd->nslicej){
-            glVertex3f(x1 + dx, yhalf, constval);
-          }
-          if(i + 1 != sd->nslicei){
-            glVertex3f(xhalf, yy1 + dy, constval);
-          }
+          if(j + 1 != sd->nslicej)glVertex3f(x1 + dx, yhalf, constval);
+          if(i + 1 != sd->nslicei)glVertex3f(xhalf, yy1 + dy, constval);
         }
         else{
           if(j +1< sd->nslicej && i +1< sd->nslicei){
