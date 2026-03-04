@@ -1631,11 +1631,30 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
   TrimBack(buffer);
   len = strlen(buffer);
   if(suffix_label!=NULL)len_suffix_label = strlen(suffix_label);
+#ifdef pp_VCELLUVW
+  if(flowlabel!=NULL){
+    if(NewMemory((void **)&flowlabel->longlabel, (unsigned int)(len+len_suffix_label+4+len_skip_label+1))==0)return LABEL_ERR;
+    STRCPY(flowlabel->longlabel, buffer);
+    if(suffix_label != NULL && strlen(suffix_label) > 0){
+      int appended = 0;
+
+      if(strcmp(buffer, "CELL U") == 0 || 
+         strcmp(buffer, "CELL V") == 0 || 
+         strcmp(buffer, "CELL W") == 0){
+        if(strcmp(suffix_label, "(cell centered)") == 0){
+          STRCAT(flowlabel->longlabel, "(cell uvw centered)");
+          appended = 1;
+        }
+      }
+      if(appended==0)STRCAT(flowlabel->longlabel, suffix_label);
+    }
+#else
   if(flowlabel!=NULL){
     if(NewMemory((void **)&flowlabel->longlabel, (unsigned int)(len+len_suffix_label+len_skip_label+1))==0)return LABEL_ERR;
     STRCPY(flowlabel->longlabel, buffer);
     if(suffix_label!=NULL&&strlen(suffix_label)>0)STRCAT(flowlabel->longlabel, suffix_label);
   }
+#endif
 
   if(FGETS(buffer2, 255, stream)==NULL){
     strcpy(buffer2, "**");

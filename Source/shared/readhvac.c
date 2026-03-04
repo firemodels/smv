@@ -654,6 +654,8 @@ int ReadHVACData0(hvacdatacollection *hvaccoll, int flag,
 
   ducttimes = hvaccoll->hvacductvalsinfo->times;
   nodetimes = hvaccoll->hvacnodevalsinfo->times;
+  max_node_buffer = 100;
+  NewMemory((void **)&node_buffer, max_node_buffer * sizeof(float));
   for(iframe = 0; iframe < nframes; iframe++) {
     int j;
     float time;
@@ -665,8 +667,8 @@ int ReadHVACData0(hvacdatacollection *hvaccoll, int flag,
     nodetimes[iframe] = time;
     if(n_node_vars > max_node_buffer) {
       FREEMEMORY(node_buffer);
-      NewMemory((void **)&node_buffer, (n_node_vars + 100) * sizeof(float));
       max_node_buffer = n_node_vars + 100;
+      NewMemory((void **)&node_buffer, max_node_buffer * sizeof(float));
     }
     for(j = 0; j < n_nodes; j++) {
       int k;
