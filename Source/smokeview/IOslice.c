@@ -6902,7 +6902,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         k = sd->kmap[kk];
         float zhalf, z1;
         int in_solid, in_gas;
-        float dy, dz;
+        float dy=0.0, dz=0.0;
 
         in_gas=1;
         if(iblank_cell != NULL&&iblank_cell[IJKCELL(plotxm1, j, k)] != GAS)in_gas=0;
@@ -6988,7 +6988,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       for(kk = 0; kk < sd->n_kmap; kk++){
         float zhalf, z1;
         int in_solid, in_gas;
-        float dy, dz;
+        float dy=0.0, dz=0.0;
 
         k = sd->kmap[kk];
         in_gas=1;
@@ -7084,7 +7084,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         k = sd->kmap[kk];
         float zhalf, z1;
         int in_solid, in_gas;
-        float dx, dz;
+        float dx=0.0, dz=0.0;
 
         in_gas=1;
         if(iblank_cell != NULL&&iblank_cell[IJKCELL(i, ploty-1, k)] != GAS)in_gas=0;
@@ -7166,7 +7166,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         k = sd->kmap[kk];
         float zhalf, z1;
         int in_solid, in_gas;
-        float dx, dz;
+        float dx=0.0, dz=0.0;
 
         in_gas=1;
         if(iblank_cell != NULL&&iblank_cell[IJKCELL(i, ploty-1, k)] != GAS)in_gas=0;
@@ -7247,7 +7247,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       float xhalf;
       float x1;
       int j;
-      float dx, dy;
+      float dx=0.0, dy=0.0;
       
       //      n = (i-sd->is1)*sd->nslicej*sd->nslicek - sd->nslicek;
       //      n += (plotz-sd->ks1);
@@ -7345,7 +7345,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         float yhalf;
         float yy1;
         int in_solid, in_gas;
-        float dx, dy;
+        float dx=0.0, dy=0.0;
 
         in_gas=1;
         if(iblank_cell != NULL&&iblank_cell[IJKCELL(i, j, plotz-1)] != GAS)in_gas=0;
