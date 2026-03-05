@@ -1,12 +1,14 @@
 @echo off
-:: setup compiler environment
-call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 
-Title Building debug smokediff for Windows
+:: setup compiler environment
+call ..\..\..\Utilities\Scripts\setup_compilers.bat intel
+
+Title Building smokediff for Windows
+
+:: build libraries if one is missing
+call ..\..\scripts\test_libs.bat ..\..\LIBS\intel_win
 
 set SMV_TESTFLAG=
-if x%ONEAPI_FORT_CAPS% == x1 set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_WIN_ONEAPI
 
-erase *.obj *.mod *.exe
-make SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG%" -f ..\Makefile intel_win_db
-pause
+erase *.obj *.exe
+make -j 4 SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG%"  -f ..\Makefile intel_win_db

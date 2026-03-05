@@ -1614,7 +1614,7 @@ void DialogMenu(int value){
   refresh_glui_dialogs = 1;
   SetMainWindow();
   GLUIRefreshDialogs();
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
 }
 
 /* ------------------ ZoomMenu ------------------------ */
@@ -1622,9 +1622,7 @@ void DialogMenu(int value){
 void ZoomMenu(int value){
   if(value==MENU_DUMMY)return;
   updatemenu=1;
-  if(opengldefined==1){
-    GLUTPOSTREDISPLAY;
-  }
+  GLUTPOSTREDISPLAY;
   zoomindex=value;
   if(zoomindex==-1){
     if(zoom<zooms[0]){
@@ -1667,9 +1665,7 @@ void ZoomMenu(int value){
 
 void ApertureMenu(int value){
   updatemenu=1;
-  if(opengldefined==1){
-    GLUTPOSTREDISPLAY;
-  }
+  GLUTPOSTREDISPLAY;
   apertureindex = CLAMP(value, 0, 4);
   aperture=apertures[apertureindex];
 }
@@ -1678,9 +1674,7 @@ void ApertureMenu(int value){
 
 void FontMenu(int value){
   updatemenu=1;
-  if(opengldefined==1){
-    GLUTPOSTREDISPLAY;
-  }
+  GLUTPOSTREDISPLAY;
   switch(value){
   case MENU_FONT_SETTINGS:
     GLUIShowDisplay(DIALOG_FONTS);
@@ -1986,9 +1980,7 @@ void RenderMenu(int value){
   if(value==MENU_DUMMY)return;
   updatemenu=1;
   if(value>=11000)return;
-  if(opengldefined==1){
-    GLUTPOSTREDISPLAY;
-  }
+  GLUTPOSTREDISPLAY;
   if(value>=10000&&value<=10005){
     resolution_multiplier=value-10000;
     GLUIUpdateResolutionMultiplier();
@@ -2278,9 +2270,7 @@ void FrameRateMenu(int value){
   }
   frameratevalue=value;
   updatemenu=1;
-  if(opengldefined==1){
-    GLUTPOSTREDISPLAY;
-  }
+  GLUTPOSTREDISPLAY;
   ResetGLTime();
 }
 
@@ -2772,6 +2762,8 @@ void SmokeviewIniMenu(int value){
 /* ------------------ PeriodicReloads ------------------------ */
 
 void PeriodicReloads(int value){
+  assert(opengl_finalized == 1);
+  if(opengl_finalized == 0)return;
   if(periodic_reloads!=0){
     if(load_incremental==1)LoadUnloadMenu(RELOAD_INCREMENTAL_ALL);
     if(load_incremental==0)LoadUnloadMenu(RELOADALL);
@@ -2783,6 +2775,7 @@ void PeriodicReloads(int value){
 
 void PeriodicRefresh(int value){
   update_refresh = 0;
+  if(opengl_finalized == 0)return;
   if(periodic_refresh!=0){
     GLUTPOSTREDISPLAY;
     if(glui_refresh_rate>0){
@@ -2948,7 +2941,8 @@ void ReloadMenu(int value){
   default:
     periodic_reloads=1;
     msecs = value*60*1000;
-    glutTimerFunc((unsigned int)msecs,PeriodicReloads,msecs);
+    assert(opengl_finalized == 1);
+    if(opengl_finalized==1)glutTimerFunc((unsigned int)msecs,PeriodicReloads,msecs);
     break;
   }
 }
@@ -8865,6 +8859,8 @@ static int textureshowmenu=0;
 static int menu_count=0;
 #endif
 
+assert(opengl_finalized == 1);
+if(opengl_finalized == 0)return;
 //*** destroy existing menus
   updatemenu=0;
   GLUIUpdateShowHideButtons();

@@ -5,6 +5,7 @@
 SOURCE_DIR = ../../../Source/
 BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
+FREEGLUT_DIR=../../../../libs/freeglut
 
 SMV_TESTFLAG =
 SMV_TESTSTRING =
@@ -14,7 +15,6 @@ SMV_PROFILESTRING =
 # Intel compiler definitions
 include ../../scripts/intel_compiler.mak
 
-COMP_VERSION =
 ifeq ($(shell echo "check_quotes"),"check_quotes")
   GIT_HASH   := $(shell ..\..\..\Utilities\Scripts\githash)
   GIT_DATE   := $(shell ..\..\..\Utilities\Scripts\gitlog)
@@ -34,9 +34,6 @@ SANITIZE_OPTIONS=-fsanitize=address -fsanitize=undefined -D pp_SANITIZE
 	windres $< -o $@
 %.obj : %.rc
 	windres $< -o $@
-
-#----------------------------------------------------------------------------
-# Should not need to edit lines below except to add or 'debug' target entries
 
 # The variable VPATH defines the source code directory relative to the current directory
 
@@ -91,17 +88,62 @@ endif
 
 objwin = $(obj:.o=.obj)
 
-INC += -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview -I $(SOURCE_DIR)/glew -I $(SOURCE_DIR)/zlib131
+#------------------------------------------------------------
+#*** common include directories
 
-# windows include directories
+INC  = -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR)/shared \
+       -I $(SOURCE_DIR)/smokeview      -I $(SOURCE_DIR)/glew     -I $(SOURCE_DIR)/zlib131
 
 ifeq ($(GLUT),freeglut)
-  WININC = -I $(SOURCE_DIR)/freeglut3.0.0/include
+  INC += -I $(FREEGLUT_DIR)/include
 else
-  WININC = -I $(SOURCE_DIR)/glut_gl
+  ifeq ($(shell echo "check_quotes"),"check_quotes")
+    INC += -I $(SOURCE_DIR)/glut_gl
+  else
+    INC += -I $(SOURCE_DIR)/glut_gl2
+  endif
 endif
-WININC += -I $(SOURCE_DIR)/pthreads
+ifeq ($(shell echo "check_quotes"),"check_quotes")
+  INC += -I $(SOURCE_DIR)/pthreads
+endif
 
+#------------------------------------------------------------
+#*** common C flags
+
+C_STANDARD_WIN = -Qstd=gnu99
+C_STANDARD     = -std=gnu99
+
+CFLAG_WIN_COM=$(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO)
+ifeq ($(SANITIZE),1)
+CFLAG_WIN_COM   += $(SANITIZE_OPTIONS)
+endif
+ifeq ($(GLUT),freeglut)
+CFLAG_WIN_COM   += -D pp_FREEGLUT -DFREEGLUT_STATIC
+endif
+CFLAG_WIN_COM   += -D GLEW_STATIC -D PTW32_STATIC_LIB -D BGDWIN32
+
+CFLAGS_COM=$(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO)
+ifeq ($(SANITIZE),1)
+CFLAGS_COM   += $(SANITIZE_OPTIONS)
+endif
+ifeq ($(GLUT),freeglut)
+CFLAGS_COM   += -D pp_FREEGLUT
+endif
+
+#------------------------------------------------------------
+#*** common linker flags
+
+LFLAGS_COM    = $(SMV_PROFILEFLAG)
+ifeq ($(SANITIZE),1)
+  LFLAGS_COM   += $(SANITIZE_OPTIONS)
+endif
+
+LFLAG_WIN   =  /MT /link /STACK:32768000 /OPT:REF /OPT:ICF /NODEFAULTLIB:msvcrt.lib
+ifeq ($(GLUT),freeglut)
+  LFLAG_WIN  +=  /NODEFAULTLIB:freeglut.lib /NODEFAULTLIB:freeglut_staticd.lib
+endif
+
+#------------------------------------------------------------
 #*** General Purpose Rules ***
 
 no_target:
@@ -111,7 +153,7 @@ no_target:
 .SUFFIXES: .c .obj .o .cpp .chk .winchk
 
 .c.obj:
-	$(CC) -c $(C_STANDARD) $(CFLAGS) $(INC) $<
+	$(CC) -c $(C_STANDARD_WIN) $(CFLAGS) $(INC) $<
 .c.o:
 	$(CC) -c $(C_STANDARD) $(CFLAGS) $(INC) $<
 
@@ -138,125 +180,71 @@ no_target:
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV  Windows VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
-#--- Intel
-
-SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win
 ifeq ($(GLUT),freeglut)
-  GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\freeglut_staticd.lib $(SMV_WIN_LIBDIR)\glut32.lib
+  GLUTLIB_WIN = freeglut_static.lib
 else
-  GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\glut32.lib
+  GLUTLIB_WIN = glut32.lib
 endif
-SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(GLUT_WIN_LIB) $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
-
-#--- clang
-
-SMV_CLANG_LIBDIR = $(LIB_DIR)\clang_win
-SMV_LIBS_CLANG = $(SMV_CLANG_LIBDIR)\glui.lib $(SMV_CLANG_LIBDIR)\gd.lib $(SMV_CLANG_LIBDIR)\jpeg.lib $(SMV_CLANG_LIBDIR)\png.lib  $(SMV_CLANG_LIBDIR)\zlib.lib $(SMV_CLANG_LIBDIR)\pthreads.lib $(SMV_CLANG_LIBDIR)\glut32.lib
-
-WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
-
-# ------------- intel_win_san ----------------
-
-intel_win_san : DYNLIB_EXT = .dll
-intel_win_san : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-intel_win_san : CFLAGS    = /Od /W4 /Wno-cast-function-type-mismatch /Wno-unused-function /Wno-unused-parameter
-intel_win_san : CFLAGS   += /debug:full /Zi  -D pp_INTEL -D _DEBUG -D _CONSOLE -D GLEW_STATIC
-intel_win_san : CFLAGS   += -D PTW32_STATIC_LIB -D BGDWIN32 $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
-intel_win_san : CFLAGS   += $(SANITIZE_OPTIONS)
-intel_win_san : C_STANDARD    = -Qstd=gnu99
-
-ifeq ($(GLUT),freeglut)
-intel_win_san : CFLAGS   += -D FREEGLUT_STATIC
-endif
-intel_win_san : LFLAGS    = /F32768000 /traceback /Zi $(SANITIZE_OPTIONS)
-intel_win_san : CC        = icx
-intel_win_san : CPP       = icx
-
-intel_win_san : exe       = smokeview_win$(SMV_TESTSTRING)
-
-intel_win_san : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(SMV_LIBS_WIN)
+SMV_LIBS_WIN = glui.lib gd.lib jpeg.lib png.lib zlib.lib pthreads.lib $(GLUTLIB_WIN)
+SYSTEM_LIBS_WIN = user32.lib gdi32.lib comdlg32.lib shell32.lib
 
 # ------------- intel_win_db ----------------
 
-intel_win_db : DYNLIB_EXT = .dll
-intel_win_db : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-intel_win_db : CFLAGS    = /Od /W4 /Wno-cast-function-type-mismatch /Wno-unused-function /Wno-unused-parameter /debug:full /Zi  -D pp_INTEL -D _DEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB -D BGDWIN32 $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
-ifeq ($(SANITIZE),1)
-intel_win_db : CFLAGS   += $(SANITIZE_OPTIONS)
-endif
-intel_win_db : C_STANDARD    = -Qstd=gnu99
-
-ifeq ($(GLUT),freeglut)
-intel_win_db : CFLAGS   += -D FREEGLUT_STATIC
-endif
-intel_win_db : LFLAGS    = /F32768000 /traceback /Zi /DEBUG
-ifeq ($(SANITIZE),1)
-intel_win_db : LFLAGS   += $(SANITIZE_OPTIONS)
-endif
+intel_win_db : CFLAGS    = /Od -D pp_INTEL -D _DEBUG -D _CONSOLE /Zi /W4 /Wno-cast-function-type-mismatch \
+                           /Wno-unused-function /Wno-unused-parameter /debug:full $(CFLAG_WIN_COM)
+intel_win_db : LFLAGS   =   /traceback /Zi /DEBUG \
+                           $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/intel_win
 intel_win_db : CC        = icx
 intel_win_db : CPP       = icx
-
 intel_win_db : exe       = smokeview_win$(SMV_TESTSTRING)_db
 
 intel_win_db : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(SMV_LIBS_WIN)
+	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
 
 # ------------- intel_win ----------------
 
-intel_win : DYNLIB_EXT = .dll
-intel_win : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-intel_win : CFLAGS    = -O1 -D pp_INTEL -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB -D BGDWIN32 -D NONDLL $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
-ifeq ($(SANITIZE),1)
-intel_win : CFLAGS   += $(SANITIZE_OPTIONS) -g
-endif
-intel_win : C_STANDARD    = -Qstd=gnu99
-ifeq ($(GLUT),freeglut)
-intel_win : CFLAGS   += -D FREEGLUT_STATIC
-endif
-intel_win : LFLAGS    = /F32768000 -D FREEGLUT_STATIC
-ifeq ($(SANITIZE),1)
-intel_win : LFLAGS   += $(SANITIZE_OPTIONS)
-endif
+intel_win : CFLAGS    = -O1 -D pp_INTEL -D NDEBUG -D _CONSOLE -D NONDLL $(CFLAG_WIN_COM)
+intel_win : LFLAGS    = $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/intel_win
 intel_win : CC        = icx
 intel_win : CPP       = icx
 intel_win : exe       = smokeview_win$(SMV_TESTSTRING)
 
 intel_win : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(SMV_LIBS_WIN)
+	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
 
 # ------------- clang_win_db ----------------
 
-clang_win_db : INC       += -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/glui_gl -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-clang_win_db : CFLAGS    = -m64 -g -D GLEW_STATIC -D NDEBUG  -D BGDWIN32 -D PTW32_STATIC_LIB  $(GITINFO) $(GNU_COMPINFO) $(SMV_PROFILEFLAG)
-clang_win_db : CFLAGS   += -g -D pp_SANITIZE -fsanitize=address -fsanitize=undefined
-clang_win_db : LFLAGS    = -m64 $(SMV_LIBS_CLANG) $(SMV_PROFILEFLAG) $(WIN32_LIBS)
-clang_win_db : LFLAGS   += -fsanitize=address -fsanitize=undefined
+clang_win_db : CFLAGS    = -D NDEBUG -D _CONSOLE -D NONDLL $(CFLAG_WIN_COM)
+clang_win_db : LFLAGS    = $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/clang_win
 clang_win_db : CC        = clang-cl
 clang_win_db : CPP       = clang-cl
 clang_win_db : exe       = smokeview_win$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 clang_win_db : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin) $(LFLAGS)
+	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
 
 # ------------- clang_win ----------------
 
-clang_win : INC       += -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/glui_gl -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-clang_win : CFLAGS    = -m64 -D GLEW_STATIC -D NDEBUG  -D BGDWIN32 -D PTW32_STATIC_LIB  $(GITINFO) $(GNU_COMPINFO) $(SMV_PROFILEFLAG)
-clang_win : LFLAGS    = -m64 $(SMV_LIBS_CLANG) $(SMV_PROFILEFLAG) $(WIN32_LIBS)
+clang_win : CFLAGS    = -D NDEBUG -D _CONSOLE -D NONDLL $(CFLAG_WIN_COM)
+clang_win : LFLAGS    = $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/clang_win
 clang_win : CC        = clang-cl
 clang_win : CPP       = clang-cl
 clang_win : exe       = smokeview_win$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 clang_win : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin) $(LFLAGS)
+	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV  Linux VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
-SMV_LIBS_LINUX= -lglui -lglut -lgd -ljpeg -lpng -lz
-SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm -lrt
+SMV_LIBS_LINUX= -lglui -lgd -ljpeg -lpng -lz
+ifeq ($(GLUT),freeglut)
+  SMV_LIBS_LINUX += -lfreeglut
+else
+  SMV_LIBS_LINUX += -lglut
+endif
+SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lXi -lGLU -lGL -lm -lrt
 
 # to profile smokeview on linux
 # 1.  cd smv/Build/smokeview/intel_linux
@@ -266,109 +254,75 @@ SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm -lrt
 
 # ------------- intel_linux ----------------
 
-intel_linux : DYNLIB_EXT = .so
-intel_linux : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux
 intel_linux : CPP_STANDARD = -std=c++11 -stdlib=libc++
-intel_linux : CFLAGS    = -O0 -traceback -m64 -D NDEBUG $(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(INTEL_COMPINFO)
-ifeq ($(SANITIZE),1)
-intel_linux : CFLAGS   += $(SANITIZE_OPTIONS)
-endif
-intel_linux : C_STANDARD    = -std=gnu99
-intel_linux : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
-intel_linux : LFLAGS    = -m64 $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
-ifeq ($(SANITIZE),1)
-intel_linux : LFLAGS   += $(SANITIZE_OPTIONS)
-endif
+intel_linux : CFLAGS    = -O0 -traceback -D NDEBUG $(CFLAGS_COM)
 intel_linux : CC        = icx
 intel_linux : CPP       = icpx
 intel_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 intel_linux : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(SMV_LIBS_LINUX) $(INTEL_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) -L $(LIB_DIR)/intel_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
 
 # ------------- intel_linux_db ----------------
 
 intel_linux_db : CPP_STANDARD = -std=c++11 -stdlib=libc++
-intel_linux_db : CFLAGS    = -O0 -g -m64 $(SMV_TESTFLAG) -D _DEBUG $(SMV_PROFILEFLAG) \
-	                        -fstack-protector -fno-omit-frame-pointer -traceback -debug variable-locations \
-                                -Wall -Wextra -Wuninitialized -Wunused-function -Wunused-variable -Wno-sign-compare \
-                                -Wno-unused-parameter $(GITINFO) $(INTEL_COMPINFO)
-ifeq ($(SANITIZE),1)
-intel_linux_db : CFLAGS   += $(SANITIZE_OPTIONS)
-endif
-intel_linux_db : C_STANDARD    = -std=gnu99
-intel_linux_db : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
-intel_linux_db : LFLAGS    = -m64 -static-intel $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
-ifeq ($(SANITIZE),1)
-intel_linux_db : LFLAGS   += $(SANITIZE_OPTIONS)
-endif
+intel_linux_db : CFLAGS    = -O0 -traceback  -fstack-protector -fno-omit-frame-pointer -debug variable-locations \
+	                         -Wall -Wextra -Wuninitialized -Wunused-function -Wunused-variable \
+	                         -Wno-sign-compare -Wno-unused-parameter $(CFLAGS_COM)
 intel_linux_db : CC        = icx
 intel_linux_db : CPP       = icpx
 intel_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
 
 intel_linux_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/intel_linux $(SMV_LIBS_LINUX) $(INTEL_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/intel_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
 
 # ------------- gnu_linux_db ----------------
 
-gnu_linux_db : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux
-gnu_linux_db : CFLAGS    = -O0  -m64 -ggdb -Wall -Wunreachable-code -Wswitch-default -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized -Wno-address -Wno-format-overflow -Wno-format-truncation -Wno-undef -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(SMV_TESTFLAG) $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
-gnu_linux_db : C_STANDARD    = -std=gnu99
-gnu_linux_db : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
-gnu_linux_db : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
+gnu_linux_db = -O0 -ggdb -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion \
+               -Wformat=2 -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition \
+               -Wbad-function-cast -Wcast-qual -Wcast-align -Wundef -Wswitch-enum -Wnull-dereference \
+               -Winit-self -Wpointer-arith -Wunreachable-code -Wwrite-strings -D_DEBUG \
+               $(CFLAGS_COM)
 gnu_linux_db : CC        = gcc
 gnu_linux_db : CPP       = g++
-gnu_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
+gnu_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 gnu_linux_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
-		$(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/gnu_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
 
 # ------------- gnu_linux ----------------
 
-gnu_linux : DYNLIB_EXT = .so
-gnu_linux : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux
-gnu_linux : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings           -D NDEBUG $(SMV_TESTFLAG) $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
-gnu_linux : C_STANDARD    = -std=gnu99
-gnu_linux : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
-gnu_linux : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
+gnu_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas \
+                        -D NDEBUG  $(CFLAGS_COM)
 gnu_linux : CC        = gcc
 gnu_linux : CPP       = g++
 gnu_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 gnu_linux : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
-		$(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/gnu_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
 
 # ------------- clang_linux_db ----------------
 
-clang_linux_db : LIB_DIR_PLAT = $(LIB_DIR)/clang_linux
-clang_linux_db : CFLAGS    = -O0  -m64 -ggdb -Wall -Wunreachable-code -Wswitch-default -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized -Wno-address -Wno-undef -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG $(SMV_TESTFLAG) $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
-clang_linux_db : C_STANDARD    = -std=gnu99
-clang_linux_db : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
-clang_linux_db : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
+clang_linux_db : CFLAGS    = -O0 -ggdb -Wall -Wunreachable-code -Wswitch-default \
+                             -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized \
+                             -Wno-address -Wno-undef -Wno-parentheses -Wno-unknown-pragmas \
+                             -D _DEBUG $(CFLAGS_COM)
 clang_linux_db : CC        = clang
 clang_linux_db : CPP       = clang++
 clang_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
 
 clang_linux_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
-		$(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/clang_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
 
 # ------------- clang_linux ----------------
 
-clang_linux : LIB_DIR_PLAT = $(LIB_DIR)/clang_linux
-clang_linux : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings          $(SMV_TESTFLAG) $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
-clang_linux : C_STANDARD    = -std=gnu99
-clang_linux : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
-clang_linux : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
+clang_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas $(CFLAGS_COM)
 clang_linux : CC        = clang
 clang_linux : CPP       = clang++
 clang_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 clang_linux : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
-		$(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/clang_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   check source   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
@@ -376,7 +330,7 @@ clang_linux : $(obj)
 
 # ------------- gnu_linux_check ----------------
 
-gnu_linux_check : CFLAGS    = -O2 -m64 -Wall
+gnu_linux_check : CFLAGS    = -O2 -Wall
 gnu_linux_check : $(src)
 	clang-tidy $^ --  $(CFLAGS) $(INC)
 
@@ -397,89 +351,64 @@ win_check : $(win_chk)
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   OSX   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
+SMV_LIBS_OSX =  -lglui -lgd -ljpeg -lpng -lz
+LFLAGS_OSX   =
 ifeq ($(GLUT),freeglut)
-  SMV_LIBS_OSX =  -lglui  -lglut -lgd -ljpeg -lpng -lz
+  ifeq ($(GLTYPE),XQUARTZ)
+    LFLAGS_OSX   += -L /opt/X11/lib -lGL -lGLU -lX11 -lXext -lXmu -lXrandr -lXxf86vm
+  else
+    LFLAGS_OSX   += -framework Cocoa -framework CoreVideo -framework OpenGL
+  endif
+  SMV_LIBS_OSX += -lfreeglut
 else
-  SMV_LIBS_OSX =  -lglui        -lgd -ljpeg -lpng -lz
+  LFLAGS_OSX   += -framework GLUT -framework OpenGL
 endif
 
 # ------------- gnu_osx_db ----------------
 
-gnu_osx_db : CFLAGS    = -O0 -ggdb -m64 -D _DEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
-gnu_osx_db : C_STANDARD    = -std=gnu99
-gnu_osx_db : LFLAGS    = -m64 -L$(LIB_DIR)/gnu_osx $(SMV_LIBS_OSX) $(GLIBDIROPT) $(SMV_PROFILEFLAG)
-ifeq ($(GLUT),freeglut)
-gnu_osx_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
-gnu_osx_db : CFLAGS   += -D FREEGLUT_STATIC
-else
-gnu_osx_db : LFLAGS   += -framework OpenGL -framework GLUT
-endif
+gnu_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-deprecated-declarations$(CFLAGS_COM)
 gnu_osx_db : CC        = ${COMPILER}
 gnu_osx_db : CPP       = ${COMPILER2}
 gnu_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
 
 gnu_osx_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -L$(LIB_DIR)/gnu_osx $(SMV_LIBS_OSX)
 
 # ------------- gnu_osx ----------------
 
-gnu_osx : CFLAGS    = -O0 -m64              -D NDEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
-gnu_osx : C_STANDARD    = -std=gnu99
-gnu_osx : LFLAGS    = -m64 -L$(LIB_DIR)/gnu_osx $(SMV_LIBS_OSX) $(GLIBDIROPT) $(SMV_PROFILEFLAG)
-ifeq ($(GLUT),freeglut)
-gnu_osx : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
-gnu_osx : CFLAGS   += -D FREEGLUT_STATIC
-else
-gnu_osx : LFLAGS   += -framework OpenGL -framework GLUT
-endif
+gnu_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-deprecated-declarations $(CFLAGS_COM)
 gnu_osx : CC        = ${COMPILER}
 gnu_osx : CPP       = ${COMPILER2}
 gnu_osx : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 gnu_osx : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -L$(LIB_DIR)/gnu_osx $(SMV_LIBS_OSX)
 
 # ------------- clang_osx_db ----------------
 
-clang_osx_db : CFLAGS    = -O0 -ggdb -m64 -D _DEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
-clang_osx_db : C_STANDARD    = -std=gnu99
-clang_osx_db : LFLAGS    = -m64 -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX) $(GLIBDIROPT) $(SMV_PROFILEFLAG)
-ifeq ($(GLUT),freeglut)
-clang_osx_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
-clang_osx_db : CFLAGS   += -D FREEGLUT_STATIC
-else
-clang_osx_db : LFLAGS   += -framework OpenGL -framework GLUT
-endif
+clang_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-deprecated-declarations $(CFLAGS_COM)
 clang_osx_db : CC        = ${COMPILER}
 clang_osx_db : CPP       = ${COMPILER2}
 clang_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
 
 clang_osx_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX)
 
 # ------------- clang_osx ----------------
 
-clang_osx : CFLAGS    = -O0 -m64 -D NDEBUG $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
-clang_osx : C_STANDARD    = -std=gnu99
-clang_osx : LFLAGS    = -m64 -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX) $(GLIBDIROPT) $(SMV_PROFILEFLAG)
-ifeq ($(GLUT),freeglut)
-clang_osx : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
-clang_osx : CFLAGS   += -D FREEGLUT_STATIC
-else
-clang_osx : LFLAGS   += -framework OpenGL -framework GLUT
-endif
+clang_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-deprecated-declarations $(CFLAGS_COM)
 clang_osx : CC        = ${COMPILER}
 clang_osx : CPP       = ${COMPILER2}
 clang_osx : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 clang_osx : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX)
 
-#-------------- Clean Target to remove Object and Module files -----------
+#-------------- Clean Target to remove Object -----------
 
 .PHONY : clean
 clean:
-	rm -f *.o *.mod *.dll *.so
+	rm *.o
 
 #-------------- force compilation of string_util.c -----------
 

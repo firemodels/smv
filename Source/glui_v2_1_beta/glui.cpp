@@ -19,11 +19,6 @@
 
 #include "glui.h"
 #include "stdinc.h"
-#ifdef pp_OSX
-#include <GLUT/glut.h>
-#else
-#include <GL/glut.h>
-#endif
 
 /*** This object must be used to create a GLUI ***/
 

@@ -281,6 +281,8 @@ void Output3TextRight(float *color, float x, float y, float z, char *string, flo
   }
 }
 
+/* ------------------ ScaleFont2D ------------------------ */
+
 void ScaleFont2D(void){
   if(render_mode == RENDER_360){
     glLineWidth(( float )resolution_multiplier * ( float )scaled_font2d_thickness);
@@ -439,8 +441,6 @@ void DrawLabels(labels_collection *labelscoll_arg){
   }
   glPopMatrix();
 }
-
-/* ----------------------- ScaleFont2D ----------------------------- */
 
 /* ----------------------- ScaleFont3D ----------------------------- */
 

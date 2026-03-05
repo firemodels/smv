@@ -102,10 +102,16 @@
 #define SVDECL(var,val)  var
 #endif
 
+#ifndef GLUT_H
 #define GLUT_H <GL/glut.h>
 #ifdef pp_OSX
 #undef  GLUT_H
 #define GLUT_H <GLUT/glut.h>
+#endif
+#ifdef pp_FREEGLUT
+#undef  GLUT_H
+#define GLUT_H <GL/freeglut.h>
+#endif
 #endif
 
 #define GL_H <GL/gl.h>

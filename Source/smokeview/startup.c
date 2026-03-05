@@ -281,6 +281,38 @@ int SetupCase(char *filename){
   PRINT_TIMER(timer_start, "InitTranslate");
 
   if(global_scase.tourcoll.ntourinfo==0)SetupTour();
+#ifdef pp_GLUT_DEBUG
+  printf("***before dialog setup\n");
+  printf("***before InitRolloutList\n");
+  InitRolloutList();
+  printf("***before GLUIColorbarSetup\n");
+  GLUIColorbarSetup(mainwindow_id);
+  printf("***before GLUIMotionSetup\n");
+  GLUIMotionSetup(mainwindow_id);
+  printf("***before GLUIBoundsSetup\n");
+  GLUIBoundsSetup(mainwindow_id);
+  printf("***before GLUIShooterSetup\n");
+  GLUIShooterSetup(mainwindow_id);
+  printf("***before GLUIGeometrySetup\n");
+  GLUIGeometrySetup(mainwindow_id);
+  printf("***before GLUIClipSetup\n");
+  GLUIClipSetup(mainwindow_id);
+  printf("***before GLUIDisplaySetup\n");
+  GLUIDisplaySetup(mainwindow_id);
+  printf("***before GLUIDeviceSetup\n");
+  GLUIDeviceSetup(mainwindow_id);
+  printf("***before GLUIPlot2DSetup\n");
+  GLUIPlot2DSetup(mainwindow_id);
+  printf("***before GLUITourSetup\n");
+  GLUITourSetup(mainwindow_id);
+  printf("***before GLUIAlertSetup\n");
+  GLUIAlertSetup(mainwindow_id);
+  printf("***before GLUIStereoSetup\n");
+  GLUIStereoSetup(mainwindow_id);
+  printf("***before GLUI3dSmokeSetup\n");
+  GLUI3dSmokeSetup(mainwindow_id);
+  printf("***after dialog setup\n");
+#else
   InitRolloutList();
   GLUIColorbarSetup(mainwindow_id);
   GLUIMotionSetup(mainwindow_id);
@@ -295,6 +327,9 @@ int SetupCase(char *filename){
   GLUIAlertSetup(mainwindow_id);
   GLUIStereoSetup(mainwindow_id);
   GLUI3dSmokeSetup(mainwindow_id);
+#endif
+
+  opengl_finalized = 1;
   PRINT_TIMER(timer_start, "all dialogs");
 
   UpdateLights(light_position0, light_position1);
@@ -306,12 +341,18 @@ int SetupCase(char *filename){
   glutSetWindowTitle(global_scase.fdsprefix);
   InitMisc();
   GLUITrainerSetup(mainwindow_id);
-  glutDetachMenu(GLUT_RIGHT_BUTTON);
+  if(opengl_finalized==1)glutDetachMenu(GLUT_RIGHT_BUTTON);
   attachmenu_status = 0;
   THREADcontrol(checkfiles_threads, THREAD_LOCK);
+#ifdef pp_GLUT_DEBUG
+  printf("\n***before menu setup\n");
+#endif
   InitMenus();
+#ifdef pp_GLUT_DEBUG
+  printf("***after menu setup\n\n");
+#endif
   THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
-  glutAttachMenu(GLUT_RIGHT_BUTTON);
+  if(opengl_finalized==1)glutAttachMenu(GLUT_RIGHT_BUTTON);
   attachmenu_status = 1;
   if(trainer_mode==1){
     GLUIShowTrainer();
@@ -642,7 +683,6 @@ void InitOpenGL(int option){
     nblueshift=8-nbluebits;
     if(nblueshift<0)nblueshift=0;
   }
-  opengldefined=1;
   if(option==PRINT){
     if(verbose_output==1)PRINTF("%s\n\n", "complete");
   }
