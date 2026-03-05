@@ -2686,9 +2686,7 @@ void UpdateFaceListsWorker(void){
   nface_textures=0;
   nface_outlines=0;
   nface_transparent=0;
-  if(opengldefined==1){
-    glutPostRedisplay();
-  }
+  GLUTPOSTREDISPLAY;
 
   int show;
   show = GetInternalFaceShow();

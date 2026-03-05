@@ -78,7 +78,7 @@ void ClipCB(int var){
   dy = MAX(0.1, mesh0->boxeps_fds[1]);
   dz = MAX(0.1, mesh0->boxeps_fds[2]);
 
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
   switch(var){
   case CLIP_ROTATE:
     if(clip_rotate==0){

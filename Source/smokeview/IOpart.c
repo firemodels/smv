@@ -1984,7 +1984,7 @@ void FinalizePartLoad(partdata *parti){
   UpdatePart5Extremes();
   updatemenu = 1;
   ForceIdle();
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
 }
 
 /* -----  ------------- ReadPart ------------------------ */

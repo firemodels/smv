@@ -1,9 +1,12 @@
 #!/bin/bash
-
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 CURDIR=`pwd`
-cd  ../../../Source
+
+cd $SCRIPTDIR/../../Source
 SOURCE_DIR=`pwd`
-cd $CURDIR
+
+cd $SCRIPTDIR/../../Build/LIBS
+LIBSDIR=`pwd`
 
 SMV_MAKE_OPTS=
 TEST=
@@ -19,25 +22,21 @@ else
 fi
 
 # define INTEL_ICC, INTEL_ICPP, GCC and GXX variables
-source $SOURCE_DIR/scripts/set_compilers.sh
+export INTEL_ICC=icx
+export INTEL_ICPP=icpx
+export GCC=gcc
+export GXX=g++
 
 export COMPILER=$INTEL_ICC
 export COMPILER2=$INTEL_ICPP
 
-inc=
 BUILD_LIBS=
 BUILD_ALL=1
-FULL_BUILD=
-if [ "$BUILD_ALL" == "1" ]; then
-  FULL_BUILD="[default]"
-fi
+GLTYPE=COCOA
 TESTOPT=
-while getopts 'AfCGhiLmprS' OPTION
+while getopts 'CfGhiIl:LprSX' OPTION
 do
 case $OPTION in
-  A)
-   BUILD_ALL=1
-  ;;
   C)
    COMPILER=clang
    COMPILER2=clang++
@@ -52,7 +51,6 @@ case $OPTION in
   h)
   echo ""
   echo "options:"
-  echo "-a - full build $FULL_BUILD"
   echo "-h - show this help info"
   echo "-i - incremental build"
   echo "-L - rebuild all libraries"
@@ -61,8 +59,14 @@ case $OPTION in
   exit
   ;;
   i)
-   inc=1
    BUILD_ALL=
+  ;;
+  I)
+   COMPILER=$INTEL_ICC
+   COMPILER2=$INTEL_ICPP
+  ;;
+  l)
+   export SMV_LIBDIR=$LIBSDIR/"$OPTARG";
   ;;
   L)
    BUILD_LIBS=1
@@ -76,6 +80,9 @@ case $OPTION in
   S)
    SANITIZE=1
   ;;
+  X)
+   GLTYPE=XQUARTZ
+  ;;
 esac
 done
 
@@ -83,8 +90,10 @@ export SMV_MAKE_OPTS
 export GLUT
 export TEST
 export SANITIZE
+export GLTYPE
 
 # this parameter is only for the mac
 if [ "`uname`" == "Darwin" ]; then
   export GLIBDIROPT
 fi
+cd $CURDIR

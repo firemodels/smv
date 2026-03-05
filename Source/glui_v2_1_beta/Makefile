@@ -7,12 +7,13 @@ CPP=${COMPILER2}
 LIB=lib
 
 ifeq ($(GLUT),freeglut)
-  INCS = -I ../freeglut3.0.0/include
-  NOCLOSE=-D FREEGLUT_STATIC
+  INCS += -I ../../../libs/freeglut/include
+  NOCLOSE=-D FREEGLUT_STATIC -D pp_FREEGLUT
 else
   INCS = -I ../glui_gl
   NOCLOSE=-D pp_NOCLOSE
 endif
+NOCLOSE += -D GL_SILENCE_DEPRECATION
 
 CFLAGS=-D_CRT_SECURE_NO_WARNINGS -Wno-deprecated-declarations -Wdeprecated-declarations
 
@@ -52,11 +53,11 @@ gnu_osx: CFLAGS=-m64 $(NOCLOSE) -fpermissive
 gnu_osx: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
-intel_win: CFLAGS+= $(NOCLOSE)
+intel_win: CFLAGS+= $(NOCLOSE) -DNDEBUG -U_DEBUG
 intel_win : $(GLUI_OBJSWIN)
 	$(LIB) $(GLUI_OBJSWIN) -OUT:libglui.lib
 
-clang_win: CFLAGS= $(NOCLOSE)
+clang_win: CFLAGS= $(NOCLOSE)  -DNDEBUG -U_DEBUG
 clang_win : $(GLUI_OBJSWIN)
 	$(LIB) $(GLUI_OBJSWIN) -OUT:libglui.lib
 

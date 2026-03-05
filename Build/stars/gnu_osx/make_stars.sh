@@ -1,9 +1,6 @@
 #!/bin/bash
 source ../../scripts/setopts.sh $*
 
-# Exit immediately if any of the build steps fail
-set -e
-
 curdir=`pwd`
 LIBDIR=../../LIBS/intel_linux/
 

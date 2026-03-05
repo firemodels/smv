@@ -1,24 +1,27 @@
 #!/bin/bash
-makelibs()
-{
-  lib=$1
-  if [ ! -e $LIBDIR/$lib ] ; then
-    CURDIR=`pwd`
-    cd $LIBDIR
-    ./make_LIBS.sh
-    cd $CURDIR
-  fi
-}
 
-makelibs libgd.a
-makelibs libglui.a
-if [ "`uname`" == "Darwin" ]; then
-  if [ "$GLUT" == "freeglut" ]; then
-    makelibs libglut.a
-  fi
+BUILDLIBS=
+LIBS="libgd.a libglui.a libjpeg.a libpng.a libz.a"
+if [ "$GLUT" == "freeglut" ]; then
+  LIBS="$LIBS libfreeglut.a"
 else
-  makelibs libglut.a
+  if [ "`uname`" != "Darwin" ]; then
+    LIBS="$LIBS libglut.a"
+  fi
 fi
-makelibs libjpeg.a
-makelibs libpng.a
-makelibs libz.a
+
+for lib in $LIBS; do
+  if [ ! -e $SMV_LIBDIR/$lib ]; then
+    BUILDLIBS=1
+    break
+  fi
+done
+
+if [ "$BUILDLIBS" != "" ]; then
+  if [ -d $SMV_LIBDIR ]; then
+    cd $SMV_LIBDIR
+    ./make_LIBS.sh $*
+  else
+    echo "***error: directory $LIBDIR does not exist"
+  fi
+fi

@@ -39,12 +39,19 @@
 #include "stdinc.h"
 #include "algebra3.h"
 #include "quaternion.h"
-#ifdef pp_OSX
-#include <GLUT/glut.h>
-#else
-#include <GL/glut.h>
-#endif
 
+#ifndef GLUT_H
+  #define GLUT_H <GL/glut.h>
+  #ifdef pp_OSX
+    #undef  GLUT_H
+    #define GLUT_H <GLUT/glut.h>
+  #endif
+  #ifdef pp_FREEGLUT
+    #undef  GLUT_H
+    #define GLUT_H <GL/freeglut.h>
+  #endif
+#endif
+#include GLUT_H
 
 class Arcball {
 public:

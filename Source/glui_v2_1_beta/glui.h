@@ -21,12 +21,23 @@
 #ifndef _GLUI_H_
 #define _GLUI_H_
 
+#ifndef GLUT_H
+#define GLUT_H <GL/glut.h>
 #ifdef pp_OSX
-#include <GLUT/glut.h>
-#include "glutbitmap.h"  // only needed on non-quartz osx platforms
-#else
-#include <GL/glut.h>
+#undef  GLUT_H
+#define GLUT_H <GLUT/glut.h>
 #endif
+#ifdef pp_FREEGLUT
+#undef  GLUT_H
+#define GLUT_H <GL/freeglut.h>
+#endif
+#endif
+
+#include GLUT_H
+#ifdef pp_OSX
+#include "glutbitmap.h"  // only needed on non-quartz osx platforms
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

@@ -2,7 +2,7 @@
 setlocal
 call ..\scripts\setopts %*
 title Building glui library
-erase *.o *.obj libglui.a libglui.lib
+git clean -dxf
 
 set target=intel_win
 if %COMPILER% == gcc set target=gnu_win

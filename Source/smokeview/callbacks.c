@@ -739,13 +739,20 @@ int GetColorbarIndex(int x, int y){
   return CB_SELECT_CONTINUE;
 }
 
+/* ------------------ GlutGetModifiersNew ------------------------ */
+
 #define GLUTGETMODIFIERS GlutGetModifiersNew
 int GlutGetModifiersNew(void){
   int modifier=0;
 
   switch(alt_ctrl_key_state){
   case KEY_NONE:
-    modifier = glutGetModifiers();
+    modifier = KEY_NONE;
+    if(opengl_finalized == 1){
+      BEFOREGLUT("glutGetModifiers");
+      modifier = glutGetModifiers();
+      AFTERGLUT;
+    }
     break;
   case KEY_CTRL:
     modifier = GLUT_ACTIVE_CTRL;
@@ -1056,7 +1063,7 @@ void MouseCBWorker(int button, int state, int xm, int ym){
     colorbar_splitdrag=0;
     GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
     GLUIUpdateTrainerMoves();
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     return;
   }
 
@@ -1094,7 +1101,7 @@ void MouseCBWorker(int button, int state, int xm, int ym){
     if(visColorbarVertical == 1 || visColorbarHorizontal == 1){
       if(showtime == 1 || showplot3d == 1){
         if(ColorbarClick(xm, ym) == 1){
-          glutPostRedisplay();
+          GLUTPOSTREDISPLAY;
           return;
         }
       }
@@ -1149,7 +1156,7 @@ void MouseCBWorker(int button, int state, int xm, int ym){
     mouse_down_xy0[0]=xm;
     mouse_down_xy0[1]=ym;
   }
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
   if(blockageSelect == 1){
     GLUIGetGeomDialogState();
     if(structured_isopen == 1 && unstructured_isopen == 0)DisplayCB();
@@ -1486,34 +1493,34 @@ void MouseDragCB(int xm, int ym){
 
   if( colorbar_drag==1&&(showtime==1 || showplot3d==1)){
     ColorbarDrag(xm,ym);
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     return;
   }
   if(timebar_drag==1){
     TimebarDrag(xm);
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     return;
   }
   if(move_gslice==1){
     MoveGenSlice(xm,ym);
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     return;
   }
   if(tour_drag==1){
     DragTourNode(xm,ym);
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     return;
   }
   if(colorbaredit_drag==1){
     DragColorbarEditNode(xm, ym);
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     return;
   }
   if(rotation_type==ROTATION_3AXIS&&(key_state == KEY_NONE||key_state == KEY_SHIFT)){
     UpdateMouseInfo(MOUSE_MOTION,xm,ym);
   }
   MoveScene(xm,ym);
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
 }
 
 /* ------------------ KeyboardUpCB ------------------------ */
@@ -1657,7 +1664,7 @@ void Keyboard(unsigned char key, int flag){
   else if(flag==FROM_SMOKEVIEW_ALT){
     keystate=GLUT_ACTIVE_ALT;
   }
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
   key2 = (char)key;
 
   switch(key2){
@@ -1892,7 +1899,7 @@ void Keyboard(unsigned char key, int flag){
     case 'F':
       hide_overlaps=1-hide_overlaps;
       GLUIUpdateShowHideButtons();
-      glutPostRedisplay();
+      GLUTPOSTREDISPLAY;
       break;
     case 'g':
       switch(keystate){
@@ -2310,7 +2317,7 @@ void Keyboard(unsigned char key, int flag){
         if(outline_mode!=SCENE_OUTLINE_HIDDEN){
           updatefacelists = 1;
           updatemenu = 1;
-          glutPostRedisplay();
+          GLUTPOSTREDISPLAY;
         }
         if(outline_mode>2&&global_scase.noutlineinfo>0)outline_mode=SCENE_OUTLINE_HIDDEN;
         if(outline_mode>1&&global_scase.noutlineinfo==0)outline_mode=SCENE_OUTLINE_HIDDEN;
@@ -2320,12 +2327,17 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'P':
-      glutAttachMenu(GLUT_RIGHT_BUTTON);
-      attachmenu_status = 1;
-      attachmenu_print = 1 - attachmenu_print;
-      if(attachmenu_print == 1){
-        if(attachmenu_status == 1)printf("menus attached(%i)\n",attachmenu_counter++);
-        if(attachmenu_status == 0)printf("menus detached(%i)\n",attachmenu_counter++);
+      assert(opengl_finalized == 1);
+      if(opengl_finalized == 1){
+        BEFOREGLUT("glutAttachMenu");
+        glutAttachMenu(GLUT_RIGHT_BUTTON);
+        AFTERGLUT;
+        attachmenu_status = 1;
+        attachmenu_print = 1 - attachmenu_print;
+        if(attachmenu_print == 1){
+          if(attachmenu_status == 1)printf("menus attached(%i)\n", attachmenu_counter++);
+          if(attachmenu_status == 0)printf("menus detached(%i)\n", attachmenu_counter++);
+        }
       }
       break;
     case 'p':
@@ -3079,7 +3091,7 @@ void Keyboard(unsigned char key, int flag){
       plotiso[plotn-1] += FlowDir;
       UpdateSurface();
     }
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
   }
   if(iplot_state!=0)UpdatePlotSlice(iplot_state);
 }
@@ -3088,7 +3100,7 @@ void Keyboard(unsigned char key, int flag){
 
 void KeyboardCB(unsigned char key, int x, int y){
   Keyboard(key,FROM_CALLBACK);
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
   updatemenu=1;
 }
 
@@ -3184,9 +3196,13 @@ void SpecialKeyboardCB(int key, int x, int y){
 #define P3_MODE 1
   int keymode=EYE_MODE;
 
+  assert(opengl_finalized == 1);
+  if(opengl_finalized == 0)return;
+  BEFOREGLUT("glutGetModifiers");
   special_modifier = glutGetModifiers() & GLUT_ACTIVE_SHIFT;
+  AFTERGLUT;
 
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
 
   if(rotation_type==EYE_CENTERED){
     keymode=EYE_MODE;
@@ -3677,11 +3693,17 @@ void IdleCB(void){
   float thisinterval;
   int redisplay=0;
 
+  if(opengl_finalized == 0){
+    update_idle = 1;
+    return;
+  }
   if(render_status == RENDER_ON && from_DisplayCB==0)return;
   CheckMemory;
   if(use_graphics==1)SetMainWindow();
   UpdateShow();
+  BEFOREGLUT("glutGet");
   thistime     = glutGet(GLUT_ELAPSED_TIME);
+  AFTERGLUT;
   thisinterval = thistime - lasttime;
   frame_count++;
 
@@ -3823,6 +3845,8 @@ void ClearBuffers(int mode){
 /* ------------------ DoStereo ------------------------ */
 
 void DoStereo(void){
+  assert(opengl_finalized == 1);
+  if(opengl_finalized==0)return;
   if(stereotype==STEREO_TIME&&videoSTEREO==1){  // temporal stereo (shuttered glasses)
     glDrawBuffer(GL_BACK_LEFT);
     if(stereotype_frame==LEFT_EYE||stereotype_frame==BOTH_EYES){
@@ -3834,7 +3858,11 @@ void DoStereo(void){
       ShowScene(DRAWSCENE,VIEW_RIGHT,0,0,0,NULL);
     }
     Render(VIEW_RIGHT);
-    if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
+    if(buffertype == DOUBLE_BUFFER){
+      BEFOREGLUT("glutSwapBuffers");
+      glutSwapBuffers();
+      AFTERGLUT;
+    }
   }
   else if(stereotype==STEREO_LR){             // left/right stereo
     int i;
@@ -3870,7 +3898,11 @@ void DoStereo(void){
         screenWidth = MAX(screenWidth, 1);
       }
       if(screeni!=NULL&&render_mode == RENDER_360 && render_status == RENDER_ON)screeni->screenbuffer = GetScreenBuffer();
-      if(buffertype == DOUBLE_BUFFER)glutSwapBuffers();
+      if(buffertype == DOUBLE_BUFFER){
+        BEFOREGLUT("glutSwapBuffers");
+        glutSwapBuffers();
+        AFTERGLUT;
+      }
     }
     if(render_status == RENDER_ON){
       if(render_mode == RENDER_360){
@@ -3908,7 +3940,11 @@ void DoStereo(void){
       glFlush();
     }
     Render(VIEW_CENTER);
-    if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
+    if(buffertype == DOUBLE_BUFFER){
+      BEFOREGLUT("glutSwapBuffers");
+      glutSwapBuffers();
+      AFTERGLUT;
+    }
   }
   else if(stereotype==STEREO_RC){             // red/cyan stereo
     glDrawBuffer(GL_BACK);
@@ -3931,7 +3967,11 @@ void DoStereo(void){
       glFlush();
     }
     Render(VIEW_CENTER);
-    if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
+    if(buffertype == DOUBLE_BUFFER){
+      BEFOREGLUT("glutSwapBuffers");
+      glutSwapBuffers();
+      AFTERGLUT;
+    }
   }
   else if(stereotype==STEREO_CUSTOM){             // custom red/blue stereo
     glDrawBuffer(GL_BACK);
@@ -3973,7 +4013,11 @@ void DoStereo(void){
       glFlush();
     }
     Render(VIEW_CENTER);
-    if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
+    if(buffertype == DOUBLE_BUFFER){
+      BEFOREGLUT("glutSwapBuffers");
+      glutSwapBuffers();
+      AFTERGLUT;
+    }
     ENABLE_LIGHTING;
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_DITHER);
@@ -4082,7 +4126,7 @@ void DoScript(void){
     if(current_script_command!=NULL&&current_script_command->command==SCRIPT_RENDERONCE){
       nrenderonce++;
     }
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
   }
   else{
     first_frame_index=0;
@@ -4136,6 +4180,8 @@ void IdleDisplay(void){
 /* ------------------ DoNonStereo ------------------------ */
 
 void DoNonStereo(void){
+  assert(opengl_finalized == 1);
+  if(opengl_finalized == 0)return;
   if(render_status==RENDER_OFF){
     glDrawBuffer(GL_BACK);
     ShowScene(DRAWSCENE, VIEW_CENTER, 0, 0, 0, NULL);
@@ -4143,7 +4189,11 @@ void DoNonStereo(void){
       update_rgb_test = 0;
       RGBTest();
     }
-    if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
+    if(buffertype == DOUBLE_BUFFER){
+      BEFOREGLUT("glutSwapBuffers");
+      glutSwapBuffers();
+      AFTERGLUT;
+    }
   }
   else{
     int stop_rendering;
@@ -4166,7 +4216,11 @@ void DoNonStereo(void){
         for(j = 0; j<resolution_multiplier; j++){
           ShowScene(DRAWSCENE, VIEW_CENTER, 1, j*screenWidth, i*screenHeight, NULL);
           screenbuffers[ibuffer++] = GetScreenBuffer();
-          if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
+          if(buffertype == DOUBLE_BUFFER){
+            BEFOREGLUT("glutSwapBuffers");
+            glutSwapBuffers();
+            AFTERGLUT;
+          }
         }
       }
 
@@ -4190,7 +4244,11 @@ void DoNonStereo(void){
         screeni = screeninfo+i;
         ShowScene(DRAWSCENE, VIEW_CENTER, 0, 0, 0, screeni);
         screeni->screenbuffer = GetScreenBuffer();
-        if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
+        if(buffertype == DOUBLE_BUFFER){
+          BEFOREGLUT("glutSwapBuffers");
+          glutSwapBuffers();
+          AFTERGLUT;
+        }
       }
       MergeRenderScreenBuffers360();
 
@@ -4215,7 +4273,11 @@ void DoNonStereo(void){
         for(j = 0; j<resolution_multiplier; j++){
           ShowScene(DRAWSCENE, VIEW_CENTER, 1, j*screenWidth, i*screenHeight, NULL);
           screenbuffers[ibuffer++] = GetScreenBuffer();
-          if(buffertype==DOUBLE_BUFFER)glutSwapBuffers();
+          if(buffertype == DOUBLE_BUFFER){
+            BEFOREGLUT("glutSwapBuffers");
+            glutSwapBuffers();
+            AFTERGLUT;
+          }
         }
       }
       GifAddFrameSpec();
@@ -4255,7 +4317,13 @@ void DisplayCB(void){
 /* ------------------ SetMainWindow ------------------------ */
 
 void SetMainWindow(void){
+  if(opengl_finalized == 0){
+    update_setmainwindow = 1;
+    return;
+  }
+  BEFOREGLUT("glutSetWindow");
   glutSetWindow(mainwindow_id);
+  AFTERGLUT;
   GLUTPOSTREDISPLAY;
 }
 
@@ -4265,6 +4333,8 @@ void SetMainWindow(void){
 void ResizeWindow(int width, int height){
   float wscaled, hscaled;
 
+  assert(opengl_finalized == 1);
+  if(opengl_finalized == 0)return;
   if(render_mode == RENDER_360&&render_status==RENDER_ON)return;
   SetMainWindow();
   wscaled = (float)width/(float)max_screenWidth;
@@ -4279,6 +4349,8 @@ void ResizeWindow(int width, int height){
       height/=hscaled;
     }
   }
+  BEFOREGLUT("GlutReshapeWindow");
   glutReshapeWindow(width,height);
-  glutPostRedisplay();
+  AFTERGLUT;
+  GLUTPOSTREDISPLAY;
 }

@@ -5972,7 +5972,7 @@ extern "C" void GLUIPlot3DBoundCB(int var){
   case PLOTISO:
     visiso = 1 - visiso;
     HandleIso();
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     break;
   case PLOTISOTYPE:
     updatemenu=1;
@@ -5980,7 +5980,7 @@ extern "C" void GLUIPlot3DBoundCB(int var){
   case UPDATEPLOT:
     UpdateRGBColors(colorbar_select_index);
     updatemenu=1;
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     break;
   case FILETYPE_INDEX:
    p3min_all[list_p3_index_old]=glui_p3min;
@@ -6268,7 +6268,7 @@ extern "C" void GLUIIsoBoundCB(int var){
     sb->dlg_setvalmin = setisomin;
     glui_iso_valmin=iso_valmin;
     EDIT_iso_valmin->set_float_val(glui_iso_valmin);
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     break;
 
   case ISO_SETVALMAX:
@@ -6292,7 +6292,7 @@ extern "C" void GLUIIsoBoundCB(int var){
     sb->dlg_setvalmax = setisomax;
     glui_iso_valmax = iso_valmax;
     EDIT_iso_valmax->set_float_val(glui_iso_valmax);
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     break;
   case ISO_VALMIN:
     if(setisomin==1){
@@ -6301,7 +6301,7 @@ extern "C" void GLUIIsoBoundCB(int var){
     }
     iso_valmin=glui_iso_valmin;
     sb->dlg_valmin = iso_valmin;
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     break;
   case ISO_VALMAX:
     if(setisomax==1){
@@ -6310,7 +6310,7 @@ extern "C" void GLUIIsoBoundCB(int var){
     }
     iso_valmax=glui_iso_valmax;
     sb->dlg_valmax = iso_valmax;
-    glutPostRedisplay();
+    GLUTPOSTREDISPLAY;
     break;
   default:
     assert(FFALSE);

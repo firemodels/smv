@@ -724,7 +724,7 @@ void UpdateShow(void){
   }
 
   if(showtime2==1)showtime=1;
-  if(use_graphics==1){
+  if(use_graphics==1&&opengl_finalized==1){
     if(plotstate==DYNAMIC_PLOTS&&stept==1){
       glutIdleFunc(IdleCB);
     }
@@ -2066,9 +2066,17 @@ void UpdateShowScene(void){
     update_fire_histogram_now = 0;
     if(update_fire_histogram==1)GLUISmoke3dCB(UPDATE_FIRE_HISTOGRAM);
   }
-#define SHOW_EXTERIOR_PATCH_DATA     32
-void BoundBoundCB(int var);
+  if(update_idle == 1){
+    IdleCB();
+    update_idle = 0;
+  }
+  if(update_setmainwindow == 1){
+    SetMainWindow();
+    update_setmainwindow = 0;
+  }
   if(update_patch_vis == 1){
+#define SHOW_EXTERIOR_PATCH_DATA     32
+    void BoundBoundCB(int var);
     BoundBoundCB(SHOW_EXTERIOR_PATCH_DATA);
     update_patch_vis = 0;
   }
@@ -2937,13 +2945,20 @@ void UpdateDisplay(void){
     ResizeWindow(screenWidthINI, screenHeightINI);
   }
   if(updatemenu == 1 && usemenu == 1 && menustatus == GLUT_MENU_NOT_IN_USE){
+    assert(opengl_finalized == 1);
     INIT_PRINT_TIMER(timer_update_menus);
-    glutDetachMenu(GLUT_RIGHT_BUTTON);
+    if(opengl_finalized==1)glutDetachMenu(GLUT_RIGHT_BUTTON);
     attachmenu_status = 0;
     THREADcontrol(checkfiles_threads, THREAD_LOCK);
+#ifdef pp_GLUT_DEBUG
+    printf("\n***before menu setup\n");
+#endif
     InitMenus();
+#ifdef pp_GLUT_DEBUG
+    printf("***after menu setup\n\n");
+#endif
     THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
-    glutAttachMenu(GLUT_RIGHT_BUTTON);
+    if(opengl_finalized==1)glutAttachMenu(GLUT_RIGHT_BUTTON);
     attachmenu_status = 1;
     updatemenu = 0;
     PRINT_TIMER(timer_update_menus, "update menus");
@@ -3041,6 +3056,7 @@ void PauseTime(float pause_time){
   float start_time;
 
   // pause no more than 60 s
+  assert(opengl_finalized == 1);
   start_time = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
   for(;;){
     float delta_time;

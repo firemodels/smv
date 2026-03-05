@@ -750,3 +750,53 @@ int main(int argc, char **argv){
   FreeVars();
   return 0;
 }
+
+#ifdef pp_FREEGLUT
+
+#ifdef __linux__
+#define GAME_STUBS
+#endif
+
+#ifndef GAME_STUBS
+#ifdef pp_OSX
+#define GAME_STUBS
+#endif
+#endif
+
+#endif
+
+#ifdef GAME_STUBS
+#include <GL/freeglut.h>
+
+/* Stub implementations to avoid GameMode backend */
+
+int FGAPIENTRY glutEnterGameMode(void)
+{
+    return 0;
+}
+
+void FGAPIENTRY glutLeaveGameMode(void)
+{
+}
+
+void FGAPIENTRY glutGameModeString(const char *string)
+{
+}
+
+int FGAPIENTRY glutGameModeGet(GLenum query)
+{
+    return 0;
+}
+#ifdef __cplusplus 
+extern "C" { 
+#endif 
+int fgPlatformGetGameModeVMaxExtent(void){
+  return 0; 
+} 
+int fgPlatformGetGameModeHMaxExtent(void){ 
+  return 0; 
+} 
+#ifdef __cplusplus 
+  } 
+#endif
+#endif

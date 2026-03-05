@@ -1,20 +1,16 @@
 #!/bin/bash
-source ../../scripts/setopts.sh $*
+CURDIR=`pwd`
+DIR=${CURDIR##*/}
+OPTS="-G -l $DIR $*"
 
-# Exit immediately if any of the build steps fail
-set -e
+source ../../scripts/setopts.sh $OPTS
 
-curdir=`pwd`
-LIBDIR=../../LIBS/gnu_linux/
 if [ "$BUILD_LIBS" == "1" ]; then
-  cd $LIBDIR
-  ./make_LIBS.sh
-  cd $curdir
-else
-  eval make -C ${LIBDIR} ${SMV_MAKE_OPTS} ${LUA_SCRIPTING} -f make_LIBS.make all
+  rm -f $SMV_LIBDIR/*.a
+fi
+../../scripts/test_libs.sh $OPTS
+if [ "$BUILD_ALL" == "1" ]; then
+  rm -f *.o smokeview*
 fi
 
-if [ "$BUILD_ALL" == "1" ]; then
-  make -f ../Makefile clean
-fi
 eval make -j 4 ${SMV_MAKE_OPTS} -f ../Makefile gnu_linux_db

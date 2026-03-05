@@ -1,6 +1,6 @@
 #!/bin/bash
 source ../scripts/setopts.sh $*
-rm -f *.o
+git clean -dxf
 STDINT="-DHAVE_STDINT_H -DNONDLL -DENABLE_FREETYPE=OFF -DBUILD_SHARED_LIBS=OFF"
 if [ "$COMPILER" == "icx" ]; then
   STDINT="$STDINT -Wno-deprecated-non-prototype"

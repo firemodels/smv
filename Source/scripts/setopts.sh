@@ -9,12 +9,12 @@ export COMPILER=$INTEL_ICC
 export COMPILER2=$INTEL_ICPP
 
 PLATFORM=""
+GLTYPE=COCOA
 GLUT=glut
-LUA=
 FOREC_g=
 FOREC_i=
 target=all
-while getopts 'CfgGhiILlt:T' OPTION
+while getopts 'CfgGhiILl:t:TX' OPTION
 do
 case $OPTION in
   C)
@@ -66,7 +66,7 @@ case $OPTION in
    FORCE_i=1
   ;;
   l)
-   LUA=lua
+   dummy="$OPTARG"
   ;;
   L)
    dummy=1
@@ -76,6 +76,9 @@ case $OPTION in
   ;;
   T)
    dummy=1
+  ;;
+  X)
+   GLTYPE=XQUARTZ
   ;;
 esac
 done
@@ -91,5 +94,9 @@ export COMPILER
 export COMPILER2
 export PLATFORM
 export GLUT
-export LUA
 export target
+export GLTYPE
+if [ "`uname`" != "Darwin" ]; then
+  GLTYPE=
+fi
+ 

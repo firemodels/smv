@@ -162,8 +162,63 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define NO_SMOKE -1
 #define NO_FIRE  -1
 
-#define GLUTPOSTREDISPLAY  if(use_graphics==1)glutPostRedisplay()
-#define GLUTSETCURSOR(val) if(use_graphics==1)glutSetCursor(val)
+#ifdef pp_GLUT_DEBUG
+  #define BEFOREGLUT(s)\
+  {\
+    char *filebeg;\
+    filebeg=(char *)strrchr(__FILE__,glut_debug_sep);\
+    if(filebeg==NULL){\
+      filebeg=(char *)__FILE__;\
+    }\
+    else{\
+      filebeg++;\
+    }\
+    printf("***before %s file: %s line: %i", #s, filebeg, __LINE__);\
+  }
+  #define AFTERGLUT printf(" after***\n")
+#else
+  #define BEFOREGLUT(s)
+  #define AFTERGLUT
+#endif
+
+#ifdef pp_GLUT_DEBUG
+#define GLUTPOSTREDISPLAY  if(use_graphics==1&&opengl_finalized==1){\
+  char *filebeg;\
+  filebeg=(char *)strrchr(__FILE__,glut_debug_sep);\
+  if(filebeg==NULL){\
+    filebeg=(char *)__FILE__;\
+  }\
+  else{\
+    filebeg++;\
+  }\
+  printf("***before glutPostRedisplay: file: %s, line: %i",filebeg,__LINE__);\
+  glutPostRedisplay();\
+  printf(" after***\n");\
+}
+#else
+#define GLUTPOSTREDISPLAY  if(use_graphics==1&&opengl_finalized==1){\
+  glutPostRedisplay();\
+}
+#endif
+#ifdef pp_GLUT_DEBUG
+#define GLUTSETCURSOR(val) if(use_graphics==1&&opengl_finalized==1){\
+     char *filebeg;\
+     filebeg=(char *)strrchr(__FILE__,glut_debug_sep);\
+     if(filebeg==NULL){\
+       filebeg=(char *)__FILE__;\
+     }\
+     else{\
+       filebeg++;\
+     }\
+     printf("***before glutSetCursor: file: %s, line: %i",filebeg,__LINE__);\
+     glutSetCursor(val);\
+     printf(" after***\n");\
+   }
+#else
+#define GLUTSETCURSOR(val) if(use_graphics==1&&opengl_finalized==1){\
+     glutSetCursor(val);\
+   }
+#endif
 
 #define ENABLE_LIGHTING if(use_lighting==1&&lighting_on==0){glEnable(GL_LIGHTING);lighting_on=1;}
 #define DISABLE_LIGHTING if(use_lighting==1&&lighting_on==1){glDisable(GL_LIGHTING);lighting_on=0;}

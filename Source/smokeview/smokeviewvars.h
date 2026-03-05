@@ -143,6 +143,19 @@ SVEXTERN int SVDECL(clip_commandline, 0), SVDECL(special_modifier, 0);
 SVEXTERN int SVDECL(update_slicexyz, 0);
 SVEXTERN int SVDECL(update_splitcolorbar, 0);
 SVEXTERN int SVDECL(slice_plot_bound_option, 1);
+
+#ifdef pp_GLUT_DEBUG
+#ifdef INMAIN
+#ifdef _WIN32
+char glut_debug_sep = '\\';
+#else
+char glut_debug_sep = '/';
+#endif
+#else
+SVEXTERN char glut_debug_sep;
+#endif
+#endif
+
 #ifdef INMAIN
 SVEXTERN float geom_bounding_box[6] = {1000000000.0, -1000000000.0,
                                        1000000000.0, -1000000000.0,
@@ -1476,6 +1489,8 @@ SVEXTERN int SVDECL(visTimeIso,1);
 SVEXTERN int SVDECL(vishmsTimelabel,0), SVDECL(visTimebar,1);
 SVEXTERN int SVDECL(visColorbarVertical,1), SVDECL(visColorbarVertical_save,1);
 SVEXTERN int SVDECL(update_visColorbars,0), visColorbarVertical_val, visColorbarHorizontal_val;
+SVEXTERN int SVDECL(update_idle, 0);
+SVEXTERN int SVDECL(update_setmainwindow, 0);
 
 SVEXTERN int SVDECL(visColorbarHorizontal, 0), SVDECL(visColorbarHorizontal_save, 0);
 SVEXTERN int SVDECL(visFullTitle, 1), SVDECL(visFramerate, 0);
@@ -2107,7 +2122,7 @@ SVEXTERN float SVDECL(*plot3dtimelist,NULL);
 SVEXTERN blockagedata SVDECL(*bchighlight,NULL),SVDECL(*bchighlight_old,NULL);
 
 SVEXTERN int SVDECL(buffertype,DOUBLE_BUFFER);
-SVEXTERN int SVDECL(opengldefined,0);
+SVEXTERN int SVDECL(opengl_finalized,0);
 SVEXTERN int SVDECL(restart_time,0);
 SVEXTERN int SVDECL(*isosubmenus,NULL), nisosubmenus;
 SVEXTERN int SVDECL(*loadpatchsubmenus,NULL), nloadpatchsubmenus;
