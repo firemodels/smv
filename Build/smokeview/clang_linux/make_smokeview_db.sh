@@ -1,18 +1,14 @@
 #!/bin/bash
-source ../../scripts/setopts.sh $*
+CURDIR=`pwd`
+DIR=${CURDIR##*/}
+OPTS="-C -l $DIR $*"
 
-
-curdir=`pwd`
-LIBDIR=../../LIBS/clang_linux/
+source ../../scripts/setopts.sh $OPTS
 if [ "$BUILD_LIBS" == "1" ]; then
-  cd $LIBDIR
-  ./make_LIBS.sh
-  cd $curdir
-else
-  eval make -C ${LIBDIR} ${SMV_MAKE_OPTS} ${LUA_SCRIPTING} -f make_LIBS.make all
+  rm -f $SMV_LIBDIR/*.a
 fi
-
+../../scripts/test_libs.sh $OPTS
 if [ "$BUILD_ALL" == "1" ]; then
-  make -f ../Makefile clean
+  rm -f *.o smokeview*
 fi
-eval make -j 4 ${SMV_MAKE_OPTS} -f ../Makefile clang_linux_db
+eval make COMPILER=${COMPILER} COMPILER2=${COMPILER2} GLTYPE="$GLTYPE" GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile clang_linux_db

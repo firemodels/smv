@@ -1,13 +1,17 @@
 @echo off
-set arg1=%1
+setlocal
+call ..\..\scripts\set_smv_opts %*
 
-Title Building env2mod for Windows
+Title Building icx windows env2mod
+
+if NOT x%GLUT% == xfreeglut set GLUT=glut
+
+if not x%inc% == xinc erase *.obj *.exe 2> Nul
 
 :: build libraries if one is missing
-call ..\..\scripts\test_clang_libs.bat ..\..\LIBS\
+call ..\..\scripts\test_libs.bat ..\..\LIBS\intel_win %GLUT%
 
-erase *.obj *.exe
+:: setup compiler environment
+if not defined ONEAPI_ROOT call ..\..\..\Utilities\Scripts\setup_compilers.bat intel
+
 make SHELL="%ComSpec%" -f ..\Makefile clang_win
-if x%arg1% == xbot goto skip2
-pause
-:skip2

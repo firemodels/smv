@@ -14,5 +14,4 @@ call ..\..\scripts\test_libs.bat ..\..\LIBS\intel_win %GLUT%
 :: setup compiler environment
 if not defined ONEAPI_ROOT call ..\..\..\Utilities\Scripts\setup_compilers.bat intel
 
-make -j %NUMBER_OF_PROCESSORS% ICON="%ICON%" GLUT="%GLUT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG%" -f ..\Makefile intel_win
- 
+make -j %NUMBER_OF_PROCESSORS% ICON="%ICON%" GLUT="%GLUT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG%" -f ..\Makefile intel_win 
