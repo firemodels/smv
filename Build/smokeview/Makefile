@@ -19,13 +19,16 @@ ifeq ($(shell echo "check_quotes"),"check_quotes")
   GIT_HASH   := $(shell ..\..\..\Utilities\Scripts\githash)
   GIT_DATE   := $(shell ..\..\..\Utilities\Scripts\gitlog)
   GIT_BRANCH := $(shell ..\..\..\Utilities\Scripts\gitbranch)
+  CPU_TYPE   := $(shell ..\..\..\Utilities\Scripts\proctype)
 else
   GLIBVERS   := $(shell echo $(GLIBVERS))
   GIT_HASH   := $(shell git describe --long --dirty)
   GIT_DATE   := $(shell git log -1 --format=%cd)
   GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
+#  CPU_TYPE   := $(shell uname -m)
 endif
 GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)-$(GIT_BRANCH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
+CPUINFO=-Dpp_CPUINFO=\"$(CPU_TYPE)\"
 
 #oneapi debug options
 SANITIZE_OPTIONS=-fsanitize=address -fsanitize=undefined -D pp_SANITIZE
@@ -113,7 +116,7 @@ endif
 C_STANDARD_WIN = -Qstd=gnu99
 C_STANDARD     = -std=gnu99
 
-CFLAG_WIN_COM=$(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO)
+CFLAG_WIN_COM=$(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(CPUINFO)
 ifeq ($(SANITIZE),1)
 CFLAG_WIN_COM   += $(SANITIZE_OPTIONS)
 endif
@@ -122,7 +125,7 @@ CFLAG_WIN_COM   += -D pp_FREEGLUT -DFREEGLUT_STATIC
 endif
 CFLAG_WIN_COM   += -D GLEW_STATIC -D PTW32_STATIC_LIB -D BGDWIN32
 
-CFLAGS_COM=$(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO)
+CFLAGS_COM=$(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(CPUINFO)
 ifeq ($(SANITIZE),1)
 CFLAGS_COM   += $(SANITIZE_OPTIONS)
 endif

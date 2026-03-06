@@ -2194,17 +2194,20 @@ void PRINTversion(char *progname, int option){
     FREEMEMORY(hash);
   }
 #ifdef _WIN32
-  PRINTF("Platform         : WIN64 ");
+  PRINTF("Platform         : WIN64");
+#endif
+#ifdef pp_OSX
+  PRINTF("Platform         : OSX64");
+#endif
+#ifdef __linux__
+  PRINTF("Platform         : LINUX64");
+#endif
+#ifdef pp_CPUINFO
+  PRINTF("/%s", pp_CPUINFO);
+#endif
 #ifdef INTEL_COMPILER_ANY
   PRINTF(" (Intel C/C++)");
 #endif
   PRINTF("\n");
-#endif
-#ifdef pp_OSX
-  PRINTF("Platform         : OSX64\n");
-#endif
-#ifdef __linux__
-  PRINTF("Platform         : LINUX64\n");
-#endif
   FREEMEMORY(progfullpath);
 }
