@@ -116,15 +116,6 @@ endif
 C_STANDARD_WIN = -Qstd=gnu99
 C_STANDARD     = -std=gnu99
 
-CFLAG_WIN_COM=$(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(CPUINFO)
-ifeq ($(SANITIZE),1)
-CFLAG_WIN_COM   += $(SANITIZE_OPTIONS)
-endif
-ifeq ($(GLUT),freeglut)
-CFLAG_WIN_COM   += -D pp_FREEGLUT -DFREEGLUT_STATIC
-endif
-CFLAG_WIN_COM   += -D GLEW_STATIC -D PTW32_STATIC_LIB -D BGDWIN32
-
 CFLAGS_COM=$(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(CPUINFO)
 ifeq ($(SANITIZE),1)
 CFLAGS_COM   += $(SANITIZE_OPTIONS)
@@ -132,6 +123,12 @@ endif
 ifeq ($(GLUT),freeglut)
 CFLAGS_COM   += -D pp_FREEGLUT
 endif
+
+CFLAG_WIN_COM=$(CFLAGS_COM)
+ifeq ($(GLUT),freeglut)
+CFLAG_WIN_COM   += -DFREEGLUT_STATIC
+endif
+CFLAG_WIN_COM   += -D GLEW_STATIC -D PTW32_STATIC_LIB -D BGDWIN32
 
 #------------------------------------------------------------
 #*** common linker flags
