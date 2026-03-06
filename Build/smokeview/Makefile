@@ -19,13 +19,16 @@ ifeq ($(shell echo "check_quotes"),"check_quotes")
   GIT_HASH   := $(shell ..\..\..\Utilities\Scripts\githash)
   GIT_DATE   := $(shell ..\..\..\Utilities\Scripts\gitlog)
   GIT_BRANCH := $(shell ..\..\..\Utilities\Scripts\gitbranch)
+  CPU_TYPE   := $(shell ..\..\..\Utilities\Scripts\proctype)
 else
   GLIBVERS   := $(shell echo $(GLIBVERS))
   GIT_HASH   := $(shell git describe --long --dirty)
   GIT_DATE   := $(shell git log -1 --format=%cd)
   GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
+  CPU_TYPE   := $(shell uname -m)
 endif
 GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)-$(GIT_BRANCH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
+CPUINFO=-Dpp_CPUINFO=\"$(CPU_TYPE)\"
 
 #oneapi debug options
 SANITIZE_OPTIONS=-fsanitize=address -fsanitize=undefined -D pp_SANITIZE
@@ -110,25 +113,24 @@ endif
 #------------------------------------------------------------
 #*** common C flags
 
-C_STANDARD_WIN = -Qstd=gnu99
+C_STANDARD_WIN = /clang:-std=gnu99
 C_STANDARD     = -std=gnu99
+CPP_STANDARD_WIN =
+CPP_STANDARD = -std=c++11
 
-CFLAG_WIN_COM=$(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO)
-ifeq ($(SANITIZE),1)
-CFLAG_WIN_COM   += $(SANITIZE_OPTIONS)
-endif
-ifeq ($(GLUT),freeglut)
-CFLAG_WIN_COM   += -D pp_FREEGLUT -DFREEGLUT_STATIC
-endif
-CFLAG_WIN_COM   += -D GLEW_STATIC -D PTW32_STATIC_LIB -D BGDWIN32
-
-CFLAGS_COM=$(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO)
+CFLAGS_COM=$(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(CPUINFO)
 ifeq ($(SANITIZE),1)
 CFLAGS_COM   += $(SANITIZE_OPTIONS)
 endif
 ifeq ($(GLUT),freeglut)
 CFLAGS_COM   += -D pp_FREEGLUT
 endif
+
+CFLAG_WIN_COM=$(CFLAGS_COM)
+ifeq ($(GLUT),freeglut)
+CFLAG_WIN_COM   += -DFREEGLUT_STATIC
+endif
+CFLAG_WIN_COM   += -D GLEW_STATIC -D PTW32_STATIC_LIB -D BGDWIN32 -D _CONSOLE
 
 #------------------------------------------------------------
 #*** common linker flags
@@ -158,7 +160,7 @@ no_target:
 	$(CC) -c $(C_STANDARD) $(CFLAGS) $(INC) $<
 
 .cpp.obj:
-	$(CPP) -c $(CPP_STANDARD) $(CFLAGS) $(INC) $<
+	$(CPP) -c $(CPP_STANDARD_WIN) $(CFLAGS) $(INC) $<
 .cpp.o:
 	$(CPP) -c $(CPP_STANDARD) $(CFLAGS) $(INC) $<
 
@@ -190,8 +192,9 @@ SYSTEM_LIBS_WIN = user32.lib gdi32.lib comdlg32.lib shell32.lib
 
 # ------------- intel_win_db ----------------
 
-intel_win_db : CFLAGS    = /Od -D pp_INTEL -D _DEBUG -D _CONSOLE /Zi /W4 /Wno-cast-function-type-mismatch \
-                           /Wno-unused-function /Wno-unused-parameter /debug:full $(CFLAG_WIN_COM)
+intel_win_db : CFLAGS    = /Od -D pp_INTEL -D _DEBUG $(CFLAG_WIN_COM) \
+                           /Zi /W4 /Wno-cast-function-type-mismatch \
+                           /Wno-unused-function /Wno-unused-parameter /debug:full 
 intel_win_db : LFLAGS   =   /traceback /Zi /DEBUG \
                            $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/intel_win
 intel_win_db : CC        = icx
@@ -203,7 +206,7 @@ intel_win_db : $(objwin)
 
 # ------------- intel_win ----------------
 
-intel_win : CFLAGS    = -O1 -D pp_INTEL -D NDEBUG -D _CONSOLE -D NONDLL $(CFLAG_WIN_COM)
+intel_win : CFLAGS    = -O1 -D pp_INTEL -D NDEBUG $(CFLAG_WIN_COM)
 intel_win : LFLAGS    = $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/intel_win
 intel_win : CC        = icx
 intel_win : CPP       = icx
@@ -214,18 +217,18 @@ intel_win : $(objwin)
 
 # ------------- clang_win_db ----------------
 
-clang_win_db : CFLAGS    = -D NDEBUG -D _CONSOLE -D NONDLL $(CFLAG_WIN_COM)
+clang_win_db : CFLAGS    = -D _DEBUG $(CFLAG_WIN_COM)
 clang_win_db : LFLAGS    = $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/clang_win
 clang_win_db : CC        = clang-cl
 clang_win_db : CPP       = clang-cl
-clang_win_db : exe       = smokeview_win$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
+clang_win_db : exe       = smokeview_win$(SMV_TESTSTRING)$(SMV_PROFILESTRING)_db
 
 clang_win_db : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
 
 # ------------- clang_win ----------------
 
-clang_win : CFLAGS    = -D NDEBUG -D _CONSOLE -D NONDLL $(CFLAG_WIN_COM)
+clang_win : CFLAGS    = -D NDEBUG $(CFLAG_WIN_COM)
 clang_win : LFLAGS    = $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/clang_win
 clang_win : CC        = clang-cl
 clang_win : CPP       = clang-cl
@@ -254,7 +257,6 @@ SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lXi -lGLU -lGL -lm -lrt
 
 # ------------- intel_linux ----------------
 
-intel_linux : CPP_STANDARD = -std=c++11 -stdlib=libc++
 intel_linux : CFLAGS    = -O0 -traceback -D NDEBUG $(CFLAGS_COM)
 intel_linux : CC        = icx
 intel_linux : CPP       = icpx
@@ -265,7 +267,6 @@ intel_linux : $(obj)
 
 # ------------- intel_linux_db ----------------
 
-intel_linux_db : CPP_STANDARD = -std=c++11 -stdlib=libc++
 intel_linux_db : CFLAGS    = -O0 -traceback  -fstack-protector -fno-omit-frame-pointer -debug variable-locations \
 	                         -Wall -Wextra -Wuninitialized -Wunused-function -Wunused-variable \
 	                         -Wno-sign-compare -Wno-unused-parameter $(CFLAGS_COM)
