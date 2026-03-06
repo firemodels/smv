@@ -25,7 +25,7 @@ else
   GIT_HASH   := $(shell git describe --long --dirty)
   GIT_DATE   := $(shell git log -1 --format=%cd)
   GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
-#  CPU_TYPE   := $(shell uname -m)
+  CPU_TYPE   := $(shell uname -m)
 endif
 GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)-$(GIT_BRANCH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 CPUINFO=-Dpp_CPUINFO=\"$(CPU_TYPE)\"
