@@ -2205,9 +2205,6 @@ void PRINTversion(char *progname, int option){
 #ifdef pp_CPUINFO
   PRINTF("/%s", pp_CPUINFO);
 #endif
-#ifdef INTEL_COMPILER_ANY
-  PRINTF(" (Intel C/C++)");
-#endif
   PRINTF("\n");
   FREEMEMORY(progfullpath);
 }
