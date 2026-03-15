@@ -100,7 +100,7 @@ intel_win : CPP       = $(I_CC)
 intel_win : exe       = set_path_win.exe
 
 intel_win : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib  $(SMV_LIBS_WIN)
+	$(CPP) -o $(bin)/$(exe) $(objwin)  $(SMV_LIBS_WIN)
 
 # ------------- clang win ----------------
 
