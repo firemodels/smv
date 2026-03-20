@@ -10,7 +10,7 @@ if exist %userprofile%\.bundle\smv_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="15-September-2025"
+set smvlogdate="18-Mar-2026"
 
 :: ---- repo locations ----
 
@@ -48,6 +48,6 @@ set linux_username=%username%
 set linux_logon=%linux_username%@%linux_hostname%
 
 ::*** OSX
-set osx_hostname=excess.el.nist.gov
+set osx_hostname=wildfire.campus.nist.gov
 set osx_username=%username%
 set osx_logon=%osx_username%@%osx_hostname%

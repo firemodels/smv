@@ -2547,6 +2547,15 @@ void *UpdateVSlices(void *arg){
     vd->vslice_filetype=sdi->slice_filetype;
     vd->cellvec_comp = sdi->cellvec_comp;
     if(vd->vslice_filetype==SLICE_CELL_CENTER){
+      int iu_vec, iv_vec, iw_vec;
+      int iu_cellvec, iv_cellvec, iw_cellvec;
+
+      iu_vec = -1;
+      iv_vec = -1;
+      iw_vec = -1;
+      iu_cellvec = -1;
+      iv_cellvec = -1;
+      iw_cellvec = -1;
       for(j=0;j<meshi->nsliceinfo;j++){
         slicedata *sdj;
 
@@ -2555,16 +2564,41 @@ void *UpdateVSlices(void *arg){
         if(sdi->blocknumber!=sdj->blocknumber)continue;
         if(sdi->is1!=sdj->is1||sdi->is2!=sdj->is2||sdi->js1!=sdj->js1)continue;
         if(sdi->js2!=sdj->js2||sdi->ks1!=sdj->ks1||sdi->ks2!=sdj->ks2)continue;
-        if(sdi->cellvec_comp == 0){
-          if(sdj->vec_comp == 1)vd->iu = sdj - global_scase.slicecoll.sliceinfo;
-          if(sdj->vec_comp == 2)vd->iv = sdj - global_scase.slicecoll.sliceinfo;
-          if(sdj->vec_comp == 3)vd->iw = sdj - global_scase.slicecoll.sliceinfo;
+        if(sdj->vec_comp == 1){
+          iu_vec = sdj - global_scase.slicecoll.sliceinfo;
+          continue;
         }
-        else{
-          if(sdj->cellvec_comp == 1)vd->iu = sdj - global_scase.slicecoll.sliceinfo;
-          if(sdj->cellvec_comp == 2)vd->iv = sdj - global_scase.slicecoll.sliceinfo;
-          if(sdj->cellvec_comp == 3)vd->iw = sdj - global_scase.slicecoll.sliceinfo;
+        if(sdj->vec_comp == 2){
+          iv_vec = sdj - global_scase.slicecoll.sliceinfo;
+          continue;
         }
+        if(sdj->vec_comp == 3){
+          iw_vec = sdj - global_scase.slicecoll.sliceinfo;
+          continue;
+        }
+        if(sdj->cellvec_comp == 1){
+          iu_cellvec = sdj - global_scase.slicecoll.sliceinfo;
+          continue;
+        }
+        if(sdj->cellvec_comp == 2){
+          iv_cellvec = sdj - global_scase.slicecoll.sliceinfo;
+          continue;
+        }
+        if(sdj->cellvec_comp == 3){
+          iw_cellvec = sdj - global_scase.slicecoll.sliceinfo;
+          continue;
+        }
+      }
+      if(iu_cellvec != -1 || iv_cellvec != -1 || iw_cellvec != -1){
+        vd->iu = iu_cellvec;
+        vd->iv = iv_cellvec;
+        vd->iw = iw_cellvec;
+        vd->cellvec_comp = 1;
+      }
+      else{
+        vd->iu = iu_vec;
+        vd->iv = iv_vec;
+        vd->iw = iw_vec;
       }
     }
     else if(vd->vslice_filetype == SLICE_GEOM){
@@ -4141,7 +4175,8 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int is1, int is2, int js1, 
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(plotx, j, k)] == EMBED_YES)continue;
 
 //        index_cell = (plotx+1-incx-iimin)*sd->nslicej*sd->nslicek + (j+1-sd->js1)*sd->nslicek + k+1-sd->ks1;
-          index_cell = IJK_SLICE(xindex, j+1, k+1);
+
+        index_cell = IJK_SLICE(xindex, j+1, k+1);
         i33 = SLICECOLOR(index_cell);
         z1 = zplt[k];
         z3 = zplt[k + 1];
@@ -6835,6 +6870,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   int plotx, ploty, plotz;
   char *iblank_cell;
   int ibar, jbar;
+  float valmin, valmax;
 
   sd = global_scase.slicecoll.sliceinfo + vd->ival;
   meshi = global_scase.meshescoll.meshinfo + sd->blocknumber;
@@ -6857,6 +6893,14 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   vel_max = max_velocity;
   if(vel_max<= 0.0)vel_max = 1.0;
   float scene_factor = SCENE_FACTOR;
+
+  valmin = sd->valmin_slice;
+  valmax = sd->valmax_slice;
+  if(valmin>=valmax){
+    valmin = 0.0;
+    valmax = 1.0;
+  }
+  
 
   u = vd->u;
   v = vd->v;
@@ -6936,6 +6980,12 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           index_w = IJK_SLICE(plotx, j, k);
           GET_VEC_DXYZ(w, dz, index_w);
           ADJUST_VEC_DX(dz);
+        }
+        if(show_cell_slices_and_vectors==0){
+          float *rgb_ptr;
+
+          rgb_ptr = rgb_slice + SLICECOLOR(IJK_SLICE(plotx,j,k));
+          glColor4fv(rgb_ptr);
         }
         if(vd->cellvec_comp == 0){
           if(k != sd->ks2){
@@ -7020,6 +7070,12 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           index_w = IJK_SLICE(plotx, j, k);
           GET_VEC_DXYZ(w, dz, index_w);
           ADJUST_VEC_DX(dz);
+        }
+        if(show_cell_slices_and_vectors==0){
+          float *rgb_ptr;
+
+          rgb_ptr = rgb_slice + SLICECOLOR(IJK_SLICE(plotx,j,k));
+          glColor4fv(rgb_ptr);
         }
         if(vd->cellvec_comp == 0){
           if(k != sd->ks2){
@@ -7116,6 +7172,12 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           GET_VEC_DXYZ(w, dz, index_w);
           ADJUST_VEC_DX(dz);
         }
+        if(show_cell_slices_and_vectors==0){
+          float *rgb_ptr;
+
+          rgb_ptr = rgb_slice + SLICECOLOR(IJK_SLICE(i,ploty,k));
+          glColor4fv(rgb_ptr);
+        }
         if(vd->cellvec_comp == 0){
           if(k + 1 != sd->nslicek){
             glVertex3f(x1 - dx, constval, zhalf);
@@ -7136,7 +7198,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
             GET_VEC_DXYZ(v, dy, index_v);
             ADJUST_VEC_DX(dy);
             glVertex3f(x1 - dx, constval-dy, z1 - dz);
-            glVertex3f(x1 + dx, constval-dy, z1 + dz);
+            glVertex3f(x1 + dx, constval+dy, z1 + dz);
           }
         }
       }
@@ -7197,6 +7259,12 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           index_w = IJK_SLICE(i+1, ploty, k);
           GET_VEC_DXYZ(w, dz, index_w);
           ADJUST_VEC_DX(dz);
+        }
+        if(show_cell_slices_and_vectors==0){
+          float *rgb_ptr;
+
+          rgb_ptr = rgb_slice + SLICECOLOR(IJK_SLICE(i,ploty,k));
+          glColor4fv(rgb_ptr);
         }
         if(vd->cellvec_comp == 0){
           if(k +1 != sd->nslicek){
@@ -7293,6 +7361,12 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           GET_VEC_DXYZ(v, dy, index_v);
           ADJUST_VEC_DX(dy);
         }
+        if(show_cell_slices_and_vectors==0){
+          float *rgb_ptr;
+
+          rgb_ptr = rgb_slice + SLICECOLOR(IJK_SLICE(i,j, plotz));
+          glColor4fv(rgb_ptr);
+        }
         if(vd->cellvec_comp==0){
           if(j + 1 != sd->nslicej){
             glVertex3f(x1 - dx, yhalf, constval);
@@ -7376,6 +7450,12 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           index_v = IJK_SLICE(i+1, j, plotz);
           GET_VEC_DXYZ(v, dy, index_v);
           ADJUST_VEC_DX(dy);
+        }
+        if(show_cell_slices_and_vectors==0){
+          float *rgb_ptr;
+
+          rgb_ptr = rgb_slice + SLICECOLOR(IJK_SLICE(i,j, plotz));
+          glColor4fv(rgb_ptr);
         }
         if(vd->cellvec_comp==0){
           if(j + 1 != sd->nslicej){
@@ -7490,6 +7570,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
 
           n11 = IJK_SLICE(i,j, sd->ks1);
           if(color_vector_black==0&&show_node_slices_and_vectors==0){
+
             int i11;
 
             i11 = SLICECOLOR(n11);
