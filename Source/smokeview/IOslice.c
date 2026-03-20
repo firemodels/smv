@@ -2547,6 +2547,15 @@ void *UpdateVSlices(void *arg){
     vd->vslice_filetype=sdi->slice_filetype;
     vd->cellvec_comp = sdi->cellvec_comp;
     if(vd->vslice_filetype==SLICE_CELL_CENTER){
+      int iu_vec, iv_vec, iw_vec;
+      int iu_cellvec, iv_cellvec, iw_cellvec;
+
+      iu_vec = -1;
+      iv_vec = -1;
+      iw_vec = -1;
+      iu_cellvec = -1;
+      iv_cellvec = -1;
+      iw_cellvec = -1;
       for(j=0;j<meshi->nsliceinfo;j++){
         slicedata *sdj;
 
@@ -2555,16 +2564,41 @@ void *UpdateVSlices(void *arg){
         if(sdi->blocknumber!=sdj->blocknumber)continue;
         if(sdi->is1!=sdj->is1||sdi->is2!=sdj->is2||sdi->js1!=sdj->js1)continue;
         if(sdi->js2!=sdj->js2||sdi->ks1!=sdj->ks1||sdi->ks2!=sdj->ks2)continue;
-        if(sdi->cellvec_comp == 0){
-          if(sdj->vec_comp == 1)vd->iu = sdj - global_scase.slicecoll.sliceinfo;
-          if(sdj->vec_comp == 2)vd->iv = sdj - global_scase.slicecoll.sliceinfo;
-          if(sdj->vec_comp == 3)vd->iw = sdj - global_scase.slicecoll.sliceinfo;
+        if(sdj->vec_comp == 1){
+          iu_vec = sdj - global_scase.slicecoll.sliceinfo;
+          continue;
         }
-        else{
-          if(sdj->cellvec_comp == 1)vd->iu = sdj - global_scase.slicecoll.sliceinfo;
-          if(sdj->cellvec_comp == 2)vd->iv = sdj - global_scase.slicecoll.sliceinfo;
-          if(sdj->cellvec_comp == 3)vd->iw = sdj - global_scase.slicecoll.sliceinfo;
+        if(sdj->vec_comp == 2){
+          iv_vec = sdj - global_scase.slicecoll.sliceinfo;
+          continue;
         }
+        if(sdj->vec_comp == 3){
+          iw_vec = sdj - global_scase.slicecoll.sliceinfo;
+          continue;
+        }
+        if(sdj->cellvec_comp == 1){
+          iu_cellvec = sdj - global_scase.slicecoll.sliceinfo;
+          continue;
+        }
+        if(sdj->cellvec_comp == 2){
+          iv_cellvec = sdj - global_scase.slicecoll.sliceinfo;
+          continue;
+        }
+        if(sdj->cellvec_comp == 3){
+          iw_cellvec = sdj - global_scase.slicecoll.sliceinfo;
+          continue;
+        }
+      }
+      if(iu_cellvec != -1 || iv_cellvec != -1 || iw_cellvec != -1){
+        vd->iu = iu_cellvec;
+        vd->iv = iv_cellvec;
+        vd->iw = iw_cellvec;
+        vd->cellvec_comp = 1;
+      }
+      else{
+        vd->iu = iu_vec;
+        vd->iv = iv_vec;
+        vd->iw = iw_vec;
       }
     }
     else if(vd->vslice_filetype == SLICE_GEOM){
