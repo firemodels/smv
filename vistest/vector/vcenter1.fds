@@ -1,4 +1,4 @@
-&HEAD CHID='vcenter',TITLE='test centered vector slices' /
+&HEAD CHID='vcenter1',TITLE='test centered vector slices' /
 
 &MESH IJK=8,8,16 XB=0.0,0.8,0.0,0.8,0.0,1.6 /
 &MESH IJK=8,8,16 XB=0.0,0.8,0.0,0.8,1.6,3.2 /
