@@ -683,6 +683,7 @@ int main(int argc, char **argv){
   x[0] = 1.0;
   printf("after accessing null variable: %f\n", x[0]);
 */
+  GluiPostRedisplayOff();
   SetStdOut(stdout);
   initMALLOC();
   InitRandAB(1000000);
@@ -746,6 +747,8 @@ int main(int argc, char **argv){
   }
   PRINTF("Startup time: %.1f s\n", startup_time);
 
+  GluiPostRedisplayOn();
+  glui_post_redisplay_on = 1;
   glutMainLoop();
   FreeVars();
   return 0;

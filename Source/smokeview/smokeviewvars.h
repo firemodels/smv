@@ -1148,6 +1148,8 @@ SVEXTERN float SVDECL(fzero,0.25);
 
 SVEXTERN char blank_global[2];
 
+SVEXTERN int SVDECL(glui_post_redisplay_on, 0);
+
 SVEXTERN float SVDECL(*sphere_xyz,NULL);
 SVEXTERN int SVDECL(demo_mode,0), SVDECL(update_demo,1);
 SVEXTERN int SVDECL(smoke3d_demo_mode, 0);
