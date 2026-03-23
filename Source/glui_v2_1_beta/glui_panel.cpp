@@ -149,7 +149,7 @@ void    GLUI_Panel::set_type( int new_type )
     update_size();
 
     old_window = set_to_glut_window();
-    glutPostRedisplay( );
+    if(allow_glui_post_redisplay==1)glutPostRedisplay();
     restore_window( old_window );
   }
 }

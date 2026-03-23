@@ -57,7 +57,7 @@ void    GLUI_Rollout::open( void )
   restore_window(orig);
   refresh_glui_dialogs = 1;
   SetMainWindow();
-  glutPostRedisplay();
+  if(allow_glui_post_redisplay==1)glutPostRedisplay();
 }
 
 
@@ -94,7 +94,7 @@ void    GLUI_Rollout::close( void )
   glui->refresh();
   refresh_glui_dialogs = 1;
   SetMainWindow();
-  glutPostRedisplay();
+  if(allow_glui_post_redisplay==1)glutPostRedisplay();
 }
 
 
