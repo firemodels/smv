@@ -291,6 +291,8 @@ int SetupCase(char *filename){
   printf("***before dialog setup\n");
   printf("***before InitRolloutList\n");
   InitRolloutList();
+  printf("***before GLUIDisplaySetup\n");
+  GLUIDisplaySetup(mainwindow_id);
   printf("***before GLUIColorbarSetup\n");
   GLUIColorbarSetup(mainwindow_id);
   printf("***before GLUIMotionSetup\n");
@@ -303,8 +305,6 @@ int SetupCase(char *filename){
   GLUIGeometrySetup(mainwindow_id);
   printf("***before GLUIClipSetup\n");
   GLUIClipSetup(mainwindow_id);
-  printf("***before GLUIDisplaySetup\n");
-  GLUIDisplaySetup(mainwindow_id);
   printf("***before GLUIDeviceSetup\n");
   GLUIDeviceSetup(mainwindow_id);
   printf("***before GLUIPlot2DSetup\n");
@@ -320,13 +320,13 @@ int SetupCase(char *filename){
   printf("***after dialog setup\n");
 #else
   InitRolloutList();
+  GLUIDisplaySetup(mainwindow_id);
   GLUIColorbarSetup(mainwindow_id);
   GLUIMotionSetup(mainwindow_id);
   GLUIBoundsSetup(mainwindow_id);
   GLUIShooterSetup(mainwindow_id);
   GLUIGeometrySetup(mainwindow_id);
   GLUIClipSetup(mainwindow_id);
-  GLUIDisplaySetup(mainwindow_id);
   GLUIDeviceSetup(mainwindow_id);
   GLUIPlot2DSetup(mainwindow_id);
   GLUITourSetup(mainwindow_id);
