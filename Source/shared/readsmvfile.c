@@ -3820,9 +3820,10 @@ int ParseSLCFCount(smv_case *scase, int option, bufferstreamdata *stream, char *
       if(FGETS(buffer, 255, stream)==NULL){
         return RETURN_BREAK;
       }
-      if((Match(buffer, "SLCF")==1)||
-        (Match(buffer, "SLCC")==1)||
-        (Match(buffer, "SLCT")==1)||
+      if((Match(buffer, "SLCF")==1) ||
+        (Match(buffer, "SLCC")==1)  ||
+        (Match(buffer, "SLFC")==1)  ||
+        (Match(buffer, "SLCT")==1)  ||
         (Match(buffer, "BNDS")==1)
         ){
         break;
@@ -3859,7 +3860,7 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   char buffers[6][256]){
   char *slicelabelptr, slicelabel[256], *sliceparms;
   float above_ground_level = 0.0;
-  int terrain = 0, cellcenter = 0;
+  int terrain = 0, cellcenter = 0, facecenter=0;
   int slicegeom = 0;
   int slcf_index = 0;
   char *char_slcf_index;
@@ -3883,9 +3884,10 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
       if(FGETS(buffer, 255, stream)==NULL){
         return RETURN_BREAK;
       }
-      if( (Match(buffer, "SLCF") == 1)  ||
-          (Match(buffer, "SLCC") == 1)  ||
-          (Match(buffer, "SLCT") == 1)  ||
+      if( (Match(buffer, "SLCF") == 1) ||
+          (Match(buffer, "SLCC") == 1) ||
+          (Match(buffer, "SLFC") == 1) ||
+          (Match(buffer, "SLCT") == 1) ||
           (Match(buffer, "BNDS") == 1)
         ){
         break;
@@ -3937,6 +3939,9 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   if(Match(buffer, "SLCC")==1){
     scase->cellcenter_slice_active = 1;
     cellcenter = 1;
+  }
+  if(Match(buffer, "SLFC")==1){
+    facecenter = 1;
   }
   TrimBack(buffer);
   len = strlen(buffer);
@@ -3991,6 +3996,7 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   sd->n_imap=0;
   sd->n_jmap=0;
   sd->n_kmap=0;
+  sd->face_center = facecenter;
   sd->cell_center = cellcenter;
   if(slicegeom==1&&cell_center_flag==1)sd->cell_center = 1;
  // sd->file_size = 0;
@@ -5318,10 +5324,10 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
 //*** SLCF
 
-    if( (MatchSMV(buffer,"SLCF") == 1)  ||
-        (MatchSMV(buffer,"SLCC") == 1)  ||
-        (MatchSMV(buffer, "SLCD") == 1) ||
-        (MatchSMV(buffer,"SLCT") == 1)  ||
+    if( (MatchSMV(buffer, "SLCF") == 1) ||
+        (MatchSMV(buffer, "SLCC") == 1) ||
+        (MatchSMV(buffer, "SLFC") == 1) ||
+        (MatchSMV(buffer, "SLCT") == 1) ||
         (MatchSMV(buffer, "BNDS") == 1)
       ){
       int return_val;
@@ -8639,10 +8645,10 @@ typedef struct {
     ++++++++++++++++++++++ SLCF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if( (MatchSMV(buffer,"SLCF") == 1)  ||
-        (MatchSMV(buffer,"SLCC") == 1)  ||
-        (MatchSMV(buffer, "SLCD") == 1) ||
-        (MatchSMV(buffer,"SLCT") == 1)  ||
+    if( (MatchSMV(buffer, "SLCF") == 1) ||
+        (MatchSMV(buffer, "SLCC") == 1) ||
+        (MatchSMV(buffer, "SLFC") == 1) ||
+        (MatchSMV(buffer, "SLCT") == 1) ||
         (MatchSMV(buffer, "BNDS") == 1)
       ){
       int return_val;
