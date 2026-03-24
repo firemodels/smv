@@ -17,6 +17,7 @@
 #define pp_OPACITY_SHORTCUTS  // add shortcuts for increasing/decreasing opacity depth
 //#define pp_GLUT_DEBUG         // add debug print for glut debugging
 #define pp_OSX_CWD            // turn off initial getcwd call for OSX smokeview's
+#define pp_DIALOG           // turn on dialogs
 
 //*** options: windows
 

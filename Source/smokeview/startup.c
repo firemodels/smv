@@ -49,6 +49,11 @@ void InitDefaultCameras(void){
 
   camera_external->zoom = zoom;
   CopyCamera(camera_current, camera_external);
+#ifndef pp_DIALOG
+  if(camera_label == NULL){
+    NewMemory((void **)&camera_label, 1000);
+  }
+#endif
   strcpy(camera_label, camera_current->name);
   GLUIUpdateCameraLabel();
 
@@ -281,6 +286,7 @@ int SetupCase(char *filename){
   PRINT_TIMER(timer_start, "InitTranslate");
 
   if(global_scase.tourcoll.ntourinfo==0)SetupTour();
+#ifdef pp_DIALOG
 #ifdef pp_GLUT_DEBUG
   printf("***before dialog setup\n");
   printf("***before InitRolloutList\n");
@@ -327,6 +333,7 @@ int SetupCase(char *filename){
   GLUIAlertSetup(mainwindow_id);
   GLUIStereoSetup(mainwindow_id);
   GLUI3dSmokeSetup(mainwindow_id);
+#endif
 #endif
 
   opengl_finalized = 1;
