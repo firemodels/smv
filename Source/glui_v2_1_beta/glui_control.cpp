@@ -481,7 +481,7 @@ void      GLUI_Control::set_w( int new_w )
   if ( glui->get_glut_window_id() != -1 ) {
     int orig = set_to_glut_window();
     glutReshapeWindow( glui->main_panel->w, glui->main_panel->h );
-    glutPostRedisplay();
+    if(allow_glui_post_redisplay==1)glutPostRedisplay();
     /*    printf( "Requesting a reshape to window %d: %d %d\n", 
 	  glutGetWindow(),
 	  glui->main_panel->w, glui->main_panel->h );*/
@@ -505,7 +505,7 @@ void      GLUI_Control::set_h( int new_h )
   if ( glui->get_glut_window_id() != -1 ) {
     int orig = set_to_glut_window();
     glutReshapeWindow( glui->main_panel->w, glui->main_panel->h );
-    glutPostRedisplay();
+    if(allow_glui_post_redisplay==1)glutPostRedisplay();
     restore_window(orig);
   }
 }
@@ -522,7 +522,7 @@ void      GLUI_Control::set_alignment( int new_align )
 
     if ( glui->get_glut_window_id() != -1 ) {
       int orig = set_to_glut_window();
-      glutPostRedisplay();
+      if(allow_glui_post_redisplay==1)glutPostRedisplay();
       restore_window(orig);
     }
   }

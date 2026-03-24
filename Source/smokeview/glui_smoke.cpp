@@ -330,13 +330,11 @@ extern "C" void GLUICreateVolTourList(void){
   }
 }
 
-#ifdef pp_OPACITY_SHORTCUTS
 /* ------------------ GLUIUpdateUseOpacityDepth ------------------------ */
 
 extern "C" void GLUIUpdateUseOpacityDepth(void){
   CHECKBOX_use_opacity_depth->set_int_val(use_opacity_depth);
 }
-#endif
 
 /* ------------------ UpdateCombineMeshes ------------------------ */
 

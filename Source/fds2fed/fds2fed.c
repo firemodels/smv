@@ -36,7 +36,7 @@ int ReadSMV(char *smvfile){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(
-      Match(buffer,"SLCF") == 1 || Match(buffer,"SLCC") == 1 || Match(buffer, "SLCD") == 1 || Match(buffer,"SLCT") == 1){
+      Match(buffer,"SLCF") == 1 || Match(buffer,"SLCC") == 1 || Match(buffer,"SLCT") == 1){
       nsliceinfo++;
       continue;
     }
@@ -141,7 +141,7 @@ int ReadSMV(char *smvfile){
     ++++++++++++++++++++++ SLCF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer, "SLCF") == 1 || Match(buffer, "SLCC") == 1 || Match(buffer, "SLCD") == 1 || Match(buffer,"SLCT") == 1){
+    if(Match(buffer, "SLCF") == 1 || Match(buffer, "SLCC") == 1 || Match(buffer,"SLCT") == 1){
       int version_local=0,dummy;
       char *buffer2, *sliceparms, *shortlabel;
       int len, blocknumber, slicetype=SLCF;
@@ -150,7 +150,6 @@ int ReadSMV(char *smvfile){
 
       if(Match(buffer, "SLCF") == 1)slicetype = SLCF;
       if(Match(buffer, "SLCC") == 1)slicetype = SLCC;
-      if(Match(buffer, "SLCD") == 1)slicetype = SLCD;
       if(Match(buffer, "SLCT") == 1)slicetype = SLCT;
 
       len=strlen(buffer);
