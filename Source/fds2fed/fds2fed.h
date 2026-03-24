@@ -50,7 +50,6 @@ typedef struct _feddata{
 
 #define SLCF 1
 #define SLCC 2
-#define SLCD 3
 #define SLCT 4
 
 #define OTHER -1

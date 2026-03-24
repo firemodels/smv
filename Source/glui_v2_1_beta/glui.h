@@ -361,6 +361,10 @@ enum GLUI_StdBitmaps_Codes {
   GLUI_STDBITMAP_NUM_ITEMS
 };
 
+static int allow_glui_post_redisplay=1;
+
+extern "C" void GluiPostRedisplayOn(void);
+extern "C" void GluiPostRedisplayOff(void);
 
 /************ Image Bitmap arrays **********/
 extern int glui_img_checkbox_0[];

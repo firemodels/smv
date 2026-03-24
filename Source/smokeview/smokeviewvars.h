@@ -144,6 +144,8 @@ SVEXTERN int SVDECL(update_slicexyz, 0);
 SVEXTERN int SVDECL(update_splitcolorbar, 0);
 SVEXTERN int SVDECL(slice_plot_bound_option, 1);
 
+SVEXTERN int SVDECL(update_viewpoint_list, 0), SVDECL(update_camera_label, 0);
+
 #ifdef pp_GLUT_DEBUG
 #ifdef INMAIN
 #ifdef _WIN32
@@ -1147,6 +1149,8 @@ SVEXTERN int SVDECL(videoSTEREO,0);
 SVEXTERN float SVDECL(fzero,0.25);
 
 SVEXTERN char blank_global[2];
+
+SVEXTERN int SVDECL(glui_post_redisplay_on, 0);
 
 SVEXTERN float SVDECL(*sphere_xyz,NULL);
 SVEXTERN int SVDECL(demo_mode,0), SVDECL(update_demo,1);

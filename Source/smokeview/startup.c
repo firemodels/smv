@@ -49,8 +49,11 @@ void InitDefaultCameras(void){
 
   camera_external->zoom = zoom;
   CopyCamera(camera_current, camera_external);
+  if(camera_label == NULL){
+    NewMemory((void **)&camera_label, 1000);
+  }
   strcpy(camera_label, camera_current->name);
-  GLUIUpdateCameraLabel();
+  update_camera_label = 1;
 
   CopyCamera(camera_save, camera_current);
   CopyCamera(camera_last, camera_current);
@@ -58,7 +61,7 @@ void InitDefaultCameras(void){
   InitCameraList();
   AddDefaultViewpoints();
   CopyCamera(camera_external_save, camera_external);
-  GLUIUpdateViewpointList();
+  update_viewpoint_list = 1;
 }
 
 /* ------------------ InitMisc ------------------------ */
@@ -121,9 +124,6 @@ void InitMisc(void){
   /* initialize box sizes, lighting parameters */
 
   xyzbox = MAX(MAX(global_scase.xbar,global_scase.ybar),global_scase.zbar);
-
-  InitDefaultCameras();
-
 
   //GLUIResetView(i_view_list);
 
@@ -277,6 +277,8 @@ int SetupCase(char *filename){
   glui_defined = 1;
   char *smv_bindir = GetSmvRootDir();
   InitTranslate(smv_bindir, tr_name);
+  InitDefaultCameras();
+  
   FREEMEMORY(smv_bindir);
   PRINT_TIMER(timer_start, "InitTranslate");
 
@@ -285,6 +287,8 @@ int SetupCase(char *filename){
   printf("***before dialog setup\n");
   printf("***before InitRolloutList\n");
   InitRolloutList();
+  printf("***before GLUIDisplaySetup\n");
+  GLUIDisplaySetup(mainwindow_id);
   printf("***before GLUIColorbarSetup\n");
   GLUIColorbarSetup(mainwindow_id);
   printf("***before GLUIMotionSetup\n");
@@ -297,8 +301,6 @@ int SetupCase(char *filename){
   GLUIGeometrySetup(mainwindow_id);
   printf("***before GLUIClipSetup\n");
   GLUIClipSetup(mainwindow_id);
-  printf("***before GLUIDisplaySetup\n");
-  GLUIDisplaySetup(mainwindow_id);
   printf("***before GLUIDeviceSetup\n");
   GLUIDeviceSetup(mainwindow_id);
   printf("***before GLUIPlot2DSetup\n");
@@ -311,49 +313,68 @@ int SetupCase(char *filename){
   GLUIStereoSetup(mainwindow_id);
   printf("***before GLUI3dSmokeSetup\n");
   GLUI3dSmokeSetup(mainwindow_id);
+  printf("***before GLUITrainerSetup\n");
+  GLUITrainerSetup(mainwindow_id);
   printf("***after dialog setup\n");
 #else
   InitRolloutList();
+  GLUIDisplaySetup(mainwindow_id);
   GLUIColorbarSetup(mainwindow_id);
   GLUIMotionSetup(mainwindow_id);
   GLUIBoundsSetup(mainwindow_id);
   GLUIShooterSetup(mainwindow_id);
   GLUIGeometrySetup(mainwindow_id);
   GLUIClipSetup(mainwindow_id);
-  GLUIDisplaySetup(mainwindow_id);
   GLUIDeviceSetup(mainwindow_id);
   GLUIPlot2DSetup(mainwindow_id);
   GLUITourSetup(mainwindow_id);
   GLUIAlertSetup(mainwindow_id);
   GLUIStereoSetup(mainwindow_id);
   GLUI3dSmokeSetup(mainwindow_id);
+  GLUITrainerSetup(mainwindow_id);
 #endif
 
   opengl_finalized = 1;
   PRINT_TIMER(timer_start, "all dialogs");
 
   UpdateLights(light_position0, light_position1);
-
+#ifdef pp_GLUT_DEBUG
+  printf("\n***before glutReshapeWindow\n");
   glutReshapeWindow(screenWidth,screenHeight);
-
+  printf("\n***before SetMainWindow\n");
+  SetMainWindow();
+  printf("\n***before glutShowWindow\n");
+  glutShowWindow();
+  printf("\n***before glutSetWindowTitle\n");
+  glutSetWindowTitle(global_scase.fdsprefix);
+  printf("\n***before InitMisc\n");
+  InitMisc();
+  printf("\n***before glutDetatchMenu\n");
+  glutDetachMenu(GLUT_RIGHT_BUTTON);
+  attachmenu_status = 0;
+  printf("\n***before THREADcontrol\n");
+  THREADcontrol(checkfiles_threads, THREAD_LOCK);
+  printf("\n***before InitMenus\n");
+  InitMenus();
+  printf("\n***before THREADcontrol\n");
+  THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
+  printf("\n***before glutAttachMenu\n");
+  glutAttachMenu(GLUT_RIGHT_BUTTON);
+  attachmenu_status = 1;
+#else
+  glutReshapeWindow(screenWidth,screenHeight);
   SetMainWindow();
   glutShowWindow();
   glutSetWindowTitle(global_scase.fdsprefix);
   InitMisc();
-  GLUITrainerSetup(mainwindow_id);
-  if(opengl_finalized==1)glutDetachMenu(GLUT_RIGHT_BUTTON);
+  glutDetachMenu(GLUT_RIGHT_BUTTON);
   attachmenu_status = 0;
   THREADcontrol(checkfiles_threads, THREAD_LOCK);
-#ifdef pp_GLUT_DEBUG
-  printf("\n***before menu setup\n");
-#endif
   InitMenus();
-#ifdef pp_GLUT_DEBUG
-  printf("***after menu setup\n\n");
-#endif
   THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
-  if(opengl_finalized==1)glutAttachMenu(GLUT_RIGHT_BUTTON);
+  glutAttachMenu(GLUT_RIGHT_BUTTON);
   attachmenu_status = 1;
+#endif
   if(trainer_mode==1){
     GLUIShowTrainer();
     GLUIShowAlert();
@@ -444,12 +465,16 @@ int GLUTGetScreenHeight(void){
 
 void SetupGlut(int argc, char **argv){
   int i;
+#ifdef pp_OSX_CWD
 #ifdef pp_OSX
   char workingdir[1000];
 #endif
+#endif
 
+#ifdef pp_OSX_CWD
 #ifdef pp_OSX
   getcwd(workingdir, 1000);
+#endif
 #endif
   if(use_graphics==1){
     PRINTF("\n");
@@ -461,8 +486,10 @@ void SetupGlut(int argc, char **argv){
     if(verbose_output==1)PRINTF("\n%s\n","complete");
 
   }
+#ifdef pp_OSX_CWD
 #ifdef pp_OSX
   chdir(workingdir);
+#endif
 #endif
 
   if(use_graphics==1){
@@ -566,6 +593,16 @@ int GetOpenGLVersion(char *version_label){
   return 100*major + 10*minor + subminor;
 }
 
+#ifdef pp_OSX
+#ifdef __arm64__
+
+/* ------------------ DummyDisplay ------------------------ */
+
+void DummyDisplay(void){
+}
+#endif
+#endif
+
 /* ------------------ InitOpenGL ------------------------ */
 
 void InitOpenGL(int option){
@@ -606,7 +643,22 @@ void InitOpenGL(int option){
   if(option==PRINT)PRINTF("%s\n","initialized");
 #endif
 
+#ifdef pp_OSX
+#ifdef __arm64__
+#ifdef pp_GLUT_DEBUG
+  printf("***before glutDisplayFunc(DummyDisplay)\n");
+#endif
+  glutDisplayFunc(DummyDisplay);
+#ifdef pp_GLUT_DEBUG
+  printf("***after glutDisplayFunc(DummyDisplay)\n");
+#endif
+#endif
+#endif
+
   CheckMemory;
+#ifdef pp_GLUT_DEBUG
+  printf("***before creating main window\n");
+#endif
 #ifdef _DEBUG
   if(option==PRINT)PRINTF("%s\n","   creating window");
 #endif
@@ -614,10 +666,27 @@ void InitOpenGL(int option){
 #ifdef _DEBUG
   if(option==PRINT)PRINTF("%s\n","   window created");
 #endif
-
+#ifdef pp_GLUT_DEBUG
+  printf("***after creating main window\n");
+#endif
+#ifdef pp_OSX
+#ifdef __arm64__
+#ifdef pp_GLUT_DEBUG
+  printf("***before dummy glutSetWindow\n");
+#endif
+  glutSetWindow(mainwindow_id);
+#ifdef pp_GLUT_DEBUG
+  printf("***after dummy glutSetWindow\n");
+#endif
+#endif
+#endif
+#ifdef pp_GLUT_DEBUG
+  printf("***before call back inits\n");
+#endif
 #ifdef _DEBUG
   if(option==PRINT)PRINTF("%s","   Initializing callbacks - ");
 #endif
+  glutDisplayFunc(DisplayCB);
   glutSpecialUpFunc(SpecialKeyboardUpCB);
   glutKeyboardUpFunc(KeyboardUpCB);
   glutKeyboardFunc(KeyboardCB);
@@ -625,11 +694,13 @@ void InitOpenGL(int option){
   glutSpecialFunc(SpecialKeyboardCB);
   glutMotionFunc(MouseDragCB);
   glutReshapeFunc(ReshapeCB);
-  glutDisplayFunc(DisplayCB);
   glutVisibilityFunc(NULL);
   glutMenuStatusFunc(MenuStatusCB);
 #ifdef _DEBUG
   if(option==PRINT)PRINTF("%s\n","initialized");
+#endif
+#ifdef pp_GLUT_DEBUG
+  printf("***after call back inits\n");
 #endif
 
   opengl_version = GetOpenGLVersion(opengl_version_label);

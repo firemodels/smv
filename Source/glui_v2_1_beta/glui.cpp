@@ -20,6 +20,18 @@
 #include "glui.h"
 #include "stdinc.h"
 
+/************************************ GluiPostRedisplayOn ************/
+
+void GluiPostRedisplayOn(void){
+  allow_glui_post_redisplay = 1;
+}
+
+/************************************ GluiPostRedisplayOff ************/
+
+void GluiPostRedisplayOff(void){
+  allow_glui_post_redisplay = 0;
+}
+
 /*** This object must be used to create a GLUI ***/
 
 GLUI_Master_Object GLUI_Master;
@@ -609,7 +621,7 @@ void    GLUI_Main::reshape( int reshape_w, int reshape_h )
 
   /*  printf( "%d: %d\n", glutGetWindow(), this->flags );          */
 
-  /*  glutPostRedisplay();          */
+  /*  if(allow_glui_post_redisplay==1)glutPostRedisplay();          */
 }
 
 
@@ -974,7 +986,7 @@ void   GLUI_Main::post_update_main_gfx( void )
   if ( main_gfx_window_id > 0 ) {
     old_window = glutGetWindow();
     glutSetWindow( main_gfx_window_id );
-    glutPostRedisplay();
+    if(allow_glui_post_redisplay==1)glutPostRedisplay();
     if( old_window > 0 )
       glutSetWindow( old_window );
   }
@@ -1415,7 +1427,7 @@ void   GLUI::close( void )
 
   old_glut_window = glutGetWindow();
   glutSetWindow( get_glut_window_id() );
-  glutPostRedisplay();
+  if(allow_glui_post_redisplay==1)glutPostRedisplay();
 
   glutSetWindow( old_glut_window );
 }
@@ -1852,7 +1864,7 @@ void    GLUI_Main::refresh( void )
 
     if ( glut_window_id > 0 )
       glutSetWindow( glut_window_id );
-    glutPostRedisplay();
+    if(allow_glui_post_redisplay==1)glutPostRedisplay();
 
     /*	printf( "top_level: %d\n", top_level_glut_window_id );*/
     glutSetWindow( top_level_glut_window_id );
@@ -1871,7 +1883,7 @@ void    GLUI_Main::refresh( void )
 
     glutReshapeWindow( new_w, new_h );
 
-    glutPostRedisplay();
+    if(allow_glui_post_redisplay==1)glutPostRedisplay();
   }
 
   glutSetWindow( orig);

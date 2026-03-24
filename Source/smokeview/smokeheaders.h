@@ -848,6 +848,9 @@ EXTERNCPP void PutStartupSmoke3D(FILE *fileout);
 EXTERNCPP void Set3DSmokeStartup(void);
 EXTERNCPP void SetupGlut(int argc, char **argv);
 EXTERNCPP int  SetupCase(char *file);
+EXTERNCPP void GluiPostRedisplayOn(void);
+EXTERNCPP void GluiPostRedisplayOff(void);
+
 
 //*** unit.c headers
 
