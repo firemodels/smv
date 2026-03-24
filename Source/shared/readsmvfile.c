@@ -5320,7 +5320,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
     if( (MatchSMV(buffer,"SLCF") == 1)  ||
         (MatchSMV(buffer,"SLCC") == 1)  ||
-        (MatchSMV(buffer, "SLCD") == 1) ||
         (MatchSMV(buffer,"SLCT") == 1)  ||
         (MatchSMV(buffer, "BNDS") == 1)
       ){
@@ -8641,7 +8640,6 @@ typedef struct {
   */
     if( (MatchSMV(buffer,"SLCF") == 1)  ||
         (MatchSMV(buffer,"SLCC") == 1)  ||
-        (MatchSMV(buffer, "SLCD") == 1) ||
         (MatchSMV(buffer,"SLCT") == 1)  ||
         (MatchSMV(buffer, "BNDS") == 1)
       ){
