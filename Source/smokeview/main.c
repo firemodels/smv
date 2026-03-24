@@ -749,7 +749,13 @@ int main(int argc, char **argv){
 
   GluiPostRedisplayOn();
   glui_post_redisplay_on = 1;
+#ifdef pp_GLUT_DEBUG
+  printf("***before glutMainLoop\n");
+#endif
   glutMainLoop();
+#ifdef pp_GLUT_DEBUG
+  printf("***after glutMainLoop\n");
+#endif
   FreeVars();
   return 0;
 }

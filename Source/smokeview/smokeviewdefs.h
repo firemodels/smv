@@ -191,9 +191,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
   else{\
     filebeg++;\
   }\
-  printf("***before glutPostRedisplay: file: %s, line: %i",filebeg,__LINE__);\
+  printf("------before glutPostRedisplay: file: %s, line: %i",filebeg,__LINE__);\
   glutPostRedisplay();\
-  printf(" after***\n");\
+  printf(" after------\n");\
 }
 #else
 #define GLUTPOSTREDISPLAY  if(glui_post_redisplay_on==1&&use_graphics==1&&opengl_finalized==1){\

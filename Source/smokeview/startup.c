@@ -636,6 +636,9 @@ void InitOpenGL(int option){
 #endif
 
   CheckMemory;
+#ifdef pp_GLUT_DEBUG
+  printf("***before creating main window\n");
+#endif
 #ifdef _DEBUG
   if(option==PRINT)PRINTF("%s\n","   creating window");
 #endif
@@ -643,7 +646,13 @@ void InitOpenGL(int option){
 #ifdef _DEBUG
   if(option==PRINT)PRINTF("%s\n","   window created");
 #endif
+#ifdef pp_GLUT_DEBUG
+  printf("***after creating main window\n");
+#endif
 
+#ifdef pp_GLUT_DEBUG
+  printf("***before call back inits\n");
+#endif
 #ifdef _DEBUG
   if(option==PRINT)PRINTF("%s","   Initializing callbacks - ");
 #endif
@@ -659,6 +668,9 @@ void InitOpenGL(int option){
   glutMenuStatusFunc(MenuStatusCB);
 #ifdef _DEBUG
   if(option==PRINT)PRINTF("%s\n","initialized");
+#endif
+#ifdef pp_GLUT_DEBUG
+  printf("***after call back inits\n");
 #endif
 
   opengl_version = GetOpenGLVersion(opengl_version_label);
