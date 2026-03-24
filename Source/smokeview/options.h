@@ -14,7 +14,6 @@
 //#define pp_SHOW_UPDATE      // show what is being updated in the UpdateShowScene routine
 //#define pp_TERRAIN_HIDE     // hide terrain when hiding internal blockages
 //#define pp_OPACITY_DEBUG    // output hrrpuv opacity in center of each mesh
-#define pp_OPACITY_SHORTCUTS  // add shortcuts for increasing/decreasing opacity depth
 //#define pp_GLUT_DEBUG         // add debug print for glut debugging
 //#define pp_OSX_CWD           / turn on initial getcwd call for OSX smokeview's
 #define pp_DIALOG           // turn on dialogs
