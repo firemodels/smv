@@ -340,26 +340,43 @@ int SetupCase(char *filename){
   PRINT_TIMER(timer_start, "all dialogs");
 
   UpdateLights(light_position0, light_position1);
-
+#ifdef pp_GLUT_DEBUG
+  printf("\n***before glutReshapeWindow\n");
   glutReshapeWindow(screenWidth,screenHeight);
-
+  printf("\n***before SetMainWindow\n");
+  SetMainWindow();
+  printf("\n***before glutShowWindow\n");
+  glutShowWindow();
+  printf("\n***before glutSetWindowTitle\n");
+  glutSetWindowTitle(global_scase.fdsprefix);
+  printf("\n***before InitMisc\n");
+  InitMisc();
+  printf("\n***before glutDetatchMenu\n");
+  glutDetachMenu(GLUT_RIGHT_BUTTON);
+  attachmenu_status = 0;
+  printf("\n***before THREADcontrol\n");
+  THREADcontrol(checkfiles_threads, THREAD_LOCK);
+  printf("\n***before InitMenus\n");
+  InitMenus();
+  printf("\n***before THREADcontrol\n");
+  THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
+  printf("\n***before glutAttachMenu\n");
+  glutAttachMenu(GLUT_RIGHT_BUTTON);
+  attachmenu_status = 1;
+#else
+  glutReshapeWindow(screenWidth,screenHeight);
   SetMainWindow();
   glutShowWindow();
   glutSetWindowTitle(global_scase.fdsprefix);
   InitMisc();
-  if(opengl_finalized==1)glutDetachMenu(GLUT_RIGHT_BUTTON);
+  glutDetachMenu(GLUT_RIGHT_BUTTON);
   attachmenu_status = 0;
   THREADcontrol(checkfiles_threads, THREAD_LOCK);
-#ifdef pp_GLUT_DEBUG
-  printf("\n***before menu setup\n");
-#endif
   InitMenus();
-#ifdef pp_GLUT_DEBUG
-  printf("***after menu setup\n\n");
-#endif
   THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
-  if(opengl_finalized==1)glutAttachMenu(GLUT_RIGHT_BUTTON);
+  glutAttachMenu(GLUT_RIGHT_BUTTON);
   attachmenu_status = 1;
+#endif
   if(trainer_mode==1){
     GLUIShowTrainer();
     GLUIShowAlert();
