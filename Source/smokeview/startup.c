@@ -595,6 +595,16 @@ int GetOpenGLVersion(char *version_label){
   return 100*major + 10*minor + subminor;
 }
 
+#ifdef pp_OSX
+#ifdef __arm64__
+
+/* ------------------ DummyDisplay ------------------------ */
+
+void DummyDisplay(void){
+}
+#endif
+#endif
+
 /* ------------------ InitOpenGL ------------------------ */
 
 void InitOpenGL(int option){
@@ -635,6 +645,18 @@ void InitOpenGL(int option){
   if(option==PRINT)PRINTF("%s\n","initialized");
 #endif
 
+#ifdef pp_OSX
+#ifdef __arm64__
+#ifdef pp_GLUT_DEBUG
+  printf("***before glutDisplayFunc(DummyDisplay)\n");
+#endif
+  glutDisplayFunc(DummyDisplay);
+#ifdef pp_GLUT_DEBUG
+  printf("***after glutDisplayFunc(DummyDisplay)\n");
+#endif
+#endif
+#endif
+
   CheckMemory;
 #ifdef pp_GLUT_DEBUG
   printf("***before creating main window\n");
@@ -649,7 +671,17 @@ void InitOpenGL(int option){
 #ifdef pp_GLUT_DEBUG
   printf("***after creating main window\n");
 #endif
-
+#ifdef pp_OSX
+#ifdef __arm64__
+#ifdef pp_GLUT_DEBUG
+  printf("***before dummy glutSetWindow\n");
+#endif
+  glutSetWindow(mainwindow_id);
+#ifdef pp_GLUT_DEBUG
+  printf("***after dummy glutSetWindow\n");
+#endif
+#endif
+#endif
 #ifdef pp_GLUT_DEBUG
   printf("***before call back inits\n");
 #endif
