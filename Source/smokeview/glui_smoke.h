@@ -106,9 +106,7 @@ EXTERNCPP void GLUIUpdateFireAlpha(void);
 EXTERNCPP void GLUIUpdateSmoke3dFlags(void);
 EXTERNCPP void GLUICreateVolTourList(void);
 EXTERNCPP void GLUIDeleteVolTourList(void);
-#ifdef pp_OPACITY_SHORTCUTS
 EXTERNCPP void GLUIUpdateUseOpacityDepth(void);
-#endif
 
 #endif
 

@@ -3002,6 +3002,14 @@ void UpdateDisplay(void){
     GLUISetColorbarDigitsCPP(ncolorlabel_digits);
     GLUISetColorbarDigits();
   }
+  if(update_viewpoint_list == 1){
+    update_viewpoint_list = 0;
+    GLUIUpdateViewpointList();
+  }
+  if(update_camera_label == 1){
+    update_camera_label = 0;
+    GLUIUpdateCameraLabel();
+  }
   if(update_visColorbars==1){
     update_visColorbars = 0;
     visColorbarVertical = visColorbarVertical_val;

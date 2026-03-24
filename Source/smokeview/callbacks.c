@@ -2078,7 +2078,6 @@ void Keyboard(unsigned char key, int flag){
         updatemenu = 1;
       }
       break;
-#ifdef pp_OPACITY_SHORTCUTS
     case 'k':
       if(keystate == GLUT_ACTIVE_ALT){
         select_device = 1-select_device;
@@ -2124,33 +2123,6 @@ void Keyboard(unsigned char key, int flag){
       GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
       printf("50%% opacity at depth: %f (m)\n", fire_halfdepth);
       break;
-#else
-    case 'K':
-      fix_window_aspect = 1 - fix_window_aspect;
-      if(fix_window_aspect == 1)printf("fix window aspect ratio: on\n");
-      if(fix_window_aspect == 0)printf("fix window aspect ratio: off\n");
-      GLUISceneMotionCB(WINDOW_PRESERVE);
-      GLUIUpdateWindowAspect();
-      break;
-    case 'k':
-      if(keystate==GLUT_ACTIVE_ALT){ // toggle device selection
-        select_device = 1-select_device;
-        updatemenu = 1;
-        if(select_device==1){
-          printf("device selection on\n");
-        }
-        else{
-          printf("device selection off\n");
-        }
-      }
-      else{
-        visTimebar = 1 - visTimebar;
-        if(visTimebar==0)PRINTF("Time bar hidden\n");
-        if(visTimebar==1)PRINTF("Time bar visible\n");
-      }
-      break;
-#endif
-#ifdef pp_OPACITY_SHORTCUTS
     case 'l':
     case 'L':
       if(global_scase.smoke3dcoll.nsmoke3dinfo<=0){
@@ -2166,14 +2138,6 @@ void Keyboard(unsigned char key, int flag){
       GLUISmoke3dCB(SMOKE_EXTINCT);
       printf("Mass extinction : %f (m2/kg)\n", glui_mass_extinct);
       break;
-#else
-    case 'l':
-    case 'L':
-#ifdef pp_MEMDEBUG
-      printf("memory blocks: %i total size: %i\n", COUNTMEMORYBLOCKS(0), (int)GETTOTALMEMORY);
-#endif
-      break;
-#endif
     case 'm':
       switch(keystate){
       case GLUT_ACTIVE_ALT:

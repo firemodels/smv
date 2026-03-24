@@ -1080,7 +1080,7 @@ extern "C" void GLUIUpdateZoom(void){
 /* ------------------ GLUIUpdateCameraLabel ------------------------ */
 
 extern "C" void GLUIUpdateCameraLabel(void){
-  EDIT_view_label->set_text(camera_label);
+  if(EDIT_view_label!=NULL)EDIT_view_label->set_text(camera_label);
 }
 
 /* ------------------ GLUIUpdateViewpointList ------------------------ */
