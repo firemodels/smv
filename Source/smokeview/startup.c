@@ -283,7 +283,6 @@ int SetupCase(char *filename){
   PRINT_TIMER(timer_start, "InitTranslate");
 
   if(global_scase.tourcoll.ntourinfo==0)SetupTour();
-#ifdef pp_DIALOG
 #ifdef pp_GLUT_DEBUG
   printf("***before dialog setup\n");
   printf("***before InitRolloutList\n");
@@ -333,7 +332,6 @@ int SetupCase(char *filename){
   GLUIStereoSetup(mainwindow_id);
   GLUI3dSmokeSetup(mainwindow_id);
   GLUITrainerSetup(mainwindow_id);
-#endif
 #endif
 
   opengl_finalized = 1;

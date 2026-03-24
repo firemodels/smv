@@ -904,7 +904,6 @@ extern "C" void GLUISmoke3dCB(int var){
     break;
   case USE_FIRE_ALPHA:
     use_fire_alpha = 1-glui_use_fire_alpha;
-#ifdef pp_DIALOG
     if(have_fire!=NO_FIRE&&have_smoke==NO_SMOKE){
       SPINNER_smoke3d_fire_halfdepth->enable();
       SPINNER_emission_factor->disable();
@@ -920,7 +919,6 @@ extern "C" void GLUISmoke3dCB(int var){
       SPINNER_emission_factor->set_float_val(emission_factor);
     }
     GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
-#endif
     GLUTPOSTREDISPLAY;
     break;
   case USE_OPACITY_DEPTH_CHECK:
@@ -939,11 +937,9 @@ extern "C" void GLUISmoke3dCB(int var){
     else{
       use_opacity_multiplier = 1 - use_opacity_depth;
     }
-#ifdef pp_DIALOG
     CHECKBOX_use_opacity_depth->set_int_val(use_opacity_depth);
     CHECKBOX_use_opacity_multiplier->set_int_val(use_opacity_multiplier);
     GLUISmoke3dCB(USE_FIRE_ALPHA);
-#endif
     break;
   case USE_OPACITY_MULTIPLIER_CHECK:
     use_opacity_ini = 0;
@@ -966,11 +962,9 @@ extern "C" void GLUISmoke3dCB(int var){
     }
     glui_use_fire_alpha = use_opacity_multiplier;
     use_opacity_depth =  1 - use_opacity_multiplier;
-#ifdef pp_DIALOG
     CHECKBOX_use_opacity_depth->set_int_val(use_opacity_depth);
     CHECKBOX_use_opacity_multiplier->set_int_val(use_opacity_multiplier);
     GLUISmoke3dCB(USE_FIRE_ALPHA);
-#endif
     break;
   case BACKGROUND_FLIP:
     background_flip = 1-background_flip;
@@ -1277,11 +1271,9 @@ extern "C" void GLUISmoke3dCB(int var){
 #endif
       break;
     }
-#ifdef pp_DIALOG
     if(LISTBOX_smoke_colorbar->get_int_val()!=colorbars.fire_colorbar_index){
       LISTBOX_smoke_colorbar->set_int_val(colorbars.fire_colorbar_index);
     }
-#endif
     UpdateSmokeColormap();
     break;
   case SMOKE_COLORBAR_LIST:
@@ -1301,10 +1293,8 @@ extern "C" void GLUISmoke3dCB(int var){
     break;
   case UPDATE_SMOKEFIRE_COLORS:
     fire_halfdepth = MAX(fire_halfdepth, 0.001);
-#ifdef pp_DIALOG
     SPINNER_smoke3d_fire_halfdepth->set_float_val(fire_halfdepth);
     GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
-#endif
     break;
   case UPDATE_CO2_COLORS:
     if(SPINNER_smoke3d_co2_halfdepth!=NULL){
@@ -1385,10 +1375,8 @@ extern "C" void GLUISmoke3dCB(int var){
    case SMOKE_EXTINCT:
      global_scase.update_smoke_alphas = 1;
      glui_mass_extinct = MAX(glui_mass_extinct, 0.0);
-#ifdef pp_DIALOG
      SPINNER_mass_extinct->set_float_val(glui_mass_extinct);
      SPINNER_mass_extinct2->set_float_val(glui_mass_extinct);
-#endif
      break;
 #ifdef pp_GPU
   case SMOKE_RTHICK:

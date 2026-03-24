@@ -250,9 +250,7 @@ void bounds_dialog::set_research_mode(int flag){
   }
   research_mode     = flag;
   research_mode_cpp = flag;
-#ifdef pp_DIALOG
   CHECKBOX_research_mode->set_int_val(research_mode_cpp);
-#endif
   CB(BOUND_CACHE_DATA);
 }
 

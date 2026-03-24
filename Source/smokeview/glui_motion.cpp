@@ -507,7 +507,6 @@ void MotionRolloutCB(int var){
 /* ------------------ UpdateRenderStartButton ------------------------ */
 
 void UpdateRenderStartButton(void){
-#ifdef pp_DIALOG
   int is_enabled;
 
   is_enabled = BUTTON_render_start->enabled;
@@ -517,7 +516,6 @@ void UpdateRenderStartButton(void){
   else if(render_status == RENDER_OFF&&is_enabled == 0&&update_makemovie==0){
     BUTTON_render_start->enable();
   }
-#endif
 }
 
 /* ------------------ GLUIEnableDisablePlayMovieCPP ------------------------ */
@@ -787,7 +785,6 @@ void EnableDisableViews(void){
 /*------------------GLUISetCurrentViewPoint------------------------ */
 
 extern "C" void GLUISetCurrentViewPoint(char *viewpoint_label){
-#ifdef pp_DIALOG
   int i;
 
   if(strlen(viewpoint_label)==0)return;
@@ -802,7 +799,6 @@ extern "C" void GLUISetCurrentViewPoint(char *viewpoint_label){
       break;
     }
   }
-#endif
 }
 
 /* ------------------ NextViewpoint ------------------------ */
@@ -1034,7 +1030,6 @@ extern "C" void GLUIViewpointCB(int var){
 /* ------------------ GLUIResetView ------------------------ */
 
 extern "C" void GLUIResetView(int ival){
-#ifdef pp_DIALOG
   assert(ival>=-5);
   if(ival!=old_listview){
     old_listview = ival;
@@ -1044,7 +1039,6 @@ extern "C" void GLUIResetView(int ival){
   BUTTON_replace_view->enable();
   GLUIViewpointCB(RESTORE_VIEW);
   EnableDisableViews();
-#endif
 }
 
 /* ------------------ GLUIEnableResetSavedView ------------------------ */
@@ -1717,7 +1711,6 @@ extern "C" void GLUIUpdateWindowSizeList(void){
 /* ------------------ GLUIUpdateTranslate ------------------------ */
 
 extern "C" void GLUIUpdateTranslate(void){
-#ifdef pp_DIALOG
   float *eye_xyz;
 #ifdef ROTATE_TRANSLATE
   float *az_elev;
@@ -1756,7 +1749,6 @@ extern "C" void GLUIUpdateTranslate(void){
 #endif
   }
   GLUISetPosXYZSMV(camera_current->eye);
-#endif
 }
 
 /* ------------------ GLUIUpdateRotationIndex ------------------------ */
