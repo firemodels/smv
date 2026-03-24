@@ -631,6 +631,7 @@ void InitOpenGL(int option){
 #ifdef _DEBUG
   if(option==PRINT)PRINTF("%s","   Initializing callbacks - ");
 #endif
+  glutDisplayFunc(DisplayCB);
   glutSpecialUpFunc(SpecialKeyboardUpCB);
   glutKeyboardUpFunc(KeyboardUpCB);
   glutKeyboardFunc(KeyboardCB);
@@ -638,7 +639,6 @@ void InitOpenGL(int option){
   glutSpecialFunc(SpecialKeyboardCB);
   glutMotionFunc(MouseDragCB);
   glutReshapeFunc(ReshapeCB);
-  glutDisplayFunc(DisplayCB);
   glutVisibilityFunc(NULL);
   glutMenuStatusFunc(MenuStatusCB);
 #ifdef _DEBUG
