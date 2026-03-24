@@ -49,13 +49,11 @@ void InitDefaultCameras(void){
 
   camera_external->zoom = zoom;
   CopyCamera(camera_current, camera_external);
-#ifndef pp_DIALOG
   if(camera_label == NULL){
     NewMemory((void **)&camera_label, 1000);
   }
-#endif
   strcpy(camera_label, camera_current->name);
-  GLUIUpdateCameraLabel();
+  update_camera_label = 1;
 
   CopyCamera(camera_save, camera_current);
   CopyCamera(camera_last, camera_current);
@@ -63,7 +61,7 @@ void InitDefaultCameras(void){
   InitCameraList();
   AddDefaultViewpoints();
   CopyCamera(camera_external_save, camera_external);
-  GLUIUpdateViewpointList();
+  update_viewpoint_list = 1;
 }
 
 /* ------------------ InitMisc ------------------------ */
@@ -126,9 +124,6 @@ void InitMisc(void){
   /* initialize box sizes, lighting parameters */
 
   xyzbox = MAX(MAX(global_scase.xbar,global_scase.ybar),global_scase.zbar);
-
-  InitDefaultCameras();
-
 
   //GLUIResetView(i_view_list);
 
@@ -282,6 +277,8 @@ int SetupCase(char *filename){
   glui_defined = 1;
   char *smv_bindir = GetSmvRootDir();
   InitTranslate(smv_bindir, tr_name);
+  InitDefaultCameras();
+  
   FREEMEMORY(smv_bindir);
   PRINT_TIMER(timer_start, "InitTranslate");
 
@@ -317,6 +314,8 @@ int SetupCase(char *filename){
   GLUIStereoSetup(mainwindow_id);
   printf("***before GLUI3dSmokeSetup\n");
   GLUI3dSmokeSetup(mainwindow_id);
+  printf("***before GLUITrainerSetup\n");
+  GLUITrainerSetup(mainwindow_id);
   printf("***after dialog setup\n");
 #else
   InitRolloutList();
@@ -333,6 +332,7 @@ int SetupCase(char *filename){
   GLUIAlertSetup(mainwindow_id);
   GLUIStereoSetup(mainwindow_id);
   GLUI3dSmokeSetup(mainwindow_id);
+  GLUITrainerSetup(mainwindow_id);
 #endif
 #endif
 
@@ -347,7 +347,6 @@ int SetupCase(char *filename){
   glutShowWindow();
   glutSetWindowTitle(global_scase.fdsprefix);
   InitMisc();
-  GLUITrainerSetup(mainwindow_id);
   if(opengl_finalized==1)glutDetachMenu(GLUT_RIGHT_BUTTON);
   attachmenu_status = 0;
   THREADcontrol(checkfiles_threads, THREAD_LOCK);
