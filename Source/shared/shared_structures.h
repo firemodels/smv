@@ -640,7 +640,10 @@ typedef struct _slicedata {
   int nslicetotal;
   int slicefile_labelindex;
   int vloaded, uvw;
-  int cell_center, face_center;
+  int cell_center;
+#ifdef pp_FACE_CENTER
+  int face_center;
+#endif
   float delta_orig, dplane_min, dplane_max;
   int extreme_min, extreme_max;
   int hist_update;

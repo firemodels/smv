@@ -3822,7 +3822,9 @@ int ParseSLCFCount(smv_case *scase, int option, bufferstreamdata *stream, char *
       }
       if((Match(buffer, "SLCF")==1) ||
         (Match(buffer, "SLCC")==1)  ||
+#ifdef pp_FACE_CENTER
         (Match(buffer, "SLFC")==1)  ||
+#endif
         (Match(buffer, "SLCT")==1)  ||
         (Match(buffer, "BNDS")==1)
         ){
@@ -3860,7 +3862,10 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   char buffers[6][256]){
   char *slicelabelptr, slicelabel[256], *sliceparms;
   float above_ground_level = 0.0;
-  int terrain = 0, cellcenter = 0, facecenter=0;
+  int terrain = 0, cellcenter = 0;
+#ifdef pp_FACE_CENTER
+  int facecenter = 0;
+#endif
   int slicegeom = 0;
   int slcf_index = 0;
   char *char_slcf_index;
@@ -3886,7 +3891,9 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
       }
       if( (Match(buffer, "SLCF") == 1) ||
           (Match(buffer, "SLCC") == 1) ||
+#ifdef pp_FACE_CENTER
           (Match(buffer, "SLFC") == 1) ||
+#endif
           (Match(buffer, "SLCT") == 1) ||
           (Match(buffer, "BNDS") == 1)
         ){
@@ -3940,9 +3947,11 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
     scase->cellcenter_slice_active = 1;
     cellcenter = 1;
   }
+#ifdef pp_FACE_CENTER
   if(Match(buffer, "SLFC")==1){
     facecenter = 1;
   }
+#endif
   TrimBack(buffer);
   len = strlen(buffer);
   if(scase->meshescoll.nmeshes>1){
@@ -3996,7 +4005,9 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   sd->n_imap=0;
   sd->n_jmap=0;
   sd->n_kmap=0;
+#ifdef pp_FACE_CENTER
   sd->face_center = facecenter;
+#endif
   sd->cell_center = cellcenter;
   if(slicegeom==1&&cell_center_flag==1)sd->cell_center = 1;
  // sd->file_size = 0;
@@ -5326,7 +5337,9 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
     if( (MatchSMV(buffer, "SLCF") == 1) ||
         (MatchSMV(buffer, "SLCC") == 1) ||
+#ifdef pp_FACE_CENTER
         (MatchSMV(buffer, "SLFC") == 1) ||
+#endif
         (MatchSMV(buffer, "SLCT") == 1) ||
         (MatchSMV(buffer, "BNDS") == 1)
       ){
@@ -8647,7 +8660,9 @@ typedef struct {
   */
     if( (MatchSMV(buffer, "SLCF") == 1) ||
         (MatchSMV(buffer, "SLCC") == 1) ||
+#ifdef pp_FACE_CENTER
         (MatchSMV(buffer, "SLFC") == 1) ||
+#endif
         (MatchSMV(buffer, "SLCT") == 1) ||
         (MatchSMV(buffer, "BNDS") == 1)
       ){
