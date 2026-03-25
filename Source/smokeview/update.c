@@ -2070,6 +2070,24 @@ void UpdateShowScene(void){
     IdleCB();
     update_idle = 0;
   }
+  if(update_set_clipplanes == 1){
+    int i;
+
+    update_set_clipplanes = 0;
+    for(i=0;i<global_scase.meshescoll.nmeshes;i++){
+      meshdata *meshi;
+
+      meshi = global_scase.meshescoll.meshinfo + i;
+      if(meshi->box_clipinfo == NULL){
+        NewMemory(( void ** )&meshi->box_clipinfo, sizeof(clipdata));
+        memset(meshi->box_clipinfo, 0, sizeof(clipdata));
+        InitBoxClipInfo(meshi->box_clipinfo,
+          global_scase.xbar0, global_scase.xbar,
+          global_scase.ybar0, global_scase.ybar,
+          global_scase.zbar0, global_scase.zbar);
+      }
+    }
+  }
   if(update_setmainwindow == 1){
     SetMainWindow();
     update_setmainwindow = 0;
