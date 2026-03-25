@@ -1375,8 +1375,12 @@ extern "C" void GLUISmoke3dCB(int var){
    case SMOKE_EXTINCT:
      global_scase.update_smoke_alphas = 1;
      glui_mass_extinct = MAX(glui_mass_extinct, 0.0);
-     SPINNER_mass_extinct->set_float_val(glui_mass_extinct);
-     SPINNER_mass_extinct2->set_float_val(glui_mass_extinct);
+     if(SPINNER_mass_extinct != NULL){
+       SPINNER_mass_extinct->set_float_val(glui_mass_extinct);
+     }
+     if(SPINNER_mass_extinct2 != NULL){
+       SPINNER_mass_extinct2->set_float_val(glui_mass_extinct);
+     }
      break;
 #ifdef pp_GPU
   case SMOKE_RTHICK:

@@ -1931,6 +1931,8 @@ SVEXTERN char script_filename[1024];
 SVEXTERN int SVDECL(highlight_block,-1), SVDECL(highlight_mesh,0), SVDECL(outline_mode,SCENE_OUTLINE_SCENE);
 SVEXTERN int SVDECL(updategetobstlabels,1);
 
+SVEXTERN int SVDECL(update_set_clipplanes, 1);
+
 SVEXTERN int smoke_alpha;
 SVEXTERN int SVDECL(showall_textures,0);
 SVEXTERN int SVDECL(enable_texture_lighting,0);

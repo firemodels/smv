@@ -912,8 +912,7 @@ void InitMesh(meshdata *meshi){
   memset(meshi->currentsurf, 0, sizeof(isosurface));
   NewMemory((void **)&meshi->currentsurf2, sizeof(isosurface));
   memset(meshi->currentsurf2, 0, sizeof(isosurface));
-  NewMemory((void **)&meshi->box_clipinfo, sizeof(clipdata));
-  memset(meshi->box_clipinfo, 0, sizeof(clipdata));
+  meshi->box_clipinfo = NULL;
   NewMemory((void **)&meshi->gsliceinfo, sizeof(meshplanedata));
   memset(meshi->gsliceinfo, 0, sizeof(meshplanedata));
   NewMemory((void **)&meshi->volrenderinfo, sizeof(volrenderdata));
@@ -7578,6 +7577,10 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       meshi->xyz_bar0[ZZZ]=scase->zbar0;
       meshi->xyz_bar[ZZZ] =scase->zbar;
       meshi->zcen_smv =(scase->zbar+scase->zbar0)/2.0;
+      if(meshi->box_clipinfo == NULL){
+        NewMemory(( void ** )&meshi->box_clipinfo, sizeof(clipdata));
+        memset(meshi->box_clipinfo, 0, sizeof(clipdata));
+      }
       InitBoxClipInfo(meshi->box_clipinfo,scase->xbar0,scase->xbar,scase->ybar0,scase->ybar,scase->zbar0,scase->zbar);
       if(scase->ntrnx==0){
         int nn;
