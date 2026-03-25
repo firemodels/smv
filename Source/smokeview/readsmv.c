@@ -1137,6 +1137,24 @@ void UpdateMeshCoords(void){
 
   if(current_mesh == NULL)current_mesh = global_scase.meshescoll.meshinfo;
   if(global_scase.setPDIM==0&&current_mesh!=NULL){
+    float *xplt_smv, *yplt_smv, *zplt_smv;
+
+    xplt_smv = current_mesh->xplt_smv;
+    if(xplt_smv == NULL){
+      NewMemory(( void ** )&xplt_smv, sizeof(float) * (current_mesh->ibar + 1));
+      current_mesh->xplt_smv = xplt_smv;
+    }
+    yplt_smv = current_mesh->yplt_smv;
+    if(yplt_smv == NULL){
+      NewMemory(( void ** )&yplt_smv, sizeof(float) * (current_mesh->jbar + 1));
+      current_mesh->yplt_smv = yplt_smv;
+    }
+    zplt_smv = current_mesh->zplt_smv;
+    if(zplt_smv == NULL){
+      NewMemory(( void ** )&zplt_smv, sizeof(float) * (current_mesh->kbar + 1));
+      current_mesh->zplt_smv = zplt_smv;
+    }
+
     for(nn=0;nn<=current_mesh->ibar;nn++){
       current_mesh->xplt_smv[nn]=global_scase.xbar0+(float)nn*(global_scase.xbar-global_scase.xbar0)/(float)current_mesh->ibar;
     }
