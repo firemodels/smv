@@ -912,8 +912,7 @@ void InitMesh(meshdata *meshi){
   memset(meshi->currentsurf, 0, sizeof(isosurface));
   NewMemory((void **)&meshi->currentsurf2, sizeof(isosurface));
   memset(meshi->currentsurf2, 0, sizeof(isosurface));
-  NewMemory((void **)&meshi->box_clipinfo, sizeof(clipdata));
-  memset(meshi->box_clipinfo, 0, sizeof(clipdata));
+  meshi->box_clipinfo = NULL;
   NewMemory((void **)&meshi->gsliceinfo, sizeof(meshplanedata));
   memset(meshi->gsliceinfo, 0, sizeof(meshplanedata));
   NewMemory((void **)&meshi->volrenderinfo, sizeof(volrenderdata));
