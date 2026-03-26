@@ -1352,12 +1352,20 @@ void SetHiddenBlockages(meshdata *meshi){
 
 /* ------------------ MakeIBlank ------------------------ */
 
+#ifdef pp_SPEEDUP
 void *MakeIBlank(void *arg){
+#else
+int MakeIBlank(void){
+#endif
   int ig;
 
+#ifdef pp_SPEEDUP
   if(global_scase.use_iblank==0){
     THREAD_EXIT(makeiblank_threads);
   }
+#else
+  if(global_scase.use_iblank==0)return 0;
+#endif
   for(ig=0;ig<global_scase.meshescoll.nmeshes;ig++){
     meshdata *meshi;
     int nx, ny, nxy, ibarjbar;
@@ -1374,6 +1382,7 @@ void *MakeIBlank(void *arg){
     kbar = meshi->kbar;
     ijksize=(ibar+1)*(jbar+1)*(kbar+1);
 
+#ifdef pp_SPEEDUP
     if(
       NewMemory((void **)&c_iblank_node_html, ijksize*sizeof(char))==0         ||
       NewMemory((void **)&iblank_node,        ijksize*sizeof(char))==0         ||
@@ -1384,6 +1393,15 @@ void *MakeIBlank(void *arg){
       NewMemory((void **)&c_iblank_z,         ijksize*sizeof(char))==0){
       THREAD_EXIT(makeiblank_threads);
     }
+#else
+    if(NewMemory(( void ** )&c_iblank_node_html, ijksize * sizeof(char)) == 0)return 1;
+    if(NewMemory(( void ** )&iblank_node, ijksize * sizeof(char)) == 0)return 1;
+    if(NewMemory(( void ** )&iblank_cell, ibar * jbar * kbar * sizeof(char)) == 0)return 1;
+    if(NewMemory(( void ** )&fblank_cell, ibar * jbar * kbar * sizeof(float)) == 0)return 1;
+    if(NewMemory(( void ** )&c_iblank_x, ijksize * sizeof(char)) == 0)return 1;
+    if(NewMemory(( void ** )&c_iblank_y, ijksize * sizeof(char)) == 0)return 1;
+    if(NewMemory(( void ** )&c_iblank_z, ijksize * sizeof(char)) == 0)return 1;
+#endif
 
     meshi->c_iblank_node_html_temp = c_iblank_node_html;
     meshi->c_iblank_node0_temp     = iblank_node;
@@ -1567,7 +1585,11 @@ void *MakeIBlank(void *arg){
   }
 
   update_make_iblank = 1;
+#ifdef pp_SPEEDUP
   THREAD_EXIT(makeiblank_threads);
+#else
+  return 0;
+#endif
 }
 
 /* ------------------ InitClip ------------------------ */

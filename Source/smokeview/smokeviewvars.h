@@ -43,9 +43,11 @@ SVEXTERN threaderdata SVDECL(*sliceparms_threads, NULL);
 SVEXTERN int SVDECL(n_meshnabors_threads, 1), SVDECL(use_meshnabors_threads, 1);
 SVEXTERN threaderdata SVDECL(*meshnabors_threads, NULL);
 
+#ifdef pp_SPEEDUP
 //***MakeIBlank
 SVEXTERN int SVDECL(n_makeiblank_threads, 1), SVDECL(use_makeiblank_threads, 1);
 SVEXTERN threaderdata SVDECL(*makeiblank_threads,       NULL);
+#endif
 
 //***checkfiles
 SVEXTERN int SVDECL(n_checkfiles_threads, 1), SVDECL(use_checkfiles_threads, 1);
