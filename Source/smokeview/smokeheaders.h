@@ -816,7 +816,7 @@ EXTERNCPP int  InExterior(float *xyz);
 EXTERNCPP void InitClip(void);
 EXTERNCPP void InitTetraClipInfo(clipdata *ci,float *v1, float *v2, float *v3, float *v4);
 EXTERNCPP void MatMultMat(float *m1, float *m2, float *m3);
-EXTERNCPP int  MakeIBlank(void);
+EXTERNCPP void *MakeIBlank(void *arg);
 EXTERNCPP int  MakeIBlankCarve(void);
 EXTERNCPP void MergeClipPlanes(clipdata *ci, clipdata *cj);
 EXTERNCPP int  MeshInFrustum(meshdata *meshi);

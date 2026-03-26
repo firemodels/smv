@@ -2837,7 +2837,8 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
 
   if(HaveCircularVents()==1|| global_scase.meshescoll.nmeshes < 100 || parse_opts.fast_startup == 0){
-    MakeIBlank();
+    makeiblank_threads = THREADinit(&n_makeiblank_threads, &use_makeiblank_threads, MakeIBlank);
+    THREADrun(makeiblank_threads);
     PRINT_TIMER(timer_readsmv, "MakeIBlank");
   }
 

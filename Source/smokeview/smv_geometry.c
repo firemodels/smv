@@ -1352,10 +1352,12 @@ void SetHiddenBlockages(meshdata *meshi){
 
 /* ------------------ MakeIBlank ------------------------ */
 
-int MakeIBlank(void){
+void *MakeIBlank(void *arg){
   int ig;
 
-  if(global_scase.use_iblank==0)return 0;
+  if(global_scase.use_iblank==0){
+    THREAD_EXIT(makeiblank_threads);
+  }
   for(ig=0;ig<global_scase.meshescoll.nmeshes;ig++){
     meshdata *meshi;
     int nx, ny, nxy, ibarjbar;
@@ -1372,13 +1374,16 @@ int MakeIBlank(void){
     kbar = meshi->kbar;
     ijksize=(ibar+1)*(jbar+1)*(kbar+1);
 
-    if(NewMemory((void **)&c_iblank_node_html, ijksize*sizeof(char))==0)return 1;
-    if(NewMemory((void **)&iblank_node,        ijksize*sizeof(char))==0)return 1;
-    if(NewMemory((void **)&iblank_cell,        ibar*jbar*kbar*sizeof(char))==0)return 1;
-    if(NewMemory((void **)&fblank_cell,        ibar*jbar*kbar*sizeof(float))==0)return 1;
-    if(NewMemory((void **)&c_iblank_x,         ijksize*sizeof(char))==0)return 1;
-    if(NewMemory((void **)&c_iblank_y,         ijksize*sizeof(char))==0)return 1;
-    if(NewMemory((void **)&c_iblank_z,         ijksize*sizeof(char))==0)return 1;
+    if(
+      NewMemory((void **)&c_iblank_node_html, ijksize*sizeof(char))==0         ||
+      NewMemory((void **)&iblank_node,        ijksize*sizeof(char))==0         ||
+      NewMemory((void **)&iblank_cell,        ibar*jbar*kbar*sizeof(char))==0  ||
+      NewMemory((void **)&fblank_cell,        ibar*jbar*kbar*sizeof(float))==0 ||
+      NewMemory((void **)&c_iblank_x,         ijksize*sizeof(char))==0         ||
+      NewMemory((void **)&c_iblank_y,         ijksize*sizeof(char))==0         ||
+      NewMemory((void **)&c_iblank_z,         ijksize*sizeof(char))==0){
+      THREAD_EXIT(makeiblank_threads);
+    }
 
     meshi->c_iblank_node_html_temp = c_iblank_node_html;
     meshi->c_iblank_node0_temp     = iblank_node;
@@ -1562,7 +1567,7 @@ int MakeIBlank(void){
   }
 
   update_make_iblank = 1;
-  return 0;
+  THREAD_EXIT(makeiblank_threads);
 }
 
 /* ------------------ InitClip ------------------------ */

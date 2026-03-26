@@ -2853,6 +2853,7 @@ void UpdateDisplay(void){
     update_make_iblank = 0;
     update_setvents    = 1;
     update_setcvents   = 1;
+    printf("blanking data structures updated\n");
   }
   if(update_setvents==1){
     SetVentDirs();
