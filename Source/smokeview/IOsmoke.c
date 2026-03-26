@@ -1354,10 +1354,12 @@ void UpdateSmokeAlphas(void){
     for(j=0;j<6;j++){
       float maxval;
 
+#ifndef pp_SPEEDUP
       assert(
              (smoke3di->soot_density_loaded == 1 && smoke3di->maxvals!=NULL) ||
              (smoke3di->soot_density_loaded == 0 && smoke3di->maxvals==NULL)
             );
+#endif
       maxval = smoke3di->maxval;
       if(smoke3di->soot_density_loaded == 1 && smoke3di->maxvals!=NULL)maxval = smoke3di->maxvals[smoke3di->ismoke3d_time];
       InitAlphas(smoke3di->alphas_smokedir[j], smoke3di->alphas_firedir[j], smoke3di->extinct, smoke3di->soot_density_loaded, maxval, glui_mass_extinct, smoke_mesh->dxyz_fds[0], dists[j]);
@@ -2690,7 +2692,6 @@ void DrawSmokeFrame(void){
     load_shaders = 1;
   }
 #endif
-
   float smoke3d_timer;
   START_TIMER(smoke3d_timer);
   blend_mode = 0;
@@ -3163,25 +3164,37 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
   times_map                 = *times_map_ptr;
   nch_smoke_compressed_full = *nchars_smoke_compressed_full;
   nch_smoke_compressed_found= *nchars_smoke_compressed_found;
+#ifdef pp_SPEEDUP
+  maxvals = *maxvals_ptr;
+#else
   if(load_smoke_density == 1 && smoke3di->is_smoke_density == 1)maxvals = *maxvals_ptr;
+#endif
 
   NewResizeMemory(       use_smokeframe_full, (*ntimes_full)  * sizeof(int));
   NewResizeMemory(                     times, nframes_found   * sizeof(float));
   NewResizeMemory(                 times_map, nframes_found   * sizeof(char));
   NewResizeMemory( nch_smoke_compressed_full, (*ntimes_full)  * sizeof(int));
   NewResizeMemory(nch_smoke_compressed_found, (*ntimes_found) * sizeof(int));
+#ifdef pp_SPEEDUP
+  NewResizeMemory(maxvals, (*ntimes_full) * sizeof(float));
+#else
   if(load_smoke_density == 1 && smoke3di->is_smoke_density == 1){
     NewResizeMemory(maxvals, (*ntimes_full) * sizeof(float));
   }
+#endif
 
   *use_smokeframe                = use_smokeframe_full;
   *times_ptr                     = times;
   *times_map_ptr                 = times_map;
   *nchars_smoke_compressed_full  = nch_smoke_compressed_full;
   *nchars_smoke_compressed_found = nch_smoke_compressed_found;
+#ifdef pp_SPEEDUP
+  *maxvals_ptr = maxvals;
+#else
   if(load_smoke_density == 1 && smoke3di->is_smoke_density == 1){
     *maxvals_ptr = maxvals;
   }
+#endif
 
   fgets(buffer, 255, SMOKE_SIZE);
   ntimes_full2 = 0;
@@ -3208,6 +3221,16 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
       sscanf(buffer, "%f %i %i %i %i %f", &time_local, &nch_uncompressed, &dummy, &nch_smoke_compressed, &nch_light, &maxvali);
     }
     *maxval = MAX(maxvali, *maxval);
+#ifdef pp_SPEEDUP
+    if(load_smoke_density == 1 && smoke3di->is_smoke_density == 1){
+      *maxvals++ = maxval_density;
+      *nch_smoke_compressed_full++ = nch_smoke_density;
+    }
+    else{
+      *maxvals++ = maxvali;
+      *nch_smoke_compressed_full++ = nch_smoke_compressed;
+    }
+#else
     if(load_smoke_density == 1 && smoke3di->is_smoke_density == 1){
       *maxvals++ = maxval_density;
       *nch_smoke_compressed_full++ = nch_smoke_density;
@@ -3215,6 +3238,7 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
     else{
       *nch_smoke_compressed_full++ = nch_smoke_compressed;
     }
+#endif
     *use_smokeframe_full = 0;
     if(use_tload_end == 1 && time_local > global_scase.tload_end)break;
 
