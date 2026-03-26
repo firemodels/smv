@@ -527,7 +527,9 @@ void ShowScene2(int mode){
 
   if(show3dsmoke == 1 && (hide_scene == 0 || mouse_down == 0)){
     CLIP_VALS;
+    INIT_PRINT_TIMER(timer_drawsmoke);
     DrawSmokeFrame();
+    PRINT_TIMER(timer_drawsmoke, "DrawSmokeFrame");
   }
 
   /* ++++++++++++++++++++++++ draw vol smoke +++++++++++++++++++++++++ */
