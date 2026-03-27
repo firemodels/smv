@@ -4172,8 +4172,8 @@ void DoNonStereo(void){
 
     IdleDisplay();
 
-    stop_rendering = 1;
-    if(plotstate==DYNAMIC_PLOTS && nglobal_times>0&&itimes>=0&&itimes<nglobal_times)stop_rendering = 0;
+    stop_rendering = 0;
+    if(plotstate==DYNAMIC_PLOTS && nglobal_times>0&&itimes==nglobal_times-1)stop_rendering = 1;
     if(render_mode==RENDER_NORMAL){
       int i, ibuffer = 0;
       GLubyte **screenbuffers;
