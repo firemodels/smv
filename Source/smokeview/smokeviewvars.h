@@ -943,6 +943,7 @@ SVEXTERN int SVDECL(saved_colorbar, -1);
 SVEXTERN int SVDECL(levelset_colorbar,-1), SVDECL(wallthickness_colorbar,-1);
 SVEXTERN colorbardata SVDECL(*fire_colorbar,NULL);
 SVEXTERN float SVDECL(glui_time,0.0);
+SVEXTERN int   SVDECL(glui_frame, 0);
 SVEXTERN int show_mode;
 SVEXTERN int SVDECL(part5colorindex,0), SVDECL(show_tracers_always,0);
 SVEXTERN int SVDECL(select_avatar,0), SVDECL(selected_avatar_tag,-1), SVDECL(view_from_selected_avatar,0);
