@@ -1458,7 +1458,7 @@ SVEXTERN int SVDECL(nslicebounds, 0), SVDECL(npatchbounds,0), SVDECL(npatch2,0);
 SVEXTERN int SVDECL(niso_bounds,0);
 SVEXTERN int SVDECL(visLabels,0);
 SVEXTERN float SVDECL(framerate,-1.0);
-SVEXTERN int SVDECL(seqnum,0),SVDECL(RenderTime,0),SVDECL(RenderTimeOld,0), SVDECL(itime_cycle,0);
+SVEXTERN int SVDECL(seqnum, 0), SVDECL(RenderTime, 0), SVDECL(RenderTimeOld, 0);
 SVEXTERN int SVDECL(nopart,1);
 SVEXTERN int SVDECL(uindex,-1), SVDECL(vindex,-1), SVDECL(windex,-1);
 
