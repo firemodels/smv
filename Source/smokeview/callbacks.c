@@ -671,7 +671,7 @@ void CheckTimeBound(void){
       smoke3ddata *smoke3di;
 
       smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
-      smoke3di->ismoke3d_time = smoke3di->ntimes;
+      smoke3di->ismoke3d_time = smoke3di->ntimes-1;
     }
     for(i=0;i<global_scase.slicecoll.nsliceinfo;i++){
       slicedata *sd;
