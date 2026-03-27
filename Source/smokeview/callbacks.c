@@ -631,6 +631,12 @@ void CheckTimeBound(void){
         current_script_command->exit=1;
       }
     }
+    for(i = 0; i < global_scase.smoke3dcoll.nsmoke3dinfo; i++){
+      smoke3ddata *smoke3di;
+
+      smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+      smoke3di->ismoke3d_time = 0;
+    }
     for(i=0;i<global_scase.slicecoll.nsliceinfo;i++){
       slicedata *sd;
 
@@ -660,6 +666,12 @@ void CheckTimeBound(void){
 
       parti=global_scase.partinfo+i;
       parti->itime=parti->ntimes-1;
+    }
+    for(i = 0; i < global_scase.smoke3dcoll.nsmoke3dinfo; i++){
+      smoke3ddata *smoke3di;
+
+      smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+      smoke3di->ismoke3d_time = smoke3di->ntimes;
     }
     for(i=0;i<global_scase.slicecoll.nsliceinfo;i++){
       slicedata *sd;
