@@ -4255,10 +4255,7 @@ void MergeSmoke3DAll(void){
     if(smoke3di->timeslist==NULL)continue;
     smoke3di->ismoke3d_time = smoke3di->timeslist[itimes];
     if(IsSmokeComponentPresent(smoke3di) == 0)continue;
-    if(smoke3di->ismoke3d_time != smoke3di->lastiframe){
-      smoke3di->lastiframe = smoke3di->ismoke3d_time;
-      UpdateSmoke3D(smoke3di);
-    }
+    UpdateSmoke3D(smoke3di);
     MergeSmoke3D(smoke3di);
   }
 }

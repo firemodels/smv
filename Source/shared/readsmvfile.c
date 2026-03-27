@@ -3737,7 +3737,6 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     smoke3di->is_fire = 0;
     smoke3di->file_size = 0;
     smoke3di->blocknumber = blocknumber;
-    smoke3di->lastiframe = -999;
     smoke3di->ismoke3d_time = 0;
     STRCPY(buffer2, bufferptr);
     STRCAT(buffer2, ".svz");
