@@ -2297,12 +2297,10 @@ void DrawZoneFireData(void){
           deltaz = SCALE2SMV(zonefbasebase[i]);
           maxheight=roomi->z1-roomi->z0-deltaz;
           flameheight = SCALE2SMV(zonefheightbase[i]);
-          SetClipPlanes(meshi->box_clipinfo,CLIP_ON);
           glPushMatrix();
           glTranslatef(firei->absx,firei->absy,roomi->z0+deltaz);
           DrawZoneFirePlume(diameter,flameheight,maxheight);
           glPopMatrix();
-          SetClipPlanes(meshi->box_clipinfo,CLIP_OFF);
         }
       }
       else{
@@ -2318,12 +2316,10 @@ void DrawZoneFireData(void){
           maxheight=roomi->z1-firei->absz;
           flameheight = SCALE2SMV((0.23f*pow((double)qdot,(double)0.4)/(1.0f+2.0f*0.268f)));
           diameter = 2.0*flameheight*0.268f;
-          SetClipPlanes(meshi->box_clipinfo,CLIP_ON);
           glPushMatrix();
           glTranslatef(firei->absx,firei->absy,firei->absz);
           DrawZoneFirePlume(diameter,flameheight,maxheight);
           glPopMatrix();
-          SetClipPlanes(meshi->box_clipinfo,CLIP_OFF);
         }
       }
     }
