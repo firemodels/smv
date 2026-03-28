@@ -171,11 +171,21 @@ void UpdateFrameNumber(int changetime){
     }
     if(show3dsmoke==1 && global_scase.smoke3dcoll.nsmoke3dinfo > 0){
       INIT_PRINT_TIMER(update_smoke_time);
+#ifdef pp_SPEEDUP
+      THREADrunloop(uncompresssmoke3d_threads);
+      THREADcontrol(uncompresssmoke3d_threads, THREAD_JOIN);
+#else
       UncompressSmoke3DAll();
+#endif
       PRINT_TIMER(update_smoke_time, "UncompressSmoke3D");
       
       INIT_PRINT_TIMER(merge_smoke_time);
+#ifdef pp_SPEEDUP
+      THREADrunloop(mergesmoke3d_threads);
+      THREADcontrol(mergesmoke3d_threads, THREAD_JOIN);
+#else
       MergeSmoke3DAll();
+#endif
       PrintMemoryInfo;
       PRINT_TIMER(merge_smoke_time, "MergeSmoke3D");
     }

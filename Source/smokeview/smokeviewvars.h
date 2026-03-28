@@ -82,6 +82,14 @@ SVEXTERN threaderdata SVDECL(*patchbound_threads, NULL);
 SVEXTERN int SVDECL(n_playmovie_threads, 1), SVDECL(use_playmovie_threads, 1);
 SVEXTERN threaderdata SVDECL(*playmovie_threads,       NULL);
 
+//*** merge smoke
+SVEXTERN int SVDECL(n_mergesmoke3d_threads, 4), SVDECL(use_mergesmoke3d_threads, 1);
+SVEXTERN threaderdata SVDECL(*mergesmoke3d_threads, NULL);
+
+//*** uncompress smoke
+SVEXTERN int SVDECL(n_uncompresssmoke3d_threads, 4), SVDECL(use_uncompresssmoke3d_threads, 1);
+SVEXTERN threaderdata SVDECL(*uncompresssmoke3d_threads, NULL);
+
 //*** readallgeom
 SVEXTERN int SVDECL(n_readallgeom_threads, 4), SVDECL(use_readallgeom_threads, 1);
 SVEXTERN threaderdata SVDECL(*readallgeom_threads,     NULL);

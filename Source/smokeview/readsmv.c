@@ -2840,6 +2840,9 @@ int ReadSMV_Configure(){
 #ifdef pp_SPEEDUP
     makeiblank_threads = THREADinit(&n_makeiblank_threads, &use_makeiblank_threads, MakeIBlank);
     THREADrun(makeiblank_threads);
+
+    mergesmoke3d_threads      = THREADinit(&n_mergesmoke3d_threads,      &use_mergesmoke3d_threads,      MergeSmoke3DAll);
+    uncompresssmoke3d_threads = THREADinit(&n_uncompresssmoke3d_threads, &use_uncompresssmoke3d_threads, UncompressSmoke3DAll);
 #else
     MakeIBlank();
 #endif

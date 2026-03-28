@@ -4267,10 +4267,22 @@ void MergeSmoke3D(smoke3ddata *smoke3dset){
 
 /* ------------------ UncompressSmoke3DAll ------------------------ */
 
+#ifdef pp_SPEEDUP
+  void *UncompressSmoke3DAll(void *arg){
+#else
 void UncompressSmoke3DAll(void){
-  int i;
+#endif
+  int i, nthreads, thread_num;
+#ifdef pp_SPEEDUP
 
-  for(i = 0;i < global_scase.smoke3dcoll.nsmoke3dinfo;i++){
+  thread_num = *(int *)arg;
+  nthreads = uncompresssmoke3d_threads->n_threads;
+#else
+  thread_num = 0;
+  nthreads = 1;
+#endif
+
+  for(i = thread_num;i < global_scase.smoke3dcoll.nsmoke3dinfo;i+=nthreads){
     smoke3ddata *smoke3di;
 
     smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
@@ -4284,14 +4296,29 @@ void UncompressSmoke3DAll(void){
       UncompressSmoke3D(smoke3di);
     }
   }
+#ifdef pp_SPEEDUP
+  THREAD_EXIT(uncompresssmoke3d_threads);
+#endif
 }
 
 /* ------------------ MergeSmoke3DAll ------------------------ */
 
+#ifdef pp_SPEEDUP
+  void *MergeSmoke3DAll(void *arg){
+#else
 void MergeSmoke3DAll(void){
-  int i;
+#endif
+  int i, nthreads, thread_num;
+#ifdef pp_SPEEDUP
 
-  for(i = 0;i < global_scase.smoke3dcoll.nsmoke3dinfo;i++){
+  thread_num = *(int *)arg;
+  nthreads = mergesmoke3d_threads->n_threads;
+#else
+  thread_num = 0;
+  nthreads = 1;
+#endif
+
+  for(i = thread_num;i < global_scase.smoke3dcoll.nsmoke3dinfo;i+=nthreads){
     smoke3ddata *smoke3di;
 
     smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
@@ -4302,6 +4329,9 @@ void MergeSmoke3DAll(void){
     if(IsSmokeComponentPresent(smoke3di) == 0)continue;
     MergeSmoke3D(smoke3di);
   }
+#ifdef pp_SPEEDUP
+  THREAD_EXIT(mergesmoke3d_threads);
+#endif
 }
 
 /* ------------------ UpdateSmoke3dMenuLabels ------------------------ */

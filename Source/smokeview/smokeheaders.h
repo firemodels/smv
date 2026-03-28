@@ -565,8 +565,16 @@ EXTERNCPP int  IsSmokeLoaded(smv_case *scase);
 EXTERNCPP void MakeIBlankSmoke3D(void);
 EXTERNCPP void MakeTimesMap(float *times, unsigned char **times_map_ptr, int n);
 EXTERNCPP void MergeSmoke3D(smoke3ddata *smoke3dset);
+#ifdef pp_SPEEDUP
+EXTERNCPP void *MergeSmoke3DAll(void *arg);
+#else
 EXTERNCPP void MergeSmoke3DAll(void);
+#endif
+#ifdef pp_SPEEDUP
+EXTERNCPP void *UncompressSmoke3DAll(void *arg);
+#else
 EXTERNCPP void UncompressSmoke3DAll(void);
+#endif
 EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int first_time, int *errorcode);
 EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
 EXTERNCPP void SmokeWrapup(void);
