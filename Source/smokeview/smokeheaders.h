@@ -7,6 +7,11 @@
 
 #include "shared_structures.h"
 
+//*** glui_bounds.cpp headers
+
+EXTERNCPP void SetFrameVal(int frameval, int stept_arg);
+EXTERNCPP void UpdateGluiFrame(int val);
+
 //*** glui_clip.cpp headers
 
 EXTERNCPP void GLUIClipSetup(int main_window);

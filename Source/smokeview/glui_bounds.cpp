@@ -4488,7 +4488,7 @@ void GLUISetTimeVal(float timeval){
 
 /* ------------------ SetFrameVal ------------------------ */
 
-void SetFrameVal(int frameval){
+void SetFrameVal(int frameval, int stept_arg){
   int changed_frame = 0;
 
   if(global_times == NULL)return;
@@ -4505,11 +4505,18 @@ void SetFrameVal(int frameval){
   force_redisplay = 1;
   UpdateFrameNumber(0);
   UpdateTimeLabels();
-  Keyboard('t', FROM_SMOKEVIEW);
+  stept = stept_arg;
+  //Keyboard('t', FROM_SMOKEVIEW);
   float timeval;
   timeval = global_times[itimes];
   SPINNER_timebounds->set_float_val(timeval);
   if(changed_frame==1)SPINNER_framebounds->set_int_val(frameval);
+}
+
+/* ------------------ UpdateGluiFrame ------------------------ */
+
+void UpdateGluiFrame(int val){
+  if(SPINNER_framebounds!=NULL)SPINNER_framebounds->set_int_val(val);
 }
 
 /* ------------------ TimeBoundCB ------------------------ */
@@ -4519,9 +4526,25 @@ void TimeBoundCB(int var){
   updatemenu = 1;
   switch(var){
   case SET_FRAME:
-    SetFrameVal(glui_frame);
+    SetFrameVal(glui_frame,0);
+    SetFrameVal(glui_frame,0);
+    break;
+  case PREV_FRAME:
+    glui_frame--;
+    if(glui_frame<0)glui_frame = nglobal_times-1;
+    SetFrameVal(glui_frame,0);
+    SetFrameVal(glui_frame,0);
+    SPINNER_framebounds->set_int_val(glui_frame);
+    break;
+  case NEXT_FRAME:
+    glui_frame++;
+    if(glui_frame>nglobal_times-1)glui_frame=0;
+    SetFrameVal(glui_frame,0);
+    SetFrameVal(glui_frame,0);
+    SPINNER_framebounds->set_int_val(glui_frame);
     break;
   case SET_TIME:
+    GLUISetTimeVal(glui_time);
     GLUISetTimeVal(glui_time);
     break;
   case TBOUNDS_USE:
@@ -5686,6 +5709,8 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
   SPINNER_framebounds = glui_bounds->add_spinner_to_panel(ROLLOUT_time1a, "Frame:", GLUI_SPINNER_INT, &glui_frame);
   BUTTON_SETFRAME = glui_bounds->add_button_to_panel(ROLLOUT_time1a, "Set frame", SET_FRAME, TimeBoundCB);
+  glui_bounds->add_button_to_panel(ROLLOUT_time1a, "Prev frame", PREV_FRAME, TimeBoundCB);
+  glui_bounds->add_button_to_panel(ROLLOUT_time1a, "Next frame", NEXT_FRAME, TimeBoundCB);
 
   glui_bounds->add_spinner_to_panel(ROLLOUT_time1a, "Offset:", GLUI_SPINNER_FLOAT, &timeoffset);
 

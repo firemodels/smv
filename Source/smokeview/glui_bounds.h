@@ -56,6 +56,8 @@
 #define UNLOAD_QDATA 203
 #define SET_TIME 204
 #define SET_FRAME 229
+#define PREV_FRAME 230
+#define NEXT_FRAME 231
 #define TBOUNDS 205
 #define TBOUNDS_USE 206
 #define RELOAD_ALL_DATA 207

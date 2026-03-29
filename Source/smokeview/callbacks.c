@@ -622,7 +622,7 @@ void MouseSelectGeom(int x, int y){
 void CheckTimeBound(void){
   int i;
 
-  if((timebar_drag==0&&itimes>nglobal_times-1)||(timebar_drag==1&&itimes<0)){
+  if((timebar_drag==0&&(itimes>nglobal_times-1))||(timebar_drag==1&&itimes<=0)){
     izone = 0;
     itimes=first_frame_index;
     if(render_status==RENDER_ON){
@@ -856,16 +856,31 @@ int TimebarClick(int xm, int ym){
   return 0;
 }
 
+/* ------------------ UpdateTime ------------------------ */
+
+void UpdateTime(int time){
+  if(nglobal_times > 0){
+    itimes = time;
+    UpdateGluiFrame(itimes);
+    CheckTimeBound();
+    IdleCB();
+  }
+}
+
 /* ------------------ TimebarDrag ------------------------ */
 
 void TimebarDrag(int xm){
   if(nglobal_times>0){
-    itimes = GetTimeBarFrame(xm);
-    CheckTimeBound();
+    int itime;
+
+    itime = GetTimeBarFrame(xm);
+    UpdateTime(itime);
     timebar_drag = 1;
   }
-  IdleCB();
-}
+  else{
+    IdleCB();
+  }
+}      
 
 /* ------------------ UpdateMouseInfo ------------------------ */
 
@@ -2815,9 +2830,8 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '0':
       if(plotstate==DYNAMIC_PLOTS){
-        itimes = 0;
-        CheckTimeBound();
-        IdleCB();
+        SetFrameVal(0,0);
+        SetFrameVal(0,0);
       }
       break;
     case '~':
@@ -3037,9 +3051,11 @@ void Keyboard(unsigned char key, int flag){
   if(plotstate==DYNAMIC_PLOTS){
     if(timebar_drag==0){
       itimes += skip_global*FlowDir;
+      if(itimes<0)itimes = nglobal_times - 1;
+      if(itimes>nglobal_times - 1)itimes = 0;
+      SetFrameVal(itimes,stept);
+      SetFrameVal(itimes,stept);
     }
-    CheckTimeBound();
-    IdleCB();
     return;
   }
   switch(iplot_state){
@@ -3635,6 +3651,8 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
             itimes += render_skip*FlowDir;
           }
         }
+        SetFrameVal(itimes,stept);
+        SetFrameVal(itimes,stept);
       }
       if(script_render_flag == 1&&IS_LOADRENDER)itimes = script_itime;
 
