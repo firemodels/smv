@@ -622,11 +622,7 @@ void MouseSelectGeom(int x, int y){
 void CheckTimeBound(void){
   int i;
 
-  if((timebar_drag==0&&itimes>nglobal_times-1)||(timebar_drag==1&&itimes<0)){
-    if(timebar_drag==0){
-      if(itimes>nglobal_times-1)itime_cycle++;
-      if(itimes<0)itime_cycle--;
-    }
+  if((timebar_drag==0&&(itimes>nglobal_times-1))||(timebar_drag==1&&itimes<=0)){
     izone = 0;
     itimes=first_frame_index;
     if(render_status==RENDER_ON){
@@ -634,6 +630,12 @@ void CheckTimeBound(void){
       if(current_script_command!=NULL&&NOT_LOADRENDER){
         current_script_command->exit=1;
       }
+    }
+    for(i = 0; i < global_scase.smoke3dcoll.nsmoke3dinfo; i++){
+      smoke3ddata *smoke3di;
+
+      smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+      smoke3di->ismoke3d_time = 0;
     }
     for(i=0;i<global_scase.slicecoll.nsliceinfo;i++){
       slicedata *sd;
@@ -664,6 +666,12 @@ void CheckTimeBound(void){
 
       parti=global_scase.partinfo+i;
       parti->itime=parti->ntimes-1;
+    }
+    for(i = 0; i < global_scase.smoke3dcoll.nsmoke3dinfo; i++){
+      smoke3ddata *smoke3di;
+
+      smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+      smoke3di->ismoke3d_time = smoke3di->ntimes-1;
     }
     for(i=0;i<global_scase.slicecoll.nsliceinfo;i++){
       slicedata *sd;
@@ -848,16 +856,31 @@ int TimebarClick(int xm, int ym){
   return 0;
 }
 
+/* ------------------ UpdateTime ------------------------ */
+
+void UpdateTime(int time){
+  if(nglobal_times > 0){
+    itimes = time;
+    UpdateGluiFrame(itimes);
+    CheckTimeBound();
+    IdleCB();
+  }
+}
+
 /* ------------------ TimebarDrag ------------------------ */
 
 void TimebarDrag(int xm){
   if(nglobal_times>0){
-    itimes = GetTimeBarFrame(xm);
-    CheckTimeBound();
+    int itime;
+
+    itime = GetTimeBarFrame(xm);
+    UpdateTime(itime);
     timebar_drag = 1;
   }
-  IdleCB();
-}
+  else{
+    IdleCB();
+  }
+}      
 
 /* ------------------ UpdateMouseInfo ------------------------ */
 
@@ -2807,9 +2830,8 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '0':
       if(plotstate==DYNAMIC_PLOTS){
-        itime_cycle = 0;
-        UpdateTimes();
-        return;
+        SetFrameVal(0,0);
+        SetFrameVal(0,0);
       }
       break;
     case '~':
@@ -3029,9 +3051,11 @@ void Keyboard(unsigned char key, int flag){
   if(plotstate==DYNAMIC_PLOTS){
     if(timebar_drag==0){
       itimes += skip_global*FlowDir;
+      if(itimes<0)itimes = nglobal_times - 1;
+      if(itimes>nglobal_times - 1)itimes = 0;
+      SetFrameVal(itimes,stept);
+      SetFrameVal(itimes,stept);
     }
-    CheckTimeBound();
-    IdleCB();
     return;
   }
   switch(iplot_state){
@@ -3627,6 +3651,8 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
             itimes += render_skip*FlowDir;
           }
         }
+        SetFrameVal(itimes,stept);
+        SetFrameVal(itimes,stept);
       }
       if(script_render_flag == 1&&IS_LOADRENDER)itimes = script_itime;
 
@@ -4164,8 +4190,8 @@ void DoNonStereo(void){
 
     IdleDisplay();
 
-    stop_rendering = 1;
-    if(plotstate==DYNAMIC_PLOTS && nglobal_times>0&&itimes>=0&&itimes<nglobal_times)stop_rendering = 0;
+    stop_rendering = 0;
+    if(plotstate==DYNAMIC_PLOTS && nglobal_times>0&&itimes==nglobal_times-1)stop_rendering = 1;
     if(render_mode==RENDER_NORMAL){
       int i, ibuffer = 0;
       GLubyte **screenbuffers;

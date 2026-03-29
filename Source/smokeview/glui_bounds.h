@@ -55,6 +55,9 @@
 #define PARTSKIP 28
 #define UNLOAD_QDATA 203
 #define SET_TIME 204
+#define SET_FRAME 229
+#define PREV_FRAME 230
+#define NEXT_FRAME 231
 #define TBOUNDS 205
 #define TBOUNDS_USE 206
 #define RELOAD_ALL_DATA 207
@@ -165,6 +168,7 @@ EXTERNCPP int  GLUIGetChopMin(int type, char *label, int *set_valmin, float *val
 EXTERNCPP int  GLUIGetChopMax(int type, char *label, int *set_valmax, float *valmax);
 EXTERNCPP int  GLUISetChopMin(int type, char *label, int set_chopmin, float chopmin);
 EXTERNCPP int  GLUISetChopMax(int type, char *label, int set_chopmax, float chopmax);
+EXTERNCPP void GLUISetTimeVal(float timeval);
 
 EXTERNCPP void GLUIUpdateTextureDisplay(void);
 EXTERNCPP void GLUIUpdateLoadAllSlices(void);

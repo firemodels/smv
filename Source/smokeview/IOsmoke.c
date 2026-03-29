@@ -4255,14 +4255,12 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
 /* ------------------ MergeSmoke3D ------------------------ */
 
 void MergeSmoke3D(smoke3ddata *smoke3dset){
-  INIT_PRINT_TIMER(merge_smoke_time);
   if(smoke3d_black==1){
     MergeSmoke3DBlack(smoke3dset);
     }
   else{
     MergeSmoke3DColors(smoke3dset);
   }
-  PRINT_TIMER(merge_smoke_time, "MergeSmoke3D");
 }
 
 /* ------------------ UncompressSmoke3DAll ------------------------ */
@@ -4291,10 +4289,7 @@ void UncompressSmoke3DAll(void){
     if(smoke3di->timeslist == NULL)continue;
     smoke3di->ismoke3d_time = smoke3di->timeslist[itimes];
     if(IsSmokeComponentPresent(smoke3di) == 0)continue;
-    if(smoke3di->ismoke3d_time != smoke3di->lastiframe){
-      smoke3di->lastiframe = smoke3di->ismoke3d_time;
-      UncompressSmoke3D(smoke3di);
-    }
+    UncompressSmoke3D(smoke3di);
   }
 #ifdef pp_SPEEDUP
   THREAD_EXIT(uncompresssmoke3d_threads);

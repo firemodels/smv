@@ -2252,7 +2252,7 @@ void UpdateShowScene(void){
   if(update_stept==1){
     SHOW_UPDATE(update_stept);
     update_stept = 0;
-    SetTimeVal(time_paused);
+    GLUISetTimeVal(time_paused);
     END_SHOW_UPDATE(update_stept);
   }
   if(update_movie_parms==1){

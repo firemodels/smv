@@ -3569,42 +3569,6 @@ void ScriptGSliceOrien(scriptdata *scripti){
   update_gslice=1;
 }
 
-/* ------------------ SetTimeVal ------------------------ */
-
-void SetTimeVal(float timeval){
-  int i;
-
-  if(global_times!=NULL&&nglobal_times>0){
-    if(timeval<global_times[0])timeval=global_times[0];
-    if(timeval>global_times[nglobal_times-1]-0.0001)timeval=global_times[nglobal_times-1]-0.0001;
-    for(i=0;i<nglobal_times;i++){
-      float tlow, thigh;
-
-      if(i==0){
-        tlow = global_times[i];
-        thigh = (global_times[i]+global_times[i+1])/2.0;
-      }
-      else if(i==nglobal_times-1){
-        tlow = (global_times[i-1]+global_times[i])/2.0;
-        thigh = global_times[i];
-      }
-      else{
-        tlow=(global_times[i-1]+global_times[i])/2.0;
-        thigh=(global_times[i]+global_times[i+1])/2.0;
-      }
-      if(tlow<=timeval&&timeval<thigh){
-        itimes=i;
-        stept=1;
-        force_redisplay=1;
-        UpdateFrameNumber(0);
-        UpdateTimeLabels();
-        Keyboard('t',FROM_SMOKEVIEW);
-        break;
-      }
-    }
-  }
-}
-
 /* ------------------ ScriptRGBtest ------------------------ */
 
 void ScriptRGBtest(scriptdata *scripti){
