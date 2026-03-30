@@ -2836,18 +2836,16 @@ int ReadSMV_Configure(){
   MakeIBlankSmoke3D();
   PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
 
-  if(HaveCircularVents()==1|| global_scase.meshescoll.nmeshes < 100 || parse_opts.fast_startup == 0){
 #ifdef pp_SPEEDUP
-    makeiblank_threads = THREADinit(&n_makeiblank_threads, &use_makeiblank_threads, MakeIBlank);
-    THREADrun(makeiblank_threads);
+  makeiblank_threads = THREADinit(&n_makeiblank_threads, &use_makeiblank_threads, MakeIBlank);
+  THREADrun(makeiblank_threads);
 
-    mergesmoke3d_threads      = THREADinit(&n_mergesmoke3d_threads,      &use_mergesmoke3d_threads,      MergeSmoke3DAll);
-    uncompresssmoke3d_threads = THREADinit(&n_uncompresssmoke3d_threads, &use_uncompresssmoke3d_threads, UncompressSmoke3DAll);
+  mergesmoke3d_threads      = THREADinit(&n_mergesmoke3d_threads,      &use_mergesmoke3d_threads,      MergeSmoke3DAll);
+  uncompresssmoke3d_threads = THREADinit(&n_uncompresssmoke3d_threads, &use_uncompresssmoke3d_threads, UncompressSmoke3DAll);
 #else
-    MakeIBlank();
+  MakeIBlank();
 #endif
-    PRINT_TIMER(timer_readsmv, "MakeIBlank");
-  }
+  PRINT_TIMER(timer_readsmv, "MakeIBlank");
 
   SetCVentDirs();
   PRINT_TIMER(timer_readsmv, "SetCVentDirs");
