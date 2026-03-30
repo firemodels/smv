@@ -3044,11 +3044,16 @@ int ReadSMV(bufferstreamdata *stream) {
   // InitScase(&global_scase);
   //** initialize multi-threading
   if(runscript == 1){
-    use_checkfiles_threads  = 0;
-    use_ffmpeg_threads      = 0;
-    use_readallgeom_threads = 0;
-    use_isosurface_threads  = 0;
-    use_meshnabors_threads  = 0;
+    use_checkfiles_threads        = 0;
+    use_ffmpeg_threads            = 0;
+    use_readallgeom_threads       = 0;
+    use_isosurface_threads        = 0;
+    use_meshnabors_threads        = 0;
+#ifdef pp_SPEEDUP
+    use_makeiblank_threads        = 0;
+    use_mergesmoke3d_threads      = 0;
+    use_uncompresssmoke3d_threads = 0;
+#endif
   }
   ReadSMV_Init(&global_scase);
   ReadSMV_Parse(&global_scase, stream);
