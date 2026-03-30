@@ -3049,9 +3049,7 @@ void Keyboard(unsigned char key, int flag){
 
   if(plotstate==DYNAMIC_PLOTS){
     if(timebar_drag==0){
-      iglobal_times += skip_global*FlowDir;
-      if(iglobal_times<0)iglobal_times = nglobal_times - 1;
-      if(iglobal_times>nglobal_times - 1)iglobal_times = 0;
+      iglobal_times = CLAMP(iglobal_times + skip_global * FlowDir,0, nglobal_times - 1);
       SetFrameIndex(iglobal_times,stept);
     }
     return;
@@ -3087,7 +3085,6 @@ void Keyboard(unsigned char key, int flag){
 void KeyboardCB(unsigned char key, int x, int y){
   Keyboard(key,FROM_CALLBACK);
   GLUTPOSTREDISPLAY;
-  updatemenu=1;
 }
 
 /* ------------------ HandleRotationType ------------------------ */
