@@ -5129,6 +5129,11 @@ extern "C" void GLUIBoundsSetup(int main_window){
     CHECKBOX_hide_all_interior_patch_data = glui_bounds->add_checkbox_to_panel(PANEL_boundary_interior_data, "Hide all", &show_all_interior_patch_data, HIDE_ALL_INTERIOR_PATCH_DATA, BoundBoundCB);
 
     glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, "output patch info when loading", &outout_patch_faces);
+#ifdef pp_BNDF_DEBUG
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, "draw 1", &bf_patch1);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, "draw 2", &bf_patch2);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, "draw 3", &bf_patch3);
+#endif
 
     if(nboundaryslicedups > 0){
       ROLLOUT_boundary_duplicates = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, "Duplicates", false, BOUNDARY_DUPLICATE_ROLLOUT, SubBoundRolloutCB);
