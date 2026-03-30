@@ -4507,9 +4507,7 @@ void SetFrameVal(int frameval, int stept_arg){
   UpdateTimeLabels();
   stept = stept_arg;
   //Keyboard('t', FROM_SMOKEVIEW);
-  float timeval;
-  timeval = global_times[iglobal_times];
-  SPINNER_timebounds->set_float_val(timeval);
+  SPINNER_timebounds->set_float_val(GetTime());
   if(changed_frame==1)SPINNER_framebounds->set_int_val(frameval);
 }
 

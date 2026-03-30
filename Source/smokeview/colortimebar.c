@@ -19,8 +19,7 @@
 void UpdateTimeLabels(void){
   float time0;
 
-  time0 = timeoffset;
-  if(global_times!=NULL)time0 = timeoffset+global_times[iglobal_times];
+  time0 = timeoffset+GetTime();
   if(current_script_command!=NULL&&IS_LOADRENDER){
     time0 = current_script_command->fval4;
   }
@@ -87,7 +86,7 @@ void UpdateTimeLabels(void){
     float hrr;
     int itime;
 
-    itime = GetInterval(global_times[iglobal_times], global_scase.timeptr->vals, global_scase.timeptr->nvals);
+    itime = GetInterval(GetTime(), global_scase.timeptr->vals, global_scase.timeptr->nvals);
     hrr = global_scase.hrrptr->vals[itime];
     if(hrr<1.0){
       sprintf(hrrlabel,"HRR: %4.1f W",hrr*1000.0);
@@ -141,7 +140,7 @@ void DrawTimebar(float xleft, float xright, float ybot, float ytop){
       dtime = global_times[nglobal_times-1] - global_times[0];
     }
     if(dtime!=0.0&&nglobal_times>1){
-      factor = CLAMP((global_times[iglobal_times] - global_times[0])/dtime, 0.0, 1.0);
+      factor = CLAMP((GetTime() - global_times[0])/dtime, 0.0, 1.0);
     }
     xxright = xleft*(1.0-factor) + xright*factor;
   }

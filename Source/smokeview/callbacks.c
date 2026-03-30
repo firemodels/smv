@@ -2474,7 +2474,7 @@ void Keyboard(unsigned char key, int flag){
           if(nglobal_times>0){
             float timeval;
 
-            timeval=global_times[iglobal_times];
+            timeval=GetTime();
             fprintf(scriptoutstream,"SETTIMEVAL\n");
             fprintf(scriptoutstream," %f\n",timeval);
             if(nvolrenderinfo>0&&load_at_rendertimes==1){

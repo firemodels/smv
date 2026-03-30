@@ -6584,8 +6584,8 @@ int SetupSlice(slicedata *sd){
   }
   if(current_script_command == NULL || current_script_command->command != SCRIPT_LOADSLICERENDER){
     // don't draw slice if the global time is before the first or after the last slice time
-    if(global_times[iglobal_times] < sd->times[0])return 0;
-    if(global_times[iglobal_times] > sd->times[sd->ntimes - 1])return 0;
+    if(GetTime() < sd->times[0])return 0;
+    if(GetTime() > sd->times[sd->ntimes - 1])return 0;
   }
   if(sd->slice_filetype != SLICE_GEOM){
     if(sd->compression_type != UNCOMPRESSED){
@@ -6619,8 +6619,8 @@ void DrawSliceFrame(){
     DrawSlicePlots();
   }
 
-  if(use_tload_begin==1 && global_times[iglobal_times]<global_scase.tload_begin)return;
-  if(use_tload_end==1   && global_times[iglobal_times]>global_scase.tload_end)return;
+  if(use_tload_begin==1 && GetTime()<global_scase.tload_begin)return;
+  if(use_tload_end==1   && GetTime()>global_scase.tload_end)return;
   SortLoadedSliceList();
 
   if(sortslices==1){
@@ -8046,8 +8046,8 @@ void DrawVVolSlice(const vslicedata *vd){
 void DrawVSliceFrame(void){
   int i;
 
-  if(use_tload_begin==1 && global_times[iglobal_times]<global_scase.tload_begin)return;
-  if(use_tload_end==1   && global_times[iglobal_times]>global_scase.tload_end)return;
+  if(use_tload_begin==1 && GetTime()<global_scase.tload_begin)return;
+  if(use_tload_end==1   && GetTime()>global_scase.tload_end)return;
   for(i=0;i<global_scase.slicecoll.nvsliceinfo;i++){
     vslicedata *vd;
     slicedata *u, *v, *w, *val;
@@ -8064,7 +8064,7 @@ void DrawVSliceFrame(void){
     v = vd->v;
     w = vd->w;
     if(u==NULL&&v==NULL&&w==NULL)continue;
-    if(global_scase.slicecoll.sliceinfo[vd->ival].times[0]>global_times[iglobal_times])continue;
+    if(global_scase.slicecoll.sliceinfo[vd->ival].times[0]>GetTime())continue;
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,global_scase.slicecoll.sliceinfo[vd->ival].blocknumber);
     if(vd->vslice_filetype!=SLICE_GEOM){
       if(val->compression_type!=UNCOMPRESSED){
@@ -8424,7 +8424,7 @@ void InitSliceData(void){
     i = slice_loaded_list[ii];
     sd = global_scase.slicecoll.sliceinfo + i;
     if(sd->display == 0 || sd->slicefile_labelindex != slicefile_labelindex)continue;
-    if(sd->times[0] > global_times[iglobal_times])continue;
+    if(sd->times[0] > GetTime())continue;
 
     strcpy(datafile, sd->file);
     ext = strstr(datafile, ".");

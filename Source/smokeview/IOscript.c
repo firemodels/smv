@@ -2999,7 +2999,7 @@ void ScriptShowSmokeSensors(void){
   }
 
   if(global_times!=NULL&&iglobal_times>=0&&iglobal_times<nglobal_times){
-    sensor_time = global_times[iglobal_times];
+    sensor_time = GetTime();
   }
   fprintf(stream_smokesensors,"%f,",sensor_time);
   j = 0;

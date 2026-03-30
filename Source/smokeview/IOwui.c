@@ -717,8 +717,8 @@ void DrawTrees(void){
     state=0;
     if(showtime==1&&global_times!=NULL){
       assert(iglobal_times>=0);
-      if(treei->time_char>0.0&&global_times[iglobal_times]>treei->time_char)state=1;
-      if(treei->time_complete>0.0&&global_times[iglobal_times]>treei->time_complete)state=2;
+      if(    treei->time_char>0.0&&GetTime()>treei->time_char)state=1;
+      if(treei->time_complete>0.0&&GetTime()>treei->time_complete)state=2;
     }
 
     glPushMatrix();

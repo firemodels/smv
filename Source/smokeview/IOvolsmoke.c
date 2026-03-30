@@ -2769,7 +2769,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
     FSEEK(SLICEFILE,skip_local,SEEK_SET); // skip from beginning of file
 
     FORTVOLSLICEREAD(&time_local,1);
-    if(global_times!=NULL&&global_times[iglobal_times]>time_local)restart_time=1;
+    if(global_times!=NULL&&GetTime()>time_local)restart_time=1;
     if(*first==1){
       *first=0;
       print=1;

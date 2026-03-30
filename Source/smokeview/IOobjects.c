@@ -594,7 +594,7 @@ unsigned char *GetDeviceColor(devicedata *devicei, unsigned char *colorval,float
   float *rgb_local;
 
   if(devicei==NULL||valmax<=valmin)return NULL;
-  val= GetDeviceVal(global_times[iglobal_times],devicei,&valid);
+  val= GetDeviceVal(GetTime(),devicei,&valid);
   if(valid!=1)return NULL;
   val = (val-valmin)/(valmax-valmin);
   colorindex=CLAMP(255*val,0,255);
@@ -613,7 +613,7 @@ void OutputDeviceVal(devicedata *devicei){
   int valid;
 
   if(fontindex==SCALED_FONT)ScaleFont3D();
-  val= GetDeviceVal(global_times[iglobal_times],devicei,&valid);
+  val= GetDeviceVal(GetTime(),devicei,&valid);
   if(valid==1){
     f_units *unitclass;
     char *unit;
@@ -3608,7 +3608,7 @@ void DrawDevices(int mode){
         if(devicei == NULL)continue;
         if(vdevi->unique == 0)continue;
         xyz = vdevi->valdev->xyz;
-        GetVDeviceVel(global_times[iglobal_times], vdevi, vel, &angle, &dvel, &dangle, &velocity_type);
+        GetVDeviceVel(GetTime(), vdevi, vel, &angle, &dvel, &dangle, &velocity_type);
         if(colordevice_val == 1){
           int type, vistype = 0;
 
@@ -4395,7 +4395,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
       float time_val = 0.0;
 
       if(nglobal_times > 0){
-        time_val = global_times[iglobal_times];
+        time_val = GetTime();
       }
 
       val_result = time_val;
@@ -4412,7 +4412,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
       val2 = arg[1];
 
       if(nglobal_times > 0){
-        time_val = global_times[iglobal_times];
+        time_val = GetTime();
       }
 
       val_result = val1*time_val + val2;

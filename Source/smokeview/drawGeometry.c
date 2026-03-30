@@ -1796,8 +1796,8 @@ void DrawCAD2Geom(const cadgeomdata *cd, int trans_flag){
     if(global_times!=NULL){
       float timeval;
 
-      timeval=global_times[iglobal_times];
-      if(quadi->time_show>=0.0&&timeval<quadi->time_show)continue;
+      timeval=GetTime();
+      if(quadi->time_show>=0.0&&timeval< quadi->time_show)continue;
       if(quadi->time_show <0.0&&timeval>-quadi->time_show)continue;
     }
     if(visCadTextures==1&&texti->loaded==1)continue;

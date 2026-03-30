@@ -371,7 +371,7 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
       char timelabel_local[20], *timelabelptr;
       float dt, maxtime;
 
-      time_local = global_times[iglobal_times];
+      time_local = GetTime();
       dt = ABS(global_times[1] - global_times[0]);
       maxtime = MAX(ABS(global_times[nglobal_times-1]), ABS(global_scase.global_tend));
       maxtime = MAX(maxtime, ABS(global_scase.global_tbegin));
@@ -440,7 +440,7 @@ void OutputSliceData(void){
     i = slice_loaded_list[ii];
     sd = global_scase.slicecoll.sliceinfo + i;
     if(sd->display == 0 || sd->slicefile_labelindex != slicefile_labelindex)continue;
-    if(global_times!=NULL&&sd->times[0] > global_times[iglobal_times])continue;
+    if(global_times!=NULL&&sd->times[0] > GetTime())continue;
 
     if(sd->qslicedata == NULL){
       PRINTF("  Slice data unavailable for output\n");
@@ -459,7 +459,7 @@ void OutputSliceData(void){
     strcat(datafile, ".csv");
     fileout = FOPEN(datafile, "a");
     if(fileout == NULL)continue;
-    if(global_times != NULL)fprintf(fileout, "%f\n", global_times[iglobal_times]);
+    if(global_times != NULL)fprintf(fileout, "%f\n", GetTime());
     switch(sd->idir){
     case XDIR:
       fprintf(fileout, "%i,%i\n", sd->ks2 + 1 - sd->ks1, sd->js2 + 1 - sd->js1);

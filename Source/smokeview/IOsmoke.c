@@ -2679,8 +2679,8 @@ void DrawSmokeFrame(void){
   int usegpu_local;
 #endif
 
-  if(use_tload_begin==1 && global_times[iglobal_times]<global_scase.tload_begin)return;
-  if(use_tload_end==1   && global_times[iglobal_times]>global_scase.tload_end)return;
+  if(use_tload_begin==1 && GetTime()<global_scase.tload_begin)return;
+  if(use_tload_end==1   && GetTime()>global_scase.tload_end)return;
 
 #ifdef pp_GPU
   usegpu_local = usegpu;
@@ -2796,8 +2796,8 @@ void DrawSmokeFrame(void){
 void DrawVolSmokeFrame(void){
   int load_shaders = 0;
 
-  if(use_tload_begin==1&&global_times[iglobal_times]<global_scase.tload_begin)return;
-  if(use_tload_end==1&&global_times[iglobal_times]>global_scase.tload_end)return;
+  if(use_tload_begin==1&&GetTime()<global_scase.tload_begin)return;
+  if(use_tload_end==1&&GetTime()>global_scase.tload_end)return;
   triangle_count = 0;
   CheckMemory;
   if(smoke3dVoldebug==1){
