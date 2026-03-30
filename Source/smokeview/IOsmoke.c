@@ -2679,8 +2679,8 @@ void DrawSmokeFrame(void){
   int usegpu_local;
 #endif
 
-  if(use_tload_begin==1 && global_times[itimes]<global_scase.tload_begin)return;
-  if(use_tload_end==1   && global_times[itimes]>global_scase.tload_end)return;
+  if(use_tload_begin==1 && global_times[iglobal_times]<global_scase.tload_begin)return;
+  if(use_tload_end==1   && global_times[iglobal_times]>global_scase.tload_end)return;
 
 #ifdef pp_GPU
   usegpu_local = usegpu;
@@ -2796,8 +2796,8 @@ void DrawSmokeFrame(void){
 void DrawVolSmokeFrame(void){
   int load_shaders = 0;
 
-  if(use_tload_begin==1&&global_times[itimes]<global_scase.tload_begin)return;
-  if(use_tload_end==1&&global_times[itimes]>global_scase.tload_end)return;
+  if(use_tload_begin==1&&global_times[iglobal_times]<global_scase.tload_begin)return;
+  if(use_tload_end==1&&global_times[iglobal_times]>global_scase.tload_end)return;
   triangle_count = 0;
   CheckMemory;
   if(smoke3dVoldebug==1){
@@ -4287,7 +4287,7 @@ void UncompressSmoke3DAll(void){
     if(smoke3di->loaded == 0 || smoke3di->display == 0)continue;
     assert(smoke3di->timeslist != NULL);
     if(smoke3di->timeslist == NULL)continue;
-    smoke3di->ismoke3d_time = smoke3di->timeslist[itimes];
+    smoke3di->ismoke3d_time = smoke3di->timeslist[iglobal_times];
     if(IsSmokeComponentPresent(smoke3di) == 0)continue;
     UncompressSmoke3D(smoke3di);
   }
@@ -4320,7 +4320,7 @@ void MergeSmoke3DAll(void){
     if(smoke3di->loaded == 0 || smoke3di->display == 0)continue;
     assert(smoke3di->timeslist != NULL);
     if(smoke3di->timeslist==NULL)continue;
-    smoke3di->ismoke3d_time = smoke3di->timeslist[itimes];
+    smoke3di->ismoke3d_time = smoke3di->timeslist[iglobal_times];
     if(IsSmokeComponentPresent(smoke3di) == 0)continue;
     MergeSmoke3D(smoke3di);
   }

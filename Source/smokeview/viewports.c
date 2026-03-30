@@ -997,7 +997,7 @@ void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down){
       }
       update_avg = 0;
     }
-    highlight_time = global_times[itimes];
+    highlight_time = global_times[iglobal_times];
     itime = GetInterval(highlight_time, hitime->vals, hitime->nvals);
     itime = CLAMP(itime, 0, hitime->nvals-1);
 
@@ -1140,7 +1140,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down){
       devicei = &(slicei->vals2d);
       if(slicei->loaded==0||devicei->valid==0)continue;
 
-      highlight_val = devicei->vals[itimes];
+      highlight_val = devicei->vals[iglobal_times];
 
       boundsdata *sb;
 
@@ -1162,7 +1162,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down){
         update_avg = 0;
       }
       DrawPlot2D(PLOT_ALL, devicei->times, devicei->vals, NULL, devicei->nvals,
-               global_times[itimes], highlight_val, 0.0, 1, position, valmin, valmax,
+               global_times[iglobal_times], highlight_val, 0.0, 1, position, valmin, valmax,
                slicei->label.shortlabel, NULL, slicei->label.unit,
                VP_slice_plot.left, VP_slice_plot.right, VP_slice_plot.down, VP_slice_plot.top);
       position++;
@@ -2348,7 +2348,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       tourdata *touri;
 
       touri = global_scase.tourcoll.tourinfo + selectedtour_index;
-      SetTourXYZView(global_times[itimes], touri);
+      SetTourXYZView(global_times[iglobal_times], touri);
       memcpy(camera_current->eye, touri->xyz_smv, 3*sizeof(float));
       camera_current->az_elev[1]=0.0;
       camera_current->az_elev[0]=0.0;
@@ -2469,7 +2469,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
         if(viewtourfrompath==1&&selectedtour_index>=0){
           touri = global_scase.tourcoll.tourinfo + selectedtour_index;
-          SetTourXYZView(global_times[itimes], touri);
+          SetTourXYZView(global_times[iglobal_times], touri);
           viewx = touri->view_smv[0]+dEyeSeparation[0];
           viewy = touri->view_smv[1]-dEyeSeparation[1];
           viewz = touri->view_smv[2];

@@ -2268,7 +2268,7 @@ void DrawZoneFireData(void){
   int i;
   float *zoneqfirebase, *zonefheightbase, *zonefdiambase, *zonefbasebase;
 
-  if(zone_times[0]>global_times[itimes])return;
+  if(zone_times[0]>global_times[iglobal_times])return;
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
   zoneqfirebase = zoneqfire + izone*global_scase.nfires;
@@ -2338,7 +2338,7 @@ void DrawZoneRoomData(void){
   float *colorvL;
   int i;
 
-  if(zone_times[0]>global_times[itimes])return;
+  if(zone_times[0]>global_times[iglobal_times])return;
 
   if(cullfaces==1)glDisable(GL_CULL_FACE);
   if(use_transparency_data==1)TransparentOn();

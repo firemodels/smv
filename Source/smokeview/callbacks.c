@@ -622,9 +622,9 @@ void MouseSelectGeom(int x, int y){
 void CheckTimeBound(void){
   int i;
 
-  if((timebar_drag==0&&(itimes>nglobal_times-1))||(timebar_drag==1&&itimes<=0)){
+  if((timebar_drag==0&&(iglobal_times>nglobal_times-1))||(timebar_drag==1&&iglobal_times<=0)){
     izone = 0;
-    itimes=first_frame_index;
+    iglobal_times=first_frame_index;
     if(render_status==RENDER_ON){
       RenderMenu(RenderCancel);
       if(current_script_command!=NULL&&NOT_LOADRENDER){
@@ -658,9 +658,9 @@ void CheckTimeBound(void){
       meshi->iso_itime=0;
     }
   }
-  if((timebar_drag==0&&itimes<0)||(timebar_drag==1&&itimes>nglobal_times-1)){
+  if((timebar_drag==0&&iglobal_times<0)||(timebar_drag==1&&iglobal_times>nglobal_times-1)){
     izone=nzone_times-1;
-    itimes=nglobal_times-1;
+    iglobal_times=nglobal_times-1;
     for(i=0;i<global_scase.npartinfo;i++){
       partdata *parti;
 
@@ -709,7 +709,7 @@ void CheckTimeBound(void){
 
       bc=meshi->blockageinfoptrs[j];
       if(bc->showtimelist==NULL)continue;
-      bc->show=bc->showtimelist[itimes];
+      bc->show=bc->showtimelist[iglobal_times];
     }
   }
 }
@@ -845,7 +845,7 @@ int GetTimeBarFrame(int xm){
 int TimebarClick(int xm, int ym){
   if(screenHeight-ym<titlesafe_offset+VP_timebar.height&&nglobal_times>0){
 //    PRINTF("ngt=%i xl=%i x=%i xr=%i\n",nglobal_times,timebar_left_pos,x,timebar_right_pos);
-    itimes = GetTimeBarFrame(xm);
+    iglobal_times = GetTimeBarFrame(xm);
     CheckTimeBound();
     timebar_drag=1;
     stept=0;
@@ -860,8 +860,8 @@ int TimebarClick(int xm, int ym){
 
 void UpdateTime(int time){
   if(nglobal_times > 0){
-    itimes = time;
-    UpdateGluiFrame(itimes);
+    iglobal_times = time;
+    UpdateGluiFrame(iglobal_times);
     CheckTimeBound();
     IdleCB();
   }
@@ -2013,7 +2013,7 @@ void Keyboard(unsigned char key, int flag){
             force_redisplay=1;
           }
           else{
-            itime_save=itimes;
+            itime_save=iglobal_times;
             ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
           }
         }
@@ -2023,7 +2023,7 @@ void Keyboard(unsigned char key, int flag){
             force_redisplay=1;
           }
           else{
-            itime_save=itimes;
+            itime_save=iglobal_times;
             ShowHideSliceMenu(GLUI_HIDEALL);
           }
         }
@@ -2474,7 +2474,7 @@ void Keyboard(unsigned char key, int flag){
           if(nglobal_times>0){
             float timeval;
 
-            timeval=global_times[itimes];
+            timeval=global_times[iglobal_times];
             fprintf(scriptoutstream,"SETTIMEVAL\n");
             fprintf(scriptoutstream," %f\n",timeval);
             if(nvolrenderinfo>0&&load_at_rendertimes==1){
@@ -3050,11 +3050,11 @@ void Keyboard(unsigned char key, int flag){
 
   if(plotstate==DYNAMIC_PLOTS){
     if(timebar_drag==0){
-      itimes += skip_global*FlowDir;
-      if(itimes<0)itimes = nglobal_times - 1;
-      if(itimes>nglobal_times - 1)itimes = 0;
-      SetFrameVal(itimes,stept);
-      SetFrameVal(itimes,stept);
+      iglobal_times += skip_global*FlowDir;
+      if(iglobal_times<0)iglobal_times = nglobal_times - 1;
+      if(iglobal_times>nglobal_times - 1)iglobal_times = 0;
+      SetFrameVal(iglobal_times,stept);
+      SetFrameVal(iglobal_times,stept);
     }
     return;
   }
@@ -3627,34 +3627,34 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
             ){
             elapsed_time = GMod(elapsed_time,global_times[nglobal_times-1]-global_times[0])+global_times[0];
           }
-          itimes = ISearch(global_times,nglobal_times,elapsed_time,itimes);
+          iglobal_times = ISearch(global_times,nglobal_times,elapsed_time,iglobal_times);
         }
         else{
           if(script_render_flag==0){
-            itimes += FlowDir;
+            iglobal_times += FlowDir;
           }
           else{
-            itimes=script_itime;
+            iglobal_times=script_itime;
           }
         }
       }
       if(stept==1&&timebar_drag==0&&render_status==RENDER_ON){
         if(render_firsttime==YES){
           render_firsttime = NO;
-          itimes = first_frame_index;
+          iglobal_times = first_frame_index;
         }
         else{
           if(render_skip==RENDER_CURRENT_SINGLE){
-            itimes += FlowDir;
+            iglobal_times += FlowDir;
           }
           else{
-            itimes += render_skip*FlowDir;
+            iglobal_times += render_skip*FlowDir;
           }
         }
-        SetFrameVal(itimes,stept);
-        SetFrameVal(itimes,stept);
+        SetFrameVal(iglobal_times,stept);
+        SetFrameVal(iglobal_times,stept);
       }
-      if(script_render_flag == 1&&IS_LOADRENDER)itimes = script_itime;
+      if(script_render_flag == 1&&IS_LOADRENDER)iglobal_times = script_itime;
 
 // if toggling time display with H then show the frame that was visible
 
@@ -3663,7 +3663,7 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
       }
       else{
         if(itime_save>=0){
-          itimes=itime_save;
+          iglobal_times=itime_save;
         }
       }
       if(shooter_firstframe==1&&visShooter!=0&&shooter_active==1){
@@ -3701,7 +3701,7 @@ void IdleCB(void){
      or if we are rendering images or stepping by hand */
 
   UpdateFrame(thisinterval,&changetime,&redisplay);
-  if(showtime==1&&stept==0&&itimeold!=itimes){
+  if(showtime==1&&stept==0&&itimeold!=iglobal_times){
     changetime=1;
     CheckTimeBound();
     UpdateTimeLabels();
@@ -3782,7 +3782,7 @@ void ReshapeCB(int width, int height){
 
 void ResetGLTime(void){
   if(showtime!=1)return;
-  reset_frame=itimes;
+  reset_frame=iglobal_times;
   START_TIMER(reset_time);
   if(global_times!=NULL&&nglobal_times>0){
     start_frametime=global_times[0];
@@ -4191,7 +4191,7 @@ void DoNonStereo(void){
     IdleDisplay();
 
     stop_rendering = 0;
-    if(plotstate==DYNAMIC_PLOTS && nglobal_times>0&&itimes==nglobal_times-1)stop_rendering = 1;
+    if(plotstate==DYNAMIC_PLOTS && nglobal_times>0&&iglobal_times==nglobal_times-1)stop_rendering = 1;
     if(render_mode==RENDER_NORMAL){
       int i, ibuffer = 0;
       GLubyte **screenbuffers;

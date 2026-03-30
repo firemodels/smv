@@ -4473,13 +4473,13 @@ void GLUISetTimeVal(float timeval){
         thigh = (global_times[i] + global_times[i + 1]) / 2.0;
       }
       if(tlow <= timeval && timeval < thigh){
-        itimes = i;
+        iglobal_times = i;
         stept = 1;
         force_redisplay = 1;
         UpdateFrameNumber(0);
         UpdateTimeLabels();
         Keyboard('t', FROM_SMOKEVIEW);
-        SPINNER_framebounds->set_int_val(itimes);
+        SPINNER_framebounds->set_int_val(iglobal_times);
         break;
       }
     }
@@ -4500,7 +4500,7 @@ void SetFrameVal(int frameval, int stept_arg){
     frameval = nglobal_times-1;
     changed_frame = 1;
   }
-  itimes = frameval;
+  iglobal_times = frameval;
   stept = 1;
   force_redisplay = 1;
   UpdateFrameNumber(0);
@@ -4508,7 +4508,7 @@ void SetFrameVal(int frameval, int stept_arg){
   stept = stept_arg;
   //Keyboard('t', FROM_SMOKEVIEW);
   float timeval;
-  timeval = global_times[itimes];
+  timeval = global_times[iglobal_times];
   SPINNER_timebounds->set_float_val(timeval);
   if(changed_frame==1)SPINNER_framebounds->set_int_val(frameval);
 }

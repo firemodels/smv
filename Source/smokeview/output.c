@@ -414,7 +414,7 @@ void DrawLabels(labels_collection *labelscoll_arg){
     if(plotstate!=DYNAMIC_PLOTS||thislabel->show_always==1||showtime==0)drawlabel=1;
     if(drawlabel==0&&plotstate==DYNAMIC_PLOTS&&showtime==1){
       if(tstart_stop[0]<0.0||tstart_stop[1]<0.0)drawlabel=1;
-      if(drawlabel==0&&global_times[itimes]>=tstart_stop[0]-0.05&&global_times[itimes]<=tstart_stop[1]+0.05)drawlabel=1;
+      if(drawlabel==0&&global_times[iglobal_times]>=tstart_stop[0]-0.05&&global_times[iglobal_times]<=tstart_stop[1]+0.05)drawlabel=1;
     }
     if(drawlabel==1){
       Output3Text(labelcolor,xyz[0],xyz[1],xyz[2],thislabel->name);

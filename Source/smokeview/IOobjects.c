@@ -594,7 +594,7 @@ unsigned char *GetDeviceColor(devicedata *devicei, unsigned char *colorval,float
   float *rgb_local;
 
   if(devicei==NULL||valmax<=valmin)return NULL;
-  val= GetDeviceVal(global_times[itimes],devicei,&valid);
+  val= GetDeviceVal(global_times[iglobal_times],devicei,&valid);
   if(valid!=1)return NULL;
   val = (val-valmin)/(valmax-valmin);
   colorindex=CLAMP(255*val,0,255);
@@ -613,7 +613,7 @@ void OutputDeviceVal(devicedata *devicei){
   int valid;
 
   if(fontindex==SCALED_FONT)ScaleFont3D();
-  val= GetDeviceVal(global_times[itimes],devicei,&valid);
+  val= GetDeviceVal(global_times[iglobal_times],devicei,&valid);
   if(valid==1){
     f_units *unitclass;
     char *unit;
@@ -817,7 +817,7 @@ void DrawWindRosesDevices(void){
     vdevi = global_scase.devicecoll.vdeviceinfo + i;
     if(vdevi->display==0||vdevi->unique==0)continue;
     itime = 0;
-    if(global_times!=NULL)itime = CLAMP(itimes, 0, vdevi->nwindroseinfo-1);
+    if(global_times!=NULL)itime = CLAMP(iglobal_times, 0, vdevi->nwindroseinfo-1);
     wr = vdevi->windroseinfo+itime;
     if(windrose_xy_vis==1)DrawWindRose(wr, WINDROSE_XY);
     if(windrose_xz_vis==1)DrawWindRose(wr, WINDROSE_XZ);
@@ -3558,7 +3558,7 @@ void DrawDevices(int mode){
     }
   }
   drawobjects_as_vectors = 0;
-  if(showtime == 1 && itimes >= 0 && itimes < nglobal_times&&showvdevice_val == 1 && global_scase.devicecoll.nvdeviceinfo>0){
+  if(showtime == 1 && iglobal_times >= 0 && iglobal_times < nglobal_times&&showvdevice_val == 1 && global_scase.devicecoll.nvdeviceinfo>0){
     unsigned char arrow_color[4];
     float arrow_color_float[4];
     int j;
@@ -3608,7 +3608,7 @@ void DrawDevices(int mode){
         if(devicei == NULL)continue;
         if(vdevi->unique == 0)continue;
         xyz = vdevi->valdev->xyz;
-        GetVDeviceVel(global_times[itimes], vdevi, vel, &angle, &dvel, &dangle, &velocity_type);
+        GetVDeviceVel(global_times[iglobal_times], vdevi, vel, &angle, &dvel, &dangle, &velocity_type);
         if(colordevice_val == 1){
           int type, vistype = 0;
 
@@ -4029,7 +4029,7 @@ void DrawDevices(int mode){
         prop->vars_indep_index[j] = j;
       }
     }
-    if(showtime == 1 && itimes >= 0 && itimes < nglobal_times&&showdevice_val == 1 && ndevicetypes>0){
+    if(showtime == 1 && iglobal_times >= 0 && iglobal_times < nglobal_times&&showdevice_val == 1 && ndevicetypes>0){
       int type, vistype = 0;
 
       type = devicei->type2;
@@ -4039,14 +4039,14 @@ void DrawDevices(int mode){
       }
     }
     if(drawobjects_as_vectors == 0){
-      if(select_device==0 && showtime == 1 && itimes >= 0 && itimes < nglobal_times){
+      if(select_device==0 && showtime == 1 && iglobal_times >= 0 && iglobal_times < nglobal_times){
         int state;
 
         if(devicei->showstatelist == NULL){
           state = devicei->state0;
         }
         else{
-          state = devicei->showstatelist[itimes];
+          state = devicei->showstatelist[iglobal_times];
         }
         if(colordevice_val == 1){
           int type, vistype = 0;
@@ -4062,7 +4062,7 @@ void DrawDevices(int mode){
           if(target_index>=0&&izonetargets!=NULL&&have_target_data==1&&vis_target_data==1){
             unsigned char color_index, target_color[4];
 
-            color_index = izonetargets[itimes*nzone_targets+target_index];
+            color_index = izonetargets[iglobal_times*nzone_targets+target_index];
             target_color[0] = (float)rgb_full[color_index][0]*255.0;
             target_color[1] = (float)rgb_full[color_index][1]*255.0;
             target_color[2] = (float)rgb_full[color_index][2]*255.0;
@@ -4395,7 +4395,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
       float time_val = 0.0;
 
       if(nglobal_times > 0){
-        time_val = global_times[itimes];
+        time_val = global_times[iglobal_times];
       }
 
       val_result = time_val;
@@ -4412,7 +4412,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
       val2 = arg[1];
 
       if(nglobal_times > 0){
-        time_val = global_times[itimes];
+        time_val = global_times[iglobal_times];
       }
 
       val_result = val1*time_val + val2;

@@ -272,7 +272,7 @@ void DrawTours(void){
           float xyz[3], view[3];
           float tour_time=0.0;
 
-          if(global_times!=NULL)tour_time = global_times[itimes];
+          if(global_times!=NULL)tour_time = global_times[iglobal_times];
           GetTourXYZ(tour_time,  touri, xyz);
           GetTourView(tour_time, touri, view);
 
@@ -295,7 +295,7 @@ void DrawTours(void){
           float xyz[3];
           float tour_time=0.0;
 
-          if(global_times!=NULL)tour_time = global_times[itimes];
+          if(global_times!=NULL)tour_time = global_times[iglobal_times];
           GetTourXYZ(tour_time, touri, xyz);
           DrawCir(xyz,tourrad_avatar,tourcol_avatar);
         }
@@ -312,7 +312,7 @@ void DrawTours(void){
           float xyz[3], tour_view[3];
           float tour_time=0.0;
 
-          if(global_times!=NULL)tour_time = global_times[itimes];
+          if(global_times!=NULL)tour_time = global_times[iglobal_times];
           GetTourXYZ(tour_time,  touri, xyz);
           GetTourView(tour_time, touri, tour_view);
           dxy[0]=tour_view[0]-xyz[0];
