@@ -4486,21 +4486,21 @@ void GLUISetTimeVal(float timeval){
   }
 }
 
-/* ------------------ SetFrameVal ------------------------ */
+/* ------------------ SetFrameIndexWorker ------------------------ */
 
-void SetFrameVal(int frameval, int stept_arg){
+void SetFrameIndexWorker(int frameindex, int stept_arg){
   int changed_frame = 0;
 
   if(global_times == NULL)return;
-  if(frameval < 0){
-    frameval = 0;
+  if(frameindex < 0){
+    frameindex = 0;
     changed_frame = 1;
   }
-  if(frameval > nglobal_times - 1){
-    frameval = nglobal_times-1;
+  if(frameindex > nglobal_times - 1){
+    frameindex = nglobal_times-1;
     changed_frame = 1;
   }
-  iglobal_times = frameval;
+  iglobal_times = frameindex;
   stept = 1;
   force_redisplay = 1;
   UpdateFrameNumber(0);
@@ -4508,10 +4508,19 @@ void SetFrameVal(int frameval, int stept_arg){
   stept = stept_arg;
   //Keyboard('t', FROM_SMOKEVIEW);
   SPINNER_timebounds->set_float_val(GetTime());
-  if(changed_frame==1)SPINNER_framebounds->set_int_val(frameval);
+  if(changed_frame==1)SPINNER_framebounds->set_int_val(frameindex);
 }
 
-/* ------------------ UpdateGluiFrame ------------------------ */
+/* ------------------ SetFrameIndex ------------------------ */
+
+void SetFrameIndex(int frameindex, int stept_arg){
+  INIT_PRINT_TIMER(frame_timer);
+  SetFrameIndexWorker(frameindex, stept_arg);
+  SetFrameIndexWorker(frameindex, stept_arg);
+  PRINT_TIMER(frame_timer, "SetFrameIndex");
+}
+
+  /* ------------------ UpdateGluiFrame ------------------------ */
 
 void UpdateGluiFrame(int val){
   if(SPINNER_framebounds!=NULL)SPINNER_framebounds->set_int_val(val);
@@ -4524,21 +4533,18 @@ void TimeBoundCB(int var){
   updatemenu = 1;
   switch(var){
   case SET_FRAME:
-    SetFrameVal(glui_frame,0);
-    SetFrameVal(glui_frame,0);
+    SetFrameIndex(glui_frame,PAUSE_TIME);
     break;
   case PREV_FRAME:
     glui_frame--;
     if(glui_frame<0)glui_frame = nglobal_times-1;
-    SetFrameVal(glui_frame,0);
-    SetFrameVal(glui_frame,0);
+    SetFrameIndex(glui_frame,PAUSE_TIME);
     SPINNER_framebounds->set_int_val(glui_frame);
     break;
   case NEXT_FRAME:
     glui_frame++;
     if(glui_frame>nglobal_times-1)glui_frame=0;
-    SetFrameVal(glui_frame,0);
-    SetFrameVal(glui_frame,0);
+    SetFrameIndex(glui_frame,PAUSE_TIME);
     SPINNER_framebounds->set_int_val(glui_frame);
     break;
   case SET_TIME:

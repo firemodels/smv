@@ -2830,8 +2830,7 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '0':
       if(plotstate==DYNAMIC_PLOTS){
-        SetFrameVal(0,0);
-        SetFrameVal(0,0);
+        SetFrameIndex(0,PAUSE_TIME);
       }
       break;
     case '~':
@@ -3053,8 +3052,7 @@ void Keyboard(unsigned char key, int flag){
       iglobal_times += skip_global*FlowDir;
       if(iglobal_times<0)iglobal_times = nglobal_times - 1;
       if(iglobal_times>nglobal_times - 1)iglobal_times = 0;
-      SetFrameVal(iglobal_times,stept);
-      SetFrameVal(iglobal_times,stept);
+      SetFrameIndex(iglobal_times,stept);
     }
     return;
   }
@@ -3651,8 +3649,7 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
             iglobal_times += render_skip*FlowDir;
           }
         }
-        SetFrameVal(iglobal_times,stept);
-        SetFrameVal(iglobal_times,stept);
+        SetFrameIndex(iglobal_times,stept);
       }
       if(script_render_flag == 1&&IS_LOADRENDER)iglobal_times = script_itime;
 

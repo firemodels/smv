@@ -1065,7 +1065,7 @@ void ConvertSsf(void){
 /* ------------------ GetTime ------------------------ */
 
 float GetTime(void){
-  if(global_times != NULL)return global_times[CLAMP(iglobal_times,0,nglobal_times)];
+  if(global_times != NULL)return global_times[CLAMP(iglobal_times,0,nglobal_times-1)];
   return 0.0;
 }
 
