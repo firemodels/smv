@@ -74,8 +74,8 @@ win_c_chk   = $(csrc:.c=.winchk)
 win_cpp_chk = $(cppsrc:.cpp=.winchk)
 win_chk     = $(win_c_chk) $(win_cpp_chk)
 
-#CLANGANALYZE=clang --analyze -Xanalyzer -analyzer-checker=core,deadcode
-CLANGANALYZE=clang --analyze
+CLANGANALYZE=clang --analyze -Xanalyzer -analyzer-checker=core,deadcode
+#CLANGANALYZE=clang --analyze
 CLANGSUMMARY=../../scripts/clang_summary.sh
 CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
 
