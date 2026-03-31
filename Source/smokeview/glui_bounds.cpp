@@ -5097,6 +5097,10 @@ extern "C" void GLUIBoundsSetup(int main_window){
     TOGGLE_ROLLOUT(subboundprocinfo, nsubboundprocinfo, ROLLOUT_outputpatchdata, BOUNDARY_OUTPUT_ROLLOUT, glui_bounds);
 
     glui_bounds->add_checkbox_to_panel(ROLLOUT_outputpatchdata, "Output data to file", &output_patchdata);
+#ifdef pp_BNDF_DEBUG
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_outputpatchdata, "Output patch", &glui_output_patch);
+    glui_bounds->add_spinner_to_panel(ROLLOUT_outputpatchdata, "patch index", GLUI_SPINNER_INT, &glui_output_ipatch);
+#endif
 
     PANEL_outputpatchdata = glui_bounds->add_panel_to_panel(ROLLOUT_outputpatchdata, "", GLUI_PANEL_NONE);
 

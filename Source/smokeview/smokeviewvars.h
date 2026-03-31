@@ -150,6 +150,7 @@ SVEXTERN int SVDECL(update_viewpoint_list, 0), SVDECL(update_camera_label, 0);
 SVEXTERN int SVDECL(bf_patch1, 0), SVDECL(bf_patch2, 1), SVDECL(bf_patch3, 1);
 #define NPATCHES_DEBUG 18
 SVEXTERN int bndf_vis_patch[NPATCHES_DEBUG];
+SVEXTERN int SVDECL(glui_output_patch, 0), SVDECL(glui_output_ipatch, 0);
 #endif
 
 #ifdef pp_GLUT_DEBUG
