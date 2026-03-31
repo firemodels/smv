@@ -2735,6 +2735,8 @@ void DrawSmokeFrame(void){
     xyz = smokemesh->boxmiddle_smv;
     Output3Text(foregroundcolor, xyz[0], xyz[1], xyz[2], alabel);
 #endif
+  //  DrawBoxMinMax(smokemesh->boxmin_smv,smokemesh->boxmax_smv,foregroundcolor);
+  //  if(smokemesh->xplt_fds[1] - smokemesh->xplt_fds[0] > 0.2)continue;
 #ifdef pp_GPU
     if(usegpu_local == 1) {
       DrawSmoke3DGPU(smoke3di);
