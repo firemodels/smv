@@ -9,7 +9,7 @@
 
 //*** glui_bounds.cpp headers
 
-EXTERNCPP void SetFrameIndex(int frameval, int stept_arg);
+EXTERNCPP void SetTimeFrameIndex(int frameval, int stept_arg);
 EXTERNCPP void UpdateGluiFrame(int val);
 
 //*** glui_clip.cpp headers
