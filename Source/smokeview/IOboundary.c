@@ -3154,10 +3154,9 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   nn = 0;
   glBegin(GL_TRIANGLES);
 #ifdef pp_BNDF_DEBUG
-  if(bf_patch1==1)for(n = 0;n<patchi->npatches;n++){
-#else
-  for(n = 0;n<patchi->npatches;n++){
+  if(bf_patch1 == 1)
 #endif
+  for(n = 0; n < patchi->npatches; n++){
     int drawit;
     patchfacedata *pfi;
 
@@ -3232,10 +3231,9 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   nn = 0;
   glBegin(GL_TRIANGLES);
 #ifdef pp_BNDF_DEBUG
-  if(bf_patch2==1)for(n = 0;n<patchi->npatches;n++){
-#else
-  for(n = 0;n<patchi->npatches;n++){
+  if(bf_patch2 == 1)
 #endif
+  for(n = 0; n < patchi->npatches; n++){
     int drawit;
     patchfacedata *pfi;
 
@@ -3310,10 +3308,9 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
   nn = 0;
 #ifdef pp_BNDF_DEBUG
-  if(bf_patch1==3)for(n = 0;n<patchi->npatches;n++){
-#else
-  for(n = 0;n<patchi->npatches;n++){
+  if(bf_patch3==1)
 #endif
+  for(n = 0;n<patchi->npatches;n++){
     int drawit;
     patchfacedata *pfi;
 
