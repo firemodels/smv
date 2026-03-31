@@ -394,6 +394,9 @@ SVEXTERN int nplot3dloaded, nsmoke3dloaded, nisoloaded, nsliceloaded, nvsliceloa
 SVEXTERN int npartloaded, npatchloaded, nvolsmoke3dloaded, npart5loaded, npartloaded;
 SVEXTERN int nplot3dvis, nsmoke3dvis, nisovis, nslicevis, nvslicevis;
 SVEXTERN int npatchvis, nvolsmoke3dvis, npart5vis, npartvis;
+#ifdef pp_SPEEDUP
+SVEXTERN int SVDECL(vis_smokemesh, 0);
+#endif
 
 SVEXTERN int SVDECL(nplot3dloaded_old,0),     SVDECL(nsmoke3dloaded_old,0), SVDECL(nisoloaded_old,0);
 SVEXTERN int SVDECL(nsliceloaded_old,0),      SVDECL(nvsliceloaded_old,0),  SVDECL(npatchloaded_old,0);

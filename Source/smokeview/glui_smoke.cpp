@@ -489,8 +489,9 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "max blending", &hrrpuv_max_blending);
   CHECKBOX_smoke_flip    = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "flip background", &background_flip,BACKGROUND_FLIP, GLUISmoke3dCB);
   CHECKBOX_triangle_display_rate = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "triangle display rate", &show_trirates);
-  glui_3dsmoke->add_checkbox_to_panel(
-      PANEL_settings1, "cull hidden meshes", &cull_meshes);
+  glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "cull hidden meshes", &cull_meshes);
+  glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "hide smoke/fire, show mesh", &vis_smokemesh);
+
 
   //---------------------------------------------Slice render settings--------------------------------------------------------------
 
