@@ -55,7 +55,6 @@ void OutputBoundaryData(patchdata *patchi){
   fprintf(csvstream,"time interval:,%f,%f\n",patchout_tmin,patchout_tmax);
   fprintf(csvstream,"region:,%f,%f,%f,%f,%f,%f\n\n",patchout_xmin,patchout_xmax,patchout_ymin,patchout_ymax,patchout_zmin,patchout_zmax);
 
-  vals = meshi->patchval;
   xplt = meshi->xplt_fds;
   yplt = meshi->yplt_fds;
   zplt = meshi->zplt_fds;
@@ -67,7 +66,7 @@ void OutputBoundaryData(patchdata *patchi){
     pt = meshi->patch_times[iframe];
     if(pt<patchout_tmin)continue;
     if(pt>patchout_tmax)break;
-    vals=meshi->patchval + iframe*meshi->npatchsize;
+    vals = meshi->patchval + iframe*meshi->npatchsize;
 
 
     for(ipatch=0;ipatch<patchi->npatches;ipatch++){
