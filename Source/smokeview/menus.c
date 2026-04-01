@@ -8189,7 +8189,9 @@ void InitSubVectorSliceMenuInfo(){
       vd->havez      = 0;
       vd->havexyz    = 0;
       if(si->slice_filetype == SLICE_NODE_CENTER || si->slice_filetype == SLICE_CELL_CENTER
+#ifdef pp_SLFC
         || si->slice_filetype == SLICE_FACE_CENTER
+#endif
         ){
         vd->slicetype = si->slice_filetype-1;
       }
