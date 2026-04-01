@@ -885,12 +885,7 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_framelabel:
      visFramelabel=1-visFramelabel;
-     if(visFramelabel==1){
-       vis_hrr_label=0;
-     }
-    plotstate=GetPlotState(DYNAMIC_PLOTS);
-    UpdateShow();
-    update_times = 1;
+     if(visFramelabel==1)vis_hrr_label=0;
      break;
    case MENU_LABEL_meshlabel:
      visMeshlabel=1-visMeshlabel;
