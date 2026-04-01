@@ -2807,8 +2807,8 @@ GLUI_Spinner *SPINNER_line_contour_num=NULL;
 GLUI_Spinner *SPINNER_line_contour_width=NULL;
 GLUI_Spinner *SPINNER_line_contour_min=NULL;
 GLUI_Spinner *SPINNER_line_contour_max=NULL;
-GLUI_Spinner *SPINNER_timebounds=NULL;
-GLUI_Spinner *SPINNER_framebounds=NULL;
+GLUI_Spinner *SPINNER_timeval=NULL;
+GLUI_Spinner *SPINNER_timeindex=NULL;
 GLUI_Spinner *SPINNER_tload_begin=NULL;
 GLUI_Spinner *SPINNER_tload_end=NULL;
 GLUI_Spinner *SPINNER_tload_skip=NULL;
@@ -4479,43 +4479,11 @@ void GLUISetTimeVal(float timeval){
         UpdateFrameNumber(0);
         UpdateTimeLabels();
         Keyboard('t', FROM_SMOKEVIEW);
-        SPINNER_framebounds->set_int_val(iglobal_times);
+        SPINNER_timeindex->set_int_val(iglobal_times);
         break;
       }
     }
   }
-}
-
-/* ------------------ SetTimeFrameIndexWorker ------------------------ */
-
-void SetTimeFrameIndexWorker(int frameindex, int stept_arg){
-  int changed_frame = 0;
-
-  if(global_times == NULL)return;
-  iglobal_times = CLAMP(frameindex, 0, nglobal_times-1);
-  stept = 1;
-  force_redisplay = 1;
-  UpdateFrameNumber(0);
-  UpdateTimeLabels();
-  stept = stept_arg;
-  //Keyboard('t', FROM_SMOKEVIEW);
-  SPINNER_timebounds->set_float_val(GetTime());
-  if(frameindex != iglobal_times)SPINNER_framebounds->set_int_val(iglobal_times);
-}
-
-/* ------------------ SetTimeFrameIndex ------------------------ */
-
-void SetTimeFrameIndex(int frameindex, int stept_arg){
-  INIT_PRINT_TIMER(frame_timer);
-  SetTimeFrameIndexWorker(frameindex, stept_arg);
-  SetTimeFrameIndexWorker(frameindex, stept_arg);
-  PRINT_TIMER(frame_timer, "SetTimeFrameIndex");
-}
-
-  /* ------------------ UpdateGluiFrame ------------------------ */
-
-void UpdateGluiFrame(int val){
-  if(SPINNER_framebounds!=NULL)SPINNER_framebounds->set_int_val(val);
 }
 
 /* ------------------ TimeBoundCB ------------------------ */
@@ -4524,22 +4492,22 @@ void TimeBoundCB(int var){
 
   updatemenu = 1;
   switch(var){
-  case SET_FRAME:
+  case SET_TIME_FRAME:
     SetTimeFrameIndex(glui_frame,PAUSE_TIME);
     break;
   case PREV_FRAME:
     glui_frame--;
     if(glui_frame<0)glui_frame = nglobal_times-1;
     SetTimeFrameIndex(glui_frame,PAUSE_TIME);
-    SPINNER_framebounds->set_int_val(glui_frame);
+    SPINNER_timeindex->set_int_val(glui_frame);
     break;
   case NEXT_FRAME:
     glui_frame++;
     if(glui_frame>nglobal_times-1)glui_frame=0;
     SetTimeFrameIndex(glui_frame,PAUSE_TIME);
-    SPINNER_framebounds->set_int_val(glui_frame);
+    SPINNER_timeindex->set_int_val(glui_frame);
     break;
-  case SET_TIME:
+  case SET_TIME_VAL:
     GLUISetTimeVal(glui_time);
     GLUISetTimeVal(glui_time);
     break;
@@ -5700,11 +5668,11 @@ extern "C" void GLUIBoundsSetup(int main_window){
   ROLLOUT_time1a = glui_bounds->add_rollout_to_panel(PANEL_loadbounds, "Set time/frame", false, LOAD_TIMESET_ROLLOUT, LoadRolloutCB);
   TOGGLE_ROLLOUT(loadprocinfo, nloadprocinfo, ROLLOUT_time1a, LOAD_TIMESET_ROLLOUT, glui_bounds);
 
-  SPINNER_timebounds = glui_bounds->add_spinner_to_panel(ROLLOUT_time1a, "Time:", GLUI_SPINNER_FLOAT, &glui_time);
-  BUTTON_SETTIME = glui_bounds->add_button_to_panel(ROLLOUT_time1a, "Set time", SET_TIME, TimeBoundCB);
+  SPINNER_timeval = glui_bounds->add_spinner_to_panel(ROLLOUT_time1a, "Time:", GLUI_SPINNER_FLOAT, &glui_time, SET_TIME_VAL, TimeBoundCB);
+  BUTTON_SETTIME = glui_bounds->add_button_to_panel(ROLLOUT_time1a, "Set time", SET_TIME_VAL, TimeBoundCB);
 
-  SPINNER_framebounds = glui_bounds->add_spinner_to_panel(ROLLOUT_time1a, "Frame:", GLUI_SPINNER_INT, &glui_frame);
-  BUTTON_SETFRAME = glui_bounds->add_button_to_panel(ROLLOUT_time1a, "Set frame", SET_FRAME, TimeBoundCB);
+  SPINNER_timeindex = glui_bounds->add_spinner_to_panel(ROLLOUT_time1a, "Frame:", GLUI_SPINNER_INT, &glui_frame, SET_TIME_FRAME, TimeBoundCB);
+  BUTTON_SETFRAME = glui_bounds->add_button_to_panel(ROLLOUT_time1a, "Set frame", SET_TIME_FRAME, TimeBoundCB);
   glui_bounds->add_button_to_panel(ROLLOUT_time1a, "Prev frame", PREV_FRAME, TimeBoundCB);
   glui_bounds->add_button_to_panel(ROLLOUT_time1a, "Next frame", NEXT_FRAME, TimeBoundCB);
 
@@ -7216,11 +7184,21 @@ extern "C" void GLUIUpdatePlot3dDisplay(void){
   if(RADIO_plot3d_display!=NULL)RADIO_plot3d_display->set_int_val(contour_type);
 }
 
+  /* ------------------ GLUIUpdateTime ------------------------ */
+
+void GLUIUpdateTime(void){
+  if(SPINNER_timeval!=NULL)SPINNER_timeval->set_float_val(GetTime());
+  if(SPINNER_timeindex!=NULL)SPINNER_timeindex->set_int_val(iglobal_times);
+}
+
 /* ------------------ GLUIUpdateTimeBounds ------------------------ */
 
 extern "C" void GLUIUpdateTimeBounds(float time_min, float time_max){
-  if(SPINNER_timebounds!=NULL){
-    SPINNER_timebounds->set_float_limits(time_min,time_max);
+  if(SPINNER_timeval!=NULL){
+    SPINNER_timeval->set_float_limits(time_min,time_max);
+  }
+  if(SPINNER_timeindex!=NULL && nglobal_times>0){
+    SPINNER_timeindex->set_int_limits(0,nglobal_times);
   }
 }
 

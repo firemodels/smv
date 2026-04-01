@@ -861,7 +861,6 @@ int TimebarClick(int xm, int ym){
 void UpdateTime(int time){
   if(nglobal_times > 0){
     iglobal_times = time;
-    UpdateGluiFrame(iglobal_times);
     CheckTimeBound();
     IdleCB();
   }
@@ -1649,6 +1648,32 @@ void UpdateGridClip(int flag){
     if(flag==4)visz_all = clipinfo.clip_ymin;
     if(flag==5)visz_all = clipinfo.clip_ymax;
   }
+}
+
+/* ------------------ SetTimeFrameIndexWorker ------------------------ */
+
+void SetTimeFrameIndexWorker(int frameindex, int stept_arg){
+  int changed_frame = 0;
+
+  if(global_times == NULL)return;
+  if(use_tload_begin == 1 && frameindex < 0)frameindex = nglobal_times - 1;
+  if(use_tload_end == 1 && frameindex > nglobal_times - 1)frameindex = 0;
+  iglobal_times = CLAMP(frameindex, 0, nglobal_times - 1);
+  stept = 1;
+  force_redisplay = 1;
+  UpdateFrameNumber(0);
+  UpdateTimeLabels();
+  stept = stept_arg;
+  //Keyboard('t', FROM_SMOKEVIEW);
+}
+
+/* ------------------ SetTimeFrameIndex ------------------------ */
+
+void SetTimeFrameIndex(int frameindex, int stept_arg){
+  INIT_PRINT_TIMER(frame_timer);
+ // SetTimeFrameIndexWorker(frameindex, stept_arg);
+  SetTimeFrameIndexWorker(frameindex, stept_arg);
+  PRINT_TIMER(frame_timer, "SetTimeFrameIndex");
 }
 
 /* ------------------ Keyboard ------------------------ */
@@ -3049,11 +3074,7 @@ void Keyboard(unsigned char key, int flag){
 
   if(plotstate==DYNAMIC_PLOTS){
     if(timebar_drag==0){
-      iglobal_times = iglobal_times + skip_global * FlowDir;
-      if(use_tload_begin == 1 && iglobal_times<0)iglobal_times = nglobal_times-1;
-      if(use_tload_end == 1   && iglobal_times>nglobal_times-1)iglobal_times = 0;
-      iglobal_times = CLAMP(iglobal_times,0, nglobal_times - 1);
-      SetTimeFrameIndex(iglobal_times,stept);
+      SetTimeFrameIndex(iglobal_times + skip_global * FlowDir,stept);
     }
     return;
   }

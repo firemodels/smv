@@ -1921,7 +1921,8 @@ SVEXTERN int minfill, maxfill;
 
 SVEXTERN int SVDECL(*plotiso,NULL);
 
-SVEXTERN int SVDECL(nglobal_times,0), SVDECL(iglobal_times,0), SVDECL(itime_save,-1), SVDECL(itimeold,-999);
+SVEXTERN int SVDECL(nglobal_times,0), SVDECL(itime_save,-1), SVDECL(itimeold,-999);
+SVEXTERN int SVDECL(iglobal_times,0), SVDECL(iglobal_times_last, -1);
 SVEXTERN float SVDECL(*global_times,NULL), SVDECL(*times_buffer, NULL), cputimes[20];
 SVEXTERN int SVDECL(ntimes_buffer, 0);
 

@@ -54,8 +54,8 @@
 #define SET_GLOBAL_BOUNDS 27
 #define PARTSKIP 28
 #define UNLOAD_QDATA 203
-#define SET_TIME 204
-#define SET_FRAME 229
+#define SET_TIME_VAL   204
+#define SET_TIME_FRAME 229
 #define PREV_FRAME 230
 #define NEXT_FRAME 231
 #define TBOUNDS 205

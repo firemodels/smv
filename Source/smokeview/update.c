@@ -2439,6 +2439,10 @@ void UpdateShowScene(void){
     PRINT_TIMER(timer_update_facelists, "UpdateFaceLists");
     END_SHOW_UPDATE(updatefacelists);
   }
+  if(global_times != NULL && iglobal_times != iglobal_times_last){
+    iglobal_times_last = iglobal_times;
+    GLUIUpdateTime();
+  }
 #ifdef pp_SHOW_UPDATE
   if(updating==1){
     printf("update complete\n\n");
