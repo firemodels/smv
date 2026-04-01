@@ -5647,6 +5647,9 @@ extern "C" void GLUIBoundsSetup(int main_window){
     RADIO_filetype = glui_bounds->add_radiogroup_to_panel(PANEL_slice_filetype, &sliceload_filetype);
     glui_bounds->add_radiobutton_to_group(RADIO_filetype, "node centered");
     glui_bounds->add_radiobutton_to_group(RADIO_filetype, "cell centered");
+#ifdef pp_SLFC
+    glui_bounds->add_radiobutton_to_group(RADIO_filetype, "face centered");
+#endif
     LISTBOX_sliceload = glui_bounds->add_listbox_to_panel(PANEL_sliceload_option, "quantity:", &sliceload_boundtype);
     for(i = 0;i < nslicebounds_cpp;i++){
       LISTBOX_sliceload->add_item(i, slicebounds_cpp[i].label);

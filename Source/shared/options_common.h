@@ -11,6 +11,7 @@
 #define _DEFAULT_SOURCE
 #endif
 //#define pp_VCELLUVW           // add add uvw to menu label for CELL U/V/W vector slice files
+//#define pp_SLFC                 // turn on face centered slice files
 
 
 #ifdef __INTEL_COMPILER
