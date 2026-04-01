@@ -3818,9 +3818,12 @@ int ParseSLCFCount(smv_case *scase, int option, bufferstreamdata *stream, char *
       if(FGETS(buffer, 255, stream)==NULL){
         return RETURN_BREAK;
       }
-      if((Match(buffer, "SLCF")==1)||
-        (Match(buffer, "SLCC")==1)||
-        (Match(buffer, "SLCT")==1)||
+      if((Match(buffer, "SLCF")==1) ||
+        (Match(buffer, "SLCC")==1)  ||
+#ifdef pp_SLFC
+        (Match(buffer, "SLFC")==1)  ||
+#endif
+        (Match(buffer, "SLCT")==1)  ||
         (Match(buffer, "BNDS")==1)
         ){
         break;
@@ -3858,6 +3861,9 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   char *slicelabelptr, slicelabel[256], *sliceparms;
   float above_ground_level = 0.0;
   int terrain = 0, cellcenter = 0;
+#ifdef pp_SLFC
+  int facecenter = 0;
+#endif
   int slicegeom = 0;
   int slcf_index = 0;
   char *char_slcf_index;
@@ -3881,9 +3887,12 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
       if(FGETS(buffer, 255, stream)==NULL){
         return RETURN_BREAK;
       }
-      if( (Match(buffer, "SLCF") == 1)  ||
-          (Match(buffer, "SLCC") == 1)  ||
-          (Match(buffer, "SLCT") == 1)  ||
+      if( (Match(buffer, "SLCF") == 1) ||
+          (Match(buffer, "SLCC") == 1) ||
+#ifdef pp_SLFC
+          (Match(buffer, "SLFC") == 1) ||
+#endif
+          (Match(buffer, "SLCT") == 1) ||
           (Match(buffer, "BNDS") == 1)
         ){
         break;
@@ -3936,6 +3945,11 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
     scase->cellcenter_slice_active = 1;
     cellcenter = 1;
   }
+#ifdef pp_SLFC
+  if(Match(buffer, "SLFC")==1){
+    facecenter = 1;
+  }
+#endif
   TrimBack(buffer);
   len = strlen(buffer);
   if(scase->meshescoll.nmeshes>1){
@@ -3989,6 +4003,9 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   sd->n_imap=0;
   sd->n_jmap=0;
   sd->n_kmap=0;
+#ifdef pp_SLFC
+  sd->face_center = facecenter;
+#endif
   sd->cell_center = cellcenter;
   if(slicegeom==1&&cell_center_flag==1)sd->cell_center = 1;
  // sd->file_size = 0;
@@ -4014,6 +4031,11 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   if(cellcenter==1){
     sd->slice_filetype = SLICE_CELL_CENTER;
   }
+#ifdef pp_SLFC
+  if(facecenter == 1){
+    sd->slice_filetype = SLICE_FACE_CENTER;
+  }
+#endif
 
   strcpy(zlib_file, bufferptr);
   strcat(zlib_file, ".svz");
@@ -4101,6 +4123,11 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   else if(sd->slice_filetype==SLICE_CELL_CENTER){
     if(ReadLabels(&sd->label, stream, "(cell centered)")==LABEL_ERR)return RETURN_TWO;
   }
+#ifdef pp_SLFC
+  else if(sd->slice_filetype == SLICE_FACE_CENTER){
+    if(ReadLabels(&sd->label, stream, "(face centered)") == LABEL_ERR)return RETURN_TWO;
+  }
+#endif
   else if(sd->slice_filetype==SLICE_GEOM){
     char geom_label[20];
 
@@ -5316,9 +5343,12 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
 //*** SLCF
 
-    if( (MatchSMV(buffer,"SLCF") == 1)  ||
-        (MatchSMV(buffer,"SLCC") == 1)  ||
-        (MatchSMV(buffer,"SLCT") == 1)  ||
+    if( (MatchSMV(buffer, "SLCF") == 1) ||
+        (MatchSMV(buffer, "SLCC") == 1) ||
+#ifdef pp_SLFC
+        (MatchSMV(buffer, "SLFC") == 1) ||
+#endif
+        (MatchSMV(buffer, "SLCT") == 1) ||
         (MatchSMV(buffer, "BNDS") == 1)
       ){
       int return_val;
@@ -8640,9 +8670,12 @@ typedef struct {
     ++++++++++++++++++++++ SLCF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if( (MatchSMV(buffer,"SLCF") == 1)  ||
-        (MatchSMV(buffer,"SLCC") == 1)  ||
-        (MatchSMV(buffer,"SLCT") == 1)  ||
+    if( (MatchSMV(buffer, "SLCF") == 1) ||
+        (MatchSMV(buffer, "SLCC") == 1) ||
+#ifdef pp_SLFC
+        (MatchSMV(buffer, "SLFC") == 1) ||
+#endif
+        (MatchSMV(buffer, "SLCT") == 1) ||
         (MatchSMV(buffer, "BNDS") == 1)
       ){
       int return_val;

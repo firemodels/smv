@@ -6,8 +6,15 @@
 #define SLICE_UNKNOWN     -1
 #define SLICE_NODE_CENTER 1
 #define SLICE_CELL_CENTER 2
+#ifdef pp_SLFC
+#define SLICE_FACE_CENTER  3
+#endif
 #define SLICE_TERRAIN     4
 #define SLICE_GEOM        6
+
+#define SLICE_NODE_CENTERED 0
+#define SLICE_CELL_CENTERED 1
+#define SLICE_FACE_CENTERED 2
 
 #define CSV_UNDEFINED 0
 #define CSV_DEFINED   1

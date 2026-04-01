@@ -6785,6 +6785,9 @@ void DrawSliceFrame(){
 #endif
         break;
       case SLICE_CELL_CENTER:
+#ifdef pp_SLFC
+      case SLICE_FACE_CENTER:
+#endif
         if(sortslices==0||sd->volslice==1){
           int is2;
 
@@ -8767,6 +8770,9 @@ void SortSlices(void){
 
       if(slicej->loaded == 0 || slicej->blocknumber != i)continue;
       if(slicej->slice_filetype!=SLICE_NODE_CENTER&&
+#ifdef pp_SLFC
+         slicej->slice_filetype != SLICE_FACE_CENTER &&
+#endif
          slicej->slice_filetype!=SLICE_CELL_CENTER)continue;
       if(slicej->volslice == 1){
         int plotx, ploty, plotz;
@@ -8951,6 +8957,9 @@ void DrawSortSlices(void){
         DrawVolSliceTexture(sd, si->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2, si->splitdir);
         break;
       case SLICE_CELL_CENTER:
+#ifdef pp_SLFC
+      case SLICE_FACE_CENTER:
+#endif
         DrawVolSliceCellFaceCenter(sd, si->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2, si->splitdir);
         break;
       default:

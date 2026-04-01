@@ -5405,8 +5405,11 @@ void LoadAllMultiSliceMenu(void){
     if(sliceload_dir == 0 && slicei->idir != 1)continue;
     if(sliceload_dir == 1 && slicei->idir != 2)continue;
     if(sliceload_dir == 2 && slicei->idir != 3)continue;
-    if(sliceload_filetype == 0 && slicei->slice_filetype!=SLICE_NODE_CENTER)continue;
-    if(sliceload_filetype == 1 && slicei->slice_filetype!=SLICE_CELL_CENTER)continue;
+    if(sliceload_filetype == SLICE_NODE_CENTERED && slicei->slice_filetype != SLICE_NODE_CENTER)continue;
+    if(sliceload_filetype == SLICE_CELL_CENTERED && slicei->slice_filetype != SLICE_CELL_CENTER)continue;
+#ifdef pp_SLFC
+    if(sliceload_filetype == SLICE_FACE_CENTERED && slicei->slice_filetype != SLICE_FACE_CENTER)continue;
+#endif
     if(strcmp(label, slicei->label.shortlabel) != 0)continue;
     LoadMultiSliceMenu(i);
   }
@@ -5431,8 +5434,12 @@ void LoadAllMultiVSliceMenu(void){
     if(sliceload_dir == 0 && slicei->idir != 1)continue;
     if(sliceload_dir == 1 && slicei->idir != 2)continue;
     if(sliceload_dir == 2 && slicei->idir != 3)continue;
-    if(sliceload_filetype == 0 && slicei->slice_filetype!=SLICE_NODE_CENTER)continue;
-    if(sliceload_filetype == 1 && slicei->slice_filetype!=SLICE_CELL_CENTER)continue;
+
+    if(sliceload_filetype == SLICE_NODE_CENTERED && slicei->slice_filetype!=SLICE_NODE_CENTER)continue;
+    if(sliceload_filetype == SLICE_CELL_CENTERED && slicei->slice_filetype!=SLICE_CELL_CENTER)continue;
+#ifdef pp_SLFC
+    if(sliceload_filetype == SLICE_FACE_CENTERED && slicei->slice_filetype != SLICE_FACE_CENTER)continue;
+#endif
     if(strcmp(label, slicei->label.shortlabel) != 0)continue;
     LoadMultiVSliceMenu(i);
   }
@@ -8107,7 +8114,11 @@ void InitSubSliceMenuInfo(){
       si->havey      = 0;
       si->havez      = 0;
       si->havexyz    = 0;
-      if(sd->slice_filetype == SLICE_NODE_CENTER || sd->slice_filetype == SLICE_CELL_CENTER){
+      if(sd->slice_filetype == SLICE_NODE_CENTER || sd->slice_filetype == SLICE_CELL_CENTER
+#ifdef pp_SLFC
+         || sd->slice_filetype == SLICE_FACE_CENTER
+#endif
+        ){
         si->slicetype = sd->slice_filetype-1;
       }
       else{
@@ -8172,7 +8183,11 @@ void InitSubVectorSliceMenuInfo(){
       vd->havey      = 0;
       vd->havez      = 0;
       vd->havexyz    = 0;
-      if(si->slice_filetype == SLICE_NODE_CENTER || si->slice_filetype == SLICE_CELL_CENTER){
+      if(si->slice_filetype == SLICE_NODE_CENTER || si->slice_filetype == SLICE_CELL_CENTER
+#ifdef pp_SLFC
+        || si->slice_filetype == SLICE_FACE_CENTER
+#endif
+        ){
         vd->slicetype = si->slice_filetype-1;
       }
       else{

@@ -1473,7 +1473,7 @@ SVEXTERN int SVDECL(n_devices,0);
 SVEXTERN float SVDECL(*globalmin_part, NULL), SVDECL(*globalmax_part, NULL);
 
 SVEXTERN int SVDECL(sliceload_boundtype, 0);
-SVEXTERN int SVDECL(sliceload_filetype, 0);
+SVEXTERN int SVDECL(sliceload_filetype, SLICE_NODE_CENTERED);
 SVEXTERN int SVDECL(sliceload_dir,0);
 SVEXTERN int SVDECL(sliceload_isvector, 0);
 
