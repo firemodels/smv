@@ -3049,7 +3049,10 @@ void Keyboard(unsigned char key, int flag){
 
   if(plotstate==DYNAMIC_PLOTS){
     if(timebar_drag==0){
-      iglobal_times = CLAMP(iglobal_times + skip_global * FlowDir,0, nglobal_times - 1);
+      iglobal_times = iglobal_times + skip_global * FlowDir;
+      if(use_tload_begin == 1 && iglobal_times<0)iglobal_times = nglobal_times-1;
+      if(use_tload_end == 1   && iglobal_times>nglobal_times-1)iglobal_times = 0;
+      iglobal_times = CLAMP(iglobal_times,0, nglobal_times - 1);
       SetTimeFrameIndex(iglobal_times,stept);
     }
     return;
