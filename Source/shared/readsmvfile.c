@@ -4865,7 +4865,11 @@ int HaveSmoke3D(bufferstreamdata *stream){
     }
     TrimBack(buffer);
     if(strncmp(buffer, " ", 1) == 0 || buffer[0] == 0)continue;
-    if(MatchSMV(buffer,"SMOKE3D") == 1 || MatchSMV(buffer,"SMOKF3D") == 1 || MatchSMV(buffer, "SMOKG3D") == 1){
+    if(
+      MatchSMV(buffer,"SMOKE3D") == 1 || 
+      MatchSMV(buffer,"SMOKF3D") == 1 || 
+      MatchSMV(buffer, "SMOKG3D") == 1
+      ){
       rewind_buffer(stream->fileinfo);
       return 1;
       }
