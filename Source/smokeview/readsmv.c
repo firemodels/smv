@@ -8127,14 +8127,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", visDummyVents);
   fprintf(fileout, "SHOWFLOOR\n");
   fprintf(fileout, " %i\n", global_scase.visFloor);
-  if(outline_mode == SCENE_OUTLINE_HIDDEN){
-    fprintf(fileout, "SHOWFRAME\n");
-    fprintf(fileout, " 0\n");
-  }
-  else{
-    fprintf(fileout, "SHOWFRAME\n");
-    fprintf(fileout, " 1\n");
-  }
   fprintf(fileout, "SHOWFRAMELABEL\n");
   fprintf(fileout, " %i\n", visFramelabel);
   fprintf(fileout, "SHOWFRAMETIMELABEL\n");

@@ -61,7 +61,6 @@
 \newcommand{\elist}{\end{list}}
 \newcommand{\loadmenu}{\fbox{\ct Load/Unload}}
 \newcommand{\hitem}[1]{\item[{\bf #1} \hfill]}
-\newcommand{\hitemNULL}[1]{}
 \newcommand{\hhitem}[2]{\item[{\bf #1}\ ({\em #2}) \hfill]}
 
 \addbibresource{../../../fds/Manuals/Bibliography/FDS_refs.bib}
@@ -2621,8 +2620,7 @@ The W key is used to toggle clipping plane modes (turned off, clip only geometry
 \chapter{Creating Custom Objects}
 \label{chap:devices}\ Smokeview visualizes FDS devices such as heat
 and smoke detectors using instructions found in a file named {\tt
-objects.svo}. Smokeview also uses these instructions to represent
-people (avatars) in FDS-EVAC simulations and to represent trees
+objects.svo}. Smokeview also uses these instructions to represent trees
 and shrubs in FDS WUI simulations. The Smokeview implementation of
 FDS devices is referred to as objects in this chapter.
 
@@ -4365,10 +4363,10 @@ Usage:
 \end{lstlisting}
 
 %%+++++++++++++++++++++++
-\hitemssfN{SETCBARLAB}
+%ssfkw SETCBARLAB}
 
 %%+++++++++++++++++++++++
-\hitemssfN{SETCBARRGB}
+%ssfkw SETCBARRGB}
 
 \elist
 
@@ -6417,6 +6415,7 @@ overridden by using the -bindir command line option, for example
 \item a file named casename.ini in the current directory, the directory where the case is located.
 \item a file named casename.ini in \$HOME/.smokeview if the current directory is not writable.
 This could occur if one does not {\em own}\ the directory containing the case.
+For example if you are running the case in someone elses directory space.
 \end{enumerate}
 
 The {\tt casename.ini}\ file may be created by selecting the {\tt Save settings to casename.ini}\ menu item.
@@ -6425,69 +6424,71 @@ This file may be used to change default smokeview settings by copying it
 to the installation directory.
 
 All configuration file parameters unless otherwise noted consist of a {\tt KEYWORD}
-followed by a value, as in:
+followed by one or more values, as in:
 \begin{lstlisting}
 KEYWORD
  value
 \end{lstlisting}
-\ Keywords begin in the first column.  Each data line that follow is preprended by at least one space. Descriptions of many of the .ini keywords follow.
+\ Keywords begin in the first column.
+Each data line that follow is preprended by at least one space.
+Descriptions of many of the .ini keywords follow.
 
 %%\subsection{Miscellaneous Settings}
-\hiteminiN{CACHE_DATA}
-\hiteminiN{GVERSION}
-\hiteminiN{INPUT_FILE}
-\hiteminiN{LABEL}
-\hiteminiN{LABELSTARTUPVIEW}
-\hiteminiN{MESHOFFSET}
-\hiteminiN{NORTHANGLE}
-\hiteminiN{OFFSETSLICE}
-\hiteminiN{OUTLINEMODE}
-\hiteminiN{RENDERCLIP}
-\hiteminiN{RENDERFILELABEL}
-\hiteminiN{SCALEDFONT}
-\hiteminiN{SENSORNORMCOLOR}
-\hiteminiN{SKYBOX}
-\hiteminiN{SPEED}
-\hiteminiN{SPHERESEGS}
-\hiteminiN{STARTUPLANG}
-\hiteminiN{STEREO}
-\hiteminiN{SURFCOLORS}
-\hiteminiN{TICKLABEL}
-\hiteminiN{TICKLINEWIDTH}
-\hiteminiN{TICKS}
-\hiteminiN{TOUR_AVATAR}
-\hiteminiN{TOURCIRCLE}
-\hiteminiN{TOURINDEX}
-\hiteminiN{TRAINERMODE}
-\hiteminiN{TRAINERVIEW}
-\hiteminiN{TREECOLORS}
-\hiteminiN{TREEPARMS}
-\hiteminiN{USENEWDRAWFACE}
-\hiteminiN{ZAXISANGLES}
-\hiteminiN{ZIPSTEP}
-\hiteminiN{ONEVIEW}
+%inikw CACHE_DATA}
+%inikw GVERSION}
+%inikw INPUT_FILE}
+%inikw LABEL}
+%inikw LABELSTARTUPVIEW}
+%inikw MESHOFFSET}
+%inikw NORTHANGLE}
+%inikw OFFSETSLICE}
+%inikw OUTLINEMODE}
+%inikw RENDERCLIP}
+%inikw RENDERFILELABEL}
+%inikw SCALEDFONT}
+%inikw SENSORNORMCOLOR}
+%inikw SKYBOX}
+%inikw SPEED}
+%inikw SPHERESEGS}
+%inikw STARTUPLANG}
+%inikw STEREO}
+%inikw SURFCOLORS}
+%inikw TICKLABEL}
+%inikw TICKLINEWIDTH}
+%inikw TICKS}
+%inikw TOUR_AVATAR}
+%inikw TOURCIRCLE}
+%inikw TOURINDEX}
+%inikw TRAINERMODE}
+%inikw TRAINERVIEW}
+%inikw TREECOLORS}
+%inikw TREEPARMS}
+%inikw USENEWDRAWFACE}
+%inikw ZAXISANGLES}
+%inikw ZIPSTEP}
+%inikw ONEVIEW}
 
 
 %%\subsection{Device Settings}
-\hiteminiN{DEVICEBOUNDS}
-\hiteminiN{DEVICENORMLENGTH}
-\hiteminiN{DEVICEORIENTATION}
-\hiteminiN{DEVICEVECTORDIMENSIONS}
-\hiteminiN{WINDROSEDEVICE}
-\hiteminiN{WINDROSEMERGE}
-\hiteminiN{WINDROSESHOWHIDE}
-\hiteminiN{BEAM}
+%inikw DEVICEBOUNDS}
+%inikw DEVICENORMLENGTH}
+%inikw DEVICEORIENTATION}
+%inikw DEVICEVECTORDIMENSIONS}
+%inikw WINDROSEDEVICE}
+%inikw WINDROSEMERGE}
+%inikw WINDROSESHOWHIDE}
+%inikw BEAM}
 
 %%subsection{Visibility Settings}
-\hiteminiN{FRAMERATE}
-\hiteminiN{APERATURE}
-\hiteminiN{GRIDPARMS}
-\hiteminiN{MESHVIS}
-\hiteminiN{USER_ROTATE}
-\hiteminiN{USERTICKS}
-\hiteminiN{VIEWPOINT6}
-\hiteminiN{MOVIEFILETYPE}
-\hiteminiN{MOVIEPARMS}
+%inikw FRAMERATE}
+%inikw APERATURE}
+%inikw GRIDPARMS}
+%inikw MESHVIS}
+%inikw USER_ROTATE}
+%inikw USERTICKS}
+%inikw VIEWPOINT6}
+%inikw MOVIEFILETYPE}
+%inikw MOVIEPARMS}
 
 %%-----------------------------------------------------------------------
 \subsection{Color and lighting}
@@ -6499,29 +6500,29 @@ lightest shade.  For example the 3-tuple 1.0 0.0 0.0 is bright red, 0.0 0.0 0.0 
 1.0 1.0 1.0 is white.
 
 
-\hiteminiN{BLOCKSHININESS}
-\hiteminiN{BLOCKSPECULAR}
-\hiteminiN{BACKGROUNDCOLOR}
-\hiteminiN{BLENDMODE}
-\hiteminiN{CO2COLOR}
-\hiteminiN{CO2COLORMAP}
-\hiteminiN{COLORBARFLIP}
-\hiteminiN{COLORBAR_SPLIT}
-\hiteminiN{COLORBARTYPE}
-\hiteminiN{COLORTABLE}
-\hiteminiN{DIRECTIONCOLOR}
-\hiteminiN{ENABLETEXTURELIGHTING}
-\hiteminiN{EXTREMECOLORS}
-\hiteminiN{LIGHTANGLES0}
-\hiteminiN{LIGHTANGLES1}
-\hiteminiN{LIGHTFACES}
-\hiteminiN{LIGHTING}
-\hiteminiN{LIGHTPROP}
-\hiteminiN{VECTORCOLOR}
+%inikw BLOCKSHININESS}
+%inikw BLOCKSPECULAR}
+%inikw BACKGROUNDCOLOR}
+%inikw BLENDMODE}
+%inikw CO2COLOR}
+%inikw CO2COLORMAP}
+%inikw COLORBARFLIP}
+%inikw COLORBAR_SPLIT}
+%inikw COLORBARTYPE}
+%inikw COLORTABLE}
+%inikw DIRECTIONCOLOR}
+%inikw ENABLETEXTURELIGHTING}
+%inikw EXTREMECOLORS}
+%inikw LIGHTANGLES0}
+%inikw LIGHTANGLES1}
+%inikw LIGHTFACES}
+%inikw LIGHTING}
+%inikw LIGHTPROP}
+%inikw VECTORCOLOR}
 
 \blist
 
-\hitem{BACKGROUNDCOLOR}Sets the color used to visualize
+\hitemini{BACKGROUNDCOLOR}Sets the color used to visualize
 the scene background.
 (default: {\tt 0.0 0.0 0.0})
 
@@ -6574,7 +6575,7 @@ the character string after the {\tt ``:''}\ are ignored.
 \hitemini{COLORBAR\_FLIP}\ Specifies whether the colorbar is flipped (1) or not flipped (0)
 (default: {\tt 0}).
 
-\hitemNULL{DIRECTIONCOLOR}
+%smvkw DIRECTIONCOLOR}
 \hitemini{FLIP}\ Specifies whether to flip (1) or not to flip (0) the foreground and background
 colors.  By default the background color is black and the foreground color
 is white.  Setting FLIP to 1 has the effect of having a white background and black foreground.
@@ -6634,10 +6635,10 @@ displayed in frame 0).
 \subsection{Size}
 The parameters described in this section allow one to customize
 the size of various Smokeview scene elements. \blist
-\hiteminiN{GRIDLINEWIDTH}
-\hiteminiN{VECTORLINEWIDTH}
+%inikw GRIDLINEWIDTH}
+%inikw VECTORLINEWIDTH}
 
-\hitemNULL{GRIDLINEWIDTH}
+%smvkw GRIDLINEWIDTH}
 \hitemini{ISOLINEWIDTH}Defines the width in pixels
 of lines used to draw animated iso-surfaces in outline mode.
 (default: $2.0$)
@@ -6666,7 +6667,7 @@ of Plot3D iso-surface particles.
 by Smokeview using the same units as used to specify the grid coordinates.
 (default: $0.038$)
 
-\hitemNULL{SENSORRELSIZE}
+%smvkw SENSORRELSIZE}
 
 \hitemini{SLICEOFFSET}Defines an offset
 distance\footnote{distance is relative to the maximum grid cell width}
@@ -6676,7 +6677,7 @@ animated slices are drawn from adjacent solid surfaces.
 \hitemini{SMOOTHLINES}Specifies whether lines should be drawn (1) or not drawn (0) using
 anti-aliasing  (default: {\tt 1}).
 
-\hitemNULL{SPHERESEGS}
+%smvkw SPHERESEGS}
 
 \hitemini{SPRINKLERABSSIZE}Defines the sprinkler size drawn
 by Smokeview using the same units as used to specify the grid coordinates.
@@ -6685,14 +6686,14 @@ by Smokeview using the same units as used to specify the grid coordinates.
 \hitemini{STREAKLINEWIDTH}Defines the width of a streak line.
 (default: $1.0$)
 
-\hitemNULL{VECCONTOURS}
+%smvkw VECCONTOURS}
 
 \hitemini{VECLENGTH}Defines the length of Plot3D vectors. A vector
 length of $1.0$ fills one grid cell.  Vector lengths may also be
 changed from within Smokeview by depressing the ``{\tt a}'' key.
 (default: $4.0$)
 
-\hitemNULL{VECTORLINEWIDTH}
+%smvkw VECTORLINEWIDTH}
 
 \hitemini{VECTORPOINTSIZE}Defines the size in pixels of the point
 that is drawn at the end of a Plot3D vector. (default: $3.0$)
@@ -6725,7 +6726,7 @@ GEOMAXIS
   length (float) width (float)
 \end{lstlisting}
 
-\hiteminiN{GEOMBOUNDARYPROPS}This keyword specifies how the geometry is drawn. Usage:
+%inikw GEOMBOUNDARYPROPS}This keyword specifies how the geometry is drawn. Usage:
 
 \begin{lstlisting}
 GEOMBOUNDARYPROPS
@@ -6735,34 +6736,34 @@ where geometry is drawn as a solid shaded surface if {\tt show\_boundary\_shaded
 if {\tt show\_boundary\_outline}\ or {\tt show\_boundary\_points}\ are 1. Geometry outline line width and point size are specified as positive
 floating numbers using {\tt geomboundary\_linewidth}\ and {\tt geomboundary\_pointsize}.
 \
-\hiteminiN{GEOMCELLPROPS}
+%inikw GEOMCELLPROPS}
 
-\hiteminiN{GEOMDOMAIN}Specifies whether geometry is drawn inside the domain and outside the domain. Usage:
+%inikw GEOMDOMAIN}Specifies whether geometry is drawn inside the domain and outside the domain. Usage:
 \begin{lstlisting}
 GEOMDOMAIN
   inside_domain (0/1)  outside_domain (0/1)
 \end{lstlisting}
 
-\hiteminiN{SHOWGEOMTERRAIN}
-\hiteminiN{GEOMSELECTCOLOR}
-\hiteminiN{GEOMSHOW}
-\hiteminiN{SHOWTRIANGLECOUNT}
-\hiteminiN{SHOWTRIANGLES}
-\hiteminiN{SHOWTETRAS}
+%inikw SHOWGEOMTERRAIN}
+%inikw GEOMSELECTCOLOR}
+%inikw GEOMSHOW}
+%inikw SHOWTRIANGLECOUNT}
+%inikw SHOWTRIANGLES}
+%inikw SHOWTETRAS}
 \elist
 
 %%-----------------------------------------------------------------------
 \subsection{2D Plot Settings}
-\hiteminiN{SHOWDEVICEPLOTS}
-\hiteminiN{SHOWGENPLOTS}
-\hiteminiN{GENPLOTLABELS}
-\hiteminiN{SHOWHRRPLOT}
-\hiteminiN{SHOWSLICEPLOT}
+%inikw SHOWDEVICEPLOTS}
+%inikw SHOWGENPLOTS}
+%inikw GENPLOTLABELS}
+%inikw SHOWHRRPLOT}
+%inikw SHOWSLICEPLOT}
 
 %%-----------------------------------------------------------------------
 \subsection{Visibility Settings}
 \blist
-\hiteminiN{SHOOTER}
+%inikw SHOOTER}
 \hitemini{SHOWAVATAR}Specifies whether to show an avatar.
 \begin{lstlisting}
 SHOWAVATAR
@@ -6775,7 +6776,7 @@ SHOWAVATAR
   bounds_each_mesh (0/1) show_bound_diffs (0/1)
 \end{lstlisting}
 
-\hiteminiN{SHOWCADOPAQUE}
+%inikw SHOWCADOPAQUE}
 
 \hitemini{SHOWCHID}When drawing the title, specify whether the CHID is drawn.
 \begin{lstlisting}
@@ -6790,96 +6791,94 @@ SHOWAVATAR
 \end{lstlisting}
 
 
-\hiteminiN{SHOWDEVICES}
-\hiteminiN{SHOWDEVICEVALS}
-\hiteminiN{SHOWEVACSLICES}
-\hiteminiN{SHOWFEDAREA}
-\hiteminiN{SHOWFIRECUTOFF}
-\hiteminiN{SHOWFRAMETIMELABEL}
-\hiteminiN{SHOWGRAVVECTOR}
-\hiteminiN{SHOWGRID}
-\hiteminiN{SHOWHRRLABEL}
-\hiteminiN{SHOWMISSINGOBJECTS}
-\hiteminiN{SHOWOTHERVENTS}
-\hiteminiN{SHOWROOMS}
-\hiteminiN{SHOWSLICEVALS}
-\hiteminiN{SHOWSZONE}
-\hiteminiN{SHOWTARGETS}
-\hiteminiN{SHOWTHRESHOLD}
-\hiteminiN{SHOWTRACERSALWAYS}
-\hiteminiN{SHOWTRANSPARENT}
-\hiteminiN{SHOWVENTFLOW}
-\hiteminiN{SHOWZONEFIRE}
+%inikw SHOWDEVICES}
+%inikw SHOWDEVICEVALS}
+%inikw SHOWEVACSLICES}
+%inikw SHOWFEDAREA}
+%inikw SHOWFIRECUTOFF}
+%inikw SHOWFRAMETIMELABEL}
+%inikw SHOWGRAVVECTOR}
+%inikw SHOWGRID}
+%inikw SHOWHRRLABEL}
+%inikw SHOWMISSINGOBJECTS}
+%inikw SHOWOTHERVENTS}
+%inikw SHOWROOMS}
+%inikw SHOWSLICEVALS}
+%inikw SHOWSZONE}
+%inikw SHOWTARGETS}
+%inikw SHOWTHRESHOLD}
+%inikw SHOWTRACERSALWAYS}
+%inikw SHOWTRANSPARENT}
+%inikw SHOWVENTFLOW}
+%inikw SHOWZONEFIRE}
 \elist
 
 
 %%-----------------------------------------------------------------------
 %%\subsection{Data Settings}
-\hiteminiN{FREEZEVOLSMOKE}
-\hiteminiN{AVATAREVAC}
-\hiteminiN{HRRPUVCUTOFF}
-\hiteminiN{FED}
-\hiteminiN{FEDCOLORBAR}
-\hiteminiN{FIRECOLORMAP}
-\hiteminiN{P3CONT3DSMOOTH}
-\hiteminiN{PART5COLOR}
-\hiteminiN{PART5PROPDISP}
-\hiteminiN{PARTAUTO}
-\hiteminiN{partclassdataVIS}
-\hiteminiN{PARTFAST}
-\hiteminiN{PATCHAUTO}
-\hiteminiN{PATCHDATAOUT}
-\hiteminiN{PERCENTILEMODE}
-\hiteminiN{PLOT2DHRRBOUNDS}
-\hiteminiN{PLOT3DAUTO}
-\hiteminiN{PROPINDEX}
-\hiteminiN{SMOKE3DCUTOFFS}
-\hiteminiN{SMOKEALBEDO}
-\hiteminiN{SMOKECOLOR}
-\hiteminiN{SMOKEFIREPROP}
-\hiteminiN{SMOKELOAD}
-\hiteminiN{SMOKEPROP}
-\hiteminiN{RESEARCHMODE}
-\hiteminiN{S3DAUTO}
-\hiteminiN{UNITCLASSES}
-\hiteminiN{UNLOAD_QDATA}
-\hiteminiN{BOUNDARYMESH}
-\hiteminiN{BOUNDARYTWOSIDE}
-\hiteminiN{CELLCENTERTEXT}
-\hiteminiN{GSLICEPARMS}
-\hiteminiN{GVECDOWN}
-\hiteminiN{HISTOGRAM}
-\hiteminiN{LOADFILESATSTARTUP}
-\hiteminiN{SLICEAUTO}
-\hiteminiN{SLICEAVERAGE}
-\hiteminiN{SLICEDUP}
-\hiteminiN{SLICESKIP}
-\hiteminiN{SMOKESENSORS}
-\hiteminiN{MSLICEAUTO}
-\hiteminiN{VECCONTOURS}
-\hiteminiN{VISBOUNDARYTYPE}
-\hiteminiN{CONTOURTYPE}
-\hiteminiN{ISOAUTO}
-\hiteminiN{LOADINC}
-\hiteminiN{SKIPEMBEDSLICE}
+%inikw FREEZEVOLSMOKE}
+%inikw AVATAREVAC}
+%inikw HRRPUVCUTOFF}
+%inikw FED}
+%inikw FEDCOLORBAR}
+%inikw FIRECOLORMAP}
+%inikw P3CONT3DSMOOTH}
+%inikw PART5COLOR}
+%inikw PART5PROPDISP}
+%inikw PARTAUTO}
+%inikw partclassdataVIS}
+%inikw PARTFAST}
+%inikw PATCHAUTO}
+%inikw PATCHDATAOUT}
+%inikw PERCENTILEMODE}
+%inikw PLOT2DHRRBOUNDS}
+%inikw PLOT3DAUTO}
+%inikw PROPINDEX}
+%inikw SMOKE3DCUTOFFS}
+%inikw SMOKEALBEDO}
+%inikw SMOKECOLOR}
+%inikw SMOKEFIREPROP}
+%inikw SMOKELOAD}
+%inikw SMOKEPROP}
+%inikw RESEARCHMODE}
+%inikw S3DAUTO}
+%inikw UNITCLASSES}
+%inikw UNLOAD_QDATA}
+%inikw BOUNDARYMESH}
+%inikw BOUNDARYTWOSIDE}
+%inikw CELLCENTERTEXT}
+%inikw GSLICEPARMS}
+%inikw GVECDOWN}
+%inikw HISTOGRAM}
+%inikw LOADFILESATSTARTUP}
+%inikw SLICEAUTO}
+%inikw SLICEAVERAGE}
+%inikw SLICEDUP}
+%inikw SLICESKIP}
+%inikw SMOKESENSORS}
+%inikw MSLICEAUTO}
+%inikw VECCONTOURS}
+%inikw VISBOUNDARYTYPE}
+%inikw CONTOURTYPE}
+%inikw ISOAUTO}
+%inikw LOADINC}
+%inikw SKIPEMBEDSLICE}
 
 %%-----------------------------------------------------------------------
 \subsection{Time and data bounds}
-\hiteminiN{C_ISO}
-\hiteminiN{V_ISO}
-\hiteminiN{VOLSMOKE}
-\hiteminiN{V_PARTICLES}
-\hiteminiN{V_PLOT3D}
-\hiteminiN{V_SLICE}
-\hiteminiN{VSLICEAUTO}
-\hiteminiN{V_TARGET}
-\hiteminiN{V_ZONE}
-\hiteminiN{V2_BOUNDARY}
-\hiteminiN{V2_PARTICLES}
-\hiteminiN{V2_SLICE}
-\hiteminiN{V_BOUNDARY}
-
-
+%inikw C_ISO}
+%inikw V_ISO}
+%inikw VOLSMOKE}
+%inikw V_PARTICLES}
+%inikw V_PLOT3D}
+%inikw V_SLICE}
+%inikw VSLICEAUTO}
+%inikw V_TARGET}
+%inikw V_ZONE}
+%inikw V2_BOUNDARY}
+%inikw V2_PARTICLES}
+%inikw V2_SLICE}
+%inikw V_BOUNDARY}
 
 \label{section:timedatabounds}
 This section describes the ini file keywords used by Smokeview:
@@ -6954,9 +6953,9 @@ Smokeview colorbar, for example {\tt temp}\ for the quantity {\tt TEMPERATURE}.
 This parameter is optional.  If it is not blank then {\tt setvalmin, valmin, setvalmax}\ and {\tt valmax}\
 are applied to filetype files with quantity {\tt quantity\_label}.
 If it is blank then these parameters are applied to all filetype files.
-Possible values of {\tt quantity\_label}\ are given in Table \ref{tabBNDF} for the {\tt V2\_BOUNDBOUNDS}\ ini keyword and
-Table \ref{tabSLCF} for the {\tt V2\_SLICEBOUNDS}\ ini keyword. The {\tt quantity\_label}\ label
-is also found in the .smv file.
+%Possible values of {\tt quantity\_label}\ are given in Table \ref{tabBNDF} for the {\tt V2\_BOUNDBOUNDS}\ ini keyword and
+%Table \ref{tabSLCF} for the {\tt V2\_SLICEBOUNDS}\ ini keyword. The {\tt quantity\_label}\ label
+%is also found in the .smv file.
 }\\
 \hline
 
@@ -7008,23 +7007,20 @@ C_SLICE
   1 70. 1 200. temp
 \end{lstlisting}
 
-\hitemNULL{CACHE\_BOUNDARYDATA}
+%smvkw CACHE\_BOUNDARYDATA}
 
-\hitemNULL{CACHE\_QDATA}
+%smvkw CACHE\_QDATA}
 
-\hitemNULL{PATCHDATAOUT}
-
-\hitemini{PERCENTILELEVEL} Defines the minimum and maximum percentile levels for setting data bounds.
-The defaults are 0.01 for the minimum level and 0.99 for maximum level.
+%smvkw PATCHDATAOUT}
 
 \begin{lstlisting}
 PERCENTILLEVEL
  min_level max_level
 \end{lstlisting}
 
-\hitemNULL{SLICEDATAOUT}
+%smvkw SLICEDATAOUT}
 
-\hitemNULL{TIMEOFFSET}
+%smvkw TIMEOFFSET}
 
 \hitemini{TLOAD}\ Defines the minimum and maximum time used to
 load data in a visualization and to also skip data.
@@ -7045,9 +7041,9 @@ TLOAD
  1 10. 1 50. 1 3
 \end{lstlisting}
 
-\hitemini{V2\_BOUNDARY, V2\_PARTICLES, V2\_SLICE}Defines the minimum and maximum
-data bounds used for converting boundary, particle or slice file data values to color indices.
-The format of these keyword is
+\hitemini{V2\_BOUNDARY}Defines the minimum and maximum
+data bounds used for converting boundary file data values to color indices.
+The format of this keyword is
 \begin{lstlisting}
 V2_BOUNDARY
  setvalmin valmin setvalmax valmax quantity_label
@@ -7055,14 +7051,12 @@ V2_BOUNDARY
 where the parameters
 {\tt setvalmin}, {\tt valmin}, {\tt setvalmax}, {\tt valmax}\ and {\tt quantity\_label}.
 are described in Table \ref{tabV2bounds}.
-The format of the {\tt V2\_PARTICLES}\ and {\tt V2\_SLICE}\ keywords is the same.
 The parameter {\tt quantity\_label}\ is optional.  If it is blank then the bound
-parameters are applied to all boundary, particle or slice files.
+parameters are applied to all boundary files.
 If it is not blank they
-are applied to only boundary, particle or slice files with quantity {\tt quantity\_label}.
-Possible quantity labels are given in Table \ref{tabBNDF} for boundary files and Table \ref{tabSLCF} or slice files.
-Quantity labels may also be found in the .smv file for those quantities used
-on a {\tt \&BNDF, \&PART}\ or {\tt \&SLCF}\ namelists in the FDS input file.
+are applied to only boundary files with quantity {\tt quantity\_label}.
+Quantity labels may be found in the .smv file for those quantities used
+on a {\tt \&BNDF}\ namelist in the FDS input file.
 
 To specify boundary file bounds for temperature ranging from\
 30.0~\degC\ to 600.0~\degC\ use:
@@ -7072,6 +7066,24 @@ V2_BOUNDARY
 \end{lstlisting}
 where {\tt temp}\ is the Smokeview colorbar label displayed when
 showing a temperature boundary file.
+
+\hitemini{V2\_PARTICLES}Defines the minimum and maximum
+data bounds used for converting particle file data values to color indices.
+The format of this keyword is
+\begin{lstlisting}
+V2_PARTICLE
+ setvalmin valmin setvalmax valmax quantity_label
+\end{lstlisting}
+where the parameters
+{\tt setvalmin}, {\tt valmin}, {\tt setvalmax}, {\tt valmax}\ and {\tt quantity\_label}.
+are described in Table \ref{tabV2bounds}.
+The parameter {\tt quantity\_label}\ is optional.  If it is blank then the bound
+parameters are applied to all particle files.
+If it is not blank they
+are applied to only particle files with quantity {\tt quantity\_label}.
+Quantity labels may be found in the .smv file for those quantities used
+on a {\tt \&PART}\ namelists in the FDS input file.
+
 To specify particle file bounds for the U component of velocity ranging from
 -1.0~m/s to 2.0~m/s use:
 \begin{lstlisting}
@@ -7080,6 +7092,25 @@ V2_PARTICLES
 \end{lstlisting}
 where {\tt u}\ is the Smokeview colorbar labels displayed when
 showing the particle file and the U component of velocity.
+
+\hitemini{V2\_SLICE}Defines the minimum and maximum
+data bounds used for converting slice file data values to color indices.
+The format of this keyword is
+\begin{lstlisting}
+V2_SLICE
+ setvalmin valmin setvalmax valmax quantity_label
+\end{lstlisting}
+where the parameters
+{\tt setvalmin}, {\tt valmin}, {\tt setvalmax}, {\tt valmax}\ and {\tt quantity\_label}.
+are described in Table \ref{tabV2bounds}.
+The format of the {\tt V2\_SLICE}\ keywords is the same.
+The parameter {\tt quantity\_label}\ is optional.  If it is blank then the bound
+parameters are applied to all slice files.
+If it is not blank then it is
+applied to only slice files with quantity {\tt quantity\_label}.
+Quantity labels may be found in the .smv file for those quantities used
+on a {\tt \&SLCF}\ namelists in the FDS input file.
+
 To specify slice file bounds for temperature ranging from
 30.0~\degC\ to 600.0~\degC\ use:
 \begin{lstlisting}
@@ -7094,10 +7125,6 @@ To specify slice file bounds for a minimum temperature of
 V2_SLICE
 0 30.000000 2 1.0 temp
 \end{lstlisting}
-
-\input{BNDFlabels.tex}
-
-\input{SLCFlabels.tex}
 
 \hitemini{V2\_PLOT3D}Defines the minimum and maximum
 data bounds used for converting plot3D file data component values to color indices.
@@ -7128,7 +7155,7 @@ V2_PLOT3D
  5 2  1.0 2 0.0
 \end{lstlisting}
 
-\hitemNULL{V\_TARGET}
+%smvkw V\_TARGET}
 
 \elist
 
@@ -7144,9 +7171,9 @@ compressing particle data and skipping particles and frames.
 boundary file frames when
 compressed by Smokezip. (default: 1)
 
-\hitemNULL{FED}
+%smvkw FED}
 
-\hitemNULL{FEDCOLORBAR}
+%smvkw FEDCOLORBAR}
 
 \hitemini{ISOZIPSTEP}\ Defines the number of intervals or steps between
 isosurface file frames when
@@ -7157,9 +7184,9 @@ should (0) be loaded when Smokeview starts up. This option is used
 when one wants to look at other files besides the particle file.
 (default: 1)
 
-\hitemNULL{SHOWFEDAREA}
+%smvkw SHOWFEDAREA}
 
-\hitemNULL{SLICEAVERAGE}
+%smvkw SLICEAVERAGE}
 
 \hitemini{SLICEDATAOUT}When set to 1 will output data corresponding
 to any loaded slice files whenever the scene is rendered.
@@ -7170,7 +7197,7 @@ by Smokezip.  (default: 1)
 
 \hitemini{SMOKE3DZIPSTEP}
 
-\hitemNULL{USER\_ROTATE}
+%smvkw USER\_ROTATE}
 \elist
 
 
@@ -7196,7 +7223,7 @@ grid (5), drawn at locations as specified in the FDS input file
 third party tools that have been developed to help process obstruction data for FDS. See
 the FDS/Smokeview website, \hhref{http://pages.nist.gov/fds/}, for details.}.   (default: 5)
 
-\hitemNULL{BOUNDARYTWOSIDE}
+%smvkw BOUNDARYTWOSIDE}
 
 \hitemini{COLORBARTYPE}\ Specifies the name of the default colorbar.
 The format of this keyword is
@@ -7211,7 +7238,7 @@ a character string appearing after the ! symbol representing the name of the col
 locations.  Dimensions are relative to the longest side of
 an FDS scene. (default: 0.001 3.000)
 
-\hitemNULL{CONTOURTYPE}
+%smvkw CONTOURTYPE}
 
 \hitemini{COMPRESSAUTO}\ Specifies that files that are to be auto-loaded
 by Smokeview (and no other files) should be compressed by Smokezip.
@@ -7319,10 +7346,6 @@ the floor (lower bounding surface) should be drawn (1) or not drawn
 (0).
 (default: 1)
 
-\hitemini{SHOWFRAME}\ Specifies whether the frame surrounding
-the scene should be drawn (1) or not drawn (0). (default:
-1)
-
 \hitemini{SHOWFRAMELABEL}\ Specifies whether the frame number
 should be drawn (1) or not drawn (0). (default: 1)
 
@@ -7332,9 +7355,6 @@ the frame rate label should be drawn (1) or not drawn (0).
 
 \hitemini{SHOWGRIDLOC}\ Specifies where grid location should be drawn (1) or not
 drawn (0). (default: 0)
-
-\hitemini{SHOWHRRCUTOFF}Specifies whether the HRRPUV cutoff label should be (1)
-or should not be (0) displayed. (default: 0)
 
 \hitemini{SHOWISO}Specifies how an isosurface should be drawn: hidden (0),
 solid (1), outline (2) or with points (3).  (default: 1)
@@ -7628,12 +7648,9 @@ should not (0) be observed from the selected tour.
 blue coordinates.  Each color component is an integer ranging from
 0 to 255.  (default: 255, 128, 0)
 
-\hitemini{FIREDEPTH}\ Specifies the depth  at which the fire is 50
+\hitemini{FDEPTH}\ Specifies the depth  at which the fire is 50
 percent transparent. (default: 2.0)
 
-
-\hitemini{SMOKECULL}\ Cull (or do not draw) smoke if it is outside of
-the viewing frustum.  (default: 1)
 
 \hitemini{SMOKESKIP}\ To speed up smoke drawing, spatial frames may be
 skipped.  Allowable parameters are (0, 1, 2).  (default: 0)
