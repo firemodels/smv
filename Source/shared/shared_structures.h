@@ -641,7 +641,7 @@ typedef struct _slicedata {
   int slicefile_labelindex;
   int vloaded, uvw;
   int cell_center;
-#ifdef pp_FACE_CENTER
+#ifdef pp_SLFC
   int face_center;
 #endif
   float delta_orig, dplane_min, dplane_max;

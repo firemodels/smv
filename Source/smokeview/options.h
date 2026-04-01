@@ -17,7 +17,6 @@
 //#define pp_GLUT_DEBUG       // add debug print for glut debugging
 //#define pp_OSX_CWD          // turn on initial getcwd call for OSX smokeview's
 #define pp_BNDF_DEBUG         // add 3 checkboxes for controlling different types of boundary file output
-#define pp_FACE_CENTER        // turn on face centered slice files
 
 //*** options: windows
 
