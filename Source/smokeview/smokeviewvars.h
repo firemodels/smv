@@ -146,6 +146,13 @@ SVEXTERN int SVDECL(slice_plot_bound_option, 1);
 
 SVEXTERN int SVDECL(update_viewpoint_list, 0), SVDECL(update_camera_label, 0);
 
+#ifdef pp_BNDF_DEBUG
+SVEXTERN int SVDECL(bf_patch1, 0), SVDECL(bf_patch2, 1), SVDECL(bf_patch3, 1);
+#define NPATCHES_DEBUG 18
+SVEXTERN int bndf_vis_patch[NPATCHES_DEBUG];
+SVEXTERN int SVDECL(glui_output_patch, 0), SVDECL(glui_output_ipatch, 0);
+#endif
+
 #ifdef pp_GLUT_DEBUG
 #ifdef INMAIN
 #ifdef _WIN32
@@ -1448,7 +1455,7 @@ SVEXTERN int SVDECL(n_devices,0);
 SVEXTERN float SVDECL(*globalmin_part, NULL), SVDECL(*globalmax_part, NULL);
 
 SVEXTERN int SVDECL(sliceload_boundtype, 0);
-SVEXTERN int SVDECL(sliceload_filetype, 0);
+SVEXTERN int SVDECL(sliceload_filetype, SLICE_NODE_CENTERED);
 SVEXTERN int SVDECL(sliceload_dir,0);
 SVEXTERN int SVDECL(sliceload_isvector, 0);
 

@@ -1648,6 +1648,7 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
       }
       if(appended==0)STRCAT(flowlabel->longlabel, suffix_label);
     }
+  }
 #else
   if(flowlabel!=NULL){
     if(NewMemory((void **)&flowlabel->longlabel, (unsigned int)(len+len_suffix_label+len_skip_label+1))==0)return LABEL_ERR;
