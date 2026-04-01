@@ -835,6 +835,21 @@ SLFC     1 # STRUCTURED &     0     8     7     7     0    16 !      3      1   
  HRRPUV
  hrrpuv
  kW/m3
+SLFC     1 # STRUCTURED &     0     8     7     7     0    16 !      3      1      2
+ facecenter_1_4.sf
+ U-VELOCITY
+ U-VEL
+ m/s
+SLFC     1 # STRUCTURED &     0     8     7     7     0    16 !      3      1      2
+ facecenter_1_5.sf
+ V-VELOCITY
+ V-VEL
+ m/s
+SLFC     1 # STRUCTURED &     0     8     7     7     0    16 !      3      1      2
+ facecenter_1_6.sf
+ W-VELOCITY
+ W-VEL
+ m/s
 PRT5     1
  facecenter_1.prt5
       1
@@ -869,6 +884,21 @@ SLFC     2 # STRUCTURED &     0     8     7     7     0    16 !      3      1   
  HRRPUV
  hrrpuv
  kW/m3
+SLFC     2 # STRUCTURED &     0     8     7     7     0    16 !      3      1      2
+ facecenter_2_4.sf
+ U-VELOCITY
+ U-VEL
+ m/s
+SLFC     2 # STRUCTURED &     0     8     7     7     0    16 !      3      1      2
+ facecenter_2_5.sf
+ V-VELOCITY
+ V-VEL
+ m/s
+SLFC     2 # STRUCTURED &     0     8     7     7     0    16 !      3      1      2
+ facecenter_2_6.sf
+ W-VELOCITY
+ W-VEL
+ m/s
 PRT5     2
  facecenter_2.prt5
       1
@@ -941,6 +971,21 @@ SLFC     5 # STRUCTURED &     0     8     7     7     0    16 !      3      1   
  HRRPUV
  hrrpuv
  kW/m3
+SLFC     5 # STRUCTURED &     0     8     7     7     0    16 !      3      1      2
+ facecenter_5_4.sf
+ U-VELOCITY
+ U-VEL
+ m/s
+SLFC     5 # STRUCTURED &     0     8     7     7     0    16 !      3      1      2
+ facecenter_5_5.sf
+ V-VELOCITY
+ V-VEL
+ m/s
+SLFC     5 # STRUCTURED &     0     8     7     7     0    16 !      3      1      2
+ facecenter_5_6.sf
+ W-VELOCITY
+ W-VEL
+ m/s
 PRT5     5
  facecenter_5.prt5
       1
@@ -975,6 +1020,21 @@ SLFC     6 # STRUCTURED &     0     8     7     7     0    16 !      3      1   
  HRRPUV
  hrrpuv
  kW/m3
+SLFC     6 # STRUCTURED &     0     8     7     7     0    16 !      3      1      2
+ facecenter_6_4.sf
+ U-VELOCITY
+ U-VEL
+ m/s
+SLFC     6 # STRUCTURED &     0     8     7     7     0    16 !      3      1      2
+ facecenter_6_5.sf
+ V-VELOCITY
+ V-VEL
+ m/s
+SLFC     6 # STRUCTURED &     0     8     7     7     0    16 !      3      1      2
+ facecenter_6_6.sf
+ W-VELOCITY
+ W-VEL
+ m/s
 PRT5     6
  facecenter_6.prt5
       1
