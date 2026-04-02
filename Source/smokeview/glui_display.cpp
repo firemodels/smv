@@ -134,6 +134,7 @@ GLUI_Checkbox *CHECKBOX_user_ticks_show_z=NULL;
 GLUI_Checkbox *CHECKBOX_tick_auto=NULL;
 GLUI_Checkbox *CHECKBOX_label_2=NULL;
 GLUI_Checkbox *CHECKBOX_label_3=NULL;
+GLUI_Checkbox *CHECKBOX_label_4=NULL;
 GLUI_Checkbox *CHECKBOX_labels_flip=NULL;
 GLUI_Checkbox *CHECKBOX_labels_transparent_override=NULL;
 GLUI_Checkbox *CHECKBOX_shownorth = NULL;
@@ -268,6 +269,7 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LABELS_ticks           8
 #define LABELS_drawface       24
 #define LABELS_hide_overlaps  25
+#define MESH_HORIZ            41
 #define LABELS_version        26
 #define LABELS_meshlabel      27
 #define LABELS_usertick       28
@@ -1035,7 +1037,8 @@ extern "C" void GLUIDisplaySetup(int main_window){
 
   CHECKBOX_label_2=glui_labels->add_checkbox_to_panel(ROLLOUT_general2,"Sort transparent faces",&sort_transparent_faces,LABELS_drawface,GLUILabelsCB);
   CHECKBOX_label_3=glui_labels->add_checkbox_to_panel(ROLLOUT_general2,"Hide overlaps",&hide_overlaps,LABELS_hide_overlaps,GLUILabelsCB);
-
+  CHECKBOX_label_4=glui_labels->add_checkbox_to_panel(ROLLOUT_general2, "Only show horizontal mesh outlines", &meshface_horiz,MESH_HORIZ, GLUILabelsCB);
+  
   if(nface_transparent>0){
     glui_labels->add_column_to_panel(PANEL_gen1,true);
     PANEL_transparency = glui_labels->add_panel_to_panel(ROLLOUT_general2,"Geometry transparency");
@@ -1483,6 +1486,10 @@ extern "C" void GLUILabelsCB(int var){
       colorbar_flip = 1 - colorbar_flip;
       ColorbarMenu(COLORBAR_FLIP);
       break;
+  case MESH_HORIZ:
+    updatefacelists = 1;
+    GLUTPOSTREDISPLAY;
+    break;
   case LABELS_hide_overlaps:
     updatefacelists=1;
     GLUTPOSTREDISPLAY;

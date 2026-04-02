@@ -2797,7 +2797,11 @@ void UpdateFaceListsWorker(void){
          (facej->type==BLOCK_outline&&visBlocks==visBLOCKAsInput)||
          ((j>=vent_offset&&j<vent_offset+meshi->nvents)&&vi->isOpenvent==1&&visOpenVentsAsOutline==1)
         ){
-        if(global_scase.obstcoll.nobstinfo==0||(global_scase.obstcoll.nobstinfo>0&&blocklocation==BLOCKlocation_grid))meshi->face_outlines[n_outlines++]=facej;
+        if(global_scase.obstcoll.nobstinfo == 0 ||
+          (global_scase.obstcoll.nobstinfo > 0 && blocklocation == BLOCKlocation_grid)
+          ){
+          if(meshface_horiz == 0 || facej->kmin == facej->kmax)meshi->face_outlines[n_outlines++] = facej;
+        }
         if(visBlocks!=visBLOCKSolidOutline&&visBlocks!=visBLOCKAsInputOutline)continue;
       }
       if(j<vent_offset){

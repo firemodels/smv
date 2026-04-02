@@ -3905,11 +3905,12 @@ int ReadIni2(const char *inifile, int localfile){
       continue;
     }
     if(MatchINI(buffer, "MESHVIS") == 1){
-      int nm;
+      int nm, meshface_horiz_input=0;
       meshdata *meshi;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &nm);
+      sscanf(buffer, "%i %i", &nm, &meshface_horiz_input);
+      meshface_horiz = CLAMP(meshface_horiz_input, 0, 1);
       for(i = 0; i<nm; i++){
         if(i>global_scase.meshescoll.nmeshes - 1)break;
         meshi = global_scase.meshescoll.meshinfo + i;
@@ -8076,7 +8077,7 @@ void WriteIni(int flag,char *filename){
   }
   if(global_scase.meshescoll.nmeshes>1){
     fprintf(fileout,"MESHVIS\n");
-    fprintf(fileout," %i\n",global_scase.meshescoll.nmeshes);
+    fprintf(fileout," %i %i\n",global_scase.meshescoll.nmeshes, meshface_horiz);
 
     for(i=0;i<global_scase.meshescoll.nmeshes;i++){
       meshdata *meshi;
