@@ -971,7 +971,7 @@ void GetPatchSizes1(FILE_m **stream, const char *patchfilename, unsigned char *b
 }
 
 // !  ------------------ GetPatchSizes2 ------------------------
-//#define pp_PATCH_DEBUG
+#define pp_PATCH_DEBUG
 void GetPatchSizes2(FILE_m *stream, int npatch, int nmeshes_arg, int *npatchsize, patchfacedata *patchfaceinfo, int *headersize, int *framesize){
   int ijkp[9] = {0};
 
@@ -3233,7 +3233,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     if(pfi->type==INTERIORwall)drawit = 1;
     if(pfi->obst == NULL && pfi->internal_mesh_face==1)drawit = 0;
 #ifdef pp_BNDF_DEBUG
-    if(n < NPATCHES_DEBUG && n<bndf_vis_patch[n] == 0)drawit = 0;
+    if(n < NPATCHES_DEBUG && bndf_vis_patch[n] == 0)drawit = 0;
 #endif
     if(drawit==1){
       nrow = pfi->nrow;
@@ -3315,7 +3315,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       }
     }
 #ifdef pp_BNDF_DEBUG
-    if(n<NPATCHES_DEBUG&&bndf_vis_patch[n] == 0)drawit = 0;
+    if(n<NPATCHES_DEBUG && bndf_vis_patch[n] == 0)drawit = 0;
 #endif
     if(pfi->obst == NULL && pfi->internal_mesh_face==1)drawit = 0;
     if(drawit==1){
