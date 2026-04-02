@@ -328,6 +328,7 @@ SVEXTERN char *crender_skips[NRENDER_SKIPS];
 
 SVEXTERN int SVDECL(bounds_each_mesh, 0);
 SVEXTERN int SVDECL(show_bound_diffs, 0);
+SVEXTERN int SVDECL(meshface_horiz, 0);
 
 SVEXTERN slicemenudata SVDECL(*slicemenuinfo, NULL);
 SVEXTERN int SVDECL(generate_info_from_commandline, 0);
