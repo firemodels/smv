@@ -728,19 +728,21 @@ void GetBoundaryHeader2(char *file, patchfacedata *patchfaceinfo, int nmeshes_ar
   fread(&npatches, 4, 1, stream);
   for(i = 0;i<npatches;i++){
     int obst_index, mesh_index;
+    patchfacedata *patchi;
 
+    patchi = patchfaceinfo + i;
     buffer[6] = 0;
     fread(buffer, 4, 9, stream);
-    memcpy(patchfaceinfo->ib, buffer, 6*sizeof(int));
-    patchfaceinfo->dir = buffer[6];
+    memcpy(patchi->ib, buffer, 6*sizeof(int));
+    patchi->dir = buffer[6];
     obst_index = buffer[7];
     mesh_index = buffer[8] - 1;
-    patchfaceinfo->obst_index = obst_index;
-    patchfaceinfo->mesh_index = mesh_index;
-    patchfaceinfo->meshinfo = NULL;
-    patchfaceinfo->obst     = NULL;
-    if(mesh_index >= 0 && mesh_index < nmeshes_arg)patchfaceinfo->meshinfo = global_scase.meshescoll.meshinfo + mesh_index;
-    if(patchfaceinfo->meshinfo != NULL && obst_index>=1 && obst_index<=patchfaceinfo->meshinfo->nbptrs)patchfaceinfo->obst = patchfaceinfo->meshinfo->blockageinfoptrs[obst_index-1];
+    patchi->obst_index = obst_index;
+    patchi->mesh_index = mesh_index;
+    patchi->meshinfo = NULL;
+    patchi->obst     = NULL;
+    if(mesh_index >= 0 && mesh_index < nmeshes_arg)patchi->meshinfo = global_scase.meshescoll.meshinfo + mesh_index;
+    if(patchi->meshinfo != NULL && obst_index>=1 && obst_index<= patchi->meshinfo->nbptrs)patchfaceinfo->obst = patchi->meshinfo->blockageinfoptrs[obst_index-1];
   }
   fclose(stream);
 }
