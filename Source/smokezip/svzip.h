@@ -285,5 +285,9 @@ EXTERN char *GLOBendianfile;
 EXTERN int GLOBmake_demo;
 EXTERN int GLOBpartfile2iso;
 EXTERN char GLOBsmvisofile[1024];
+#ifdef pp_REDUCE_SMOKE3D
+EXTERN int GLOBreduce_smoke3d;
+EXTERN int GLOBskip_smokeplanes;
+#endif
 
 #endif
