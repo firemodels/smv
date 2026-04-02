@@ -2278,6 +2278,15 @@ void Keyboard(unsigned char key, int flag){
       }
       else{
         outline_mode++;
+        if(outline_mode == SCENE_OUTLINE_MESH+1){
+          if(meshface_horiz == 0){
+            outline_mode = SCENE_OUTLINE_MESH;
+            meshface_horiz = 1;
+          }
+          else{
+            meshface_horiz = 0;
+          }
+        }
         if(outline_mode!=SCENE_OUTLINE_HIDDEN){
           updatefacelists = 1;
           updatemenu = 1;
