@@ -971,7 +971,7 @@ void GetPatchSizes1(FILE_m **stream, const char *patchfilename, unsigned char *b
 }
 
 // !  ------------------ GetPatchSizes2 ------------------------
-#define pp_PATCH_DEBUG
+//#define pp_PATCH_DEBUG
 void GetPatchSizes2(FILE_m *stream, int npatch, int nmeshes_arg, int *npatchsize, patchfacedata *patchfaceinfo, int *headersize, int *framesize){
   int ijkp[9] = {0};
 
@@ -980,7 +980,7 @@ void GetPatchSizes2(FILE_m *stream, int npatch, int nmeshes_arg, int *npatchsize
   int n;
 #ifdef pp_PATCH_DEBUG
   FILE *fstream = fopen("patches.csv", "w");
-  fprintf(fstream,"patch index,i1,i2,j1,j2,k1,k2,dir,obst_index,mesh_index\n");
+  if(fstream!=NULL)fprintf(fstream,"patch index,i1,i2,j1,j2,k1,k2,dir,obst_index,mesh_index\n");
 #endif
   for(n = 0; n < npatch; n++){
     patchfacedata *pfi;
@@ -988,7 +988,7 @@ void GetPatchSizes2(FILE_m *stream, int npatch, int nmeshes_arg, int *npatchsize
 
     fseek_m(stream, 4, SEEK_CUR); fread_m(ijkp, sizeof(*ijkp), 9, stream); fseek_m(stream, 4, SEEK_CUR);
 #ifdef pp_PATCH_DEBUG
-    fprintf(fstream,"%i,%i, %i, %i, %i, %i, %i, %i, %i, %i\n",
+    if(fstream!=NULL)fprintf(fstream,"%i,%i, %i, %i, %i, %i, %i, %i, %i, %i\n",
       n + 1, ijkp[0], ijkp[1], ijkp[2], ijkp[3], ijkp[4], ijkp[5], ijkp[6], ijkp[7], ijkp[8]);
 #endif
     pfi = patchfaceinfo + n;
@@ -1015,7 +1015,7 @@ void GetPatchSizes2(FILE_m *stream, int npatch, int nmeshes_arg, int *npatchsize
   *framesize = 8 + 4 + 8 * npatch + (*npatchsize) * 4;
 
 #ifdef pp_PATCH_DEBUG
-  fclose(fstream);
+  if(fstream!=NULL)fclose(fstream);
 #endif
   return;
 }
