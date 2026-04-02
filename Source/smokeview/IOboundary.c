@@ -3222,7 +3222,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     if(pfi->type==INTERIORwall)drawit = 1;
     if(pfi->obst == NULL && pfi->internal_mesh_face==1)drawit = 0;
 #ifdef pp_BNDF_DEBUG
-    if(bndf_vis_patch[n] == 0)drawit = 0;
+    if(n < NPATCHES_DEBUG && n<bndf_vis_patch[n] == 0)drawit = 0;
 #endif
     if(drawit==1){
       nrow = pfi->nrow;
@@ -3304,7 +3304,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       }
     }
 #ifdef pp_BNDF_DEBUG
-    if(bndf_vis_patch[n] == 0)drawit = 0;
+    if(n<NPATCHES_DEBUG&&bndf_vis_patch[n] == 0)drawit = 0;
 #endif
     if(pfi->obst == NULL && pfi->internal_mesh_face==1)drawit = 0;
     if(drawit==1){
@@ -3381,7 +3381,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     }
     if(pfi->obst == NULL && pfi->internal_mesh_face==1)drawit = 0;
 #ifdef pp_BNDF_DEBUG
-    if(bndf_vis_patch[n] == 0)drawit = 0;
+    if(n < NPATCHES_DEBUG && bndf_vis_patch[n] == 0)drawit = 0;
 #endif
     if(drawit==1){
       nrow = pfi->nrow;
