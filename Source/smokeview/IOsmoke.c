@@ -2878,6 +2878,15 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
     strcat(smoke_sizefilename, ".sz");
     SMOKE_SIZE = FOPEN_2DIR(smoke_sizefilename, "r");
   }
+  if(SMOKE_SIZE == NULL){
+    char *ext;
+
+    strcpy(smoke_sizefilename, smokefile);
+    ext = strchr(smoke_sizefilename, '.');
+    if(ext != NULL)ext[0] = 0;
+    strcat(smoke_sizefilename, ".s3d.sz");
+    SMOKE_SIZE = FOPEN_2DIR(smoke_sizefilename, "r");
+  }
   if(SMOKE_SIZE != NULL)return SMOKE_SIZE;
 
   // wasn't able to read the size file so try creating a new one
@@ -3253,6 +3262,10 @@ int GetSmoke3DVersion2(smoke3ddata *smoke3di){
   if(SMOKE3D_COMPFILE==NULL){
     file = smoke3di->reg_file;
     SMOKE3D_REGFILE = FOPEN(file, "rb");
+    if(SMOKE3D_REGFILE == NULL){
+      file = smoke3di->smoke_density_file;
+      SMOKE3D_REGFILE = FOPEN(file, "rb");
+    }
   }
   if(SMOKE3D_REGFILE==NULL&&SMOKE3D_COMPFILE==NULL)return -1;
   if(SMOKE3D_COMPFILE!=NULL)SMOKE3DFILE = SMOKE3D_COMPFILE;
