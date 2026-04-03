@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #include "dmalloc.h"
 #include "compress.h"
@@ -228,4 +229,124 @@ int UnCompressVolSliceFrame(unsigned char *compressed_data_in,
     }
   }
   return countout;
+}
+
+#ifndef IJKMAP
+#define IJKMAP(i,j,k,nx,nxy) ((i)+(j)*nx+(k)*nxy)
+#endif
+
+/* ------------------ Compress3D ------------------------ */
+
+unsigned char AverageCube(unsigned *buffer, int *ijk_start, int *ijk_end, int *nijk, unsigned char *minmax){
+  unsigned char average=0;
+  unsigned int faverage=0;
+  int i, j, k;
+  int nx = nijk[0], nxy = nijk[0] * nijk[1];
+  int sum;
+
+  nx = nijk[0];
+  nxy = nijk[0]*nijk[1];
+  sum  = (ijk_end[0] + 1 - ijk_start[0]);
+  sum *= (ijk_end[1] + 1 - ijk_start[1]);
+  sum *= (ijk_end[2] + 1 - ijk_start[2]);
+
+
+  for(k = ijk_start[2]; k <= ijk_end[2]; k++){
+    for(j = ijk_start[1]; j <= ijk_end[1]; j++){
+      for(i = ijk_start[0]; i <= ijk_end[0]; i++){
+        faverage += buffer[IJKNODE(i, j, k)];
+      }
+    }
+  }
+  if(sum!=0)average = (unsigned char)(faverage/sum);
+  return average;
+}
+
+/* ------------------ Reorder3D ------------------------ */
+
+void Reorder3D(int **fds2smv, int **smv2fds, int *nijk){
+  int i, j, k;
+  int skipi, skipj, skipk, nsize, nx, nxy;
+  int *state, *fds2smvptr = NULL, *smv2fdsptr = NULL;
+  int count = 0;
+  int nskipi, nskipj, nskipk;
+
+  if(nijk[0] * nijk[1] * nijk[2] <= 0)return;
+
+  skipi = nijk[0];
+  skipj = nijk[1];
+  skipk = nijk[2];
+
+  nskipi = 1;
+  for(;;){
+    if(skipi <= 1)break;
+    nskipi++;
+    skipi /= 2;
+  }
+  nskipj = 1;
+  for(;;){
+    if(skipj <= 1)break;
+    nskipj++;
+    skipj /= 2;
+  }
+  nskipk = 1;
+  for(;;){
+    if(skipk <= 1)break;
+    nskipk++;
+    skipk /= 2;
+  }
+
+  nsize = nskipi * nskipj * nskipk;
+  nx = nskipi;
+  nxy = nskipi * nskipj;
+
+  NewMemory(( void ** )&state, nsize);
+
+  NewMemory(( void ** )&fds2smvptr, nsize);
+  *fds2smv = fds2smvptr;
+
+  NewMemory(( void ** )&smv2fdsptr, nsize);
+  *smv2fds = smv2fdsptr;
+
+  for(i = 0; i < nsize; i++){
+    state[i] = 0;
+    fds2smvptr[i] = -1;
+    smv2fdsptr[i] = -1;
+  }
+
+  skipi = nijk[0];
+  skipj = nijk[1];
+  skipk = nijk[2];
+  for(;;){
+    for(k = 0; k < nijk[2]; k += skipk){
+      for(j = 0; j < nijk[1]; j += skipj){
+        for(i = 0; i < nijk[0]; i += skipi){
+          int ijk;
+
+          ijk = IJKMAP(i, j, k, nx, nxy);
+          if(state[ijk] == 0){
+            fds2smvptr[count] = ijk;
+            smv2fdsptr[ijk] = count;
+            count++;
+          }
+          else{
+            state[ijk] = 1;
+          }
+        }
+      }
+    }
+    if(skipi == 1 && skipj == 1 && skipk == 1)break;
+    skipi = skipi/2;
+    if(skipi < 1)skipi = 1;
+    skipj = skipj/2;
+    if(skipj < 1)skipj = 1;
+    skipk = skipk/2;
+    if(skipk < 1)skipk = 1;
+  }
+  for(i = 0; i < nsize; i++){
+    assert(fds2smvptr[i] >= 0);
+    assert(smv2fdsptr[i] >= 0);
+  }
+
+  FREEMEMORY(state);
 }
