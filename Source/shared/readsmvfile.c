@@ -3775,6 +3775,7 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
       if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
       if(strcmp(smoke3di->label.longlabel, "SOOT DENSITY") == 0){
         smoke3di->is_smoke = 1;
+        smoke3di->reg_file = smoke3di->smoke_density_file;
       }
       if(strcmp(smoke3di->label.longlabel, "HRRPUV")==0){
         scase->show_hrrcutoff_active = 1;
