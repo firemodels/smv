@@ -3704,8 +3704,7 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     smoke3di->ntimes_old = 0;
     smoke3di->filetype = filetype;
     smoke3di->is_zlib = 0;
-    smoke3di->is_smoke_density    = 0;
-    smoke3di->soot_density_loaded = 0;
+    smoke3di->soot_loaded = 0;
     smoke3di->seq_id = nn_smoke3d;
     smoke3di->autoload = 0;
     smoke3di->compression_type = COMPRESSED_UNKNOWN;

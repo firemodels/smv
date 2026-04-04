@@ -1946,7 +1946,7 @@ void GetSmokeDir(float *mm){
 
       use_soot_density = 0;
       maxval = soot->maxval;
-      if(soot->soot_density_loaded == 1 && soot->maxvals!=NULL){
+      if(soot->soot_loaded == 1 && soot->maxvals!=NULL){
         use_soot_density = 1;
         maxval = soot->maxvals[soot->ismoke3d_time];
       }

@@ -1116,15 +1116,6 @@ void UpdateSmoke3DTypes(void){
       }
     }
   }
-  for(i = 0; i<global_scase.smoke3dcoll.nsmoke3dinfo; i++){
-    smoke3ddata *smoke3di;
-
-    smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
-    if(smoke3di->type == SOOT_index && FileExistsCaseDir(&global_scase, smoke3di->smoke_density_file)==YES){
-      smoke3di->is_smoke_density = 1;
-      have_smoke_density = 1;
-    }
-  }
 }
 
 /* ------------------ UpdateMeshCoords ------------------------ */
