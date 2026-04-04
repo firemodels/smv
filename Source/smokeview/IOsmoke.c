@@ -2738,7 +2738,6 @@ void DrawSmokeFrame(void){
 #ifdef pp_SPEEDUP
     if(vis_smokemesh == 1){
       DrawBoxMinMax(smokemesh->boxmin_smv, smokemesh->boxmax_smv, foregroundcolor);
-      continue;
     }
 #endif
 #ifdef pp_GPU

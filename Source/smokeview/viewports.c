@@ -1348,10 +1348,8 @@ int CompareMeshes(const void *arg1, const void *arg2){
   xyzmaxi = meshi->boxmax_fds;
   xyzminj = meshj->boxmin_fds;
   xyzmaxj = meshj->boxmax_fds;
-  if(dir == 0){
-    if(xyzmaxi[0] <= xyzminj[0])dir = 1;
-    if(xyzmaxj[0] <= xyzmini[0])dir = -1;
-  }
+  if(xyzmaxi[0] <= xyzminj[0])dir = 1;
+  if(xyzmaxj[0] <= xyzmini[0])dir = -1;
   if(dir == 0){
     if(xyzmaxi[1] <= xyzminj[1])dir = 2;
     if(xyzmaxj[1] <= xyzmini[1])dir = -2;
