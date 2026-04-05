@@ -1672,7 +1672,6 @@ void SetTimeFrameIndexWorker(int frameindex, int stept_arg){
 void SetTimeFrameIndex(int frameindex, int stept_arg){
   INIT_PRINT_TIMER(frame_timer);
   SetTimeFrameIndexWorker(frameindex, stept_arg);
-  SetTimeFrameIndexWorker(frameindex, stept_arg);
   PRINT_TIMER(frame_timer, "SetTimeFrameIndex");
 }
 
