@@ -1373,6 +1373,8 @@ void UpdateMeshCoords(void){
   float dy_scene   = global_scase.ybar - global_scase.ybar0;
   float dz_scene   = global_scase.zbar - global_scase.zbar0;
   xyzmaxdiff = MAX(MAX(dx_scene,dy_scene),dz_scene);
+  fire_halfdepth = (float)((int)(10.0*xyzmaxdiff/40.0+0.5))/10.0;
+  fire_halfdepth = MAX(fire_halfdepth, 0.3);
   vector_scalelength = MIN(dx_scene, dz_scene);
   if(global_scase.meshescoll.meshinfo[0].jbar > 1) {
     vector_scalelength = MIN(vector_scalelength, dy_scene);
