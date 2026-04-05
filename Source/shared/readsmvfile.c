@@ -3752,6 +3752,7 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     }
     else{
       smoke3di->file = smoke3di->reg_file;
+      smoke3di->compression_type = COMPRESSED_RLE;
     }
 #ifdef pp_SMOKE3D_FORCE
     if(strcmp(smoke3di->file, "dummy.xyz") == 0){

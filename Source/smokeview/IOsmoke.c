@@ -3645,10 +3645,13 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   if(smoke3di->smokeframe_comp_list==NULL)return 0;
 
   IF_NOT_USEMESH_RETURN0(smoke3di->loaded, smoke3di->blocknumber);
-  char *file;
-  file = smoke3di->file;
-  if(smoke3di->type == SOOT_index)file = smoke3di->smoke_density_file;
-  SMOKE3DFILE=FOPEN(file,"rb");
+  if(smoke3di->type == SOOT_index){
+    SMOKE3DFILE=FOPEN(smoke3di->smoke_density_file,"rb");
+    if(SMOKE3DFILE == NULL)SMOKE3DFILE = FOPEN(smoke3di->file, "rb");
+  }
+  else{
+    SMOKE3DFILE = FOPEN(smoke3di->file, "rb");
+  }
   if(SMOKE3DFILE==NULL){
     SetupSmoke3D(smoke3di,UNLOAD, time_frame, &error_local);
     *errorcode_arg =1;
