@@ -1423,8 +1423,8 @@ typedef struct _smoke3ddata {
   int is_smoke, is_fire;
   int loaded, request_load, finalize, display, primary_file;
   int is_zlib;
-  int is_smoke_density;
-  int soot_density_loaded;
+
+  int soot_loaded;
   smokestatedata *smokestate;
   int blocknumber;
   int type;

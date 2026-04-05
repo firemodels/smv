@@ -3704,8 +3704,7 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     smoke3di->ntimes_old = 0;
     smoke3di->filetype = filetype;
     smoke3di->is_zlib = 0;
-    smoke3di->is_smoke_density    = 0;
-    smoke3di->soot_density_loaded = 0;
+    smoke3di->soot_loaded = 0;
     smoke3di->seq_id = nn_smoke3d;
     smoke3di->autoload = 0;
     smoke3di->compression_type = COMPRESSED_UNKNOWN;
@@ -3752,6 +3751,7 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     }
     else{
       smoke3di->file = smoke3di->reg_file;
+      smoke3di->compression_type = COMPRESSED_RLE;
     }
 #ifdef pp_SMOKE3D_FORCE
     if(strcmp(smoke3di->file, "dummy.xyz") == 0){
@@ -3774,6 +3774,7 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
       if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
       if(strcmp(smoke3di->label.longlabel, "SOOT DENSITY") == 0){
         smoke3di->is_smoke = 1;
+        smoke3di->reg_file = smoke3di->smoke_density_file;
       }
       if(strcmp(smoke3di->label.longlabel, "HRRPUV")==0){
         scase->show_hrrcutoff_active = 1;

@@ -499,12 +499,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     glui_3dsmoke->add_column_to_panel(ROLLOUT_smoke_settings, false);
     ROLLOUT_slices = ROLLOUT_smoke_settings;
 
-    if(have_smoke_density == 1){
-      PANEL_load_options = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices, "Load using");
-      RADIO_sootdensity = glui_3dsmoke->add_radiogroup_to_panel(PANEL_load_options,&load_smoke_density);
-      glui_3dsmoke->add_radiobutton_to_group(RADIO_sootdensity,"soot opacity");
-      glui_3dsmoke->add_radiobutton_to_group(RADIO_sootdensity,"soot density");
-    }
 #ifdef pp_GPU
     if(gpuactive==0){
       usegpu=0;
