@@ -1653,8 +1653,6 @@ void UpdateGridClip(int flag){
 /* ------------------ SetTimeFrameIndexWorker ------------------------ */
 
 void SetTimeFrameIndexWorker(int frameindex, int stept_arg){
-  int changed_frame = 0;
-
   if(global_times == NULL)return;
   if(use_tload_begin == 1 && frameindex < 0)frameindex = nglobal_times - 1;
   if(use_tload_end == 1 && frameindex > nglobal_times - 1)frameindex = 0;
