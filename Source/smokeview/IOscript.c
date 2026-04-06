@@ -1570,7 +1570,7 @@ void ScriptRenderAll(scriptdata *scripti){
   if(script_startframe>0)scripti->ival3=script_startframe;
   if(render_startframe0>=0)scripti->ival3=render_startframe0;
   first_frame_index=scripti->ival3;
-  itimes=first_frame_index;
+  iglobal_times=first_frame_index;
 
   if(script_skipframe>0)scripti->ival=script_skipframe;
   if(render_skipframe0>0)scripti->ival=render_skipframe0;
@@ -1593,7 +1593,7 @@ void ScriptRender360All(scriptdata *scripti){
   if(script_startframe>0)scripti->ival3 = script_startframe;
   if(render_startframe0 >= 0)scripti->ival3 = render_startframe0;
   first_frame_index = scripti->ival3;
-  itimes = first_frame_index;
+  iglobal_times = first_frame_index;
 
   if(script_skipframe>0)scripti->ival = script_skipframe;
   if(render_skipframe0>0)scripti->ival = render_skipframe0;
@@ -1662,7 +1662,7 @@ void LoadSmokeFrame(int meshnum, int framenum){
   force_redisplay = 1;
   UpdateFrameNumber(framenum);
   i = framenum;
-  itimes = i;
+  iglobal_times = i;
   script_itime = i;
   stept = 1;
   force_redisplay = 1;
@@ -1742,7 +1742,7 @@ void ScriptLoadVolSmokeFrame2(void){
   scriptdata scripti;
 
   scripti.ival = -1;
-  scripti.ival2 = itimes;
+  scripti.ival2 = iglobal_times;
   ScriptLoadVolSmokeFrame(&scripti, 0);
 }
 
@@ -1762,7 +1762,7 @@ void ScriptVolSmokeRenderAll(scriptdata *scripti){
   if(vol_startframe0>0)scripti->ival3=vol_startframe0;
   // check first_frame_index
   first_frame_index=scripti->ival3;
-  itimes=first_frame_index;
+  iglobal_times=first_frame_index;
 
   if(script_skipframe>0)scripti->ival=script_skipframe;
   if(vol_skipframe0>0)scripti->ival=vol_skipframe0;
@@ -1804,7 +1804,7 @@ void ScriptLoadIsoFrame(scriptdata *scripti, int flag){
   force_redisplay = 1;
   UpdateFrameNumber(framenum);
   i = framenum;
-  itimes = i;
+  iglobal_times = i;
   script_itime = i;
   stept = 1;
   force_redisplay = 1;
@@ -1817,7 +1817,7 @@ void ScriptLoadIsoFrame(scriptdata *scripti, int flag){
 /* ------------------ ScriptLoadIsoFrame2 ------------------------ */
 
 void ScriptLoadIsoFrame2(scriptdata *scripti){
-  scripti->ival2 = itimes;
+  scripti->ival2 = iglobal_times;
   ScriptLoadIsoFrame(scripti, 0);
 }
 
@@ -1842,7 +1842,7 @@ void ScriptIsoRenderAll(scriptdata *scripti){
   if(render_startframe0>0)scripti->ival3 = render_startframe0;
   // check first_frame_index
   first_frame_index = scripti->ival3;
-  itimes = first_frame_index;
+  iglobal_times = first_frame_index;
 
   if(script_skipframe>0)scripti->ival = script_skipframe;
   if(render_skipframe0>0)scripti->ival = render_skipframe0;
@@ -2998,8 +2998,8 @@ void ScriptShowSmokeSensors(void){
     stream_smokesensors = FOPEN(file_smokesensors, "a");
   }
 
-  if(global_times!=NULL&&itimes>=0&&itimes<nglobal_times){
-    sensor_time = global_times[itimes];
+  if(global_times!=NULL&&iglobal_times>=0&&iglobal_times<nglobal_times){
+    sensor_time = GetTime();
   }
   fprintf(stream_smokesensors,"%f,",sensor_time);
   j = 0;
@@ -3516,7 +3516,7 @@ void ScriptSetTimeVal(scriptdata *scripti){
       imin=i;
     }
   }
-  itimes=imin;
+  iglobal_times=imin;
   script_itime=imin;
   stept=0;
   last_time_paused = 1;
@@ -3567,42 +3567,6 @@ void ScriptGSliceOrien(scriptdata *scripti){
   gslice_normal_azelev[0]=scripti->fval;
   gslice_normal_azelev[1]=scripti->fval2;
   update_gslice=1;
-}
-
-/* ------------------ SetTimeVal ------------------------ */
-
-void SetTimeVal(float timeval){
-  int i;
-
-  if(global_times!=NULL&&nglobal_times>0){
-    if(timeval<global_times[0])timeval=global_times[0];
-    if(timeval>global_times[nglobal_times-1]-0.0001)timeval=global_times[nglobal_times-1]-0.0001;
-    for(i=0;i<nglobal_times;i++){
-      float tlow, thigh;
-
-      if(i==0){
-        tlow = global_times[i];
-        thigh = (global_times[i]+global_times[i+1])/2.0;
-      }
-      else if(i==nglobal_times-1){
-        tlow = (global_times[i-1]+global_times[i])/2.0;
-        thigh = global_times[i];
-      }
-      else{
-        tlow=(global_times[i-1]+global_times[i])/2.0;
-        thigh=(global_times[i]+global_times[i+1])/2.0;
-      }
-      if(tlow<=timeval&&timeval<thigh){
-        itimes=i;
-        stept=1;
-        force_redisplay=1;
-        UpdateFrameNumber(0);
-        UpdateTimeLabels();
-        Keyboard('t',FROM_SMOKEVIEW);
-        break;
-      }
-    }
-  }
 }
 
 /* ------------------ ScriptRGBtest ------------------------ */

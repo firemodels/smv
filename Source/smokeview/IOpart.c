@@ -202,7 +202,7 @@ void DrawPart(const partdata *parti, int mode){
   propdata *prop;
   float valmin, valmax;
 
-  if(nglobal_times<1||parti->times[0] > global_times[itimes])return;
+  if(nglobal_times<1||parti->times[0] > GetTime())return;
   if(global_scase.nterraininfo > 0 && ABS(vertical_factor - 1.0) > 0.01){
     offset_terrain = 1;
   }
@@ -591,8 +591,8 @@ void DrawPart(const partdata *parti, int mode){
 void DrawPartFrame(int mode){
   int i;
 
-  if(use_tload_begin==1&&global_times[itimes]<global_scase.tload_begin)return;
-  if(use_tload_end==1&&global_times[itimes]>global_scase.tload_end)return;
+  if(use_tload_begin==1&&GetTime()<global_scase.tload_begin)return;
+  if(  use_tload_end==1&&GetTime()>global_scase.tload_end)return;
   for(i=0;i<global_scase.npartinfo;i++){
     partdata *parti;
     meshdata *meshi;

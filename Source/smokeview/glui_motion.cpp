@@ -1490,9 +1490,9 @@ extern "C" void GLUIMotionSetup(int main_window){
   render_size_index = RenderWindow;
   RenderCB(RENDER_RESOLUTION);
 
-  glui_resolution_multiplier=CLAMP(resolution_multiplier,2,10);
+  glui_resolution_multiplier=CLAMP(resolution_multiplier,1,10);
   SPINNER_resolution_multiplier = glui_motion->add_spinner_to_panel(ROLLOUT_image_size, "multiplier:", GLUI_SPINNER_INT, &glui_resolution_multiplier, RENDER_MULTIPLIER, RenderCB);
-  SPINNER_resolution_multiplier->set_int_limits(2, 10);
+  SPINNER_resolution_multiplier->set_int_limits(1, 10);
   RenderCB(RENDER_MULTIPLIER);
 
   PANEL_360 = glui_motion->add_panel_to_panel(ROLLOUT_image_size, (char *)deg360, true);

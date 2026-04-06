@@ -622,18 +622,20 @@ void MouseSelectGeom(int x, int y){
 void CheckTimeBound(void){
   int i;
 
-  if((timebar_drag==0&&itimes>nglobal_times-1)||(timebar_drag==1&&itimes<0)){
-    if(timebar_drag==0){
-      if(itimes>nglobal_times-1)itime_cycle++;
-      if(itimes<0)itime_cycle--;
-    }
+  if((timebar_drag==0&&(iglobal_times>nglobal_times-1))||(timebar_drag==1&&iglobal_times<=0)){
     izone = 0;
-    itimes=first_frame_index;
+    iglobal_times=first_frame_index;
     if(render_status==RENDER_ON){
       RenderMenu(RenderCancel);
       if(current_script_command!=NULL&&NOT_LOADRENDER){
         current_script_command->exit=1;
       }
+    }
+    for(i = 0; i < global_scase.smoke3dcoll.nsmoke3dinfo; i++){
+      smoke3ddata *smoke3di;
+
+      smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+      smoke3di->ismoke3d_time = 0;
     }
     for(i=0;i<global_scase.slicecoll.nsliceinfo;i++){
       slicedata *sd;
@@ -656,14 +658,20 @@ void CheckTimeBound(void){
       meshi->iso_itime=0;
     }
   }
-  if((timebar_drag==0&&itimes<0)||(timebar_drag==1&&itimes>nglobal_times-1)){
+  if((timebar_drag==0&&iglobal_times<0)||(timebar_drag==1&&iglobal_times>nglobal_times-1)){
     izone=nzone_times-1;
-    itimes=nglobal_times-1;
+    iglobal_times=nglobal_times-1;
     for(i=0;i<global_scase.npartinfo;i++){
       partdata *parti;
 
       parti=global_scase.partinfo+i;
       parti->itime=parti->ntimes-1;
+    }
+    for(i = 0; i < global_scase.smoke3dcoll.nsmoke3dinfo; i++){
+      smoke3ddata *smoke3di;
+
+      smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+      smoke3di->ismoke3d_time = smoke3di->ntimes-1;
     }
     for(i=0;i<global_scase.slicecoll.nsliceinfo;i++){
       slicedata *sd;
@@ -701,7 +709,7 @@ void CheckTimeBound(void){
 
       bc=meshi->blockageinfoptrs[j];
       if(bc->showtimelist==NULL)continue;
-      bc->show=bc->showtimelist[itimes];
+      bc->show=bc->showtimelist[iglobal_times];
     }
   }
 }
@@ -837,7 +845,7 @@ int GetTimeBarFrame(int xm){
 int TimebarClick(int xm, int ym){
   if(screenHeight-ym<titlesafe_offset+VP_timebar.height&&nglobal_times>0){
 //    PRINTF("ngt=%i xl=%i x=%i xr=%i\n",nglobal_times,timebar_left_pos,x,timebar_right_pos);
-    itimes = GetTimeBarFrame(xm);
+    iglobal_times = GetTimeBarFrame(xm);
     CheckTimeBound();
     timebar_drag=1;
     stept=0;
@@ -848,16 +856,30 @@ int TimebarClick(int xm, int ym){
   return 0;
 }
 
+/* ------------------ UpdateTime ------------------------ */
+
+void UpdateTime(int time){
+  if(nglobal_times > 0){
+    iglobal_times = time;
+    CheckTimeBound();
+    IdleCB();
+  }
+}
+
 /* ------------------ TimebarDrag ------------------------ */
 
 void TimebarDrag(int xm){
   if(nglobal_times>0){
-    itimes = GetTimeBarFrame(xm);
-    CheckTimeBound();
+    int itime;
+
+    itime = GetTimeBarFrame(xm);
+    UpdateTime(itime);
     timebar_drag = 1;
   }
-  IdleCB();
-}
+  else{
+    IdleCB();
+  }
+}      
 
 /* ------------------ UpdateMouseInfo ------------------------ */
 
@@ -1628,6 +1650,29 @@ void UpdateGridClip(int flag){
   }
 }
 
+/* ------------------ SetTimeFrameIndexWorker ------------------------ */
+
+void SetTimeFrameIndexWorker(int frameindex, int stept_arg){
+  if(global_times == NULL)return;
+  if(use_tload_begin == 1 && frameindex < 0)frameindex = nglobal_times - 1;
+  if(use_tload_end == 1 && frameindex > nglobal_times - 1)frameindex = 0;
+  iglobal_times = CLAMP(frameindex, 0, nglobal_times - 1);
+  stept = 1;
+  force_redisplay = 1;
+  UpdateFrameNumber(0);
+  UpdateTimeLabels();
+  stept = stept_arg;
+  //Keyboard('t', FROM_SMOKEVIEW);
+}
+
+/* ------------------ SetTimeFrameIndex ------------------------ */
+
+void SetTimeFrameIndex(int frameindex, int stept_arg){
+  INIT_PRINT_TIMER(frame_timer);
+  SetTimeFrameIndexWorker(frameindex, stept_arg);
+  PRINT_TIMER(frame_timer, "SetTimeFrameIndex");
+}
+
 /* ------------------ Keyboard ------------------------ */
 
 void Keyboard(unsigned char key, int flag){
@@ -1990,7 +2035,7 @@ void Keyboard(unsigned char key, int flag){
             force_redisplay=1;
           }
           else{
-            itime_save=itimes;
+            itime_save=iglobal_times;
             ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
           }
         }
@@ -2000,7 +2045,7 @@ void Keyboard(unsigned char key, int flag){
             force_redisplay=1;
           }
           else{
-            itime_save=itimes;
+            itime_save=iglobal_times;
             ShowHideSliceMenu(GLUI_HIDEALL);
           }
         }
@@ -2464,7 +2509,7 @@ void Keyboard(unsigned char key, int flag){
           if(nglobal_times>0){
             float timeval;
 
-            timeval=global_times[itimes];
+            timeval=GetTime();
             fprintf(scriptoutstream,"SETTIMEVAL\n");
             fprintf(scriptoutstream," %f\n",timeval);
             if(nvolrenderinfo>0&&load_at_rendertimes==1){
@@ -2820,9 +2865,7 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '0':
       if(plotstate==DYNAMIC_PLOTS){
-        itime_cycle = 0;
-        UpdateTimes();
-        return;
+        SetTimeFrameIndex(0,NO_PAUSE_TIME);
       }
       break;
     case '~':
@@ -3041,10 +3084,8 @@ void Keyboard(unsigned char key, int flag){
 
   if(plotstate==DYNAMIC_PLOTS){
     if(timebar_drag==0){
-      itimes += skip_global*FlowDir;
+      SetTimeFrameIndex(iglobal_times + skip_global * FlowDir,stept);
     }
-    CheckTimeBound();
-    IdleCB();
     return;
   }
   switch(iplot_state){
@@ -3078,7 +3119,6 @@ void Keyboard(unsigned char key, int flag){
 void KeyboardCB(unsigned char key, int x, int y){
   Keyboard(key,FROM_CALLBACK);
   GLUTPOSTREDISPLAY;
-  updatemenu=1;
 }
 
 /* ------------------ HandleRotationType ------------------------ */
@@ -3616,32 +3656,33 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
             ){
             elapsed_time = GMod(elapsed_time,global_times[nglobal_times-1]-global_times[0])+global_times[0];
           }
-          itimes = ISearch(global_times,nglobal_times,elapsed_time,itimes);
+          iglobal_times = ISearch(global_times,nglobal_times,elapsed_time,iglobal_times);
         }
         else{
           if(script_render_flag==0){
-            itimes += FlowDir;
+            iglobal_times += FlowDir;
           }
           else{
-            itimes=script_itime;
+            iglobal_times=script_itime;
           }
         }
       }
       if(stept==1&&timebar_drag==0&&render_status==RENDER_ON){
         if(render_firsttime==YES){
           render_firsttime = NO;
-          itimes = first_frame_index;
+          iglobal_times = first_frame_index;
         }
         else{
           if(render_skip==RENDER_CURRENT_SINGLE){
-            itimes += FlowDir;
+            iglobal_times += FlowDir;
           }
           else{
-            itimes += render_skip*FlowDir;
+            iglobal_times += render_skip*FlowDir;
           }
         }
+        SetTimeFrameIndex(iglobal_times,stept);
       }
-      if(script_render_flag == 1&&IS_LOADRENDER)itimes = script_itime;
+      if(script_render_flag == 1&&IS_LOADRENDER)iglobal_times = script_itime;
 
 // if toggling time display with H then show the frame that was visible
 
@@ -3650,7 +3691,7 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
       }
       else{
         if(itime_save>=0){
-          itimes=itime_save;
+          iglobal_times=itime_save;
         }
       }
       if(shooter_firstframe==1&&visShooter!=0&&shooter_active==1){
@@ -3688,7 +3729,7 @@ void IdleCB(void){
      or if we are rendering images or stepping by hand */
 
   UpdateFrame(thisinterval,&changetime,&redisplay);
-  if(showtime==1&&stept==0&&itimeold!=itimes){
+  if(showtime==1&&stept==0&&itimeold!=iglobal_times){
     changetime=1;
     CheckTimeBound();
     UpdateTimeLabels();
@@ -3769,7 +3810,7 @@ void ReshapeCB(int width, int height){
 
 void ResetGLTime(void){
   if(showtime!=1)return;
-  reset_frame=itimes;
+  reset_frame=iglobal_times;
   START_TIMER(reset_time);
   if(global_times!=NULL&&nglobal_times>0){
     start_frametime=global_times[0];
@@ -4159,6 +4200,7 @@ void IdleDisplay(void){
 void DoNonStereo(void){
   assert(opengl_finalized == 1);
   if(opengl_finalized == 0)return;
+  INIT_PRINT_TIMER(timer_dononstereo);
   if(render_status==RENDER_OFF){
     glDrawBuffer(GL_BACK);
     ShowScene(DRAWSCENE, VIEW_CENTER, 0, 0, 0, NULL);
@@ -4177,8 +4219,8 @@ void DoNonStereo(void){
 
     IdleDisplay();
 
-    stop_rendering = 1;
-    if(plotstate==DYNAMIC_PLOTS && nglobal_times>0&&itimes>=0&&itimes<nglobal_times)stop_rendering = 0;
+    stop_rendering = 0;
+    if(plotstate==DYNAMIC_PLOTS && nglobal_times>0&&iglobal_times==nglobal_times-1)stop_rendering = 1;
     if(render_mode==RENDER_NORMAL){
       int i, ibuffer = 0;
       GLubyte **screenbuffers;
@@ -4271,6 +4313,13 @@ void DoNonStereo(void){
       assert(render_skip>0);
       RenderState(RENDER_OFF);
     }
+  }
+  if(show_timings != 0){
+    char label[256];
+
+    sprintf(label, "DoNonStereo(%i)", iglobal_times);
+    PRINT_TIMER(timer_dononstereo, label);
+    PRINT_TIMER_LF(timer_dononstereo);
   }
 }
 

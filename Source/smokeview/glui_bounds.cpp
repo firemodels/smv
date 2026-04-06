@@ -2664,6 +2664,7 @@ GLUI_Button *BUTTON_ini_load=NULL;
 GLUI_Button *BUTTON_script_setsuffix=NULL;
 GLUI_Button *BUTTON_script_runscript=NULL;
 GLUI_Button *BUTTON_SETTIME=NULL;
+GLUI_Button *BUTTON_SETFRAME = NULL;
 GLUI_Button *BUTTON_PART = NULL;
 GLUI_Button *BUTTON_SLICE = NULL;
 GLUI_Button *BUTTON_VSLICE = NULL;
@@ -2809,7 +2810,8 @@ GLUI_Spinner *SPINNER_line_contour_num=NULL;
 GLUI_Spinner *SPINNER_line_contour_width=NULL;
 GLUI_Spinner *SPINNER_line_contour_min=NULL;
 GLUI_Spinner *SPINNER_line_contour_max=NULL;
-GLUI_Spinner *SPINNER_timebounds=NULL;
+GLUI_Spinner *SPINNER_timeval=NULL;
+GLUI_Spinner *SPINNER_timeindex=NULL;
 GLUI_Spinner *SPINNER_tload_begin=NULL;
 GLUI_Spinner *SPINNER_tload_end=NULL;
 GLUI_Spinner *SPINNER_tload_skip=NULL;
@@ -4453,14 +4455,67 @@ extern "C" void GLUIUpdateMeshBounds(void){
   MeshBoundCB(USEMESH_USE_XYZ);
 }
 
+/* ------------------ GLUISetTimeVal ------------------------ */
+
+void GLUISetTimeVal(float timeval){
+  int i;
+
+  if(global_times != NULL && nglobal_times > 0){
+    if(timeval < global_times[0])timeval = global_times[0];
+    if(timeval > global_times[nglobal_times - 1] - 0.0001)timeval = global_times[nglobal_times - 1] - 0.0001;
+    for(i = 0; i < nglobal_times; i++){
+      float tlow, thigh;
+
+      if(i == 0){
+        tlow = global_times[i];
+        thigh = (global_times[i] + global_times[i + 1]) / 2.0;
+      }
+      else if(i == nglobal_times - 1){
+        tlow = (global_times[i - 1] + global_times[i]) / 2.0;
+        thigh = global_times[i];
+      }
+      else{
+        tlow = (global_times[i - 1] + global_times[i]) / 2.0;
+        thigh = (global_times[i] + global_times[i + 1]) / 2.0;
+      }
+      if(tlow <= timeval && timeval < thigh){
+        iglobal_times = i;
+        stept = 1;
+        force_redisplay = 1;
+        UpdateFrameNumber(0);
+        UpdateTimeLabels();
+        Keyboard('t', FROM_SMOKEVIEW);
+        SPINNER_timeindex->set_int_val(iglobal_times);
+        break;
+      }
+    }
+  }
+}
+
 /* ------------------ TimeBoundCB ------------------------ */
 
 void TimeBoundCB(int var){
 
   updatemenu = 1;
   switch(var){
-  case SET_TIME:
-    SetTimeVal(glui_time);
+  case SET_TIME_FRAME:
+    SetTimeFrameIndex(glui_frame,PAUSE_TIME);
+    break;
+  case PREV_FRAME:
+    glui_frame--;
+    if(glui_frame<0)glui_frame = nglobal_times-1;
+    SetTimeFrameIndex(glui_frame,PAUSE_TIME);
+    SPINNER_timeindex->set_int_val(glui_frame);
+    break;
+  case NEXT_FRAME:
+    glui_frame++;
+    if(glui_frame>nglobal_times-1)glui_frame=0;
+    SetTimeFrameIndex(glui_frame,PAUSE_TIME);
+    SPINNER_timeindex->set_int_val(glui_frame);
+    break;
+  case SET_TIME_VAL:
+    GLUISetTimeVal(glui_time);
+    GLUISetTimeVal(glui_time);
     break;
   case TBOUNDS_USE:
     GLUIUpdatePlot2DTbounds();
@@ -5671,12 +5726,18 @@ extern "C" void GLUIBoundsSetup(int main_window){
   glui_bounds->add_button_to_panel(ROLLOUT_autoload, "Save auto load file list", SAVE_FILE_LIST, BoundBoundCB);
   glui_bounds->add_button_to_panel(ROLLOUT_autoload, "Auto load now", LOAD_FILES, BoundBoundCB);
 
-  ROLLOUT_time1a = glui_bounds->add_rollout_to_panel(PANEL_loadbounds, "Set time", false, LOAD_TIMESET_ROLLOUT, LoadRolloutCB);
+  ROLLOUT_time1a = glui_bounds->add_rollout_to_panel(PANEL_loadbounds, "Set time/frame", false, LOAD_TIMESET_ROLLOUT, LoadRolloutCB);
   TOGGLE_ROLLOUT(loadprocinfo, nloadprocinfo, ROLLOUT_time1a, LOAD_TIMESET_ROLLOUT, glui_bounds);
 
-  SPINNER_timebounds = glui_bounds->add_spinner_to_panel(ROLLOUT_time1a, "Time:", GLUI_SPINNER_FLOAT, &glui_time);
+  SPINNER_timeval = glui_bounds->add_spinner_to_panel(ROLLOUT_time1a, "Time:", GLUI_SPINNER_FLOAT, &glui_time, SET_TIME_VAL, TimeBoundCB);
+  BUTTON_SETTIME = glui_bounds->add_button_to_panel(ROLLOUT_time1a, "Set time", SET_TIME_VAL, TimeBoundCB);
+
+  SPINNER_timeindex = glui_bounds->add_spinner_to_panel(ROLLOUT_time1a, "Frame:", GLUI_SPINNER_INT, &glui_frame, SET_TIME_FRAME, TimeBoundCB);
+  BUTTON_SETFRAME = glui_bounds->add_button_to_panel(ROLLOUT_time1a, "Set frame", SET_TIME_FRAME, TimeBoundCB);
+  glui_bounds->add_button_to_panel(ROLLOUT_time1a, "Prev frame", PREV_FRAME, TimeBoundCB);
+  glui_bounds->add_button_to_panel(ROLLOUT_time1a, "Next frame", NEXT_FRAME, TimeBoundCB);
+
   glui_bounds->add_spinner_to_panel(ROLLOUT_time1a, "Offset:", GLUI_SPINNER_FLOAT, &timeoffset);
-  BUTTON_SETTIME = glui_bounds->add_button_to_panel(ROLLOUT_time1a, "Set", SET_TIME, TimeBoundCB);
 
   ROLLOUT_time2 = glui_bounds->add_rollout_to_panel(PANEL_loadbounds, "Set time limits", false, LOAD_TIMEBOUND_ROLLOUT, LoadRolloutCB);
   TOGGLE_ROLLOUT(loadprocinfo, nloadprocinfo, ROLLOUT_time2, LOAD_TIMEBOUND_ROLLOUT, glui_bounds);
@@ -7184,11 +7245,21 @@ extern "C" void GLUIUpdatePlot3dDisplay(void){
   if(RADIO_plot3d_display!=NULL)RADIO_plot3d_display->set_int_val(contour_type);
 }
 
+  /* ------------------ GLUIUpdateTime ------------------------ */
+
+void GLUIUpdateTime(void){
+  if(SPINNER_timeval!=NULL)SPINNER_timeval->set_float_val(GetTime());
+  if(SPINNER_timeindex!=NULL)SPINNER_timeindex->set_int_val(iglobal_times);
+}
+
 /* ------------------ GLUIUpdateTimeBounds ------------------------ */
 
 extern "C" void GLUIUpdateTimeBounds(float time_min, float time_max){
-  if(SPINNER_timebounds!=NULL){
-    SPINNER_timebounds->set_float_limits(time_min,time_max);
+  if(SPINNER_timeval!=NULL){
+    SPINNER_timeval->set_float_limits(time_min,time_max);
+  }
+  if(SPINNER_timeindex!=NULL && nglobal_times>0){
+    SPINNER_timeindex->set_int_limits(0,nglobal_times);
   }
 }
 

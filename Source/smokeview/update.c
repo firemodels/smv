@@ -33,18 +33,18 @@ int CompareFloat(const void *arg1, const void *arg2){
 /* ------------------ UpdateFrameNumber ------------------------ */
 
 void UpdateFrameNumber(int changetime){
-  if(force_redisplay==1||(itimeold!=itimes&&changetime==1)){
+  if(force_redisplay==1||(itimeold!=iglobal_times&&changetime==1)){
     int i;
 
     force_redisplay=0;
-    itimeold=itimes;
+    itimeold=iglobal_times;
     if(showsmoke==1){
       for(i=0;i<global_scase.npartinfo;i++){
         partdata *parti;
 
         parti = global_scase.partinfo+i;
         if(parti->loaded==0||parti->timeslist==NULL)continue;
-        parti->itime=parti->timeslist[itimes];
+        parti->itime=parti->timeslist[iglobal_times];
       }
     }
     if(showvolrender==1){
@@ -62,7 +62,7 @@ void UpdateFrameNumber(int changetime){
         smokeslice=vr->smokeslice;
         if(fireslice==NULL||smokeslice==NULL)continue;
         if(vr->loaded==0||vr->display==0)continue;
-        vr->itime = vr->timeslist[itimes];
+        vr->itime = vr->timeslist[iglobal_times];
         for(j=vr->itime;j>=0;j--){
           if(vr->dataready[j]==1)break;
         }
@@ -115,7 +115,7 @@ void UpdateFrameNumber(int changetime){
 
       geomi = geominfoptrs[i];
       if(geomi->loaded==0||geomi->timeslist==NULL)continue;
-      geomi->itime=geomi->timeslist[itimes];
+      geomi->itime=geomi->timeslist[iglobal_times];
     }
     if(showslice==1||showvslice==1){
       int ii;
@@ -135,7 +135,7 @@ void UpdateFrameNumber(int changetime){
             patchi->geom_itime = 0; // only one frame loaded at a time when using LOADSLICERNDER
           }
           else{
-            patchi->geom_itime = patchi->geom_timeslist[itimes];
+            patchi->geom_itime = patchi->geom_timeslist[iglobal_times];
           }
           patchi->geom_val_static   = patchi->geom_vals  + patchi->geom_vals_static_offset[patchi->geom_itime];
           patchi->geom_ival_static  = patchi->geom_ivals + patchi->geom_ivals_static_offset[patchi->geom_itime];
@@ -144,12 +144,12 @@ void UpdateFrameNumber(int changetime){
           patchi->geom_val_dynamic  = patchi->geom_vals  + patchi->geom_vals_dynamic_offset[patchi->geom_itime];
           patchi->geom_nval_static  = patchi->geom_nstatics[patchi->geom_itime];
           patchi->geom_nval_dynamic = patchi->geom_ndynamics[patchi->geom_itime];
-          sd->itime                 = patchi->geom_timeslist[itimes];
+          sd->itime                 = patchi->geom_timeslist[iglobal_times];
           slice_time                = sd->itime;
         }
         else{
           if(sd->timeslist == NULL)continue;
-          sd->itime = sd->timeslist[itimes];
+          sd->itime = sd->timeslist[iglobal_times];
 
           assert(sd->times_map == NULL || sd->times_map[sd->itime] == 1);
           slice_time = sd->itime;
@@ -160,7 +160,7 @@ void UpdateFrameNumber(int changetime){
 
         patchi = global_scase.patchinfo + i;
         if(patchi->structured == YES || patchi->boundary == 1 || patchi->geom_times == NULL || patchi->geom_timeslist == NULL)continue;
-        patchi->geom_itime = patchi->geom_timeslist[itimes];
+        patchi->geom_itime = patchi->geom_timeslist[iglobal_times];
         patchi->geom_ival_static  = patchi->geom_ivals + patchi->geom_ivals_static_offset[patchi->geom_itime];
         patchi->geom_ival_dynamic = patchi->geom_ivals + patchi->geom_ivals_dynamic_offset[patchi->geom_itime];
         patchi->geom_val_static   = patchi->geom_vals  + patchi->geom_vals_static_offset[patchi->geom_itime];
@@ -170,10 +170,24 @@ void UpdateFrameNumber(int changetime){
       }
     }
     if(show3dsmoke==1 && global_scase.smoke3dcoll.nsmoke3dinfo > 0){
+      INIT_PRINT_TIMER(update_smoke_time);
+#ifdef pp_SPEEDUP
+      THREADrunloop(uncompresssmoke3d_threads);
+      THREADcontrol(uncompresssmoke3d_threads, THREAD_JOIN);
+#else
+      UncompressSmoke3DAll();
+#endif
+      PRINT_TIMER(update_smoke_time, "UncompressSmoke3D");
+      
       INIT_PRINT_TIMER(merge_smoke_time);
+#ifdef pp_SPEEDUP
+      THREADrunloop(mergesmoke3d_threads);
+      THREADcontrol(mergesmoke3d_threads, THREAD_JOIN);
+#else
       MergeSmoke3DAll();
+#endif
       PrintMemoryInfo;
-      PRINT_TIMER(merge_smoke_time, "UpdateSmoke3D + MergeSmoke3D");
+      PRINT_TIMER(merge_smoke_time, "MergeSmoke3D");
     }
     if(showpatch==1){
       for(i=0;i<global_scase.npatchinfo;i++){
@@ -181,7 +195,7 @@ void UpdateFrameNumber(int changetime){
 
         patchi = global_scase.patchinfo + i;
         if(patchi->structured == YES||patchi->boundary==0||patchi->geom_times==NULL||patchi->geom_timeslist==NULL)continue;
-        patchi->geom_itime=patchi->geom_timeslist[itimes];
+        patchi->geom_itime=patchi->geom_timeslist[iglobal_times];
         if(patchi->geom_ivals != NULL){
           patchi->geom_ival_static = patchi->geom_ivals + patchi->geom_ivals_static_offset[patchi->geom_itime];
           patchi->geom_ival_dynamic = patchi->geom_ivals + patchi->geom_ivals_dynamic_offset[patchi->geom_itime];
@@ -198,7 +212,7 @@ void UpdateFrameNumber(int changetime){
         if(meshi->patchfilenum < 0||meshi->patchfilenum>global_scase.npatchinfo-1)continue;
         patchi=global_scase.patchinfo + meshi->patchfilenum;
         if(patchi->structured == NO||meshi->patch_times==NULL||meshi->patch_timeslist==NULL)continue;
-        meshi->patch_itime=meshi->patch_timeslist[itimes];
+        meshi->patch_itime=meshi->patch_timeslist[iglobal_times];
         if(patchi->compression_type==UNCOMPRESSED){
 
           meshi->patchval_iframe  = meshi->patchval  + meshi->patch_itime*meshi->npatchsize;
@@ -218,11 +232,11 @@ void UpdateFrameNumber(int changetime){
         isoi = global_scase.isoinfo + i;
         meshi = global_scase.meshescoll.meshinfo + isoi->blocknumber;
         if(isoi->loaded==0||meshi->iso_times==NULL||meshi->iso_timeslist==NULL)continue;
-        meshi->iso_itime=meshi->iso_timeslist[itimes];
+        meshi->iso_itime=meshi->iso_timeslist[iglobal_times];
       }
     }
     if(showzone==1){
-      izone=zone_timeslist[itimes];
+      izone=zone_timeslist[iglobal_times];
     }
   }
 }
@@ -1051,7 +1065,7 @@ void ConvertSsf(void){
 /* ------------------ GetTime ------------------------ */
 
 float GetTime(void){
-  if(global_times != NULL)return global_times[CLAMP(itimes,0,nglobal_times)];
+  if(global_times != NULL)return global_times[CLAMP(iglobal_times,0,nglobal_times-1)];
   return 0.0;
 }
 
@@ -1887,7 +1901,7 @@ int ISearch(float *list, int nlist, float key, int guess){
 
 void ResetItimes0(void){
   if(current_script_command==NULL||(current_script_command->command!=SCRIPT_VOLSMOKERENDERALL&&current_script_command->command!=SCRIPT_ISORENDERALL)){
-    itimes=first_frame_index;
+    iglobal_times=first_frame_index;
   }
 }
 
@@ -2238,7 +2252,7 @@ void UpdateShowScene(void){
   if(update_stept==1){
     SHOW_UPDATE(update_stept);
     update_stept = 0;
-    SetTimeVal(time_paused);
+    GLUISetTimeVal(time_paused);
     END_SHOW_UPDATE(update_stept);
   }
   if(update_movie_parms==1){
@@ -2424,6 +2438,10 @@ void UpdateShowScene(void){
     UpdateFaceLists();
     PRINT_TIMER(timer_update_facelists, "UpdateFaceLists");
     END_SHOW_UPDATE(updatefacelists);
+  }
+  if(global_times != NULL && iglobal_times != iglobal_times_last){
+    iglobal_times_last = iglobal_times;
+    GLUIUpdateTime();
   }
 #ifdef pp_SHOW_UPDATE
   if(updating==1){
@@ -2853,6 +2871,9 @@ void UpdateDisplay(void){
     update_make_iblank = 0;
     update_setvents    = 1;
     update_setcvents   = 1;
+#ifdef pp_SPEEDUP
+    printf("blanking data structures updated\n");
+#endif
   }
   if(update_setvents==1){
     SetVentDirs();

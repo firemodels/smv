@@ -162,7 +162,7 @@ void DrawShooter(void){
   shootpointdata *pb, *pe;
   int nframes;
 
-  iframe_local = shooter_timeslist[itimes];
+  iframe_local = shooter_timeslist[iglobal_times];
   pb = shoottimeinfo[iframe_local].beg;
   pe = shoottimeinfo[iframe_local].end;
   nframes = pe + 1 - pb;

@@ -130,6 +130,17 @@ void THREADruni(threaderdata *thi, unsigned char *datainfo, int sizedatai){
 #endif
 }
 
+/* ------------------ THREADrunloop ------------------------ */
+
+void THREADrunloop(threaderdata *thi){
+  int i, thread_ids[MAX_THREADS];
+
+  for(i = 0;i < MAX_THREADS;i++){
+    thread_ids[i] = i;
+  }
+  THREADruni(thi, (unsigned char *)thread_ids, sizeof(int));
+}
+
 /* ------------------ THREADrun ------------------------ */
 
 void THREADrun(threaderdata *thi){

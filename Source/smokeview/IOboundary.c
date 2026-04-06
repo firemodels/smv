@@ -329,7 +329,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
   }
   patchi = global_scase.patchinfo+meshi->patchfilenum;
 
-  if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
+  if(patch_times[0]>GetTime()||patchi->display==0)return;
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
   /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
@@ -343,7 +343,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo + n;
     if(pfi->obst!=NULL){
-      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[itimes]==0){
+      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[iglobal_times]==0){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -373,19 +373,19 @@ void DrawOnlyThreshold(const meshdata *meshi){
             color12 = NULL;
             color21 = NULL;
             color22 = NULL;
-            if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol]){
+            if(meshi->thresholdtime[nn1+icol]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol]){
               color11 = &char_color[0];
               nnulls--;
             }
-            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1]){
+            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol+1]){
               color12 = &char_color[0];
               nnulls--;
             }
-            if(meshi->thresholdtime[nn2+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol]){
+            if(meshi->thresholdtime[nn2+icol]>=0.0&&GetTime()>meshi->thresholdtime[nn2+icol]){
               color21 = &char_color[0];
               nnulls--;
             }
-            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1]){
+            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&GetTime()>meshi->thresholdtime[nn2+icol+1]){
               color22 = &char_color[0];
               nnulls--;
             }
@@ -426,7 +426,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo + n;
     if(pfi->obst!=NULL){
-      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[itimes]==0){
+      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[iglobal_times]==0){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -458,19 +458,19 @@ void DrawOnlyThreshold(const meshdata *meshi){
             color22 = NULL;
             nnulls = 4;
 
-            if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol]){
+            if(meshi->thresholdtime[nn1+icol]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol]){
               color11 = &char_color[0];
               nnulls--;
             }
-            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1]){
+            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol+1]){
               color12 = &char_color[0];
               nnulls--;
             }
-            if(meshi->thresholdtime[nn2+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol]){
+            if(meshi->thresholdtime[nn2+icol]>=0.0&&GetTime()>meshi->thresholdtime[nn2+icol]){
               color21 = &char_color[0];
               nnulls--;
             }
-            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1]){
+            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&GetTime()>meshi->thresholdtime[nn2+icol+1]){
               color22 = &char_color[0];
               nnulls--;
             }
@@ -506,7 +506,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo + n;
     if(pfi->obst != NULL && pfi->meshinfo != NULL){
-      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[itimes]==0){
+      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[iglobal_times]==0){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -536,19 +536,19 @@ void DrawOnlyThreshold(const meshdata *meshi){
             color21 = NULL;
             color22 = NULL;
             nnulls = 4;
-            if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol]){
+            if(meshi->thresholdtime[nn1+icol]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol]){
               color11 = &char_color[0];
               nnulls--;
             }
-            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1]){
+            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol+1]){
               color12 = &char_color[0];
               nnulls--;
             }
-            if(meshi->thresholdtime[nn2+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol]){
+            if(meshi->thresholdtime[nn2+icol]>=0.0&&GetTime()>meshi->thresholdtime[nn2+icol]){
               color21 = &char_color[0];
               nnulls--;
             }
-            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1]){
+            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&GetTime()>meshi->thresholdtime[nn2+icol+1]){
               color22 = &char_color[0];
               nnulls--;
             }
@@ -728,19 +728,21 @@ void GetBoundaryHeader2(char *file, patchfacedata *patchfaceinfo, int nmeshes_ar
   fread(&npatches, 4, 1, stream);
   for(i = 0;i<npatches;i++){
     int obst_index, mesh_index;
+    patchfacedata *patchi;
 
+    patchi = patchfaceinfo + i;
     buffer[6] = 0;
     fread(buffer, 4, 9, stream);
-    memcpy(patchfaceinfo->ib, buffer, 6*sizeof(int));
-    patchfaceinfo->dir = buffer[6];
+    memcpy(patchi->ib, buffer, 6*sizeof(int));
+    patchi->dir = buffer[6];
     obst_index = buffer[7];
     mesh_index = buffer[8] - 1;
-    patchfaceinfo->obst_index = obst_index;
-    patchfaceinfo->mesh_index = mesh_index;
-    patchfaceinfo->meshinfo = NULL;
-    patchfaceinfo->obst     = NULL;
-    if(mesh_index >= 0 && mesh_index < nmeshes_arg)patchfaceinfo->meshinfo = global_scase.meshescoll.meshinfo + mesh_index;
-    if(patchfaceinfo->meshinfo != NULL && obst_index>=1 && obst_index<=patchfaceinfo->meshinfo->nbptrs)patchfaceinfo->obst = patchfaceinfo->meshinfo->blockageinfoptrs[obst_index-1];
+    patchi->obst_index = obst_index;
+    patchi->mesh_index = mesh_index;
+    patchi->meshinfo = NULL;
+    patchi->obst     = NULL;
+    if(mesh_index >= 0 && mesh_index < nmeshes_arg)patchi->meshinfo = global_scase.meshescoll.meshinfo + mesh_index;
+    if(patchi->meshinfo != NULL && obst_index>=1 && obst_index<= patchi->meshinfo->nbptrs)patchfaceinfo->obst = patchi->meshinfo->blockageinfoptrs[obst_index-1];
   }
   fclose(stream);
 }
@@ -2252,12 +2254,7 @@ void SetTimeState(void){
     timestate = GetPlotState(DYNAMIC_PLOTS);
     if(timestate==DYNAMIC_PLOTS){
       update_stept = 1;
-      if(global_times!=NULL){
-        time_paused = global_times[itimes];
-      }
-      else{
-        time_paused = 0.0;
-      }
+      time_paused = GetTime();
     }
   }
 }
@@ -2374,7 +2371,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
   int is_time_arrival = 0;
 
   if(strcmp(patchi->label.shortlabel, "t_a") == 0)is_time_arrival = 1;
-  if(global_times!=NULL&&patch_times[0]>global_times[itimes])return;
+  if(global_times!=NULL&&patch_times[0]>GetTime())return;
   if(patchi->display == 0)return;
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
@@ -2415,7 +2412,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo + n;
     CheckMemory;
-    if(pfi->obst != NULL && pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[itimes]==0)continue;
+    if(pfi->obst != NULL && pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[iglobal_times]==0)continue;
     if(pfi->internal_mesh_face == 1)continue;
 
     drawit=0;
@@ -2495,7 +2492,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
     pfi = patchi->patchfaceinfo + n;
     CheckMemory;
     if(pfi->internal_mesh_face == 1)continue;
-    if(pfi->obst!=NULL && pfi->obst->showtimelist!=NULL&& pfi->obst->showtimelist[itimes]==0)continue;
+    if(pfi->obst!=NULL && pfi->obst->showtimelist!=NULL&& pfi->obst->showtimelist[iglobal_times]==0)continue;
 
     drawit=0;
     if(pfi->vis==1&&pfi->dir>0){
@@ -2574,7 +2571,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
     pfi = patchi->patchfaceinfo + n;
     CheckMemory;
     if(pfi->internal_mesh_face==1)continue;
-    if(pfi->obst!=NULL && pfi->obst->showtimelist!=NULL && pfi->obst->showtimelist[itimes]==0)continue;
+    if(pfi->obst!=NULL && pfi->obst->showtimelist!=NULL && pfi->obst->showtimelist[iglobal_times]==0)continue;
 
     drawit=0;
     if(pfi->vis==1&&pfi->dir<0){
@@ -2672,7 +2669,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   patchval_iframe=meshi->patchval_iframe;
   patchi = global_scase.patchinfo + meshi->patchfilenum;
 
-  if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
+  if(patch_times[0]>GetTime()||patchi->display==0)return;
 
   int set_valmin, set_valmax;
   char *label;
@@ -2696,7 +2693,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo + n;
     if(pfi->obst!=NULL&&pfi->meshinfo!=NULL){
-      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[itimes]==0){
+      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[iglobal_times]==0){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -2731,10 +2728,10 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
             color12=clear_color;
             color21=clear_color;
             color22=clear_color;
-            if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ])color11=burn_color;
-            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1])color12=burn_color;
-            if(meshi->thresholdtime[nn2+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol  ])color21=burn_color;
-            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1])color22=burn_color;
+            if(meshi->thresholdtime[nn1+icol  ]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol  ])color11=burn_color;
+            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol+1])color12=burn_color;
+            if(meshi->thresholdtime[nn2+icol  ]>=0.0&&GetTime()>meshi->thresholdtime[nn2+icol  ])color21=burn_color;
+            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&GetTime()>meshi->thresholdtime[nn2+icol+1])color22=burn_color;
             if(color11==color12&&color11==color21&&color11==color22){
               glColor4fv(color11);
               glTexCoord1f(r11);glVertex3fv(xyzp1);
@@ -2782,7 +2779,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo + n;
     if(pfi->obst!=NULL){
-      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[itimes]==0){
+      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[iglobal_times]==0){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -2817,10 +2814,10 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
             color12=clear_color;
             color21=clear_color;
             color22=clear_color;
-            if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ])color11=burn_color;
-            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1])color12=burn_color;
-            if(meshi->thresholdtime[nn2+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol  ])color21=burn_color;
-            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1])color22=burn_color;
+            if(meshi->thresholdtime[nn1+icol  ]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol  ])color11=burn_color;
+            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol+1])color12=burn_color;
+            if(meshi->thresholdtime[nn2+icol  ]>=0.0&&GetTime()>meshi->thresholdtime[nn2+icol  ])color21=burn_color;
+            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&GetTime()>meshi->thresholdtime[nn2+icol+1])color22=burn_color;
             if(color11==color12&&color11==color21&&color11==color22){
               glColor4fv(color11);
               glTexCoord1f(r11);glVertex3fv(xyzp1);
@@ -2864,7 +2861,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo;
     if(pfi->obst!=NULL&&pfi->meshinfo!=NULL){
-      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[itimes]==0){
+      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[iglobal_times]==0){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -2898,10 +2895,10 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
             color12=clear_color;
             color21=clear_color;
             color22=clear_color;
-            if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ])color11=burn_color;
-            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1])color12=burn_color;
-            if(meshi->thresholdtime[nn2+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol  ])color21=burn_color;
-            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1])color22=burn_color;
+            if(meshi->thresholdtime[nn1+icol  ]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol  ])color11=burn_color;
+            if(meshi->thresholdtime[nn1+icol+1]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol+1])color12=burn_color;
+            if(meshi->thresholdtime[nn2+icol  ]>=0.0&&GetTime()>meshi->thresholdtime[nn2+icol  ])color21=burn_color;
+            if(meshi->thresholdtime[nn2+icol+1]>=0.0&&GetTime()>meshi->thresholdtime[nn2+icol+1])color22=burn_color;
             if(color11==color12&&color11==color21&&color11==color22){
               glColor4fv(color11);
               glTexCoord1f(r11);glVertex3fv(xyzp1);
@@ -2971,7 +2968,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
   }
   patchi = global_scase.patchinfo + meshi->patchfilenum;
 
-  if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
+  if(patch_times[0]>GetTime()||patchi->display==0)return;
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
   /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
@@ -2983,7 +2980,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo + n;
     if(pfi->obst != NULL && pfi->meshinfo != NULL){
-      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[itimes]==0){
+      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[iglobal_times]==0){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -3007,7 +3004,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
         for(icol=0;icol<ncol-1;icol++){
           {
             color11=clear_color;
-            if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ])color11=burn_color;
+            if(meshi->thresholdtime[nn1+icol  ]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol  ])color11=burn_color;
 
             glColor4fv(color11);
             glVertex3fv(xyzp1);
@@ -3037,7 +3034,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo + n;
     if(pfi->obst!=NULL){
-      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[itimes]==0){
+      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[iglobal_times]==0){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -3062,7 +3059,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
         for(icol=0;icol<ncol-1;icol++){
           {
             color11=clear_color;
-            if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ])color11=burn_color;
+            if(meshi->thresholdtime[nn1+icol  ]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol  ])color11=burn_color;
 
             glColor4fv(color11);
             glVertex3fv(xyzp1);
@@ -3088,7 +3085,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo + n;
     if(pfi->obst != NULL && pfi->meshinfo != NULL){
-      if(pfi->obst->showtimelist!=NULL&& pfi->obst->showtimelist[itimes]==0){
+      if(pfi->obst->showtimelist!=NULL&& pfi->obst->showtimelist[iglobal_times]==0){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -3112,7 +3109,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
         for(icol=0;icol<ncol-1;icol++){
           {
             color11=clear_color;
-            if(meshi->thresholdtime[nn1+icol  ]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol  ])color11=burn_color;
+            if(meshi->thresholdtime[nn1+icol  ]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol  ])color11=burn_color;
 
             glColor4fv(color11);
             glVertex3fv(xyzp1);
@@ -3205,7 +3202,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   if(patchval_iframe == NULL)return;
   patchi = global_scase.patchinfo+meshi->patchfilenum;
 
-  if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
+  if(patch_times[0]>GetTime()||patchi->display==0)return;
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
   nn = 0;
@@ -3219,7 +3216,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo + n;
     if(pfi->obst != NULL){
-      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[itimes]==0){
+      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[iglobal_times]==0){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -3261,7 +3258,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
             if(patchventcolors==NULL){
               color11 = rgb_patch+4*cval;
               if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
-                if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
+                if(meshi->thresholdtime[nn1+icol]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
               }
             }
             else{
@@ -3299,7 +3296,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo + n;
     if(pfi->obst!=NULL){
-      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[itimes]==0){
+      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[iglobal_times]==0){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -3345,7 +3342,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
             if(patchventcolors==NULL){
               color11 = rgb_patch+4*cval;
               if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
-                if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
+                if(meshi->thresholdtime[nn1+icol]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
               }
             }
             else{
@@ -3379,7 +3376,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo + n;
     if(pfi->obst != NULL){
-      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[itimes]==0){
+      if(pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[iglobal_times]==0){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -3420,7 +3417,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
             if(patchventcolors==NULL){
               color11 = rgb_patch+4*cval;
               if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
-                if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
+                if(meshi->thresholdtime[nn1+icol]>=0.0&&GetTime()>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
               }
             }
             else{
@@ -3486,8 +3483,8 @@ meshdata *GetPatchMeshNabor(meshdata *meshi, int *ib){
 void DrawBoundaryFrame(int flag){
   int i;
 
-  if(use_tload_begin==1 && global_times[itimes]<global_scase.tload_begin)return;
-  if(use_tload_end==1   && global_times[itimes]>global_scase.tload_end)return;
+  if(use_tload_begin==1 && GetTime()<global_scase.tload_begin)return;
+  if(use_tload_end==1   && GetTime()>global_scase.tload_end)return;
 
   for(i=0;i<global_scase.npatchinfo;i++){
     patchdata *patchi;

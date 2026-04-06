@@ -54,7 +54,11 @@ void Usage(int option){
     PRINTF("        uses (20.0,620.0) and (0.0,0.23) for temperature and oxygen bounds\n");
     PRINTF("        and creates the .svd file which activates the Smokeview demonstrator\n");
     PRINTF("        mode.\n");
-    PRINTF("  -skip skipval - skip frames when compressing files\n\n");
+    PRINTF("  -skip skipval - skip frames when compressing files\n");
+#ifdef pp_REDUCE_SMOKE3D
+    PRINTF("  -smokeskip n - skip n smoke planes when compressing 3D smoke files\n");
+#endif
+    PRINTF("\n");
     UsageCommon(HELP_ALL);
   }
 }
@@ -125,6 +129,10 @@ int main(int argc, char **argv){
   GLOBboundzipstep=1;
   GLOBslicezipstep=1;
   GLOBfilesremoved=0;
+#ifdef pp_REDUCE_SMOKE3D
+  GLOBreduce_smoke3d   = 0;
+  GLOBskip_smokeplanes = 1;
+#endif
 
   npatchinfo=0;
   nsmoke3dinfo=0;
@@ -223,6 +231,14 @@ int main(int argc, char **argv){
           }
           i++;
         }
+#ifdef pp_REDUCE_SMOKE3D
+        else if(strcmp(arg, "-smokeskip") == 0){
+          arg2 = argv[i + 1];
+          sscanf(arg2, "%i", &GLOBskip_smokeplanes);
+          GLOBreduce_smoke3d = 1;
+          i++;
+        }
+#endif
         break;
       case 'd':
         if(strcmp(arg,"-demo")==0){
