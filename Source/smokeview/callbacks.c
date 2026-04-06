@@ -4321,6 +4321,7 @@ void DoNonStereo(void){
 
     sprintf(label, "DoNonStereo(%i)", iglobal_times);
     PRINT_TIMER(timer_dononstereo, label);
+    PRINT_TIMER_LF(timer_dononstereo);
   }
 }
 

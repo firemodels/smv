@@ -147,6 +147,10 @@
 #define PRINT_TIMER(timer, label) PrintTime(__FILE__, __LINE__, &timer, label, 1)
 #endif
 
+#ifndef PRINT_TIMER_LF
+#define PRINT_TIMER_LF(timer) if(show_timings==1 && timer>0.1)printf("\n")
+#endif
+
 #ifndef PRINT_CUM_TIMER
 #define PRINT_CUM_TIMER(timer, label) PrintTime(__FILE__, __LINE__, &timer, label, 0)
 #endif
