@@ -4202,6 +4202,7 @@ void IdleDisplay(void){
 void DoNonStereo(void){
   assert(opengl_finalized == 1);
   if(opengl_finalized == 0)return;
+  INIT_PRINT_TIMER(timer_dononstereo);
   if(render_status==RENDER_OFF){
     glDrawBuffer(GL_BACK);
     ShowScene(DRAWSCENE, VIEW_CENTER, 0, 0, 0, NULL);
@@ -4314,6 +4315,12 @@ void DoNonStereo(void){
       assert(render_skip>0);
       RenderState(RENDER_OFF);
     }
+  }
+  if(show_timings != 0){
+    char label[256];
+
+    sprintf(label, "DoNonStereo(%i)", iglobal_times);
+    PRINT_TIMER(timer_dononstereo, label);
   }
 }
 

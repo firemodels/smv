@@ -529,7 +529,12 @@ void ShowScene2(int mode){
     CLIP_VALS;
     INIT_PRINT_TIMER(timer_drawsmoke);
     DrawSmokeFrame();
-    PRINT_TIMER(timer_drawsmoke, "DrawSmokeFrame");
+    if(show_timings != 0){
+      char label[256];
+
+      sprintf(label, "DrawSmokeFrame(%i)", iglobal_times);
+      PRINT_TIMER(timer_drawsmoke, label);
+    }
   }
 
   /* ++++++++++++++++++++++++ draw vol smoke +++++++++++++++++++++++++ */
@@ -632,7 +637,13 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
 
   INIT_PRINT_TIMER(timer_showscene);
   UpdateShowScene();
-  PRINT_TIMER(timer_showscene, "UpdateShowScene");
+
+  if(show_timings != 0){
+    char label[256];
+
+    sprintf(label, "\nUpdateShowScene(%i)", iglobal_times);
+    PRINT_TIMER(timer_showscene, label);
+  }
   if(stereotype == STEREO_NONE || stereotype == STEREO_TIME)ClearBuffers(mode);
 
   /* ++++++++++++++++++++++++ setup viewports +++++++++++++++++++++++++ */
@@ -696,11 +707,5 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
     }
   }
   if(viscolorbarpath==0||colorbar_showscene==1)ShowScene2(mode);
-
-/* ++++++++++++++++++++++++ render scene +++++++++++++++++++++++++ */
-// if rendering is not working remove following comment
-// then determine where Render should have been called
-//  Render(view_mode);
-
   SNIFF_ERRORS("end of ShowScene");
 }
