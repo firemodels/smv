@@ -7,6 +7,11 @@
 
 #include "shared_structures.h"
 
+//*** glui_bounds.cpp headers
+
+EXTERNCPP void SetTimeFrameIndex(int frameval, int stept_arg);
+EXTERNCPP void GLUIUpdateTime(void);
+
 //*** glui_clip.cpp headers
 
 EXTERNCPP void GLUIClipSetup(int main_window);
@@ -565,7 +570,16 @@ EXTERNCPP int  IsSmokeLoaded(smv_case *scase);
 EXTERNCPP void MakeIBlankSmoke3D(void);
 EXTERNCPP void MakeTimesMap(float *times, unsigned char **times_map_ptr, int n);
 EXTERNCPP void MergeSmoke3D(smoke3ddata *smoke3dset);
+#ifdef pp_SPEEDUP
+EXTERNCPP void *MergeSmoke3DAll(void *arg);
+#else
 EXTERNCPP void MergeSmoke3DAll(void);
+#endif
+#ifdef pp_SPEEDUP
+EXTERNCPP void *UncompressSmoke3DAll(void *arg);
+#else
+EXTERNCPP void UncompressSmoke3DAll(void);
+#endif
 EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int first_time, int *errorcode);
 EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
 EXTERNCPP void SmokeWrapup(void);
@@ -816,7 +830,11 @@ EXTERNCPP int  InExterior(float *xyz);
 EXTERNCPP void InitClip(void);
 EXTERNCPP void InitTetraClipInfo(clipdata *ci,float *v1, float *v2, float *v3, float *v4);
 EXTERNCPP void MatMultMat(float *m1, float *m2, float *m3);
-EXTERNCPP int  MakeIBlank(void);
+#ifdef pp_SPEEDUP
+EXTERNCPP void *MakeIBlank(void *arg);
+#else
+EXTERNCPP int MakeIBlank(void);
+#endif
 EXTERNCPP int  MakeIBlankCarve(void);
 EXTERNCPP void MergeClipPlanes(clipdata *ci, clipdata *cj);
 EXTERNCPP int  MeshInFrustum(meshdata *meshi);

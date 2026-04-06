@@ -885,12 +885,7 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_framelabel:
      visFramelabel=1-visFramelabel;
-     if(visFramelabel==1){
-       vis_hrr_label=0;
-     }
-    plotstate=GetPlotState(DYNAMIC_PLOTS);
-    UpdateShow();
-    update_times = 1;
+     if(visFramelabel==1)vis_hrr_label=0;
      break;
    case MENU_LABEL_meshlabel:
      visMeshlabel=1-visMeshlabel;
@@ -3291,7 +3286,7 @@ void LoadPlot2DMenu(int value){
 
 void UnloadSmoke3D(smoke3ddata *smoke3di){
   smoke3di->request_load = 0;
-  smoke3di->soot_density_loaded = 0;
+  smoke3di->soot_loaded = 0;
   if(smoke3di->loaded == 0)return;
   FreeSmoke3D(&global_scase, smoke3di);
   smoke3di->loaded  = 0;

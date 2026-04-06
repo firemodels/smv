@@ -997,7 +997,7 @@ void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down){
       }
       update_avg = 0;
     }
-    highlight_time = global_times[itimes];
+    highlight_time = GetTime();
     itime = GetInterval(highlight_time, hitime->vals, hitime->nvals);
     itime = CLAMP(itime, 0, hitime->nvals-1);
 
@@ -1140,7 +1140,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down){
       devicei = &(slicei->vals2d);
       if(slicei->loaded==0||devicei->valid==0)continue;
 
-      highlight_val = devicei->vals[itimes];
+      highlight_val = devicei->vals[iglobal_times];
 
       boundsdata *sb;
 
@@ -1162,7 +1162,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down){
         update_avg = 0;
       }
       DrawPlot2D(PLOT_ALL, devicei->times, devicei->vals, NULL, devicei->nvals,
-               global_times[itimes], highlight_val, 0.0, 1, position, valmin, valmax,
+               GetTime(), highlight_val, 0.0, 1, position, valmin, valmax,
                slicei->label.shortlabel, NULL, slicei->label.unit,
                VP_slice_plot.left, VP_slice_plot.right, VP_slice_plot.down, VP_slice_plot.top);
       position++;
@@ -1348,10 +1348,8 @@ int CompareMeshes(const void *arg1, const void *arg2){
   xyzmaxi = meshi->boxmax_fds;
   xyzminj = meshj->boxmin_fds;
   xyzmaxj = meshj->boxmax_fds;
-  if(dir == 0){
-    if(xyzmaxi[0] <= xyzminj[0])dir = 1;
-    if(xyzmaxj[0] <= xyzmini[0])dir = -1;
-  }
+  if(xyzmaxi[0] <= xyzminj[0])dir = 1;
+  if(xyzmaxj[0] <= xyzmini[0])dir = -1;
   if(dir == 0){
     if(xyzmaxi[1] <= xyzminj[1])dir = 2;
     if(xyzmaxj[1] <= xyzmini[1])dir = -2;
@@ -1946,7 +1944,7 @@ void GetSmokeDir(float *mm){
 
       use_soot_density = 0;
       maxval = soot->maxval;
-      if(soot->soot_density_loaded == 1 && soot->maxvals!=NULL){
+      if(soot->soot_loaded == 1 && soot->maxvals!=NULL){
         use_soot_density = 1;
         maxval = soot->maxvals[soot->ismoke3d_time];
       }
@@ -2348,7 +2346,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       tourdata *touri;
 
       touri = global_scase.tourcoll.tourinfo + selectedtour_index;
-      SetTourXYZView(global_times[itimes], touri);
+      SetTourXYZView(GetTime(), touri);
       memcpy(camera_current->eye, touri->xyz_smv, 3*sizeof(float));
       camera_current->az_elev[1]=0.0;
       camera_current->az_elev[0]=0.0;
@@ -2469,7 +2467,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
         if(viewtourfrompath==1&&selectedtour_index>=0){
           touri = global_scase.tourcoll.tourinfo + selectedtour_index;
-          SetTourXYZView(global_times[itimes], touri);
+          SetTourXYZView(GetTime(), touri);
           viewx = touri->view_smv[0]+dEyeSeparation[0];
           viewy = touri->view_smv[1]-dEyeSeparation[1];
           viewz = touri->view_smv[2];

@@ -9,6 +9,37 @@
 #include "dmalloc.h"
 #include "compress.h"
 
+#ifdef pp_REDUCE_SMOKE3D
+/* ------------------ Reduce3DSmoke ------------------------ */
+
+#define IJKNODE(i,j,k) ((i)+(j)*nx+(k)*nxy)
+
+void ReduceSmoke3D(unsigned char *full_alphabuffer, int *nxyz_in, int skip_smokeplanes,
+                    unsigned char *full_alphabuffer_out){
+
+  int k, nx, ny, nz, nxy;
+
+  nx = nxyz_in[0];
+  ny = nxyz_in[1];
+  nz = nxyz_in[2];
+  nxy = nx*ny;
+
+  for(k = 0;k < nz;k += skip_smokeplanes){
+    int j;
+
+    for(j = 0;j < ny;j += skip_smokeplanes){
+      int i;
+      
+      for(i = 0;i < nx;i+=skip_smokeplanes){
+
+        *full_alphabuffer_out = full_alphabuffer[IJKNODE(i, j, k)];
+        full_alphabuffer_out++;
+      }
+    }
+  }
+}
+#endif
+
 /* ------------------ Convert3DSmoke ------------------------ */
 
 void Convert3DSmoke(smoke3d *smoke3di, int *thread_index){
@@ -156,6 +187,23 @@ void Convert3DSmoke(smoke3d *smoke3di, int *thread_index){
   nx = nxyz[3]-nxyz[2]+1;
   ny = nxyz[5]-nxyz[4]+1;
   nz = nxyz[7]-nxyz[6]+1;
+
+#ifdef pp_REDUCE_SMOKE3D
+  int nxyz_in[3], [3], nxy;
+  unsigned char *full_alphabuffer_out;
+
+  if(GLOBreduce_smoke3d == 1){
+    nxyz_in[0] = nx;
+    nxyz_in[1] = ny;
+    nxyz_in[2] = nz;
+    nxy = nx*ny;
+    nxyz_out[0] = 1 + (nx - 1) / GLOBskip_smokeplanes;
+    nxyz_out[1] = 1 + (ny - 1) / GLOBskip_smokeplanes;
+    nxyz_out[2] = 1 + (nz - 1) / GLOBskip_smokeplanes;
+    NewMemory((void **)&full_alphabuffer_out, nxyz_out[0] * nxyz_out[1] * nxyz_out[2]);
+  }
+#endif
+
   buffersize=2*(1.01*nx*ny*nz+600);
   smoke3di->nx=nx;
   smoke3di->ny=ny;
@@ -195,6 +243,15 @@ void Convert3DSmoke(smoke3d *smoke3di, int *thread_index){
     if(nfull_file!=nfull_data){
       fprintf(stderr,"*** Warning frame size expected=%i frame size found=%i\n",nfull_file,nfull_data);
     }
+
+#ifdef pp_REDUCE_SMOKE3D
+    if(GLOBreduce_smoke3d == 1){
+      ReduceSmoke3D(full_alphabuffer, nxyz_in, GLOBskip_smokeplanes, full_alphabuffer_out);
+      FREEMEMORY(full_alphabuffer);
+      full_alphabuffer = full_alphabuffer_out;
+      nfull_data = nxyz_out[0]*nxyz_out[1]*nxyz_out[2];
+    }
+#endif
 
     // compress frame data (into ZLIB format)
 

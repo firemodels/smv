@@ -20,7 +20,6 @@ void FreeSmoke3D(smv_case *scase, smoke3ddata *smoke3di){
   meshi = scase->meshescoll.meshinfo + smoke3di->blocknumber;
   FREEMEMORY(meshi->is_firenode);
   meshi->is_firenodeptr = NULL;
-  smoke3di->lastiframe = -999;
   float ext;
   char *label;
 

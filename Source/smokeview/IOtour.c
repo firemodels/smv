@@ -270,9 +270,9 @@ void DrawTours(void){
           if(touri->timeslist==NULL)continue;
 
           float xyz[3], view[3];
-          float tour_time=0.0;
+          float tour_time;
 
-          if(global_times!=NULL)tour_time = global_times[itimes];
+          tour_time = GetTime();
           GetTourXYZ(tour_time,  touri, xyz);
           GetTourView(tour_time, touri, view);
 
@@ -293,9 +293,9 @@ void DrawTours(void){
           if(touri->timeslist==NULL)continue;
 
           float xyz[3];
-          float tour_time=0.0;
+          float tour_time;
 
-          if(global_times!=NULL)tour_time = global_times[itimes];
+          tour_time = GetTime();
           GetTourXYZ(tour_time, touri, xyz);
           DrawCir(xyz,tourrad_avatar,tourcol_avatar);
         }
@@ -310,9 +310,9 @@ void DrawTours(void){
           if(touri->timeslist==NULL)continue;
 
           float xyz[3], tour_view[3];
-          float tour_time=0.0;
+          float tour_time;
 
-          if(global_times!=NULL)tour_time = global_times[itimes];
+          tour_time = GetTime();
           GetTourXYZ(tour_time,  touri, xyz);
           GetTourView(tour_time, touri, tour_view);
           dxy[0]=tour_view[0]-xyz[0];

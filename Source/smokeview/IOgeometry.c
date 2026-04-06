@@ -4851,8 +4851,8 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
         }
         if(itime==1&&geomi->geomtype==GEOM_ISO){
           if(plotstate != DYNAMIC_PLOTS)continue;
-          if(use_tload_begin==1&&global_times[itimes]<global_scase.tload_begin)continue;
-          if(use_tload_end==1&&global_times[itimes]>global_scase.tload_end)continue;
+          if(use_tload_begin==1&&GetTime()<global_scase.tload_begin)continue;
+          if(  use_tload_end==1&&GetTime()>global_scase.tload_end)continue;
         }
 
         for(j = 0; j < geomlisti->ntriangles; j++){

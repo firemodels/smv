@@ -1423,8 +1423,8 @@ typedef struct _smoke3ddata {
   int is_smoke, is_fire;
   int loaded, request_load, finalize, display, primary_file;
   int is_zlib;
-  int is_smoke_density;
-  int soot_density_loaded;
+
+  int soot_loaded;
   smokestatedata *smokestate;
   int blocknumber;
   int type;
@@ -1450,7 +1450,7 @@ typedef struct _smoke3ddata {
   int fire_alpha, co2_alpha;
   float fire_alphas[256], co2_alphas[256];
   int *timeslist;
-  int ntimes, ntimes_old, ismoke3d_time, lastiframe, ntimes_full;
+  int ntimes, ntimes_old, ismoke3d_time, ntimes_full;
   int nchars_uncompressed;
 
   int ncomp_smoke_total;
