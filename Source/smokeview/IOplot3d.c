@@ -1602,9 +1602,9 @@ void DrawGrid(const meshdata *meshi){
       skipk = kbar;
     }
     if(use_smoke_grid == 1){
-      skipi = smoke3d_skipx;
-      skipj = smoke3d_skipy;
-      skipk = smoke3d_skipz;
+      skipi = smoke3d_skip_horiz;
+      skipj = smoke3d_skip_frontback;
+      skipk = smoke3d_skip_vert;
     }
 
     glBegin(GL_LINES);

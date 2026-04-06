@@ -6113,13 +6113,13 @@ int ReadIni2(const char *inifile, int localfile){
         int smokeskippm1_local;
 
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i %i %i %i %i", &smokeskippm1_local, &smoke3d_skip, &smoke3d_skipx, &smoke3d_skipy, &smoke3d_skipz);
+        sscanf(buffer, "%i %i %i %i %i", &smokeskippm1_local, &smoke3d_skip_all, &smoke3d_skip_horiz, &smoke3d_skip_vert, &smoke3d_skip_frontback);
         if(smokeskippm1_local<0)smokeskippm1_local = 0;
-        smoke3d_frame_inc = smokeskippm1_local + 1;
-        smoke3d_skip  = CLAMP(smoke3d_skip,1,10);
-        smoke3d_skipx = CLAMP(smoke3d_skipx, 1, 10);
-        smoke3d_skipy = CLAMP(smoke3d_skipy, 1, 10);
-        smoke3d_skipz = CLAMP(smoke3d_skipz, 1, 10);
+        smoke3d_frame_inc      = smokeskippm1_local + 1;
+        smoke3d_skip_all       = CLAMP(smoke3d_skip_all,1,20);
+        smoke3d_skip_horiz     = CLAMP(smoke3d_skip_horiz, 1, 20);
+        smoke3d_skip_vert      = CLAMP(smoke3d_skip_vert, 1, 20);
+        smoke3d_skip_frontback = CLAMP(smoke3d_skip_frontback, 1, 20);
         update_smoke3d_frame_inc = 1;
         continue;
       }
@@ -8412,7 +8412,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %f\n", glui_mass_extinct);
   glui_mass_extinct_default = glui_mass_extinct;
   fprintf(fileout, "SMOKESKIP\n");
-  fprintf(fileout," %i %i %i %i %i\n", smoke3d_frame_inc-1,smoke3d_skip, smoke3d_skipx, smoke3d_skipy, smoke3d_skipz);
+  fprintf(fileout," %i %i %i %i %i\n", smoke3d_frame_inc-1,smoke3d_skip_all, smoke3d_skip_horiz, smoke3d_skip_vert, smoke3d_skip_frontback);
 #ifdef pp_GPU
   fprintf(fileout, "USEGPU\n");
   fprintf(fileout, " %i\n", usegpu);
