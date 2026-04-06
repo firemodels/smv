@@ -697,6 +697,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   SPINNER_smoke3d_skipx  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "yz",     GLUI_SPINNER_INT, &smoke3d_skipx,  SMOKE_SKIP_X,   GLUISmoke3dCB);
   SPINNER_smoke3d_skipy  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "xz",     GLUI_SPINNER_INT, &smoke3d_skipy,  SMOKE_SKIP_Y,   GLUISmoke3dCB);
   SPINNER_smoke3d_skipz  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "xy",     GLUI_SPINNER_INT, &smoke3d_skipz,  SMOKE_SKIP_Z,   GLUISmoke3dCB);
+  glui_3dsmoke->add_checkbox_to_panel(PANEL_skip_planes, "Use skips when drawing grids", &use_smoke_grid);
 
   glui_3dsmoke->add_column_to_panel(ROLLOUT_skip, false);
   PANEL_max_planes = glui_3dsmoke->add_panel_to_panel(ROLLOUT_skip, "max plane");

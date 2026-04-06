@@ -1601,6 +1601,11 @@ void DrawGrid(const meshdata *meshi){
       skipj = jbar;
       skipk = kbar;
     }
+    if(use_smoke_grid == 1){
+      skipi = smoke3d_skipx;
+      skipj = smoke3d_skipy;
+      skipk = smoke3d_skipz;
+    }
 
     glBegin(GL_LINES);
     if(visx_all==1&&plotx>=0){
