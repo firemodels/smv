@@ -2268,14 +2268,23 @@ void *Compress(void *arg){
 #ifdef pp_READTEST
 
 /* ------------------ ReadTest ------------------------ */
-static int countread=0;
+
 void *ReadTest(void *arg){
   char buffer[100];
 
-  printf("read test activated\n");
   for(;;){
+    char *flag;
+
+    THREADcontrol(readkeyboard_threads, THREAD_LOCK);
     fgets(buffer, 255, stdin);
-    printf("ReadTest: %i %s\n", countread++,buffer);
+    flag = TrimFrontBack(buffer);
+    if(strcmp(flag, "a") == 0){
+      abort_vis = 1;
+    }
+    else{
+      abort_vis = 0;
+    }
+    THREADcontrol(readkeyboard_threads, THREAD_UNLOCK);
 #ifdef _WIN32
     Sleep(1000);
 #else

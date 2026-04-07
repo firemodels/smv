@@ -91,6 +91,16 @@ SVEXTERN threaderdata SVDECL(*mergesmoke3d_threads, NULL);
 SVEXTERN int SVDECL(n_readkeyboard_threads, 1), SVDECL(use_readkeyboard_threads, 1);
 SVEXTERN threaderdata SVDECL(*readkeyboard_threads, NULL);
 SVEXTERN int SVDECL(update_readtest, 0);
+SVEXTERN int SVDECL(abort_vis, 0);
+#ifndef ABORTVIS
+#define ABORTVIS \
+THREADcontrol(readkeyboard_threads, THREAD_LOCK);\
+if(abort_vis==1){\
+  THREADcontrol(readkeyboard_threads, THREAD_UNLOCK);\
+  return;\
+}\
+THREADcontrol(readkeyboard_threads, THREAD_UNLOCK)
+#endif
 #endif
 
 //*** uncompress smoke
