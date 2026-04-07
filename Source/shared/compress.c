@@ -254,7 +254,7 @@ unsigned char AverageCube(unsigned *buffer, int *ijk_start, int *ijk_end, int *n
   for(k = ijk_start[2]; k <= ijk_end[2]; k++){
     for(j = ijk_start[1]; j <= ijk_end[1]; j++){
       for(i = ijk_start[0]; i <= ijk_end[0]; i++){
-        faverage += buffer[IJKNODE(i, j, k)];
+        faverage += buffer[IJKMAP(i, j, k, nx, nxy)];
       }
     }
   }
@@ -349,4 +349,136 @@ void Reorder3D(int **fds2smv, int **smv2fds, int *nijk){
   }
 
   FREEMEMORY(state);
+}
+
+
+/* --------------------------  octtreedata ------------------------------- */
+
+typedef struct _octreedata {
+  unsigned char val, valmin, valmax, mask, bottom;
+  struct _octreedata *subtrees[8];
+  int ijkmin[3], ijkmax[3], nsubtrees;
+} octtreedata;
+
+/* ------------------ InitOctTree ------------------------ */
+
+octtreedata *InitOctTree(unsigned char *vals, int *nijk, unsigned char level, int *ijkmin, int *ijkmax){
+  octtreedata *oi;
+  int i,j,k;
+  unsigned char valmin = 255, valmax = 0, val;
+  unsigned int valsum = 0;
+  int nx, ny, nxy, nz, nvals;
+
+  nx = nijk[0];
+  ny = nijk[1];
+  nz = nijk[2];
+  nxy = nx*ny;
+  nvals = nx * ny * nz;
+
+  valmin = vals[IJKMAP(ijkmin[0], ijkmin[1], ijkmin[2], nx, nxy)];
+  valmax = valmin;
+
+  NewMemory((void **)&oi, sizeof(octtreedata));
+
+  memcpy(oi->ijkmin, ijkmin, 3 * sizeof(int));
+  memcpy(oi->ijkmax, ijkmax, 3 * sizeof(int));
+
+  for(k = ijkmin[2];k <= ijkmax[2];k++){
+    for(j = ijkmin[1];1 <= ijkmax[1];j++){
+      for(i = ijkmin[0];i <= ijkmax[0];i++){
+        val = vals[IJKMAP(i,j,k, nx, nxy)];
+        if(val < valmin)valmin = val;
+        if(val > valmax)valmax = val;
+        valsum += val;
+      }
+    }
+  }
+  if(valmax - valmin <= level){
+    oi->bottom = 1;
+  }
+  else{
+    oi->bottom = 0;
+  }
+  oi->mask = 0;
+  oi->valmin = valmin;
+  oi->valmax = valmax;
+  oi->nsubtrees = 0;
+  oi->val = valsum / nvals;
+  for(i = 0;i < 8;i++){
+    oi->subtrees[i] = NULL;
+  }
+  return oi;
+}
+
+/* ------------------ MakeSubOctTrees ------------------------ */
+
+void MakeSubOctTrees(octtreedata *oi, unsigned char level, unsigned char *vals, int *nijk){
+  int i, j, k;
+  int ijkmin[3], ijkmax[3];
+  int nx, nxy;
+  unsigned char submask[8] = {1, 2, 4, 8,16,32,64,128};
+
+  nx = nijk[0];
+  nxy = nijk[0] * nijk[1];
+
+  if(oi->bottom==1)return;
+  if(ijkmin[0] == ijkmax[0] && ijkmin[1] == ijkmax[1] && ijkmin[2] == ijkmax[2])return;
+
+  int index = 0;
+  for(k = 0;k < 2;k++){
+    if(k == 0){
+      ijkmin[2] = oi->ijkmin[2];
+      ijkmax[2] = (oi->ijkmin[2] + oi->ijkmax[2]) / 2;
+    }
+    else{
+      ijkmin[2] = (oi->ijkmin[2] + oi->ijkmax[2]) /2 +1;
+      ijkmax[2] = oi->ijkmax[2];
+    }
+    for(j = 0;j < 2;j++){
+      if(j == 0){
+        ijkmin[1] = oi->ijkmin[1];
+        ijkmax[1] = (oi->ijkmin[1] + oi->ijkmax[1]) / 2;
+      }
+      else{
+        ijkmin[1] = (oi->ijkmin[1] + oi->ijkmax[1]) / 2 +1;
+        ijkmax[1] = oi->ijkmax[1];
+      }
+      for(i = 0;i < 2;i++){
+        if(i == 0){
+          ijkmin[0] = oi->ijkmin[0];
+          ijkmax[0] = (oi->ijkmin[0] + oi->ijkmax[0]) / 2;
+        }
+        else{
+          ijkmin[0] = (oi->ijkmin[0] + oi->ijkmax[0]) / 2 +1;
+          ijkmax[0] = oi->ijkmax[0];
+        }
+        if(ijkmin[0] == ijkmax[0] && ijkmin[1] == ijkmax[1] && ijkmin[2] == ijkmax[2]){
+          memcpy(oi->ijkmin, ijkmin, 3 * sizeof(int));
+          memcpy(oi->ijkmax, ijkmax, 3 * sizeof(int));
+          oi->subtrees[index] = InitOctTree(vals, nijk, level, ijkmin, ijkmax);
+          oi->mask &= submask[index];
+        }
+        else{
+          oi->subtrees[index] = NULL;
+        }
+        index++;
+      }
+    }
+  }
+}
+
+/* ------------------ OctTreeCompress ------------------------ */
+
+void OctTreeCompress(char *vals, int *nijk, unsigned char level){
+  octtreedata *rootnode;
+  int ijkmin[3], ijkmax[3];
+
+  ijkmin[0] = 0;
+  ijkmin[1] = 0;
+  ijkmin[2] = 0;
+  ijkmax[0] = nijk[0] - 1;
+  ijkmax[1] = nijk[1] - 1;
+  ijkmax[2] = nijk[2] - 1;
+
+  rootnode = InitOctTree(vals, nijk, level, ijkmin, ijkmax);
 }
