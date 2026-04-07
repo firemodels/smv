@@ -16,6 +16,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <pthread.h>
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
 
 #include "glew.h"
 #include "smokeviewvars.h"
@@ -26,7 +31,6 @@
 #include "shared_structures.h"
 #include "IOobjects.h"
 #include "IOscript.h"
-
 
 #include "translate.h"
 #include "file_util.h"
@@ -2261,6 +2265,27 @@ void *Compress(void *arg){
   THREAD_EXIT(compress_threads);
 }
 
+#ifdef pp_READTEST
+
+/* ------------------ ReadTest ------------------------ */
+static int countread=0;
+void *ReadTest(void *arg){
+  char buffer[100];
+
+  printf("read test activated\n");
+  for(;;){
+    fgets(buffer, 255, stdin);
+    printf("ReadTest: %i %s\n", countread++,buffer);
+#ifdef _WIN32
+    Sleep(1000);
+#else
+    usleep(1000000);
+#endif
+  }
+  THREAD_EXIT(readkeyboard_threads);
+}
+#endif
+
 /* ------------------ CheckFiles ------------------------ */
 
 void *CheckFiles(void *arg){
@@ -2830,6 +2855,10 @@ int ReadSMV_Configure(){
   MakeIBlankSmoke3D();
   PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
 
+#ifdef pp_READTEST
+  readkeyboard_threads = THREADinit(&n_readkeyboard_threads, &use_readkeyboard_threads, ReadTest);
+  update_readtest = 1;
+#endif
 #ifdef pp_SPEEDUP
   makeiblank_threads = THREADinit(&n_makeiblank_threads, &use_makeiblank_threads, MakeIBlank);
   THREADrun(makeiblank_threads);

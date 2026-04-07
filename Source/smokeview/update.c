@@ -2084,6 +2084,12 @@ void UpdateShowScene(void){
     IdleCB();
     update_idle = 0;
   }
+#ifdef pp_READTEST
+  if(update_readtest == 1){
+    update_readtest = 0;
+    THREADrun(readkeyboard_threads);
+  }
+#endif
   if(update_set_clipplanes == 1){
     int i;
 

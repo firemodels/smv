@@ -18,6 +18,7 @@
 //#define pp_OSX_CWD          // turn on initial getcwd call for OSX smokeview's
 #define pp_BNDF_DEBUG         // add 3 checkboxes for controlling different types of boundary file output
 #define pp_SPEEDUP            // speed up smokeview
+#define pp_READTEST           // test if the keyboard can be read in a different thread 
 
 //*** options: windows
 

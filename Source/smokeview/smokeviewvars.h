@@ -86,6 +86,13 @@ SVEXTERN threaderdata SVDECL(*playmovie_threads,       NULL);
 SVEXTERN int SVDECL(n_mergesmoke3d_threads, 4), SVDECL(use_mergesmoke3d_threads, 1);
 SVEXTERN threaderdata SVDECL(*mergesmoke3d_threads, NULL);
 
+//*** read test
+#ifdef pp_READTEST
+SVEXTERN int SVDECL(n_readkeyboard_threads, 1), SVDECL(use_readkeyboard_threads, 1);
+SVEXTERN threaderdata SVDECL(*readkeyboard_threads, NULL);
+SVEXTERN int SVDECL(update_readtest, 0);
+#endif
+
 //*** uncompress smoke
 SVEXTERN int SVDECL(n_uncompresssmoke3d_threads, 4), SVDECL(use_uncompresssmoke3d_threads, 1);
 SVEXTERN threaderdata SVDECL(*uncompresssmoke3d_threads, NULL);

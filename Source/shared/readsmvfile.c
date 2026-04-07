@@ -17,7 +17,6 @@
 #include <sys/stat.h>
 #include <pthread.h>
 
-
 #include "translate.h"
 #include "file_util.h"
 #include "datadefs.h"
