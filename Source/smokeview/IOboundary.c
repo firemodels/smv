@@ -3489,6 +3489,9 @@ void DrawBoundaryFrame(int flag){
   for(i=0;i<global_scase.npatchinfo;i++){
     patchdata *patchi;
 
+#ifdef pp_READ_KEYBOARD
+    ABORTVIS(1);
+#endif
     patchi = global_scase.patchinfo + i;
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,patchi->blocknumber);
     if(patchi->structured == NO && patchi->loaded == 1 && patchi->display == 1){
@@ -3511,6 +3514,9 @@ void DrawBoundaryFrame(int flag){
     patchdata *patchi;
     meshdata *meshi;
 
+#ifdef pp_READ_KEYBOARD
+    ABORTVIS(1);
+#endif
     patchi = global_scase.patchinfo + i;
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW, patchi->blocknumber);
     if(patchi->structured == NO)continue;

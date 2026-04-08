@@ -162,6 +162,20 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define NO_SMOKE -1
 #define NO_FIRE  -1
 
+#ifdef pp_READ_KEYBOARD
+#ifndef ABORTVIS
+#define ABORTVIS(call_keyboard) \
+THREADcontrol(readkeyboard_threads, THREAD_LOCK);\
+if(abort_vis==1){\
+  if(call_keyboard==1)Keyboard(abort_char, FROM_SMOKEVIEW);\
+  if(call_keyboard==0)abort_vis=0;\
+  THREADcontrol(readkeyboard_threads, THREAD_UNLOCK);\
+  return;\
+}\
+THREADcontrol(readkeyboard_threads, THREAD_UNLOCK)
+#endif
+#endif
+
 #ifdef pp_GLUT_DEBUG
   #define BEFOREGLUT(s)\
   {\
