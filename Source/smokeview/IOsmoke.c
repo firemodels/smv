@@ -2702,7 +2702,9 @@ void DrawSmokeFrame(void){
   for(i = 0; i<global_scase.smoke3dcoll.nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
     meshdata *smokemesh;
-
+#ifdef pp_READ_KEYBOARD
+    ABORTVIS(1);
+#endif
     smoke3di = global_scase.smoke3dcoll.smoke3dinfo_sorted[i];
     if(smoke3di->loaded==0||smoke3di->display==0)continue;
     if(smoke3di->primary_file==0)continue;
@@ -2732,22 +2734,28 @@ void DrawSmokeFrame(void){
     Output3Text(foregroundcolor, xyz[0], xyz[1], xyz[2], alabel);
 #endif
 #ifdef pp_SPEEDUP
-    if(vis_smokemesh == 1){
+    if(vis_smokemesh == 1||vis_only_smokemesh==1){
       DrawBoxMinMax(smokemesh->boxmin_smv, smokemesh->boxmax_smv, foregroundcolor);
     }
 #endif
-#ifdef pp_GPU
-    if(usegpu_local == 1) {
-      DrawSmoke3DGPU(smoke3di);
-      nsmoke_triangles = -1;
-    }
-    else{
-      nsmoke_triangles += DrawSmoke3D(smoke3di);
-    }
-#else
-    nsmoke_triangles += DrawSmoke3D(smoke3di);
+#ifdef pp_SPEEDUP
+    if(vis_only_smokemesh == 0){
 #endif
-  }
+#ifdef pp_GPU
+      if(usegpu_local == 1) {
+        DrawSmoke3DGPU(smoke3di);
+        nsmoke_triangles = -1;
+      }
+      else{
+        nsmoke_triangles += DrawSmoke3D(smoke3di);
+      }
+#else
+      nsmoke_triangles += DrawSmoke3D(smoke3di);
+#endif
+      }
+#ifdef pp_SPEEDUP
+    }
+#endif
   STOP_TIMER(smoke3d_timer);
   if( (show_trirates==1 && smoke3d_timer>0.0) || (show_timings==1  && smoke3d_timer>0.1) ){
      float tri_fps = -1.0;

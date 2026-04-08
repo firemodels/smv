@@ -13,9 +13,15 @@
 #include <math.h>
 #include <ctype.h>
 #include <sys/types.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 #include <pthread.h>
+#ifdef _WIN32
+#include <conio.h>
+#include <windows.h>
+#else
+#include <unistd.h>
+#include <sys/select.h>
+#endif
 
 #include "glew.h"
 #include "smokeviewvars.h"
@@ -26,7 +32,6 @@
 #include "shared_structures.h"
 #include "IOobjects.h"
 #include "IOscript.h"
-
 
 #include "translate.h"
 #include "file_util.h"
@@ -2261,6 +2266,63 @@ void *Compress(void *arg){
   THREAD_EXIT(compress_threads);
 }
 
+#ifdef pp_READ_KEYBOARD
+
+/* ------------------ ReadCharNonblocking ------------------------ */
+
+int ReadCharNonblocking(char *out) {
+
+#ifdef _WIN32
+
+    if (_kbhit()) {
+        *out = _getch();   // reads immediately (no Enter actually required on Windows)
+        return 1;
+    }
+    return 0;
+
+#else
+
+    fd_set set;
+    struct timeval timeout;
+
+    FD_ZERO(&set);
+    FD_SET(STDIN_FILENO, &set);
+
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 0;   // no wait
+
+    int rv = select(STDIN_FILENO + 1, &set, NULL, NULL, &timeout);
+
+    if (rv > 0) {
+        return read(STDIN_FILENO, out, 1) == 1;
+    }
+    return 0;
+
+#endif
+}
+
+/* ------------------ ReadKeyboard ------------------------ */
+
+void *ReadKeyboard(void *arg){
+  for(;;){
+    char key_char;
+
+    THREADcontrol(readkeyboard_threads, THREAD_LOCK);
+    if(ReadCharNonblocking(&key_char)==1){
+      abort_char = (unsigned char)key_char;
+      abort_vis = 1;
+    }
+    THREADcontrol(readkeyboard_threads, THREAD_UNLOCK);
+#ifdef _WIN32
+      Sleep(1000);
+#else
+      usleep(1000000);
+#endif
+  }
+  THREAD_EXIT(readkeyboard_threads);
+}
+
+#endif
 /* ------------------ CheckFiles ------------------------ */
 
 void *CheckFiles(void *arg){
@@ -2275,7 +2337,7 @@ void *CheckFiles(void *arg){
 
     patchi = global_scase.patchinfo + i;
     have_file = FileExistsCaseDir(&global_scase, patchi->comp_file);
-    THREADcontrol(checkfiles_threads, THREAD_LOCK);
+	    THREADcontrol(checkfiles_threads, THREAD_LOCK);
     if(have_file == YES){
       patchi->compression_type_temp = COMPRESSED_ZLIB;
       global_scase.have_compressed_files = 1;
@@ -2830,6 +2892,10 @@ int ReadSMV_Configure(){
   MakeIBlankSmoke3D();
   PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
 
+#ifdef pp_READ_KEYBOARD
+  readkeyboard_threads = THREADinit(&n_readkeyboard_threads, &use_readkeyboard_threads, ReadKeyboard);
+  update_readkeyboard = 1;
+#endif
 #ifdef pp_SPEEDUP
   makeiblank_threads = THREADinit(&n_makeiblank_threads, &use_makeiblank_threads, MakeIBlank);
   THREADrun(makeiblank_threads);

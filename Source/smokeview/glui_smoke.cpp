@@ -34,7 +34,6 @@ GLUI_Button *BUTTON_cancelrender=NULL;
 GLUI_Listbox *LISTBOX_smoke_colorbar=NULL;
 GLUI_Listbox *LISTBOX_co2_colorbar = NULL;
 
-GLUI_RadioGroup *RADIO_use_fire_alpha = NULL;
 GLUI_RadioGroup *RADIO_smokealign = NULL;
 GLUI_RadioGroup *RADIO_smoke_outline_type = NULL;
 GLUI_RadioGroup *RADIO_newsmoke = NULL;
@@ -102,6 +101,8 @@ GLUI_Checkbox *CHECKBOX_force_alpha_opaque = NULL;
 GLUI_Checkbox *CHECKBOX_use_co2_colormap = NULL;
 GLUI_Checkbox *CHECKBOX_use_co2_rgb = NULL;
 GLUI_Checkbox *CHECKBOX_smoke_flip=NULL;
+GLUI_Checkbox *CHECKBOX_vis_smokemesh = NULL;
+GLUI_Checkbox *CHECKBOX_vis_only_smokemesh = NULL;
 GLUI_Checkbox *CHECKBOX_triangle_display_rate = NULL;
 GLUI_Checkbox *CHECKBOX_smoke_getvals=NULL;
 GLUI_Checkbox *CHECKBOX_update_smokeplanes = NULL;
@@ -489,7 +490,8 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   CHECKBOX_smoke_flip    = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "flip background", &background_flip,BACKGROUND_FLIP, GLUISmoke3dCB);
   CHECKBOX_triangle_display_rate = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "triangle display rate", &show_trirates);
   glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "cull hidden meshes", &cull_meshes);
-  glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "show smoke/fire mesh", &vis_smokemesh);
+  CHECKBOX_vis_smokemesh = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "show smoke/fire mesh", &vis_smokemesh,SHOW_SMOKEMESH, GLUISmoke3dCB);
+  CHECKBOX_vis_only_smokemesh=glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "show only smoke/fire mesh", &vis_only_smokemesh,SHOW_ONLY_SMOKEMESH, GLUISmoke3dCB);
 
 
   //---------------------------------------------Slice render settings--------------------------------------------------------------
@@ -963,6 +965,16 @@ extern "C" void GLUISmoke3dCB(int var){
     CHECKBOX_use_opacity_depth->set_int_val(use_opacity_depth);
     CHECKBOX_use_opacity_multiplier->set_int_val(use_opacity_multiplier);
     GLUISmoke3dCB(USE_FIRE_ALPHA);
+    break;
+  case SHOW_SMOKEMESH:
+    if(vis_smokemesh == 1 && vis_only_smokemesh == 1){
+      CHECKBOX_vis_only_smokemesh->set_int_val(0);
+    }
+    break;
+  case SHOW_ONLY_SMOKEMESH:
+    if(vis_smokemesh == 1 && vis_only_smokemesh == 1){
+      CHECKBOX_vis_smokemesh->set_int_val(0);
+    }
     break;
   case BACKGROUND_FLIP:
     background_flip = 1-background_flip;

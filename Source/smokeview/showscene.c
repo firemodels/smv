@@ -87,6 +87,9 @@ void ShowScene2(int mode){
     if(showsmoke == 1 && (hide_scene==0||mouse_down==0)){
       CLIP_VALS;
       DrawPartFrame(DRAWSCENE);
+#ifdef pp_READ_KEYBOARD
+      ABORTVIS(0);
+#endif
     }
 
     /* ++++++++++++++++++++++++ draw screeninfo +++++++++++++++++++++++++ */
@@ -259,6 +262,9 @@ void ShowScene2(int mode){
       CLIP_VALS;
       DrawPartFrame(SELECTOBJECT);
       SNIFF_ERRORS("after DrawPartFrame(SELECTOBJECT)");
+#ifdef pp_READ_KEYBOARD
+      ABORTVIS(0);
+#endif
       return;
     }
   }
@@ -428,6 +434,9 @@ void ShowScene2(int mode){
     CLIP_VALS;
     if(hide_scene==0||mouse_down==0){
       DrawSliceFrame();
+#ifdef pp_READ_KEYBOARD
+      ABORTVIS(0);
+#endif
     }
   }
 
@@ -436,6 +445,9 @@ void ShowScene2(int mode){
   if(showpatch == 1 && (hide_scene==0||mouse_down==0)){
     CLIP_VALS;
     DrawBoundaryFrame(DRAW_OPAQUE);
+#ifdef pp_READ_KEYBOARD
+    ABORTVIS(0);
+#endif
   }
 
   /* ++++++++++++++++++++++++ draw labels +++++++++++++++++++++++++ */
@@ -535,6 +547,9 @@ void ShowScene2(int mode){
       sprintf(label, "DrawSmokeFrame(%i)", iglobal_times);
       PRINT_TIMER(timer_drawsmoke, label);
     }
+#ifdef pp_READ_KEYBOARD
+    ABORTVIS(0);
+#endif
   }
 
   /* ++++++++++++++++++++++++ draw vol smoke +++++++++++++++++++++++++ */
@@ -542,6 +557,9 @@ void ShowScene2(int mode){
   if(showvolrender == 1 && show3dsmoke==0 && (hide_scene == 0 || mouse_down == 0)){
     CLIP_VALS;
     DrawVolSmokeFrame();
+#ifdef pp_READ_KEYBOARD
+    ABORTVIS(0);
+#endif
   }
 
   if(active_smokesensors == 1 && show_smokesensors != SMOKESENSORS_HIDDEN && (hide_scene == 0 || mouse_down == 0)){
@@ -583,6 +601,9 @@ void ShowScene2(int mode){
     CLIP_VALS;
     DrawBoundaryFrame(DRAW_TRANSPARENT);
     SNIFF_ERRORS("after DrawBoundaryFrame");
+#ifdef pp_READ_KEYBOARD
+    ABORTVIS(0);
+#endif
   }
 
   /* ++++++++++++++++++++++++ draw slice files +++++++++++++++++++++++++ */
@@ -594,6 +615,10 @@ void ShowScene2(int mode){
         DrawSliceFrame();
       }
       SNIFF_ERRORS("after DrawSliceFrame");
+#ifdef pp_READ_KEYBOARD
+      ABORTVIS(0);
+#endif
+
     }
   }
 
@@ -612,6 +637,9 @@ void ShowScene2(int mode){
   if(showvslice == 1 && (hide_scene == 0 || mouse_down == 0)){
     CLIP_VALS;
     DrawVSliceFrame();
+#ifdef pp_READ_KEYBOARD
+    ABORTVIS(0);
+#endif
     SNIFF_ERRORS("after drawvslice");
   }
 
@@ -620,6 +648,9 @@ void ShowScene2(int mode){
   if(showplot3d == 1 && (hide_scene == 0 || mouse_down == 0)){
     CLIP_VALS;
     DrawPlot3dFrame();
+#ifdef pp_READ_KEYBOARD
+    ABORTVIS(0);
+#endif
     SNIFF_ERRORS("after DrawPlot3dFrame");
   }
 }

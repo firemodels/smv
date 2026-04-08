@@ -86,6 +86,15 @@ SVEXTERN threaderdata SVDECL(*playmovie_threads,       NULL);
 SVEXTERN int SVDECL(n_mergesmoke3d_threads, 4), SVDECL(use_mergesmoke3d_threads, 1);
 SVEXTERN threaderdata SVDECL(*mergesmoke3d_threads, NULL);
 
+//*** read test
+#ifdef pp_READ_KEYBOARD
+SVEXTERN int SVDECL(n_readkeyboard_threads, 1), SVDECL(use_readkeyboard_threads, 1);
+SVEXTERN threaderdata SVDECL(*readkeyboard_threads, NULL);
+SVEXTERN int SVDECL(update_readkeyboard, 0);
+SVEXTERN int SVDECL(abort_vis, 0);
+SVEXTERN unsigned char abort_char;
+#endif
+
 //*** uncompress smoke
 SVEXTERN int SVDECL(n_uncompresssmoke3d_threads, 4), SVDECL(use_uncompresssmoke3d_threads, 1);
 SVEXTERN threaderdata SVDECL(*uncompresssmoke3d_threads, NULL);
@@ -403,7 +412,7 @@ SVEXTERN int npartloaded, npatchloaded, nvolsmoke3dloaded, npart5loaded, npartlo
 SVEXTERN int nplot3dvis, nsmoke3dvis, nisovis, nslicevis, nvslicevis;
 SVEXTERN int npatchvis, nvolsmoke3dvis, npart5vis, npartvis;
 #ifdef pp_SPEEDUP
-SVEXTERN int SVDECL(vis_smokemesh, 0);
+SVEXTERN int SVDECL(vis_smokemesh, 0), SVDECL(vis_only_smokemesh, 0);
 #endif
 
 SVEXTERN int SVDECL(nplot3dloaded_old,0),     SVDECL(nsmoke3dloaded_old,0), SVDECL(nisoloaded_old,0);
