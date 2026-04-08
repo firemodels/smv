@@ -412,10 +412,14 @@ mallocflag __NewMemory(void **ppv, size_t size, int memory_id, const char *varna
   return_code=_NewMemoryNOTHREAD(ppb,size,memory_id);
   if(return_code != 1){
     PrintMemoryError(size, varname, file, linenumber);
+    UNLOCK_MEM;
+    return return_code;
   }
   pbi=GetBlockInfo((bbyte *)*ppb);
-  if(return_code == 1 && pbi == NULL){ // don't print error message twice
+  if(return_code != 1 || pbi == NULL){ // don't print error message twice
     PrintMemoryError(size, varname, file, linenumber);
+    UNLOCK_MEM;
+    return return_code;
   }
   pbi->linenumber=linenumber;
 
