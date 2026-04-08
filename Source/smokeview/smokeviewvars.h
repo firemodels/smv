@@ -87,7 +87,7 @@ SVEXTERN int SVDECL(n_mergesmoke3d_threads, 4), SVDECL(use_mergesmoke3d_threads,
 SVEXTERN threaderdata SVDECL(*mergesmoke3d_threads, NULL);
 
 //*** read test
-#ifdef pp_READTEST
+#ifdef pp_READ_KEYBOARD
 SVEXTERN int SVDECL(n_readkeyboard_threads, 1), SVDECL(use_readkeyboard_threads, 1);
 SVEXTERN threaderdata SVDECL(*readkeyboard_threads, NULL);
 SVEXTERN int SVDECL(update_readtest, 0);

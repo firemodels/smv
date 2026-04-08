@@ -2084,7 +2084,7 @@ void UpdateShowScene(void){
     IdleCB();
     update_idle = 0;
   }
-#ifdef pp_READTEST
+#ifdef pp_READ_KEYBOARD
   if(update_readtest == 1){
     update_readtest = 0;
     THREADrun(readkeyboard_threads);

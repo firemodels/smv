@@ -2266,43 +2266,7 @@ void *Compress(void *arg){
   THREAD_EXIT(compress_threads);
 }
 
-#ifdef pp_READTEST
-
-#ifdef pp_BLOCKING_IO
-
-/* ------------------ ReadKeyboard ------------------------ */
-
-void *ReadKeyboard(void *arg){
-  char buffer[255];
-  char in_file[255];
-
-  strcpy(in_file, "kb.txt");
-
-                                     
-  for(;;){
-    THREADcontrol(readkeyboard_threads, THREAD_LOCK);
-    char *flag;
-    FILE *stream=NULL;
-
-    stream = fopen(in_file, "r");
-    if(stream!=NULL){
-      fgets(buffer, 255, stream);
-      flag = TrimFrontBack(buffer);
-      abort_char = *flag;
-      abort_vis = 1;
-      fclose(stream);
-      remove(in_file);
-    }
-    THREADcontrol(readkeyboard_threads, THREAD_UNLOCK);
-#ifdef _WIN32
-      Sleep(1000);
-#else
-      usleep(1000000);
-#endif
-  }
-  THREAD_EXIT(readkeyboard_threads);
-}
-#else
+#ifdef pp_READ_KEYBOARD
 
 /* ------------------ ReadCharNonblocking ------------------------ */
 
@@ -2358,7 +2322,6 @@ void *ReadKeyboard(void *arg){
   THREAD_EXIT(readkeyboard_threads);
 }
 
-#endif
 #endif
 /* ------------------ CheckFiles ------------------------ */
 
@@ -2929,7 +2892,7 @@ int ReadSMV_Configure(){
   MakeIBlankSmoke3D();
   PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
 
-#ifdef pp_READTEST
+#ifdef pp_READ_KEYBOARD
   readkeyboard_threads = THREADinit(&n_readkeyboard_threads, &use_readkeyboard_threads, ReadKeyboard);
   update_readtest = 1;
 #endif
