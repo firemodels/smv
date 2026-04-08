@@ -143,7 +143,6 @@ void PrintMemoryError(size_t size, const char *varname, const char *file, int li
     fprintf(stderr," at %s(%i)\n",file,linenumber);
   }
   fprintf(stderr, "\n");
-  assert(1==0); // force smokeview to abort when in debug mode
 }
 
 /* ------------------ _NewMemory ------------------------ */
