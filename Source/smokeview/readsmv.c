@@ -2894,7 +2894,7 @@ int ReadSMV_Configure(){
 
 #ifdef pp_READ_KEYBOARD
   readkeyboard_threads = THREADinit(&n_readkeyboard_threads, &use_readkeyboard_threads, ReadKeyboard);
-  update_readtest = 1;
+  update_readkeyboard = 1;
 #endif
 #ifdef pp_SPEEDUP
   makeiblank_threads = THREADinit(&n_makeiblank_threads, &use_makeiblank_threads, MakeIBlank);

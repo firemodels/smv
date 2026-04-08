@@ -991,6 +991,9 @@ void DrawPlot3dFrame(void){
     if(meshi->use == 0)continue;
     if(meshi->plot3dfilenum==-1)continue;
     if(global_scase.plot3dinfo[meshi->plot3dfilenum].display==0)continue;
+#ifdef pp_READ_KEYBOARD
+    ABORTVIS(1);
+#endif
     DrawPlot3dTexture(meshi);
   }
 }

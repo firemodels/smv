@@ -90,22 +90,9 @@ SVEXTERN threaderdata SVDECL(*mergesmoke3d_threads, NULL);
 #ifdef pp_READ_KEYBOARD
 SVEXTERN int SVDECL(n_readkeyboard_threads, 1), SVDECL(use_readkeyboard_threads, 1);
 SVEXTERN threaderdata SVDECL(*readkeyboard_threads, NULL);
-SVEXTERN int SVDECL(update_readtest, 0);
+SVEXTERN int SVDECL(update_readkeyboard, 0);
 SVEXTERN int SVDECL(abort_vis, 0);
 SVEXTERN unsigned char abort_char;
-
-#ifndef ABORTVIS
-#define ABORTVIS \
-THREADcontrol(readkeyboard_threads, THREAD_LOCK);\
-if(abort_vis==1){\
-  Keyboard(abort_char, FROM_SMOKEVIEW);\
-  GLUTPOSTREDISPLAY;\
-  abort_vis=0;\
-  THREADcontrol(readkeyboard_threads, THREAD_UNLOCK);\
-  return;\
-}\
-THREADcontrol(readkeyboard_threads, THREAD_UNLOCK)
-#endif
 #endif
 
 //*** uncompress smoke

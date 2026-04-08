@@ -2085,11 +2085,10 @@ void UpdateShowScene(void){
     update_idle = 0;
   }
 #ifdef pp_READ_KEYBOARD
-  if(update_readtest == 1){
-    update_readtest = 0;
+  if(update_readkeyboard == 1){
+    update_readkeyboard = 0;
     THREADrun(readkeyboard_threads);
   }
-  ABORTVIS;
 #endif
   if(update_set_clipplanes == 1){
     int i;
