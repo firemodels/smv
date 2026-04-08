@@ -536,6 +536,9 @@ void ShowScene2(int mode){
       PRINT_TIMER(timer_drawsmoke, label);
     }
   }
+#ifdef pp_READTEST
+  ABORTVIS;
+#endif
 
   /* ++++++++++++++++++++++++ draw vol smoke +++++++++++++++++++++++++ */
 

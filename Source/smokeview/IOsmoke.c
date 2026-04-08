@@ -2702,7 +2702,7 @@ void DrawSmokeFrame(void){
   for(i = 0; i<global_scase.smoke3dcoll.nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
     meshdata *smokemesh;
-#ifdef pp_READ_TEST
+#ifdef pp_READTEST
     ABORTVIS;
 #endif
     smoke3di = global_scase.smoke3dcoll.smoke3dinfo_sorted[i];

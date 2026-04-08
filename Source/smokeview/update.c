@@ -2089,6 +2089,7 @@ void UpdateShowScene(void){
     update_readtest = 0;
     THREADrun(readkeyboard_threads);
   }
+  ABORTVIS;
 #endif
   if(update_set_clipplanes == 1){
     int i;
