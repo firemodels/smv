@@ -4711,6 +4711,7 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
       smoke3di->finalize = 0;
       if(i == last_smoke)smoke3di->finalize = 1;
       load_size += ReadSmoke3D(frame, i, LOAD, FIRST_TIME, &errorcode);
+      if(errorcode == 1)return 0;
     }
   }
   if(verbose_output == 0)PRINTF("\n");

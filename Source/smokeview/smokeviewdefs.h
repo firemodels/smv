@@ -164,16 +164,11 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #ifdef pp_READ_KEYBOARD
 #ifndef ABORTVIS
-#define ABORTVIS(call_keyboard) \
-THREADcontrol(readkeyboard_threads, THREAD_LOCK);\
-if(abort_vis==1){\
-  if(call_keyboard==1)Keyboard(abort_char, FROM_SMOKEVIEW);\
-  if(call_keyboard==0)abort_vis=0;\
-  THREADcontrol(readkeyboard_threads, THREAD_UNLOCK);\
-  return;\
-}\
-THREADcontrol(readkeyboard_threads, THREAD_UNLOCK)
+#define ABORTVIS(check_state) if(CheckMouseKeyState(check_state)==1)return
 #endif
+#else
+#undef  ABORTVIS
+#define ABORTVIS
 #endif
 
 #ifdef pp_GLUT_DEBUG
