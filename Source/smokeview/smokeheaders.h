@@ -730,6 +730,9 @@ EXTERNCPP void ScaleFont3D(void);
 //*** readsmv.c headers
 
 EXTERNCPP void *CheckFiles(void *arg);
+#ifdef pp_READ_KEYBOARD
+EXTERNCPP int CheckMouseKeyState(int check_state);
+#endif
 EXTERNCPP void *Compress(void *arg);
 EXTERNCPP void GetBoxSkyCorners(void);
 EXTERNCPP void GetSliceParmInfo(sliceparmdata *sp);
