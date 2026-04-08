@@ -3532,6 +3532,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
   }
   smoke3di->ncomp_smoke_total = ncomp_smoke_total_skipped_local;
   if(NewResizeMemory(smoke3di->smoke_comp_all, ncomp_smoke_total_skipped_local*sizeof(unsigned char))==0){
+    void UnloadAllSmoke3D(int type);
     UnloadAllSmoke3D(-1);
     *errorcode_arg = 1;
     fprintf(stderr, "\n*** Error: problems allocating memory for 3d smoke file: %s\n", smoke3di->file);
