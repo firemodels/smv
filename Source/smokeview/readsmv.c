@@ -2322,7 +2322,32 @@ void *ReadKeyboard(void *arg){
   THREAD_EXIT(readkeyboard_threads);
 }
 
+/* ------------------ CheckMouseKeyState ------------------------ */
+
+int CheckMouseKeyState(int check_state){
+  THREADcontrol(readkeyboard_threads, THREAD_LOCK);
+  if(abort_vis == 1){
+    if(check_state == 1)Keyboard(abort_char, FROM_SMOKEVIEW);
+    if(check_state == 0)abort_vis = 0;
+    THREADcontrol(readkeyboard_threads, THREAD_UNLOCK);
+    return 1;
+  }
+  THREADcontrol(readkeyboard_threads, THREAD_UNLOCK);
+#ifdef _WIN32
+  if(check_state == 1 && GetAsyncKeyState(VK_LBUTTON) & 0x8000){
+    Keyboard('t', FROM_SMOKEVIEW);
+    abort_vis = 1;
+    return 1;
+  }
+  if(check_state == 0 && abort_vis == 1){
+    abort_vis = 0;
+    return 1;
+  }
 #endif
+  return 0;
+}
+#endif
+
 /* ------------------ CheckFiles ------------------------ */
 
 void *CheckFiles(void *arg){
