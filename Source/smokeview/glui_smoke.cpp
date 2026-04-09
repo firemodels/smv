@@ -90,11 +90,10 @@ GLUI_Spinner *SPINNER_smokeloadframe = NULL;
 GLUI_Spinner *SPINNER_globalloadframe = NULL;
 GLUI_Spinner *SPINNER_timeloadframe = NULL;
 GLUI_Spinner *SPINNER_co2color[3];
-
-GLUI_Checkbox *CHECKBOX_use_op_multiplier = NULL;
 GLUI_Spinner *SPINNER_fire_halfdepth=NULL;
-GLUI_Spinner *SPINNER_op_multiplier=NULL;
+GLUI_Spinner *SPINNER_soot_multiplier=NULL;
 
+GLUI_Checkbox *CHECKBOX_use_soot_multiplier = NULL;
 GLUI_Checkbox *CHECKBOX_smoke3d_demo_mode=NULL;
 GLUI_Checkbox *CHECKBOX_smoke3d_use_skip=NULL;
 GLUI_Checkbox *CHECKBOX_force_alpha_opaque = NULL;
@@ -201,9 +200,9 @@ int nsmokeprocinfo = 0, nvolsmokeprocinfo=0;
 /* ------------------ GLUIUpdateFireParms ------------------------ */
 
 extern "C" void GLUIUpdateFireParms(void){
-  CHECKBOX_use_op_multiplier->set_int_val(use_opacity_multiplier);
+  CHECKBOX_use_soot_multiplier->set_int_val(use_soot_multiplier);
   SPINNER_fire_halfdepth->set_float_val(fire_halfdepth);
-  SPINNER_op_multiplier->set_float_val(soot_multiplier);
+  SPINNER_soot_multiplier->set_float_val(soot_multiplier);
 }
 
 /* ------------------ GLUIUpdateCO2ColorbarList ------------------------ */
@@ -592,16 +591,13 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   BUTTON_fds_extinction_reset = glui_3dsmoke->add_button_to_panel(PANEL_smoke_opacity, "Reset(saved extinct)", EXTINCTION_RESET_SMV, GLUISmoke3dCB);
 
   PANEL_fire_opacity = glui_3dsmoke->add_panel_to_panel(ROLLOUT_opacity, "fire opacity");
-  SPINNER_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "50% opacity at depth (m):",
-                GLUI_SPINNER_FLOAT,
-                &fire_halfdepth, FIRE_HALFDEPTH, GLUISmoke3dCB);
+  SPINNER_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity,
+               "50% opacity at depth (m):", GLUI_SPINNER_FLOAT, &fire_halfdepth, FIRE_HALFDEPTH, GLUISmoke3dCB);
   SPINNER_fire_halfdepth->set_float_limits(0.001, 1000.0);
-  CHECKBOX_use_op_multiplier = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity,
-    "use opacity multiplier when smoke also loaded",
-    &use_opacity_multiplier, USE_OP_MULTIPLIER, GLUISmoke3dCB);
-  SPINNER_op_multiplier = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity,
-                "opacity multiplier:",
-                 GLUI_SPINNER_FLOAT, &soot_multiplier, OP_MULTIPLIER, GLUISmoke3dCB);
+  CHECKBOX_use_soot_multiplier = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity,
+                "use opacity multiplier when smoke also loaded", &use_soot_multiplier, USE_SOOT_MULTIPLIER, GLUISmoke3dCB);
+  SPINNER_soot_multiplier = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity,
+                "opacity multiplier:", GLUI_SPINNER_FLOAT, &soot_multiplier, SOOT_MULTIPLIER, GLUISmoke3dCB);
   if(active_smokesensors == 1){
     PANEL_smokesensor = glui_3dsmoke->add_panel_to_panel(ROLLOUT_opacity, "Visibility");
     RADIO_smokesensors = glui_3dsmoke->add_radiogroup_to_panel(PANEL_smokesensor, &show_smokesensors);
@@ -1216,20 +1212,20 @@ extern "C" void GLUISmoke3dCB(int var){
   case REFRESH_FIRE:
     ForceIdle();
     break;
-  case USE_OP_MULTIPLIER:
-    if(use_opacity_multiplier == 1){
-      SPINNER_op_multiplier->enable();
+  case USE_SOOT_MULTIPLIER:
+    if(use_soot_multiplier == 1){
+      SPINNER_soot_multiplier->enable();
     }
     else{
-      SPINNER_op_multiplier->disable();
+      SPINNER_soot_multiplier->disable();
     }
-    GLUISmoke3dCB(OP_MULTIPLIER);
+    GLUISmoke3dCB(SOOT_MULTIPLIER);
     break;
   case FIRE_HALFDEPTH:
-  case OP_MULTIPLIER:
+  case SOOT_MULTIPLIER:
     have_fire  = HaveFireLoaded();
     have_smoke = HaveSootLoaded();
-    if(have_smoke!=NO_SMOKE&&have_fire!=NO_FIRE&&use_opacity_multiplier==1){
+    if(have_smoke!=NO_SMOKE&&have_fire!=NO_FIRE&&use_soot_multiplier==1){
       use_fire_alpha = 0;
     }
     else{

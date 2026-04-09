@@ -1305,7 +1305,7 @@ void InitAlphas(unsigned char *smokealphanew, unsigned char *firealphanew, float
   int use_soot_multiplier;
   have_fire = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
-  if(have_smoke != NO_SMOKE && have_fire != NO_FIRE && use_opacity_multiplier == 1){
+  if(have_smoke != NO_SMOKE && have_fire != NO_FIRE && use_soot_multiplier == 1){
     use_soot_multiplier = 1;
   }
   else{

@@ -2808,8 +2808,8 @@ void UpdateDisplay(void){
     ShowBoundaryMenu(INTERIOR_WALL_MENU);
     ShowBoundaryMenu(INTERIOR_WALL_MENU);
   }
-  if(update_use_opacity_multiplier == 1){
-    update_use_opacity_multiplier = 0;
+  if(update_use_soot_multiplier == 1){
+    update_use_soot_multiplier = 0;
     GLUIUpdateFireParms();
   }
   if(update_texturebar==1){

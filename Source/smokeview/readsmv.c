@@ -6233,9 +6233,9 @@ int ReadIni2(const char *inifile, int localfile){
         int dummy;
 
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i %i", &dummy, &use_opacity_multiplier);
-        use_opacity_multiplier = CLAMP(use_opacity_multiplier, 0, 1);
-        update_use_opacity_multiplier = 1;
+        sscanf(buffer, "%i %i", &dummy, &use_soot_multiplier);
+        use_soot_multiplier = CLAMP(use_soot_multiplier, 0, 1);
+        update_use_soot_multiplier = 1;
         continue;
       }
       if(MatchINI(buffer, "SMOKEPROP")==1){
@@ -8499,7 +8499,7 @@ void WriteIni(int flag,char *filename){
 
   if((have_fire == NO_FIRE && have_smoke == NO_SMOKE)||(have_fire != NO_FIRE && have_smoke != NO_SMOKE)){
     fprintf(fileout, "SMOKEFIREPROP\n");
-    fprintf(fileout, " %i %i\n", 1 - use_opacity_multiplier, use_opacity_multiplier);
+    fprintf(fileout, " %i %i\n", 1 - use_soot_multiplier, use_soot_multiplier);
   }
   fprintf(fileout, "SMOKEPROP\n");
   fprintf(fileout, " %f\n", glui_mass_extinct);
