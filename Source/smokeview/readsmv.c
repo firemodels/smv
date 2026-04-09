@@ -6230,9 +6230,12 @@ int ReadIni2(const char *inifile, int localfile){
         continue;
       }
       if(MatchINI(buffer, "SMOKEFIREPROP") == 1){
+        int dummy;
+
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i %i", &use_opacity_depth_ini, &use_opacity_multiplier_ini);
-        use_opacity_ini = 1;
+        sscanf(buffer, "%i %i", &dummy, &use_soot_multiplier);
+        use_soot_multiplier = CLAMP(use_soot_multiplier, 0, 1);
+        update_use_soot_multiplier = 1;
         continue;
       }
       if(MatchINI(buffer, "SMOKEPROP")==1){
@@ -6283,7 +6286,7 @@ int ReadIni2(const char *inifile, int localfile){
       }
       if(MatchINI(buffer, "FDEPTH2") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%f %f %f %i %i", &fire_halfdepth,&co2_halfdepth,&emission_factor,&use_fire_alpha, &force_alpha_opaque);
+        sscanf(buffer, "%f %f %f %i %i", &fire_halfdepth, &co2_halfdepth, &soot_multiplier, &use_fire_alpha, &force_alpha_opaque);
         continue;
       }
       if(MatchINI(buffer, "VIEWTOURFROMPATH") == 1){
@@ -8457,7 +8460,7 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, " FIRE %i %s\n", fire_colormap_type, colorbars.colorbarinfo[colorbars.fire_colorbar_index].menu_label);
   }
   fprintf(fileout, "FDEPTH2\n");
-  fprintf(fileout, " %f %f %f %i %i\n", fire_halfdepth, co2_halfdepth, emission_factor, use_fire_alpha, force_alpha_opaque);
+  fprintf(fileout, " %f %f %f %i %i\n", fire_halfdepth, co2_halfdepth, soot_multiplier, use_fire_alpha, force_alpha_opaque);
   if(colorbars.ncolorbars > colorbars.ndefaultcolorbars){
     colorbardata *cbi;
     unsigned char *rrgb;
@@ -8493,9 +8496,10 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, "SMOKEALBEDO\n");
     fprintf(fileout, " %f\n", global_scase.smoke_albedo);
   }
+
   if((have_fire == NO_FIRE && have_smoke == NO_SMOKE)||(have_fire != NO_FIRE && have_smoke != NO_SMOKE)){
     fprintf(fileout, "SMOKEFIREPROP\n");
-    fprintf(fileout, " %i %i\n", use_opacity_depth, use_opacity_multiplier);
+    fprintf(fileout, " %i %i\n", 1 - use_soot_multiplier, use_soot_multiplier);
   }
   fprintf(fileout, "SMOKEPROP\n");
   fprintf(fileout, " %f\n", glui_mass_extinct);
