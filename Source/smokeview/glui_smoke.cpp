@@ -1230,10 +1230,10 @@ extern "C" void GLUISmoke3dCB(int var){
     have_fire  = HaveFireLoaded();
     have_smoke = HaveSootLoaded();
     if(have_smoke!=NO_SMOKE&&have_fire!=NO_FIRE&&use_opacity_multiplier==1){
-      use_fire_alpha_new = 0;
+      use_fire_alpha = 0;
     }
     else{
-      use_fire_alpha_new = 1;
+      use_fire_alpha = 1;
     }
     GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
     GLUISmoke3dCB(USE_FIRE_COLORMAP);

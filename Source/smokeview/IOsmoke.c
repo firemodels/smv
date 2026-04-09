@@ -476,7 +476,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
   glUniform1f(GPU_emission_factor, emission_factor);
-  glUniform1i(GPU_use_fire_alpha, use_fire_alpha_new);
+  glUniform1i(GPU_use_fire_alpha, use_fire_alpha);
   glUniform1i(GPU_have_smoke, have_smoke_local);
   glUniform1i(GPU_have_fire, have_fire_local);
   glUniform1i(GPU_force_alpha_opaque, force_alpha_opaque);
@@ -4010,7 +4010,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3di){
           is_firenode[j] = 1;
           fire_index = CLAMP(firecolor_data[j],0,254);
           smokecolor_ptr = rgb_slicesmokecolormap_0255+4*fire_index;
-          if(use_fire_alpha_new == 1){
+          if(use_fire_alpha == 1){
             alpha_smoke_local = smoke3di->fire_alpha;
           }
           else{
