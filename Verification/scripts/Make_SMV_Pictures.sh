@@ -308,7 +308,7 @@ wait $pid_cased
 
 echo Generating images
 
-d $GITROOT/smv/Verification
+cd $GITROOT/smv/Verification
 scripts/SMV_Cases.sh
 scripts/RESTART_Cases.sh
 cd $GITROOT/smv/Verification
