@@ -200,9 +200,9 @@ int nsmokeprocinfo = 0, nvolsmokeprocinfo=0;
 /* ------------------ GLUIUpdateFireParms ------------------------ */
 
 extern "C" void GLUIUpdateFireParms(void){
-  CHECKBOX_use_soot_multiplier->set_int_val(use_soot_multiplier);
-  SPINNER_fire_halfdepth->set_float_val(fire_halfdepth);
-  SPINNER_soot_multiplier->set_float_val(soot_multiplier);
+  if(CHECKBOX_use_soot_multiplier!=NULL)CHECKBOX_use_soot_multiplier->set_int_val(use_soot_multiplier);
+  if(SPINNER_fire_halfdepth != NULL)SPINNER_fire_halfdepth->set_float_val(fire_halfdepth);
+  if(SPINNER_soot_multiplier != NULL)SPINNER_soot_multiplier->set_float_val(soot_multiplier);
 }
 
 /* ------------------ GLUIUpdateCO2ColorbarList ------------------------ */
