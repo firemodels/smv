@@ -68,10 +68,10 @@
 #ifndef pp_NEW_FIRE_ALPHA
 #define USE_FIRE_ALPHA 84
 #define USE_OPACITY_MULTIPLIER_CHECK 100
-#endif
 #define USE_OPACITY_DEPTH 93
-// #define USE_OPACITY_MULTIPLIER 94 // defined now in smokeviewdefs.h
 #define USE_OPACITY_DEPTH_CHECK 99
+#endif
+// #define USE_OPACITY_MULTIPLIER 94 // defined now in smokeviewdefs.h
 #define SMOKE_EXTINCT 95
 #define CUTOFF_RESET 96
 #define EXTINCTION_RESET_FDS 97

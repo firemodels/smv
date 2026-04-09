@@ -2242,7 +2242,9 @@ void UpdateShowScene(void){
     update_smokefire_colors = 0;
     GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
     GLUISmoke3dCB(UPDATE_CO2_COLORS);
+#ifndef pp_NEW_FIRE_ALPHA
     GLUISmoke3dCB(USE_OPACITY_DEPTH);
+#endif
     END_SHOW_UPDATE(update_smokefire_colors);
   }
   if(update_smoke3d_frame_inc == 1){

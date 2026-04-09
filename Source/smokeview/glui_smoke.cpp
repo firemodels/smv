@@ -625,6 +625,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   SPINNER_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "50% opacity at depth (m):",
                 GLUI_SPINNER_FLOAT,
                 &fire_halfdepth, FIRE_HALFDEPTH, GLUISmoke3dCB);
+  SPINNER_fire_halfdepth->set_float_limits(0.001, 1000.0);
   CHECKBOX_use_op_multiplier = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity,
     "use opacity multiplier when smoke also loaded",
     &use_opacity_multiplier, USE_OP_MULTIPLIER, GLUISmoke3dCB);
@@ -948,7 +949,6 @@ extern "C" void GLUISmoke3dCB(int var){
     }
     GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
     GLUTPOSTREDISPLAY;
-#endif
     break;
   case USE_OPACITY_DEPTH_CHECK:
     use_opacity_ini = 0;
@@ -959,7 +959,6 @@ extern "C" void GLUISmoke3dCB(int var){
       use_opacity_depth      = 1;
       use_opacity_multiplier = 0;
     }
-#ifndef pp_NEW_FIRE_ALPHA
     glui_use_fire_alpha = 1 - use_opacity_depth;
     if(have_smoke!=NO_SMOKE&&have_fire==NO_FIRE){
         use_opacity_multiplier = 0;
