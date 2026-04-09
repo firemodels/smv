@@ -433,7 +433,7 @@ SVEXTERN int SVDECL(glui_mesh_intersection_option, 0);
 SVEXTERN int SVDECL(partfast, 1);
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);
 SVEXTERN int SVDECL(use_fire_alpha, 0);
-SVEXTERN float SVDECL(emission_factor, 3.0);
+SVEXTERN float SVDECL(soot_multiplier, 3.0);
 #ifdef pp_OSX
 SVEXTERN int SVDECL(monitor_screen_height, -1);
 #endif
@@ -1006,7 +1006,7 @@ SVEXTERN int GPU_skip, GPU_hrrcutoff, GPU_hrr, GPU_global_hrrpuv_max, GPU_global
 SVEXTERN int GPU_fire_alpha, GPU_firecolor, GPU_force_alpha_opaque, GPU_have_smoke, GPU_smokecolormap;
 SVEXTERN int GPU_have_fire;
 SVEXTERN int GPU_smokeshade,GPU_smokealpha;
-SVEXTERN int GPU_use_fire_alpha, GPU_emission_factor;
+SVEXTERN int GPU_use_fire_alpha, GPU_soot_multiplier;
 
 SVEXTERN int GPUzone_zonedir;
 SVEXTERN int GPUzone_zoneinside;

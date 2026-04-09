@@ -2151,7 +2151,7 @@ void Keyboard(unsigned char key, int flag){
         havesoot_local = HaveSootLoaded();
         havefire_local = HaveFireLoaded();
         if(havesoot_local!=NO_SMOKE&&havefire_local!=NO_FIRE&&use_opacity_multiplier==1){
-          emission_factor *= 1.25;
+          soot_multiplier *= 1.25;
         }
         else{
           fire_halfdepth /= 1.25;
@@ -2160,7 +2160,7 @@ void Keyboard(unsigned char key, int flag){
         GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
         GLUIUpdateFireParms();
         if(havesoot_local!=NO_SMOKE&&havefire_local!=NO_FIRE&&use_opacity_multiplier==1){
-          printf("soot multiplier: %f\n", emission_factor);
+          printf("soot multiplier: %f\n", soot_multiplier);
         }
         else{
           printf("50%% opacity at depth: %f (m)\n", fire_halfdepth);
@@ -2178,7 +2178,7 @@ void Keyboard(unsigned char key, int flag){
         havesoot_local = HaveSootLoaded();
         havefire_local = HaveFireLoaded();
         if(havesoot_local!=NO_SMOKE&&havefire_local!=NO_FIRE&&use_opacity_multiplier==1){
-          emission_factor /= 1.25;
+          soot_multiplier /= 1.25;
         }
         else{
           fire_halfdepth *= 1.25;
@@ -2187,7 +2187,7 @@ void Keyboard(unsigned char key, int flag){
         GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
         GLUIUpdateFireParms();
         if(havesoot_local!=NO_SMOKE&&havefire_local!=NO_FIRE&&use_opacity_multiplier==1){
-          printf("soot multiplier: %f\n", emission_factor);
+          printf("soot multiplier: %f\n", soot_multiplier);
         }
         else{
           printf("50%% opacity at depth: %f (m)\n", fire_halfdepth);

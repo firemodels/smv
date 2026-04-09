@@ -685,7 +685,7 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
       float absorb, trans;
 
       absorb = 1.0 - *smoke_tran;
-      absorb *= emission_factor;
+      absorb *= soot_multiplier;
       trans = CLAMP(1.0 - absorb, 0.0, 1.0);
       *smoke_tran = trans;
     }

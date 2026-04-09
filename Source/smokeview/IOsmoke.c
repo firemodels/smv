@@ -475,7 +475,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
-  glUniform1f(GPU_emission_factor, emission_factor);
+  glUniform1f(GPU_soot_multiplier, soot_multiplier);
   glUniform1i(GPU_use_fire_alpha, use_fire_alpha);
   glUniform1i(GPU_have_smoke, have_smoke_local);
   glUniform1i(GPU_have_fire, have_fire_local);
@@ -1331,7 +1331,7 @@ void InitAlphas(unsigned char *smokealphanew, unsigned char *firealphanew, float
     else{
       int fire_alpha;
 
-      fire_alpha       = CLAMP(emission_factor*soot_opacity+0.5, 0, 254);
+      fire_alpha       = CLAMP(soot_multiplier*soot_opacity+0.5, 0, 254);
       firealphanew[i]  = (unsigned char)fire_alpha;
     }
   }

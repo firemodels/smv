@@ -203,7 +203,7 @@ int nsmokeprocinfo = 0, nvolsmokeprocinfo=0;
 extern "C" void GLUIUpdateFireParms(void){
   CHECKBOX_use_op_multiplier->set_int_val(use_opacity_multiplier);
   SPINNER_fire_halfdepth->set_float_val(fire_halfdepth);
-  SPINNER_op_multiplier->set_float_val(emission_factor);
+  SPINNER_op_multiplier->set_float_val(soot_multiplier);
 }
 
 /* ------------------ GLUIUpdateCO2ColorbarList ------------------------ */
@@ -601,7 +601,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     &use_opacity_multiplier, USE_OP_MULTIPLIER, GLUISmoke3dCB);
   SPINNER_op_multiplier = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity,
                 "opacity multiplier:",
-                 GLUI_SPINNER_FLOAT, &emission_factor, OP_MULTIPLIER, GLUISmoke3dCB);
+                 GLUI_SPINNER_FLOAT, &soot_multiplier, OP_MULTIPLIER, GLUISmoke3dCB);
   if(active_smokesensors == 1){
     PANEL_smokesensor = glui_3dsmoke->add_panel_to_panel(ROLLOUT_opacity, "Visibility");
     RADIO_smokesensors = glui_3dsmoke->add_radiogroup_to_panel(PANEL_smokesensor, &show_smokesensors);
