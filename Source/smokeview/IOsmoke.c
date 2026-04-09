@@ -1302,7 +1302,6 @@ void InitAlphas(unsigned char *smokealphanew, unsigned char *firealphanew, float
     return;
   }
   if(smoke3d_frame_inc != 1)new_dx *= (float)smoke3d_frame_inc;
-  int use_soot_multiplier;
   have_fire = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
   if(have_smoke != NO_SMOKE && have_fire != NO_FIRE && use_soot_multiplier == 1){
