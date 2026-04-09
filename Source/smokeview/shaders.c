@@ -482,7 +482,7 @@ int SetSmokeShaders(){
   const GLchar *FragmentShaderSource[]={
     "#version 120\n"
     "uniform float global_hrrpuv_max_u, global_hrrpuv_cb_min_u;"
-    "uniform float emission_factor_u, fire_alpha0255_u;"
+    "uniform float soot_multiplier_u, fire_alpha0255_u;"
     "uniform sampler1D smokecolormap_u;"
     "uniform int have_smoke_u, have_fire_u, use_fire_alpha_u, force_alpha_opaque_u;"
     "varying  float fireval_v, alpha01_v;"
@@ -498,7 +498,7 @@ int SetSmokeShaders(){
     "      fire_alpha01_l=fire_alpha0255_u/255.0;"
     "    }"
     "    else{"
-    "      opacity_multiplier_l=1.0+(emission_factor_u-1.0)*fireval_v/global_hrrpuv_max_u;"
+    "      opacity_multiplier_l=1.0+(soot_multiplier_u-1.0)*fireval_v/global_hrrpuv_max_u;"
     "      fire_alpha01_l = alpha01_v*opacity_multiplier_l;"
     "    }"
     "    if(force_alpha_opaque_u == 1 && fire_alpha01_l>0.0)fire_alpha01_l = 1.0;"
@@ -562,7 +562,7 @@ int SetSmokeShaders(){
   GPU_have_smoke             = glGetUniformLocation(p_smoke, "have_smoke_u");
   GPU_use_fire_alpha         = glGetUniformLocation(p_smoke, "use_fire_alpha_u");
   GPU_force_alpha_opaque     = glGetUniformLocation(p_smoke, "force_alpha_opaque_u");
-  GPU_emission_factor        = glGetUniformLocation(p_smoke, "emission_factor_u");
+  GPU_soot_multiplier        = glGetUniformLocation(p_smoke, "soot_multiplier_u");
   return 1;
 }
 

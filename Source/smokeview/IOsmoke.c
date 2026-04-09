@@ -475,7 +475,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
-  glUniform1f(GPU_emission_factor, emission_factor);
+  glUniform1f(GPU_soot_multiplier, soot_multiplier);
   glUniform1i(GPU_use_fire_alpha, use_fire_alpha);
   glUniform1i(GPU_have_smoke, have_smoke_local);
   glUniform1i(GPU_have_fire, have_fire_local);
@@ -1302,6 +1302,14 @@ void InitAlphas(unsigned char *smokealphanew, unsigned char *firealphanew, float
     return;
   }
   if(smoke3d_frame_inc != 1)new_dx *= (float)smoke3d_frame_inc;
+  have_fire = HaveFireLoaded();
+  have_smoke = HaveSootLoaded();
+  if(have_smoke != NO_SMOKE && have_fire != NO_FIRE && use_soot_multiplier == 1){
+    use_soot_multiplier = 1;
+  }
+  else{
+    use_soot_multiplier = 0;
+  }
   for(i = 1; i < 255; i++){
     float soot_density, soot_opacity;
     int soot_alpha;
@@ -1315,13 +1323,14 @@ void InitAlphas(unsigned char *smokealphanew, unsigned char *firealphanew, float
     soot_opacity     = 254.0*(1.0 - exp(-new_extinct*new_dx*soot_density));
     soot_alpha       = CLAMP(soot_opacity+0.5, 0, 254);
     smokealphanew[i] = (unsigned char)soot_alpha;
-    if(use_opacity_depth==1){
+
+    if(use_soot_multiplier == 0){
       firealphanew[i]  = (unsigned char)i;
     }
     else{
       int fire_alpha;
 
-      fire_alpha       = CLAMP(emission_factor*soot_opacity+0.5, 0, 254);
+      fire_alpha       = CLAMP(soot_multiplier*soot_opacity+0.5, 0, 254);
       firealphanew[i]  = (unsigned char)fire_alpha;
     }
   }
@@ -3360,10 +3369,8 @@ void SmokeWrapup(void){
   GLUISmoke3dCB(USE_FIRE_COLORMAP);
 
   smoke_render_option = RENDER_SLICE;
-  update_fire_alpha = 1;
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
-  GLUISmoke3dCB(USE_OPACITY_MULTIPLIER);
   ForceIdle();
 }
 
@@ -3424,7 +3431,6 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
     plotstate = GetPlotState(DYNAMIC_PLOTS);
     UpdateTimes();
     SetSmokeColorFlags(&global_scase.smoke3dcoll);
-    update_fire_alpha = 1;
 
     smoke3di->soot_loaded = 0;
     if(smoke3di->type==HRRPUV_index)mesh_smoke3d->smoke3d_hrrpuv = NULL;
@@ -4003,7 +4009,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3di){
           is_firenode[j] = 1;
           fire_index = CLAMP(firecolor_data[j],0,254);
           smokecolor_ptr = rgb_slicesmokecolormap_0255+4*fire_index;
-          if(use_fire_alpha==1){
+          if(use_fire_alpha == 1){
             alpha_smoke_local = smoke3di->fire_alpha;
           }
           else{

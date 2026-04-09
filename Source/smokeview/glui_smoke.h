@@ -65,11 +65,7 @@
 #define BACKGROUND_FLIP 81
 #define SHOW_SMOKEMESH 118
 #define SHOW_ONLY_SMOKEMESH 119
-#define USE_FIRE_ALPHA 84
-#define USE_OPACITY_DEPTH 93
 // #define USE_OPACITY_MULTIPLIER 94 // defined now in smokeviewdefs.h
-#define USE_OPACITY_DEPTH_CHECK 99
-#define USE_OPACITY_MULTIPLIER_CHECK 100
 #define SMOKE_EXTINCT 95
 #define CUTOFF_RESET 96
 #define EXTINCTION_RESET_FDS 97
@@ -81,6 +77,9 @@
 #define SMOKE_FRAME_INC 113
 #define REFRESH_FIRE       114
 #define SMOKE_DEMO_MODE    117
+#define USE_SOOT_MULTIPLIER 121
+#define FIRE_HALFDEPTH    122 
+#define SOOT_MULTIPLIER      123
 
 #define GLOBAL_HRRPUV_MIN  101
 #define GLOBAL_HRRPUV_MAX  102
@@ -103,11 +102,9 @@ EXTERNCPP void GLUIUpdateTimeFrameBounds(float time_min, float time_max);
 EXTERNCPP void GLUIUpdateLoadFrameVal(int frames);
 EXTERNCPP void GLUIUpdateLoadFrameMax(int max_frames);
 EXTERNCPP void GLUISmoke3dCB(int var);
-EXTERNCPP void GLUIUpdateFireAlpha(void);
 EXTERNCPP void GLUIUpdateSmoke3dFlags(void);
 EXTERNCPP void GLUICreateVolTourList(void);
 EXTERNCPP void GLUIDeleteVolTourList(void);
-EXTERNCPP void GLUIUpdateUseOpacityDepth(void);
 
 #endif
 
