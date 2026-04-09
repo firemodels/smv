@@ -2814,7 +2814,7 @@ void UpdateDisplay(void){
 #ifdef pp_NEW_FIRE_ALPHA
   if(update_use_opacity_multiplier == 1){
     update_use_opacity_multiplier = 0;
-    GLUIUpdateUseOpacityMultiplier();
+    GLUIUpdateFireParms();
   }
 #else
   if(update_fire_alpha==1){

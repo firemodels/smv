@@ -63,7 +63,7 @@ EXTERNCPP void GLUIHideShooter(void);
 
 //*** glui_smoke.cpp headers
 
-EXTERNCPP void GLUIUpdateUseOpacityMultiplier(void);
+EXTERNCPP void GLUIUpdateFireParms(void);
 
 //*** glui_geometry.cpp headers
 

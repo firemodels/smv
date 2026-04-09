@@ -209,10 +209,12 @@ int nsmokeprocinfo = 0, nvolsmokeprocinfo=0;
 #define SLICESMOKE_TEST_ROLLOUT 2
 
 #ifdef pp_NEW_FIRE_ALPHA
-/* ------------------ GLUIUpdateUseOpacityMultiplier ------------------------ */
+/* ------------------ GLUIUpdateFireParms ------------------------ */
 
-extern "C" void GLUIUpdateUseOpacityMultiplier(void){
+extern "C" void GLUIUpdateFireParms(void){
   CHECKBOX_use_op_multiplier->set_int_val(use_opacity_multiplier);
+  SPINNER_fire_halfdepth->set_float_val(fire_halfdepth);
+  SPINNER_op_multiplier->set_float_val(emission_factor);
 }
 #else
 /* ------------------ GLUIUpdateFireAlpha ------------------------ */
