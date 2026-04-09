@@ -6233,7 +6233,9 @@ int ReadIni2(const char *inifile, int localfile){
         if(fgets(buffer, 255, stream) == NULL)break;
 #ifdef pp_NEW_FIRE_ALPHA
         int dummy;
-        sscanf(buffer, "%i %i", &dummy, &use_opacity_multiplier_ini);
+        sscanf(buffer, "%i %i", &dummy, &use_opacity_multiplier);
+        use_opacity_multiplier = CLAMP(use_opacity_multiplier, 0, 1);
+        update_use_opacity_multiplier = 1;
 #else
         sscanf(buffer, "%i %i", &use_opacity_depth_ini, &use_opacity_multiplier_ini);
         use_opacity_ini = 1;

@@ -208,7 +208,13 @@ int nsmokeprocinfo = 0, nvolsmokeprocinfo=0;
 #define SLICESMOKE_ORIG_ROLLOUT 1
 #define SLICESMOKE_TEST_ROLLOUT 2
 
-#ifndef pp_NEW_FIRE_ALPHA
+#ifdef pp_NEW_FIRE_ALPHA
+/* ------------------ GLUIUpdateUseOpacityMultiplier ------------------------ */
+
+extern "C" void GLUIUpdateUseOpacityMultiplier(void){
+  CHECKBOX_use_op_multiplier->set_int_val(use_opacity_multiplier);
+}
+#else
 /* ------------------ GLUIUpdateFireAlpha ------------------------ */
 
 extern "C" void GLUIUpdateFireAlpha(void){

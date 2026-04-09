@@ -2141,12 +2141,14 @@ SVEXTERN int smoke_color_int255[4];
 SVEXTERN int co2_color_int255[3];
 #endif
 
-#ifndef pp_NEW_FIRE_ALPHA
+#ifdef pp_NEW_FIRE_ALPHA
+SVEXTERN int SVDECL(update_use_opacity_multiplier,0);
+#else
 SVEXTERN int SVDECL(use_opacity_depth, 1);
 SVEXTERN int SVDECL(use_opacity_depth_ini, -1);
-SVEXTERN int SVDECL(use_opacity_ini, 0);
+SVEXTERN int SVDECL(use_opacity_ini, 0), SVDECL(use_opacity_multiplier_ini, -1);
 #endif
-SVEXTERN int SVDECL(use_opacity_multiplier, 0), SVDECL(use_opacity_multiplier_ini, -1);
+SVEXTERN int SVDECL(use_opacity_multiplier, 0);
 
 SVEXTERN int SVDECL(update_smokefire_colors, 0);
 SVEXTERN float SVDECL(fire_halfdepth,0.3);

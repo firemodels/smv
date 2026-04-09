@@ -55,12 +55,15 @@ EXTERNCPP void GLUILabelsCB(int value);
 EXTERNCPP void GLUIUpdateVisSkyboxOutline(void);
 EXTERNCPP void GLUISkyCB(int var);
 
-
 //*** glui_shooter.cpp headers
 
 EXTERNCPP void GLUIShooterSetup(int main_window);
 EXTERNCPP void GLUIShowShooter(void);
 EXTERNCPP void GLUIHideShooter(void);
+
+//*** glui_smoke.cpp headers
+
+EXTERNCPP void GLUIUpdateUseOpacityMultiplier(void);
 
 //*** glui_geometry.cpp headers
 

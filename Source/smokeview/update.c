@@ -2811,7 +2811,12 @@ void UpdateDisplay(void){
     ShowBoundaryMenu(INTERIOR_WALL_MENU);
     ShowBoundaryMenu(INTERIOR_WALL_MENU);
   }
-#ifndef pp_NEW_FIRE_ALPHA
+#ifdef pp_NEW_FIRE_ALPHA
+  if(update_use_opacity_multiplier == 1){
+    update_use_opacity_multiplier = 0;
+    GLUIUpdateUseOpacityMultiplier();
+  }
+#else
   if(update_fire_alpha==1){
     update_fire_alpha=0;
     GLUIUpdateFireAlpha();
