@@ -32,8 +32,6 @@ echo "-h - display this message"
 echo "-i - use installed version of smokeview"
 echo "-q q - queue used to generate images"
 echo "-t - use test version of smokeview"
-echo "-W - only generate WUI case images"
-echo "-Y - generate SMV and WUI case images"
 exit
 }
 
@@ -128,12 +126,10 @@ COMPILER=intel
 DEBUG=
 TEST=
 use_installed=
-RUN_SMV=1
-RUN_WUI=1
 QUEUE=batch
 CPUS_PER_TASK=
 
-while getopts 'Cdghij:q:tT:WY' OPTION
+while getopts 'Cdghij:q:tT:' OPTION
 do
 case $OPTION  in
   C)
@@ -160,13 +156,6 @@ case $OPTION  in
   T)
    CPUS_PER_TASK="-T $OPTARG" 
    ;;
-  W)
-   RUN_SMV=0
-   RUN_WUI=1
-   ;;
-  Y)
-   RUN_SMV=1
-   RUN_WUI=1
    ;;
 esac
 done
@@ -261,82 +250,76 @@ make_helpinfo_files $SMVUG/SCRIPT_FIGURES
 
 $SMV -version > smokeview.version
 
-if [ "$RUN_SMV" == "1" ]; then
-
 # precompute FED slices
-  cd $GITROOT/smv/Verification/Visualization
-  $FDS2FED plume5c            &
-  pid_feda=$1
-  $FDS2FED plume5cdelta       &
-  pid_fedb=$1
-  $FDS2FED thouse5            &
-  pid_fedc=$1
-  $FDS2FED thouse5delta       &
-  pid_fedd=$1
-  $FDS2FED fed_test           &
-  pid_fede=$1
+cd $GITROOT/smv/Verification/Visualization
+$FDS2FED plume5c            &
+pid_feda=$1
+$FDS2FED plume5cdelta       &
+pid_fedb=$1
+$FDS2FED thouse5            &
+pid_fedc=$1
+$FDS2FED thouse5delta       &
+pid_fedd=$1
+$FDS2FED fed_test           &
+pid_fede=$1
 
 # compute isosurface from particles
 
-  cd $GITROOT/smv/Verification/Visualization
-  echo Compressing sphere_propanec case
-  $SMOKEZIP -f sphere_propanec &
-  pid_casea=$!
+cd $GITROOT/smv/Verification/Visualization
+echo Compressing sphere_propanec case
+$SMOKEZIP -f sphere_propanec &
+pid_casea=$!
 
 # compute isosurface from particles
 
-  cd $GITROOT/smv/Verification/Visualization
-  echo Converting particles to isosurfaces in case plumeiso
-  $SMOKEZIP -f -part2iso plumeiso &
-  pid_caseb=$!
+cd $GITROOT/smv/Verification/Visualization
+echo Converting particles to isosurfaces in case plumeiso
+$SMOKEZIP -f -part2iso plumeiso &
+pid_caseb=$!
 
-  cd $GITROOT/smv/Verification/WUI
-  if  [ -e pine_tree.smv ]; then
-    echo Converting particles to isosurfaces in case pine_tree
-    $SMOKEZIP -f -part2iso pine_tree &
-    pid_casec=$!
-  fi
+cd $GITROOT/smv/Verification/WUI
+if  [ -e pine_tree.smv ]; then
+  echo Converting particles to isosurfaces in case pine_tree
+  $SMOKEZIP -f -part2iso pine_tree &
+  pid_casec=$!
+fi
 
 # difference plume5c and thouse5
 
-  cd $GITROOT/smv/Verification/Visualization
+cd $GITROOT/smv/Verification/Visualization
 
-  echo Differencing cases plume5c and plume5cdelta
-  $SMOKEDIFF -w -r plume5c plume5cdelta &
-  pid_cased=$!
-  echo Differencing cases thouse5 and thouse5delta
-  $SMOKEDIFF -w -r thouse5 thouse5delta &
-  pid_cased=$!
+echo Differencing cases plume5c and plume5cdelta
+$SMOKEDIFF -w -r plume5c plume5cdelta &
+pid_cased=$!
+echo Differencing cases thouse5 and thouse5delta
+$SMOKEDIFF -w -r thouse5 thouse5delta &
+pid_cased=$!
 
-  wait $pid_feda
-  wait $pid_fedb
-  wait $pid_fedc
-  wait $pid_fedd
-  wait $pid_fede
-  wait $pid_casea
-  wait $pid_caseb
-  if  [ -e $GITROOT/smv/Verification/WUI/pine_tree.smv ]; then
-    wait $pid_casec
-  fi
-  wait $pid_cased
-
-  echo Generating images
-
-  cd $GITROOT/smv/Verification
-  scripts/SMV_Cases.sh
-  scripts/RESTART_Cases.sh
-  cd $GITROOT/smv/Verification
-  scripts/SMV_DIFF_Cases.sh
-  cd $CURDIDR
-
+wait $pid_feda
+wait $pid_fedb
+wait $pid_fedc
+wait $pid_fedd
+wait $pid_fede
+wait $pid_casea
+wait $pid_caseb
+if  [ -e $GITROOT/smv/Verification/WUI/pine_tree.smv ]; then
+  wait $pid_casec
 fi
+wait $pid_cased
+
+echo Generating images
+
+d $GITROOT/smv/Verification
+scripts/SMV_Cases.sh
+scripts/RESTART_Cases.sh
+cd $GITROOT/smv/Verification
+scripts/SMV_DIFF_Cases.sh
+cd $CURDIDR
 
 # generate geometry images
 
-if [ "$RUN_WUI" == "1" ] ; then
-  cd $GITROOT/smv/Verification
-  scripts/WUI_Cases.sh
-fi
+cd $GITROOT/smv/Verification
+scripts/WUI_Cases.sh
 
 wait_cases_end
 
