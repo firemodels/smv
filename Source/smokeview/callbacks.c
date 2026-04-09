@@ -2145,11 +2145,13 @@ void Keyboard(unsigned char key, int flag){
         printf("***warning: 3D smoke files not present, fire opacity setting not changed\n");
         break;
       }
+#ifndef pp_NEW_FIRE_ALPHA
       if(use_opacity_depth == 0){
         use_opacity_depth = 1;
         GLUISmoke3dCB(USE_OPACITY_DEPTH);
         GLUIUpdateUseOpacityDepth();
       }
+#endif
       fire_halfdepth /= 1.25;
       GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
       printf("50%% opacity at depth: %f (m)\n", fire_halfdepth);
@@ -2159,11 +2161,13 @@ void Keyboard(unsigned char key, int flag){
         printf("***warning: 3D smoke files not present, fire opacity setting not changed\n");
         break;
       }
+#ifndef pp_NEW_FIRE_ALPHA
       if(use_opacity_depth == 0){
         use_opacity_depth = 1;
         GLUISmoke3dCB(USE_OPACITY_DEPTH);
         GLUIUpdateUseOpacityDepth();
       }
+#endif
       fire_halfdepth *= 1.25;
       GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
       printf("50%% opacity at depth: %f (m)\n", fire_halfdepth);

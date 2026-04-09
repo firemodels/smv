@@ -1306,7 +1306,18 @@ void InitAlphas(unsigned char *smokealphanew, unsigned char *firealphanew, float
     return;
   }
   if(smoke3d_frame_inc != 1)new_dx *= (float)smoke3d_frame_inc;
-  for(i = 1; i < 255; i++){
+#ifdef pp_NEW_FIRE_ALPHA
+  int use_soot_multiplier;
+  have_fire = HaveFireLoaded();
+  have_smoke = HaveSootLoaded();
+  if(have_smoke != NO_SMOKE && have_fire != NO_FIRE && use_opacity_multiplier == 1){
+    use_soot_multiplier = 1;
+  }
+  else{
+    use_soot_multiplier = 0;
+  }
+#endif
+    for(i = 1; i < 255; i++){
     float soot_density, soot_opacity;
     int soot_alpha;
 
@@ -1319,7 +1330,12 @@ void InitAlphas(unsigned char *smokealphanew, unsigned char *firealphanew, float
     soot_opacity     = 254.0*(1.0 - exp(-new_extinct*new_dx*soot_density));
     soot_alpha       = CLAMP(soot_opacity+0.5, 0, 254);
     smokealphanew[i] = (unsigned char)soot_alpha;
+
+#ifdef pp_NEW_FIRE_ALPHA
+    if(use_soot_multiplier == 0){
+#else
     if(use_opacity_depth==1){
+#endif
       firealphanew[i]  = (unsigned char)i;
     }
     else{
@@ -3364,10 +3380,12 @@ void SmokeWrapup(void){
   GLUISmoke3dCB(USE_FIRE_COLORMAP);
 
   smoke_render_option = RENDER_SLICE;
-  update_fire_alpha = 1;
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
+#ifndef pp_NEW_FIRE_ALPHA
+  update_fire_alpha = 1;
   GLUISmoke3dCB(USE_OPACITY_MULTIPLIER);
+#endif
   ForceIdle();
 }
 
@@ -3428,7 +3446,9 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
     plotstate = GetPlotState(DYNAMIC_PLOTS);
     UpdateTimes();
     SetSmokeColorFlags(&global_scase.smoke3dcoll);
+#ifndef pp_NEW_FIRE_ALPHA
     update_fire_alpha = 1;
+#endif
 
     smoke3di->soot_loaded = 0;
     if(smoke3di->type==HRRPUV_index)mesh_smoke3d->smoke3d_hrrpuv = NULL;

@@ -437,8 +437,8 @@ SVEXTERN int SVDECL(use_fire_alpha_new, 0);
 #else
 SVEXTERN int SVDECL(use_fire_alpha, 0);
 SVEXTERN int SVDECL(glui_use_fire_alpha, 1);
-#endif
 SVEXTERN int SVDECL(update_fire_alpha, 0);
+#endif
 SVEXTERN float SVDECL(emission_factor, 3.0);
 #ifdef pp_OSX
 SVEXTERN int SVDECL(monitor_screen_height, -1);

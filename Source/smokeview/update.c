@@ -2809,10 +2809,12 @@ void UpdateDisplay(void){
     ShowBoundaryMenu(INTERIOR_WALL_MENU);
     ShowBoundaryMenu(INTERIOR_WALL_MENU);
   }
+#ifndef pp_NEW_FIRE_ALPHA
   if(update_fire_alpha==1){
     update_fire_alpha=0;
     GLUIUpdateFireAlpha();
   }
+#endif
   if(update_texturebar==1){
     update_texturebar = 0;
     UpdateTexturebar();
