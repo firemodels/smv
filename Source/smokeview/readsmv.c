@@ -6283,7 +6283,11 @@ int ReadIni2(const char *inifile, int localfile){
       }
       if(MatchINI(buffer, "FDEPTH2") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
+#ifdef pp_NEW_FIRE_ALPHA
+        sscanf(buffer, "%f %f %f %i %i", &fire_halfdepth, &co2_halfdepth, &emission_factor, &use_fire_alpha_new, &force_alpha_opaque);
+#else
         sscanf(buffer, "%f %f %f %i %i", &fire_halfdepth,&co2_halfdepth,&emission_factor,&use_fire_alpha, &force_alpha_opaque);
+#endif
         continue;
       }
       if(MatchINI(buffer, "VIEWTOURFROMPATH") == 1){
@@ -8457,7 +8461,11 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, " FIRE %i %s\n", fire_colormap_type, colorbars.colorbarinfo[colorbars.fire_colorbar_index].menu_label);
   }
   fprintf(fileout, "FDEPTH2\n");
+#ifdef pp_NEW_FIRE_ALPHA
+  fprintf(fileout, " %f %f %f %i %i\n", fire_halfdepth, co2_halfdepth, emission_factor, use_fire_alpha_new, force_alpha_opaque);
+#else
   fprintf(fileout, " %f %f %f %i %i\n", fire_halfdepth, co2_halfdepth, emission_factor, use_fire_alpha, force_alpha_opaque);
+#endif
   if(colorbars.ncolorbars > colorbars.ndefaultcolorbars){
     colorbardata *cbi;
     unsigned char *rrgb;

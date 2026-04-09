@@ -81,6 +81,11 @@
 #define SMOKE_FRAME_INC 113
 #define REFRESH_FIRE       114
 #define SMOKE_DEMO_MODE    117
+#ifdef pp_NEW_FIRE_ALPHA
+#define USE_OP_MULTIPLIER 121
+#define FIRE_HALFDEPTH    122 
+#define OP_MULTIPLIER      123
+#endif
 
 #define GLOBAL_HRRPUV_MIN  101
 #define GLOBAL_HRRPUV_MAX  102
