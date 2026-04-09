@@ -129,7 +129,7 @@ use_installed=
 QUEUE=batch
 CPUS_PER_TASK=
 
-while getopts 'Cdghij:q:tT:' OPTION
+while getopts 'Cdhij:q:tT:' OPTION
 do
 case $OPTION  in
   C)
@@ -155,7 +155,6 @@ case $OPTION  in
   ;;
   T)
    CPUS_PER_TASK="-T $OPTARG" 
-   ;;
    ;;
 esac
 done
