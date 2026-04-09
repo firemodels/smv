@@ -6230,16 +6230,12 @@ int ReadIni2(const char *inifile, int localfile){
         continue;
       }
       if(MatchINI(buffer, "SMOKEFIREPROP") == 1){
-        if(fgets(buffer, 255, stream) == NULL)break;
-#ifdef pp_NEW_FIRE_ALPHA
         int dummy;
+
+        if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%i %i", &dummy, &use_opacity_multiplier);
         use_opacity_multiplier = CLAMP(use_opacity_multiplier, 0, 1);
         update_use_opacity_multiplier = 1;
-#else
-        sscanf(buffer, "%i %i", &use_opacity_depth_ini, &use_opacity_multiplier_ini);
-        use_opacity_ini = 1;
-#endif
         continue;
       }
       if(MatchINI(buffer, "SMOKEPROP")==1){
@@ -6290,11 +6286,7 @@ int ReadIni2(const char *inifile, int localfile){
       }
       if(MatchINI(buffer, "FDEPTH2") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-#ifdef pp_NEW_FIRE_ALPHA
         sscanf(buffer, "%f %f %f %i %i", &fire_halfdepth, &co2_halfdepth, &emission_factor, &use_fire_alpha_new, &force_alpha_opaque);
-#else
-        sscanf(buffer, "%f %f %f %i %i", &fire_halfdepth,&co2_halfdepth,&emission_factor,&use_fire_alpha, &force_alpha_opaque);
-#endif
         continue;
       }
       if(MatchINI(buffer, "VIEWTOURFROMPATH") == 1){
@@ -8468,11 +8460,7 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, " FIRE %i %s\n", fire_colormap_type, colorbars.colorbarinfo[colorbars.fire_colorbar_index].menu_label);
   }
   fprintf(fileout, "FDEPTH2\n");
-#ifdef pp_NEW_FIRE_ALPHA
   fprintf(fileout, " %f %f %f %i %i\n", fire_halfdepth, co2_halfdepth, emission_factor, use_fire_alpha_new, force_alpha_opaque);
-#else
-  fprintf(fileout, " %f %f %f %i %i\n", fire_halfdepth, co2_halfdepth, emission_factor, use_fire_alpha, force_alpha_opaque);
-#endif
   if(colorbars.ncolorbars > colorbars.ndefaultcolorbars){
     colorbardata *cbi;
     unsigned char *rrgb;
@@ -8511,11 +8499,7 @@ void WriteIni(int flag,char *filename){
 
   if((have_fire == NO_FIRE && have_smoke == NO_SMOKE)||(have_fire != NO_FIRE && have_smoke != NO_SMOKE)){
     fprintf(fileout, "SMOKEFIREPROP\n");
-#ifdef pp_NEW_FIRE_ALPHA
     fprintf(fileout, " %i %i\n", 1 - use_opacity_multiplier, use_opacity_multiplier);
-#else
-    fprintf(fileout, " %i %i\n", use_opacity_depth, use_opacity_multiplier);
-#endif
   }
   fprintf(fileout, "SMOKEPROP\n");
   fprintf(fileout, " %f\n", glui_mass_extinct);

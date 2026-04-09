@@ -2242,9 +2242,6 @@ void UpdateShowScene(void){
     update_smokefire_colors = 0;
     GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
     GLUISmoke3dCB(UPDATE_CO2_COLORS);
-#ifndef pp_NEW_FIRE_ALPHA
-    GLUISmoke3dCB(USE_OPACITY_DEPTH);
-#endif
     END_SHOW_UPDATE(update_smokefire_colors);
   }
   if(update_smoke3d_frame_inc == 1){
@@ -2811,17 +2808,10 @@ void UpdateDisplay(void){
     ShowBoundaryMenu(INTERIOR_WALL_MENU);
     ShowBoundaryMenu(INTERIOR_WALL_MENU);
   }
-#ifdef pp_NEW_FIRE_ALPHA
   if(update_use_opacity_multiplier == 1){
     update_use_opacity_multiplier = 0;
     GLUIUpdateFireParms();
   }
-#else
-  if(update_fire_alpha==1){
-    update_fire_alpha=0;
-    GLUIUpdateFireAlpha();
-  }
-#endif
   if(update_texturebar==1){
     update_texturebar = 0;
     UpdateTexturebar();

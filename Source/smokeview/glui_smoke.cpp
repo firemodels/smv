@@ -77,10 +77,6 @@ GLUI_Spinner *SPINNER_smoke3d_frame_inc = NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_red=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_green=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_blue=NULL;
-#ifndef pp_NEW_FIRE_ALPHA 
-GLUI_Spinner *SPINNER_smoke3d_fire_halfdepth=NULL;
-GLUI_Spinner *SPINNER_emission_factor=NULL;
-#endif
 GLUI_Spinner *SPINNER_smoke3d_co2_halfdepth = NULL;
 GLUI_Spinner *SPINNER_smoke3d_co2_alpha = NULL;
 GLUI_Spinner *SPINNER_smoke3d_smoke_red=NULL;
@@ -95,18 +91,12 @@ GLUI_Spinner *SPINNER_globalloadframe = NULL;
 GLUI_Spinner *SPINNER_timeloadframe = NULL;
 GLUI_Spinner *SPINNER_co2color[3];
 
-#ifdef pp_NEW_FIRE_ALPHA
 GLUI_Checkbox *CHECKBOX_use_op_multiplier = NULL;
 GLUI_Spinner *SPINNER_fire_halfdepth=NULL;
 GLUI_Spinner *SPINNER_op_multiplier=NULL;
-#endif
 
 GLUI_Checkbox *CHECKBOX_smoke3d_demo_mode=NULL;
 GLUI_Checkbox *CHECKBOX_smoke3d_use_skip=NULL;
-#ifndef pp_NEW_FIRE_ALPHA
-GLUI_Checkbox *CHECKBOX_use_opacity_depth = NULL;
-GLUI_Checkbox *CHECKBOX_use_opacity_multiplier = NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_force_alpha_opaque = NULL;
 GLUI_Checkbox *CHECKBOX_use_co2_colormap = NULL;
 GLUI_Checkbox *CHECKBOX_use_co2_rgb = NULL;
@@ -208,7 +198,6 @@ int nsmokeprocinfo = 0, nvolsmokeprocinfo=0;
 #define SLICESMOKE_ORIG_ROLLOUT 1
 #define SLICESMOKE_TEST_ROLLOUT 2
 
-#ifdef pp_NEW_FIRE_ALPHA
 /* ------------------ GLUIUpdateFireParms ------------------------ */
 
 extern "C" void GLUIUpdateFireParms(void){
@@ -216,13 +205,6 @@ extern "C" void GLUIUpdateFireParms(void){
   SPINNER_fire_halfdepth->set_float_val(fire_halfdepth);
   SPINNER_op_multiplier->set_float_val(emission_factor);
 }
-#else
-/* ------------------ GLUIUpdateFireAlpha ------------------------ */
-
-extern "C" void GLUIUpdateFireAlpha(void){
-  GLUISmoke3dCB(USE_FIRE_ALPHA);
-}
-#endif
 
 /* ------------------ GLUIUpdateCO2ColorbarList ------------------------ */
 
@@ -349,14 +331,6 @@ extern "C" void GLUICreateVolTourList(void){
     LISTBOX_VOL_tour->set_int_val(selectedtour_index);
   }
 }
-
-/* ------------------ GLUIUpdateUseOpacityDepth ------------------------ */
-
-#ifndef pp_NEW_FIRE_ALPHA
-extern "C" void GLUIUpdateUseOpacityDepth(void){
-  CHECKBOX_use_opacity_depth->set_int_val(use_opacity_depth);
-}
-#endif
 
 /* ------------------ UpdateCombineMeshes ------------------------ */
 
@@ -618,18 +592,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   BUTTON_fds_extinction_reset = glui_3dsmoke->add_button_to_panel(PANEL_smoke_opacity, "Reset(saved extinct)", EXTINCTION_RESET_SMV, GLUISmoke3dCB);
 
   PANEL_fire_opacity = glui_3dsmoke->add_panel_to_panel(ROLLOUT_opacity, "fire opacity");
-#ifndef pp_NEW_FIRE_ALPHA
-  glui_use_fire_alpha = 1-use_fire_alpha;
-  if(glui_use_fire_alpha==0){
-    use_opacity_depth      = 1;
-    use_opacity_multiplier = 0;
-  }
-  else{
-    use_opacity_depth      = 0;
-    use_opacity_multiplier = 1;
-  }
-#endif
-#ifdef pp_NEW_FIRE_ALPHA
   SPINNER_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "50% opacity at depth (m):",
                 GLUI_SPINNER_FLOAT,
                 &fire_halfdepth, FIRE_HALFDEPTH, GLUISmoke3dCB);
@@ -640,20 +602,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   SPINNER_op_multiplier = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity,
                 "opacity multiplier:",
                  GLUI_SPINNER_FLOAT, &emission_factor, OP_MULTIPLIER, GLUISmoke3dCB);
-#else
-  CHECKBOX_use_opacity_depth = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "set 50% opacity depth",
-    &use_opacity_depth, USE_OPACITY_DEPTH, GLUISmoke3dCB);
-  SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "50% opacity at depth (m):", GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, GLUISmoke3dCB);
-
-  CHECKBOX_use_opacity_multiplier = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "set opacity multiplier (when smoke also loaded)",
-    &use_opacity_multiplier, USE_OPACITY_MULTIPLIER_CHECK, GLUISmoke3dCB);
-  SPINNER_emission_factor = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "opacity multiplier:", GLUI_SPINNER_FLOAT, &emission_factor, USE_FIRE_ALPHA, GLUISmoke3dCB);
-  glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "off axis planes", &smoke_offaxis);
-  glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "adjust opacities", &smoke_adjust);
-  SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.001, 1000.0);
-  CHECKBOX_force_alpha_opaque = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "force opaque", &force_alpha_opaque, FORCE_ALPHA_OPAQUE, GLUISmoke3dCB);
-  GLUISmoke3dCB(USE_OPACITY_DEPTH);
-#endif
   if(active_smokesensors == 1){
     PANEL_smokesensor = glui_3dsmoke->add_panel_to_panel(ROLLOUT_opacity, "Visibility");
     RADIO_smokesensors = glui_3dsmoke->add_radiogroup_to_panel(PANEL_smokesensor, &show_smokesensors);
@@ -937,72 +885,6 @@ extern "C" void GLUISmoke3dCB(int var){
   case FORCE_ALPHA_OPAQUE:
     global_scase.update_smoke_alphas = 1;
     updatemenu = 1;
-    break;
-#ifndef pp_NEW_FIRE_ALPHA
-  case USE_FIRE_ALPHA:
-    use_fire_alpha = 1-glui_use_fire_alpha;
-    if(have_fire!=NO_FIRE&&have_smoke==NO_SMOKE){
-      SPINNER_smoke3d_fire_halfdepth->enable();
-      SPINNER_emission_factor->disable();
-      CHECKBOX_use_opacity_multiplier->disable();
-    }
-    else{
-      SPINNER_smoke3d_fire_halfdepth->enable();
-      SPINNER_emission_factor->enable();
-      CHECKBOX_use_opacity_multiplier->enable();
-    }
-    if(emission_factor < 1.0){
-      emission_factor = 1.0;
-      SPINNER_emission_factor->set_float_val(emission_factor);
-    }
-    GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
-    GLUTPOSTREDISPLAY;
-    break;
-  case USE_OPACITY_DEPTH_CHECK:
-    use_opacity_ini = 0;
-    GLUISmoke3dCB(USE_OPACITY_DEPTH);
-    break;
-  case USE_OPACITY_DEPTH:
-    if(have_fire!=NO_FIRE&&have_smoke==NO_SMOKE){
-      use_opacity_depth      = 1;
-      use_opacity_multiplier = 0;
-    }
-    glui_use_fire_alpha = 1 - use_opacity_depth;
-    if(have_smoke!=NO_SMOKE&&have_fire==NO_FIRE){
-        use_opacity_multiplier = 0;
-    }
-    else{
-      use_opacity_multiplier = 1 - use_opacity_depth;
-    }
-    CHECKBOX_use_opacity_depth->set_int_val(use_opacity_depth);
-    CHECKBOX_use_opacity_multiplier->set_int_val(use_opacity_multiplier);
-    GLUISmoke3dCB(USE_FIRE_ALPHA);
-    break;
-  case USE_OPACITY_MULTIPLIER_CHECK:
-    use_opacity_ini = 0;
-    GLUISmoke3dCB(USE_OPACITY_MULTIPLIER);
-    break;
-  case USE_OPACITY_MULTIPLIER:
-    if(have_fire!=NO_FIRE&&have_smoke==NO_SMOKE){
-      use_opacity_depth      = 1;
-      use_opacity_multiplier = 0;
-    }
-    if(have_fire != NO_FIRE && have_smoke != NO_SMOKE){
-      if(use_opacity_depth_ini == 1 && use_opacity_ini == 1){
-        use_opacity_depth = 1;
-        use_opacity_multiplier = 0;
-      }
-      else{
-        use_opacity_depth = 0;
-        use_opacity_multiplier = 1;
-      }
-    }
-    glui_use_fire_alpha = use_opacity_multiplier;
-    use_opacity_depth =  1 - use_opacity_multiplier;
-    CHECKBOX_use_opacity_depth->set_int_val(use_opacity_depth);
-    CHECKBOX_use_opacity_multiplier->set_int_val(use_opacity_multiplier);
-    GLUISmoke3dCB(USE_FIRE_ALPHA);
-#endif
     break;
   case SHOW_SMOKEMESH:
     if(vis_smokemesh == 1 && vis_only_smokemesh == 1){
@@ -1334,7 +1216,6 @@ extern "C" void GLUISmoke3dCB(int var){
   case REFRESH_FIRE:
     ForceIdle();
     break;
-#ifdef pp_NEW_FIRE_ALPHA
   case USE_OP_MULTIPLIER:
     if(use_opacity_multiplier == 1){
       SPINNER_op_multiplier->enable();
@@ -1356,16 +1237,9 @@ extern "C" void GLUISmoke3dCB(int var){
     }
     GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
     GLUISmoke3dCB(USE_FIRE_COLORMAP);
-#ifndef pp_NEW_FIRE_ALPHA
-    GLUISmoke3dCB(USE_OPACITY_MULTIPLIER);
-#endif
     break;
-#endif
   case UPDATE_SMOKEFIRE_COLORS:
     fire_halfdepth = MAX(fire_halfdepth, 0.001);
-#ifndef pp_NEW_FIRE_ALPHA
-    SPINNER_smoke3d_fire_halfdepth->set_float_val(fire_halfdepth);
-#endif
     GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
     break;
   case UPDATE_CO2_COLORS:

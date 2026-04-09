@@ -432,13 +432,7 @@ SVEXTERN int SVDECL(glui_mesh_intersection_option, 0);
 
 SVEXTERN int SVDECL(partfast, 1);
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);
-#ifdef pp_NEW_FIRE_ALPHA
 SVEXTERN int SVDECL(use_fire_alpha_new, 0);
-#else
-SVEXTERN int SVDECL(use_fire_alpha, 0);
-SVEXTERN int SVDECL(glui_use_fire_alpha, 1);
-SVEXTERN int SVDECL(update_fire_alpha, 0);
-#endif
 SVEXTERN float SVDECL(emission_factor, 3.0);
 #ifdef pp_OSX
 SVEXTERN int SVDECL(monitor_screen_height, -1);
@@ -2141,13 +2135,7 @@ SVEXTERN int smoke_color_int255[4];
 SVEXTERN int co2_color_int255[3];
 #endif
 
-#ifdef pp_NEW_FIRE_ALPHA
 SVEXTERN int SVDECL(update_use_opacity_multiplier,0);
-#else
-SVEXTERN int SVDECL(use_opacity_depth, 1);
-SVEXTERN int SVDECL(use_opacity_depth_ini, -1);
-SVEXTERN int SVDECL(use_opacity_ini, 0), SVDECL(use_opacity_multiplier_ini, -1);
-#endif
 SVEXTERN int SVDECL(use_opacity_multiplier, 0);
 
 SVEXTERN int SVDECL(update_smokefire_colors, 0);

@@ -2145,7 +2145,6 @@ void Keyboard(unsigned char key, int flag){
         printf("***warning: 3D smoke files not present, fire opacity setting not changed\n");
         break;
       }
-#ifdef pp_NEW_FIRE_ALPHA
       {
         int havesoot_local, havefire_local;
 
@@ -2167,23 +2166,12 @@ void Keyboard(unsigned char key, int flag){
           printf("50%% opacity at depth: %f (m)\n", fire_halfdepth);
         }
       }
-#else
-      if(use_opacity_depth == 0){
-        use_opacity_depth = 1;
-        GLUISmoke3dCB(USE_OPACITY_DEPTH);
-        GLUIUpdateUseOpacityDepth();
-      }
-      fire_halfdepth /= 1.25;
-      GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
-      printf("50%% opacity at depth: %f (m)\n", fire_halfdepth);
-#endif
       break;
     case 'K':
       if(global_scase.smoke3dcoll.nsmoke3dinfo<=0){
         printf("***warning: 3D smoke files not present, fire opacity setting not changed\n");
         break;
       }
-#ifdef pp_NEW_FIRE_ALPHA
       {
         int havesoot_local, havefire_local;
 
@@ -2205,16 +2193,6 @@ void Keyboard(unsigned char key, int flag){
           printf("50%% opacity at depth: %f (m)\n", fire_halfdepth);
         }
       }
-#else
-      if(use_opacity_depth == 0){
-        use_opacity_depth = 1;
-        GLUISmoke3dCB(USE_OPACITY_DEPTH);
-        GLUIUpdateUseOpacityDepth();
-      }
-      fire_halfdepth *= 1.25;
-      GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
-      printf("50%% opacity at depth: %f (m)\n", fire_halfdepth);
-#endif
       break;
     case 'l':
     case 'L':

@@ -678,11 +678,7 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
   }
   if(firedata_local!=NULL&&temperature>global_temp_cb_min){
 
-#ifdef pp_NEW_FIRE_ALPHA
     if(use_opacity_multiplier == 0){
-#else
-    if(use_opacity_depth==1){
-#endif
       *smoke_tran = pow(0.5, dlength/fire_halfdepth);
     }
     if(use_opacity_multiplier==1&&smokedata_local!=NULL){
