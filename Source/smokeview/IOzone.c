@@ -1409,10 +1409,10 @@ void DrawZoneRoomGeom(void){
         glPushMatrix();
         if(zvi->wall==TOP_WALL){
           glTranslatef(FDS2SMV_X(zvi->xcen), FDS2SMV_Y(zvi->ycen), z2);
-	}
-	else{
+	    }
+	    else{
           glTranslatef(FDS2SMV_X(zvi->xcen), FDS2SMV_Y(zvi->ycen), z1);
-	}
+	    }
         uc_color[0] = zvi->color[0]*255;
         uc_color[1] = zvi->color[1]*255;
         uc_color[2] = zvi->color[2]*255;
@@ -1561,7 +1561,7 @@ void DrawZoneVentDataProfile(void){
       case LEFT_WALL:
       case RIGHT_WALL:
         if(dvent1*dvent2>=0.0){
-          glColor3fv(vcolor1);
+          glColor4fv(vcolor1);
           glVertex3f(xwall,       ymid,zelev[j]);
           glVertex3f(xwall+dvent1,ymid,zelev[j]);
 
@@ -1572,7 +1572,7 @@ void DrawZoneVentDataProfile(void){
           float dvent;
 
           dvent =  dvent1*(zelev[j+1]-zelev[j])/(dvent2-dvent1);
-          glColor3fv(vcolor1);
+          glColor4fv(vcolor1);
           glVertex3f(xwall,          ymid, zelev[j]);
           glVertex3f(xwall + dvent1, ymid, zelev[j]);
           glVertex3f(xwall,          ymid, zelev[j] - dvent);
@@ -1587,7 +1587,7 @@ void DrawZoneVentDataProfile(void){
       case BACK_WALL:
       case FRONT_WALL:
         if(dvent1*dvent2>=0.0){
-          glColor3fv(vcolor1);
+          glColor4fv(vcolor1);
           glVertex3f(xmid, ywall,          zelev[j]);
           glVertex3f(xmid, ywall + dvent1, zelev[j]);
 
@@ -1598,7 +1598,7 @@ void DrawZoneVentDataProfile(void){
           float dvent;
 
           dvent =  dvent1*(zelev[j+1]-zelev[j])/(dvent2-dvent1);
-          glColor3fv(vcolor1);
+          glColor4fv(vcolor1);
           glVertex3f(xmid, ywall,          zelev[j]);
           glVertex3f(xmid, ywall + dvent1, zelev[j]);
           glVertex3f(xmid, ywall,          zelev[j] - dvent);
