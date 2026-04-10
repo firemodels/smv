@@ -58,13 +58,7 @@ void ShowScene2(int mode){
     UpdateLights(light_position0, light_position1);
     if(drawlights==1)DrawLights(light_position0, light_position1);
 
-
- // if(render_status==RENDER_ON&&render_mode==RENDER_360){
- //   UpdateLights(light_position0, light_position1);
- // }
-
     glPointSize((float)1.0);
-
 
     /* ++++++++++++++++++++++++ DrawNorth  +++++++++++++++++++++++++ */
 
@@ -155,7 +149,7 @@ void ShowScene2(int mode){
       SNIFF_ERRORS("after drawaxis");
     }
 
-    /* ++++++++++++++++++++++++ draw outlnes when boundary files are displayed +++++++++++++++++++++++++ */
+    /* ++++++++++++++++++++++++ draw outlines when boundary files are displayed +++++++++++++++++++++++++ */
 
     if(hide_internal_blockages == 1){
       if(outline_state == OUTLINE_ONLY || outline_state == OUTLINE_ADDED){
