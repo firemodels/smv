@@ -666,7 +666,7 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
   if(show_timings != 0){
     char label[256];
 
-    sprintf(label, "\nUpdateShowScene(%i)", iglobal_times);
+    sprintf(label, "UpdateShowScene(%i)", iglobal_times);
     PRINT_TIMER(timer_showscene, label);
   }
   if(stereotype == STEREO_NONE || stereotype == STEREO_TIME)ClearBuffers(mode);

@@ -2595,8 +2595,10 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 #endif
     }
     if(global_scase.smoke3dcoll.nsmoke3dinfo>0&&show3dsmoke==1){
+      INIT_PRINT_TIMER(timer_sort_smokemeshes);
       SortSmoke3dinfo();
       GetSmokeDir(modelview_scratch);
+      PRINT_TIMER(timer_sort_smokemeshes,"SortSmoke3dinfo+GetSmokeDir");
       SNIFF_ERRORS("after GetSmokeDir");
     }
     else if(showslice==1&&(showall_3dslices==1||nslice_loaded>1)){
