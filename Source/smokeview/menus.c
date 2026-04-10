@@ -4726,6 +4726,7 @@ void LoadSmoke3DMenu(int value){
   int file_count;
   float load_time;
   float load_size;
+  int nsmoke3dtypes;
 
 #define MENU_DUMMY_SMOKE           -9
 #define MENU_SMOKE_SETTINGS        -4
@@ -4735,6 +4736,8 @@ void LoadSmoke3DMenu(int value){
   START_TIMER(load_time);
   load_size = 0.0;
   file_count=0;
+
+  nsmoke3dtypes = global_scase.smoke3dcoll.nsmoke3dtypes;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
     if(scriptoutstream!=NULL){
@@ -4816,7 +4819,15 @@ void LoadSmoke3DMenu(int value){
       }
     }
   }
-  else if(value<=-100){
+  else if(value == -nsmoke3dtypes - 100){
+    LoadSmoke3DMenu(-SOOT_index - 100);
+    LoadSmoke3DMenu(-HRRPUV_index - 100);
+  }
+  else if(value == -nsmoke3dtypes -1 - 100){
+    LoadSmoke3DMenu(-SOOT_index - 100);
+    LoadSmoke3DMenu(-TEMP_index - 100);
+  }
+  else if(value<=-100 && value > -nsmoke3dtypes -100){
     smoke3ddata *smoke3di;
 
     value = -(value + 100);
@@ -12149,6 +12160,9 @@ if(opengl_finalized == 0)return;
         }
 
         int ii;
+        int nsmoke3dtypes;
+
+        nsmoke3dtypes = global_scase.smoke3dcoll.nsmoke3dtypes;
         for(ii = 0; ii<global_scase.smoke3dcoll.nsmoke3dtypes; ii++){
           if(global_scase.meshescoll.nmeshes>1){
             CREATEMENU(global_scase.smoke3dcoll.smoke3dtypes[ii].menu_id, LoadSmoke3DMenu);
@@ -12207,6 +12221,23 @@ if(opengl_finalized == 0)return;
               strcat(menulabel, "(ZLIB)");
             }
             glutAddMenuEntry(menulabel,-ii-100);
+          }
+          if(SOOT_index >= 0){
+            char menulabel[256];
+
+            if(HRRPUV_index>=0 || TEMP_index>=0)glutAddMenuEntry("-",MENU_DUMMY_SMOKE);
+            if(HRRPUV_index >= 0){
+              strcpy(menulabel, global_scase.smoke3dcoll.smoke3dtypes[SOOT_index].longlabel);
+              strcat(menulabel, " and ");
+              strcat(menulabel, global_scase.smoke3dcoll.smoke3dtypes[HRRPUV_index].longlabel);
+              glutAddMenuEntry(menulabel, -nsmoke3dtypes - 100);
+            }
+            if(TEMP_index >= 0){
+              strcpy(menulabel, global_scase.smoke3dcoll.smoke3dtypes[SOOT_index].longlabel);
+              strcat(menulabel, " and ");
+              strcat(menulabel, global_scase.smoke3dcoll.smoke3dtypes[TEMP_index].longlabel);
+              glutAddMenuEntry(menulabel, -nsmoke3dtypes - 1 - 100);
+            }
           }
         }
 
