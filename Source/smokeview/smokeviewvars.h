@@ -207,7 +207,6 @@ SVEXTERN char slice_plot_label[256];
 SVEXTERN int SVDECL(update_plot_label, 0);
 
 SVEXTERN int SVDECL(terrain_skip, 1);
-SVEXTERN int nsmoke3dtypes, smoke3d_other;
 SVEXTERN smoke3dtypedata SVDECL(*smoke3dtypes, NULL);
 
 SVEXTERN int SOOT_index, HRRPUV_index, TEMP_index, CO2_index;
