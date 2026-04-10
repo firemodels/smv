@@ -95,7 +95,6 @@ GLUI_Spinner *SPINNER_soot_multiplier=NULL;
 
 GLUI_Checkbox *CHECKBOX_use_soot_multiplier = NULL;
 GLUI_Checkbox *CHECKBOX_smoke3d_demo_mode=NULL;
-GLUI_Checkbox *CHECKBOX_smoke3d_use_skip=NULL;
 GLUI_Checkbox *CHECKBOX_force_alpha_opaque = NULL;
 GLUI_Checkbox *CHECKBOX_use_co2_colormap = NULL;
 GLUI_Checkbox *CHECKBOX_use_co2_rgb = NULL;

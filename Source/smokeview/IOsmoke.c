@@ -2722,19 +2722,6 @@ void DrawSmokeFrame(void){
     if(smokemesh->in_frustum == 0)continue;
     if(smokemesh->datavis == 0)continue;
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
-    if(smoke3d_use_skip==1){
-      if(smoke3di->smokeframe_loaded==NULL){
-        NewMemory((void **)&smoke3di->smokeframe_loaded, smoke3di->ntimes_full*sizeof(int));
-        int j;
-        for(j=0;j<smoke3di->ntimes_full;j++){
-          smoke3di->smokeframe_loaded[j] = 0;
-        }
-        for(j=smoke3d_start_frame;j<smoke3di->ntimes_full;j+=smoke3d_skip_frame){
-          smoke3di->smokeframe_loaded[j] = 1;
-        }
-      }
-      if(smoke3di->smokeframe_loaded!=NULL&&smoke3di->smokeframe_loaded[smoke3di->ismoke3d_time]==0)continue;
-    }
 #ifdef pp_OPACITY_DEBUG
     char alabel[256];
     float *xyz;
@@ -2746,8 +2733,6 @@ void DrawSmokeFrame(void){
     if(vis_smokemesh == 1||vis_only_smokemesh==1){
       DrawBoxMinMax(smokemesh->boxmin_smv, smokemesh->boxmax_smv, foregroundcolor);
     }
-#endif
-#ifdef pp_SPEEDUP
     if(vis_only_smokemesh == 0){
 #endif
 #ifdef pp_GPU
