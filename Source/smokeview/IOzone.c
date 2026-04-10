@@ -1515,7 +1515,8 @@ void DrawZoneVentDataProfile(void){
     zventdata *zvi;
     int j;
     float zelev[NELEV_ZONE];
-    float *vcolor1,*vcolor2;
+    
+    float *vcolor1;
     float xmid, ymid;
 
     zvi = global_scase.zventinfo + i;
@@ -1556,7 +1557,6 @@ void DrawZoneVentDataProfile(void){
         dvent2=-dvent2;
       }
       vcolor1=rgb_full[zvi->itempdata[j]];
-      vcolor2=vcolor1;
       switch(zvi->wall){
       case LEFT_WALL:
       case RIGHT_WALL:
@@ -1565,7 +1565,6 @@ void DrawZoneVentDataProfile(void){
           glVertex3f(xwall,       ymid,zelev[j]);
           glVertex3f(xwall+dvent1,ymid,zelev[j]);
 
-          glColor3fv(vcolor2);
           glVertex3f(xwall+dvent2,ymid,zelev[j+1]);
           glVertex3f(xwall,       ymid,zelev[j+1]);
         }
@@ -1579,7 +1578,6 @@ void DrawZoneVentDataProfile(void){
           glVertex3f(xwall,          ymid, zelev[j] - dvent);
           glVertex3f(xwall,          ymid, zelev[j] - dvent);
 
-          glColor3fv(vcolor2);
           glVertex3f(xwall,          ymid, zelev[j] - dvent);
           glVertex3f(xwall,          ymid, zelev[j] - dvent);
           glVertex3f(xwall + dvent2, ymid, zelev[j + 1]);
@@ -1593,7 +1591,6 @@ void DrawZoneVentDataProfile(void){
           glVertex3f(xmid, ywall,          zelev[j]);
           glVertex3f(xmid, ywall + dvent1, zelev[j]);
 
-          glColor3fv(vcolor2);
           glVertex3f(xmid, ywall + dvent2, zelev[j + 1]);
           glVertex3f(xmid, ywall,          zelev[j + 1]);
         }
@@ -1607,7 +1604,6 @@ void DrawZoneVentDataProfile(void){
           glVertex3f(xmid, ywall,          zelev[j] - dvent);
           glVertex3f(xmid, ywall,          zelev[j] - dvent);
 
-          glColor3fv(vcolor2);
           glVertex3f(xmid, ywall,          zelev[j] - dvent);
           glVertex3f(xmid, ywall,          zelev[j] - dvent);
           glVertex3f(xmid, ywall + dvent2, zelev[j + 1]);
