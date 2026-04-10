@@ -4357,9 +4357,7 @@ void DisplayCB(void){
   UpdateDisplay();
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   if(stereotype==STEREO_NONE){
-    if(use_vr==0){
-      DoNonStereo();
-    }
+    DoNonStereo();
   }
   else{
     DoStereo();

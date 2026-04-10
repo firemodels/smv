@@ -11559,12 +11559,8 @@ if(opengl_finalized == 0)return;
     glutAddMenuEntry("HVAC settings...", DIALOG_HVAC);
   }
   char stereo_label[32];
-  if(have_vr == 1){
-    strcpy(stereo_label, "Stereo/VR settings...");
-  }
-  else{
-    strcpy(stereo_label, "Stereo settings...");
-  }
+
+  strcpy(stereo_label, "Stereo settings...");
   glutAddMenuEntry(stereo_label, DIALOG_STEREO);
   if(trainer_active==1){
     glutAddMenuEntry("Trainer...", DIALOG_TRAINER);
