@@ -8861,7 +8861,7 @@ static int loadsmoke3dmenu = 0;
 #ifdef pp_VOL_OLD
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static unloadvolsmoke3dmenu=0;
-#endif;
+#endif
 static int unloadsmoke3dmenu = 0;
 static int loadslicemenu=0, loadmultislicemenu = 0, loadhvacmenu = 0;
 static int *loadsubvslicemenu=NULL, nloadsubvslicemenu=0;
