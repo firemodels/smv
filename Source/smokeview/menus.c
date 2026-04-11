@@ -8858,8 +8858,11 @@ static int hvacvaluemenu = 0, hvacnodevaluemenu = 0, hvacductvaluemenu = 0;
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
 static int loadplot3dmenu=0, unloadvslicemenu=0, unloadslicemenu=0;
 static int loadsmoke3dmenu = 0;
+#ifdef pp_VOL_OLD
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
-static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
+static unloadvolsmoke3dmenu=0;
+#endif;
+static int unloadsmoke3dmenu = 0;
 static int loadslicemenu=0, loadmultislicemenu = 0, loadhvacmenu = 0;
 static int *loadsubvslicemenu=NULL, nloadsubvslicemenu=0;
 static int *loadsubpatchmenu_b = NULL, *nsubpatchmenus_b=NULL, iloadsubpatchmenu_b=0, nloadsubpatchmenu_b = 0;
@@ -11064,6 +11067,7 @@ if(opengl_finalized == 0)return;
 
  /* --------------------------------Show Volume smoke menu -------------------------- */
 
+#ifdef pp_VOL_OLD
   if(nvolsmoke3dloaded>0){
     char vlabel[256];
 
@@ -11074,6 +11078,7 @@ if(opengl_finalized == 0)return;
     glutAddMenuEntry(vlabel,TOGGLE_VOLSMOKE);
     GLUTADDSUBMENU("Smoke colorbar",smokecolorbarmenu);
   }
+#endif
 
   CREATEMENU(aperturemenu,ApertureMenu);
   if(apertureindex==0)glutAddMenuEntry("*30",0);
@@ -11235,6 +11240,7 @@ if(opengl_finalized == 0)return;
     showhide_data = 1;
     GLUTADDSUBMENU("3D smoke", smoke3dshowmenu);
   }
+#ifdef pp_VOL_OLD
   if(nvolsmoke3dloaded>0){
     char vlabel[256];
 
@@ -11242,6 +11248,7 @@ if(opengl_finalized == 0)return;
     strcpy(vlabel, "3D smoke (Volume rendered)");
     GLUTADDSUBMENU(vlabel, showvolsmoke3dmenu);
   }
+#endif
   if(npatchloaded>0){
     showhide_data = 1;
     GLUTADDSUBMENU("Boundary", showpatchmenu);
@@ -12099,6 +12106,7 @@ if(opengl_finalized == 0)return;
 
 /* --------------------------------unload and load 3d vol smoke menus -------------------------- */
 
+#ifdef pp_VOL_OLD
     if(nvolsmoke3dloaded>0){
       CREATEMENU(unloadvolsmoke3dmenu,UnLoadVolsmoke3DMenu);
       if(nvolsmoke3dloaded>1){
@@ -12118,7 +12126,6 @@ if(opengl_finalized == 0)return;
         glutAddMenuEntry(meshi->label,i);
       }
     }
-#ifdef pp_VOL_OLD
     if(nvolrenderinfo>0){
       char vlabel[256];
       CREATEMENU(loadvolsmoke3dmenu,LoadVolsmoke3DMenu);
