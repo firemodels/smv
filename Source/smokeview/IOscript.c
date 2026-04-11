@@ -269,8 +269,10 @@ void InitKeywords(void){
   InitKeyword("dummy", -999, 0);         // dummy entry used to report errors
 // 3d smoke
   InitKeyword("LOAD3DSMOKE",         SCRIPT_LOAD3DSMOKE, 1);
+#ifdef pp_VOL_OLD
   InitKeyword("LOADVOLSMOKE",        SCRIPT_LOADVOLSMOKE, 1);
   InitKeyword("LOADVOLSMOKEFRAME",   SCRIPT_LOADVOLSMOKEFRAME, 1);
+#endif
   InitKeyword("SMOKEPROP",           SCRIPT_SMOKEPROP, 1);
 
 // boundary files
@@ -383,7 +385,9 @@ void InitKeywords(void){
   InitKeyword("RENDERSIZE",          SCRIPT_RENDERSIZE, 1);
   InitKeyword("RENDERSTART",         SCRIPT_RENDERSTART, 1);
   InitKeyword("RENDERTYPE",          SCRIPT_RENDERTYPE, 1);
+#ifdef pp_VOL_OLD
   InitKeyword("VOLSMOKERENDERALL",   SCRIPT_VOLSMOKERENDERALL, 2);
+#endif
 
 // miscellaneous
 
@@ -951,12 +955,14 @@ int CompileScript(char *scriptfile){
 //  clip mode (int)
       case SCRIPT_SCENECLIP:
 
+#ifdef pp_VOL_OLD
 // LOADVOLSMOKE
 //  mesh number (-1 for all meshes) (int)
       case SCRIPT_LOADVOLSMOKE:
         scripti->need_graphics = 0;
         SETival;
         break;
+#endif
 
 // X/y/ZSCENECLIP
 // imin (int) min (float) imax (int) max (float)
@@ -1020,6 +1026,7 @@ int CompileScript(char *scriptfile){
         SETcval2;
         break;
 
+#ifdef pp_VOL_OLD
 // VOLSMOKERENDERALL
 //  skip (int) start_frame (int)
 // file name base (char) (or blank to use smokeview default)
@@ -1036,6 +1043,7 @@ int CompileScript(char *scriptfile){
 
         SETcval2;
         break;
+#endif
 
 // LOADISOM
 //  type (char)
@@ -1219,12 +1227,14 @@ case SCRIPT_LOADSMV:
         }
         break;
 
+#ifdef pp_VOL_OLD
 // LOADVOLSMOKEFRAME
 //  mesh index, frame (int)
       case SCRIPT_LOADVOLSMOKEFRAME:
         SETbuffer;
         sscanf(param_buffer,"%i %i",&scripti->ival,&scripti->ival2);
         break;
+#endif
 
 // LOADSLICERENDER
 //  (char)quantity
@@ -1724,6 +1734,8 @@ void LoadTimeFrame(int meshnum, float timeval){
   LoadSmokeFrame(meshnum, smokeframe);
 }
 
+#ifdef pp_VOL_OLD
+
 /* ------------------ ScriptLoadVolSmokeFrame ------------------------ */
 
 void ScriptLoadVolSmokeFrame(scriptdata *scripti, int flag){
@@ -1772,6 +1784,7 @@ void ScriptVolSmokeRenderAll(scriptdata *scripti){
   scripti->ival=skip_local;
   RenderMenu(skip_local);
 }
+#endif
 
 /* ------------------ ScriptLoadIsoFrame ------------------------ */
 
@@ -1938,7 +1951,7 @@ void ScriptLoadIso(scriptdata *scripti, int meshnum){
 }
 
 /* ------------------ ScriptLoadVolSmoke ------------------------ */
-
+#ifdef pp_VOL_OLD
 void ScriptLoadVolSmoke(scriptdata *scripti){
   int imesh;
 
@@ -1956,6 +1969,7 @@ void ScriptLoadVolSmoke(scriptdata *scripti){
     ReadVolsmokeAllFrames(vr);
   }
 }
+#endif
 
 /* ------------------ ScriptLoad3dSmoke ------------------------ */
 
@@ -3939,9 +3953,11 @@ int RunScriptCommand(scriptdata *script_command){
     case SCRIPT_RENDER360ALL:
       ScriptRender360All(scripti);
       break;
+#ifdef pp_VOL_OLD
     case SCRIPT_VOLSMOKERENDERALL:
       ScriptVolSmokeRenderAll(scripti);
       break;
+#endif
     case SCRIPT_ISORENDERALL:
       ScriptIsoRenderAll(scripti);
       break;
@@ -4081,6 +4097,7 @@ int RunScriptCommand(scriptdata *script_command){
     case SCRIPT_LOAD3DSMOKE:
       ScriptLoad3dSmoke(scripti);
       break;
+#ifdef pp_VOL_OLD
     case SCRIPT_LOADVOLSMOKE:
       ScriptLoadVolSmoke(scripti);
       break;
@@ -4088,6 +4105,7 @@ int RunScriptCommand(scriptdata *script_command){
       ScriptLoadVolSmokeFrame(scripti,1);
       returnval=1;
       break;
+#endif
     case SCRIPT_LOADPARTICLES:
       ScriptLoadParticles(scripti);
       break;

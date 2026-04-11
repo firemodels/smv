@@ -780,7 +780,9 @@ SVEXTERN float SVDECL(tmax_part,16.0);
 SVEXTERN int SVDECL(redirect,0);
 SVEXTERN int SVDECL(tempdir_flag,0),SVDECL(time_flag,0);
 SVEXTERN int SVDECL(script_render,0);
+#ifdef pp_VOL_OLD
 SVEXTERN int SVDECL(make_volrender_script,0);
+#endif
 SVEXTERN char SVDECL(*volrender_scriptname,NULL);
 SVEXTERN float SVDECL(nongpu_vol_factor,1.0);
 SVEXTERN float SVDECL(gpu_vol_factor,1.0);
@@ -845,9 +847,11 @@ SVEXTERN float SVDECL(thisMOTIONtime,0.0), SVDECL(lastMOTIONtime,0.0);
   SVEXTERN int SVDECL(GPUnframes,0);
 #endif
 SVEXTERN int SVDECL(mouse_down,0);
-SVEXTERN int SVDECL(show_volsmoke_moving,1);
-SVEXTERN int SVDECL(freeze_volsmoke,0);
+#ifdef pp_VOL_OLD
+SVEXTERN int SVDECL(show_volsmoke_moving, 1);
+SVEXTERN int SVDECL(freeze_volsmoke, 0);
 SVEXTERN int SVDECL(autofreeze_volsmoke, 0);
+#endif
 
 SVEXTERN int SVDECL(glui_show_vector_slice, 1);
 SVEXTERN int SVDECL(glui_show_slice_shaded,1);
@@ -901,7 +905,9 @@ SVEXTERN geomlistdata SVDECL(*geomlistinfo, NULL);
 SVEXTERN int SVDECL(glui_load_volcompressed,0),SVDECL(load_volcompressed,0);
 SVEXTERN int SVDECL(use_multi_threading,1);
 SVEXTERN int SVDECL(load_at_rendertimes,1);
+#ifdef pp_VOL_OLD
 SVEXTERN int nvolrenderinfo;
+#endif
 SVEXTERN int SVDECL(compress_volsmoke,0),SVDECL(glui_compress_volsmoke,0);
 SVEXTERN int SVDECL(read_vol_mesh,VOL_READNONE);
 SVEXTERN int SVDECL(trainer_temp_index,0),SVDECL(trainer_oxy_index,0);
@@ -995,7 +1001,9 @@ SVEXTERN int opengl_version;
 SVEXTERN char opengl_version_label[256];
 SVEXTERN int SVDECL(cull_meshes, 1);
 
+#ifdef pp_VOL_OLD
 SVEXTERN int SVDECL(usevolrender,1);
+#endif
 SVEXTERN int SVDECL(gpuactive, 0);
 #ifdef pp_GPU
 SVEXTERN int SVDECL(usegpu, 0);
@@ -1013,6 +1021,7 @@ SVEXTERN int GPUzone_boxmin, GPUzone_boxmax;
 SVEXTERN int GPUzone_zlay;
 SVEXTERN int GPUzone_odl, GPUzone_odu;
 
+#ifdef pp_VOL_OLD
 SVEXTERN int GPUvol_inside, GPUvol_eyepos, GPUvol_xyzmaxdiff, GPUvol_slicetype,GPUvol_dcell3;
 SVEXTERN int GPUvol_gpu_vol_factor;
 SVEXTERN int GPUvol_soot_density, GPUvol_fire, GPUvol_blockage;
@@ -1020,6 +1029,7 @@ SVEXTERN int GPUvol_fire_opacity_factor, GPUvol_volbw, GPUvol_mass_extinct;
 SVEXTERN int GPUvol_temperature_min,GPUvol_temperature_cutoff,GPUvol_temperature_max;
 SVEXTERN int GPUvol_boxmin, GPUvol_boxmax, GPUvol_drawsides;
 SVEXTERN int GPUvol_smokecolormap, GPUvol_dcell, GPUvol_havefire;
+#endif
 
 SVEXTERN int GPU3dslice_valtexture,GPU3dslice_colormap;
 SVEXTERN int GPU3dslice_val_min,GPU3dslice_val_max;
@@ -1193,7 +1203,9 @@ SVEXTERN int SVDECL(update_plot3d_bnd, 0);
 SVEXTERN int show3dsmoke;
 SVEXTERN float frustum[6][4];
 SVEXTERN int showtime, showtime2, showplot3d, showpatch, showslice, showvslice, showsmoke, showzone, showiso;
+#ifdef pp_VOL_OLD
 SVEXTERN int SVDECL(showvolrender,0);
+#endif
 SVEXTERN int SVDECL(vis_slice_contours,0);
 SVEXTERN int SVDECL(update_slicecontours,0);
 SVEXTERN int showiso_colorbar;
@@ -1832,7 +1844,10 @@ SVEXTERN int SVDECL(titlesafe_offsetBASE,45);
 SVEXTERN int   SVDECL(reset_frame,0);
 SVEXTERN float SVDECL(reset_time,0.0),SVDECL(start_frametime,0.0),SVDECL(stop_frametime,0.0);
 SVEXTERN float SVDECL(max_velocity,0.0);
-SVEXTERN int nslice_loaded, ngeomslice_loaded, nvolsmoke_loaded;
+SVEXTERN int nslice_loaded, ngeomslice_loaded;
+#ifdef pp_VOL_OLD
+SVEXTERN int nvolsmoke_loaded;
+#endif
 SVEXTERN int SVDECL(*slice_loaded_list,NULL), SVDECL(*slice_sorted_loaded_list,NULL);
 SVEXTERN char SVDECL(*fdsprefix2,NULL);
 SVEXTERN char SVDECL(*endian_filename,NULL);

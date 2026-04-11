@@ -1045,10 +1045,12 @@ void MouseCBWorker(int button, int state, int xm, int ym){
   colorbar_drag = 0;
   timebar_drag  = 0;
 
+#ifdef pp_VOL_OLD
   if(autofreeze_volsmoke==ON&&nvolsmoke_loaded>0){
     if(state==GLUT_DOWN)GLUIUpdateFreeze(ON);
     if(state==GLUT_UP)GLUIUpdateFreeze(OFF);
   }
+#endif
   if(state == GLUT_UP){
     alt_ctrl_key_state = KEY_NONE;
   }
@@ -1508,9 +1510,11 @@ void MouseDragCB(int xm, int ym){
 
   in_external=0;
 #ifdef pp_GPU
+#ifdef pp_VOL_OLD
   if(usegpu==1&&showvolrender==1&&show_volsmoke_moving==1){
     if(ThrottleGpu()==1)return;
   }
+#endif
 #endif
 
   if( colorbar_drag==1&&(showtime==1 || showplot3d==1)){
@@ -2538,6 +2542,7 @@ void Keyboard(unsigned char key, int flag){
             timeval=GetTime();
             fprintf(scriptoutstream,"SETTIMEVAL\n");
             fprintf(scriptoutstream," %f\n",timeval);
+#ifdef pp_VOL_OLD
             if(nvolrenderinfo>0&&load_at_rendertimes==1){
               for(i=0;i<global_scase.meshescoll.nmeshes;i++){
                 meshdata *meshi;
@@ -2565,6 +2570,7 @@ void Keyboard(unsigned char key, int flag){
                 fprintf(scriptoutstream," %i %i\n",i,framenum);
               }
             }
+#endif
           }
           else{
             int show_plot3dkeywords=0;
@@ -2734,6 +2740,7 @@ void Keyboard(unsigned char key, int flag){
           break;
       }
       break;
+#ifdef pp_VOL_OLD
     case 'V':
       if(nvolrenderinfo>0){
         usevolrender=1-usevolrender;
@@ -2744,6 +2751,7 @@ void Keyboard(unsigned char key, int flag){
         return;
       }
       break;
+#endif
     case 'w':
       switch(keystate){
         case GLUT_ACTIVE_ALT:
@@ -4080,6 +4088,7 @@ void DoScript(void){
   if(nscriptinfo>0&&current_script_command!=NULL&&(script_step==0||(script_step==1&&script_step_now==1))){
     script_step_now=0;
     if(current_script_command>=scriptinfo){
+#ifdef pp_VOL_OLD
       if(current_script_command->command==SCRIPT_VOLSMOKERENDERALL){
         if(current_script_command->exit==0){
           RenderState(RENDER_ON);
@@ -4091,7 +4100,10 @@ void DoScript(void){
         }
       }
       else if(current_script_command->command==SCRIPT_ISORENDERALL){
-          if(current_script_command->exit==0){
+#else
+      if(current_script_command->command == SCRIPT_ISORENDERALL){
+#endif
+        if(current_script_command->exit == 0){
             RenderState(RENDER_ON);
           }
           else{
@@ -4148,6 +4160,7 @@ void DoScript(void){
       }
     }
     else{
+#ifdef pp_VOL_OLD
       if(current_script_command->command==SCRIPT_VOLSMOKERENDERALL){
         int remove_frame;
 
@@ -4157,7 +4170,10 @@ void DoScript(void){
           UnloadVolsmokeFrameAllMeshes(remove_frame);
         }
       }
-      else if(current_script_command->command==SCRIPT_ISORENDERALL){
+      else if(current_script_command->command == SCRIPT_ISORENDERALL){
+#else
+      if(current_script_command->command==SCRIPT_ISORENDERALL){
+#endif
         int remove_frame;
 
         ScriptLoadIsoFrame2(current_script_command);

@@ -2796,6 +2796,7 @@ void DrawSmokeFrame(void){
 
 /* ------------------ DrawSmokeVolFrame ------------------------ */
 
+#ifdef pp_VOL_OLD
 void DrawVolSmokeFrame(void){
   int load_shaders = 0;
 
@@ -2834,6 +2835,7 @@ void DrawVolSmokeFrame(void){
 #endif
   SNIFF_ERRORS("after drawsmoke");
 }
+#endif
 
 /* ------------------ SkipSmokeFrames ------------------------ */
 

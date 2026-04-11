@@ -938,6 +938,7 @@ void UpdateTexturebar(void){
   SNIFF_ERRORS("UpdateTexturebar - glTexImage1D (rgb_volsmokecolormap) ");
 
 #ifdef pp_GPU
+#ifdef pp_VOL_OLD
   if(gpuactive==1&&nvolrenderinfo>0&&showvolrender==1){
     glActiveTexture(GL_TEXTURE2);
     glTexSubImage1D(GL_TEXTURE_1D,0,0,MAXSMOKERGB,GL_RGBA,GL_FLOAT, rgb_volsmokecolormap);
@@ -951,7 +952,7 @@ void UpdateTexturebar(void){
     glActiveTexture(GL_TEXTURE0);
   }
 #endif
-
+#endif
 }
 
 /* ------------------ InitRGB ------------------------ */

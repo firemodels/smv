@@ -9,6 +9,7 @@
 #include "stdio_buffer.h"
 #include "getdata.h"
 
+#ifdef pp_VOL_OLD
 /* ------------------ InitVolRender ------------------------ */
 
 void InitVolRender(void){
@@ -70,6 +71,7 @@ void InitVolRender(void){
     }
   }
 }
+#endif
 
 /* ------------------ ReadSMV ------------------------ */
 
@@ -770,7 +772,9 @@ int ReadSMV(char *smvfile){
 
     }
   }
+#ifdef pp_VOL_OLD
   InitVolRender();
+#endif
   InitBoundaryBounds();
   InitSliceBounds();
   return 0;

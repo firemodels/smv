@@ -1189,9 +1189,11 @@ void InitSuperMesh(void){
 
     // sort meshes in supermesh from lower front left to upper back right
 
+#ifdef pp_VOL_OLD
     if(nvolrenderinfo>1){
       qsort((meshdata **)smesh->meshes, smesh->nmeshes, sizeof(meshdata *), CompareSMeshes);
     }
+#endif
 
     // count meshes in supermesh in each direction
 
@@ -1299,6 +1301,7 @@ int GetVolsmokeNFrames(volrenderdata *vr){
 
 /* ------------------ InitVolRender ------------------------ */
 
+#ifdef pp_VOL_OLD
 void InitVolRender(void){
   int i;
 
@@ -1408,6 +1411,7 @@ void InitVolRender(void){
     InitSuperMesh();
   }
 }
+#endif
 
 /* ------------------ GetMeshInSmesh ------------------------ */
 
@@ -1658,7 +1662,9 @@ void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlen
 void ComputeAllSmokecolors(void){
   int ii;
 
+#ifdef pp_VOL_OLD
   if(freeze_volsmoke==1)return;
+#endif
   for(ii=0;ii<global_scase.meshescoll.nmeshes;ii++){
     meshdata *meshi;
     volrenderdata *vr;
@@ -1984,6 +1990,7 @@ void DrawSmoke3dVolDebug(void){
                 glColor4fv(smokecolor + val_index[v3]); glVertex3f(x[xindex[v3]], y[yindex[v3]], zz)
 /* ------------------ DrawSmoke3dVol ------------------------ */
 
+#ifdef pp_VOL_OLD
 void DrawSmoke3DVol(void){
   int iwall;
   int ii;
@@ -2259,6 +2266,7 @@ void DrawSmoke3DVol(void){
   }
   if(use_transparency_data==1)TransparentOff();
 }
+#endif
 
 /* ------------------ UpdateVolsmokeSupertexture ------------------------ */
 
@@ -2381,6 +2389,7 @@ void UpdateVolsmokeTexture(meshdata *meshi){
 /* ------------------ DrawSmoke3dGpuVol ------------------------ */
 
 #ifdef pp_GPU
+#ifdef pp_VOL_OLD
 void DrawSmoke3DGPUVol(void){
 
   int iwall;
@@ -2402,7 +2411,11 @@ void DrawSmoke3DGPUVol(void){
     GPUnframes=0;
   }
 #endif
-  if(mouse_down==1&&show_volsmoke_moving==0){
+  if(mouse_down==1
+#ifdef pp_VOL_OLD
+    &&show_volsmoke_moving==0
+#endif
+    ){
     return;
   }
   glUniform3f(GPUvol_eyepos,eye_position_smv[0],eye_position_smv[1],eye_position_smv[2]);
@@ -2593,6 +2606,7 @@ void DrawSmoke3DGPUVol(void){
   SNIFF_ERRORS("after DrawSmoke3dGpuVol after loop");
   if(use_transparency_data==1)TransparentOff();
 }
+#endif
 #endif
 
 /* ------------------ GetVolsmokeFrameTime ------------------------ */

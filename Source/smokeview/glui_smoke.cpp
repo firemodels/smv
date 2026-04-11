@@ -456,7 +456,11 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   int i;
 
 
-  if(global_scase.smoke3dcoll.nsmoke3dinfo<=0&&nvolrenderinfo<=0)return;
+  if(global_scase.smoke3dcoll.nsmoke3dinfo<=0
+#ifdef pp_VOL_OLD
+    &&nvolrenderinfo<=0
+#endif
+    )return;
   if(CHECKBOX_meshvisptr!=NULL)FREEMEMORY(CHECKBOX_meshvisptr);
   NewMemory((void **)&CHECKBOX_meshvisptr,global_scase.meshescoll.nmeshes*sizeof(GLUI_Checkbox *));
 
@@ -659,10 +663,16 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   GLUISmoke3dCB(UPDATE_CO2_COLORS);
   GLUISmoke3dCB(USE_SMOKE_RGB);
 
-  if(global_scase.smoke3dcoll.nsmoke3dinfo<=0||nvolrenderinfo<=0){
+  if(global_scase.smoke3dcoll.nsmoke3dinfo<=0
+#ifdef pp_VOL_OLD
+    ||nvolrenderinfo<=0
+#endif
+    ){
     smoke_render_option=RENDER_SLICE;
     if(global_scase.smoke3dcoll.nsmoke3dinfo>0)smoke_render_option=RENDER_SLICE;
+#ifdef pp_VOL_OLD
     if(nvolrenderinfo>0)smoke_render_option=RENDER_VOLUME;
+#endif
   }
 
   //---------------------------------------------Skip planes--------------------------------------------------------------
@@ -697,6 +707,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
 
   //---------------------------------------------Volume render settings--------------------------------------------------------------
 
+#ifdef pp_VOL_OLD
   if(nvolrenderinfo > 0){
     ROLLOUT_volume = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoke3d, "Volume render settings", false, VOLRENDER_ROLLOUT, SmokeRolloutCB);
     TOGGLE_ROLLOUT(smokeprocinfo, nsmokeprocinfo, ROLLOUT_volume, VOLRENDER_ROLLOUT, glui_3dsmoke);
@@ -817,6 +828,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     SPINNER_smokeloadframe = glui_3dsmoke->add_spinner_to_panel(PANEL_loadframe, "smoke frame", GLUI_SPINNER_INT, &smoke_framenumber);
     SPINNER_timeloadframe = glui_3dsmoke->add_spinner_to_panel(PANEL_loadframe, "time", GLUI_SPINNER_FLOAT, &time_frameval);
   }
+#endif
 
 #ifdef pp_GPU
   GLUISmoke3dCB(VOL_SMOKE);
@@ -872,8 +884,10 @@ void GLUIGetPixelsPerTriangle(void){
 
 extern "C" void GLUISmoke3dCB(int var){
   int i;
+#ifdef pp_VOL_OLD
   char *tour_label;
   char *vol_prefixptr;
+#endif
 
   updatemenu=1;
   switch(var){
@@ -963,6 +977,7 @@ extern "C" void GLUISmoke3dCB(int var){
   case CANCEL_GENERATE_IMAGES:
     ScriptCB(SCRIPT_CANCEL_NOW);
     break;
+#ifdef pp_VOL_OLD
   case GENERATE_IMAGES:
     if(selected_tour==NULL){
       tour_label=NULL;
@@ -978,6 +993,7 @@ extern "C" void GLUISmoke3dCB(int var){
   case NONGPU_VOL_FACTOR:
     InitVolRenderSurface(NOT_FIRSTCALL);
     break;
+#endif
   case MASS_EXTINCTION:
     if(glui_mass_extinct<1.0) {
       glui_mass_extinct = 1.0;

@@ -562,7 +562,9 @@ EXTERNCPP void UpdateVSliceBoundIndexes(void);
 //*** IOsmoke.c headers
 
 EXTERNCPP void DrawSmokeFrame(void);
+#ifdef pp_VOL_OLD
 EXTERNCPP void DrawVolSmokeFrame(void);
+#endif
 EXTERNCPP void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *ntimes_found, int *ntimes_full);
 EXTERNCPP int GetSmokeNFrames(int type, float *tmin, float *tmax);
 EXTERNCPP void InitAlphas(unsigned char *smokealphanew,  unsigned char *firealphanew,
@@ -809,7 +811,9 @@ EXTERNCPP void LoadSkyTexture(char *filebase, texturedata *texti);
 EXTERNCPP void AntiAliasLine(int flag);
 EXTERNCPP int BuildGbndFile(int file_type);
 EXTERNCPP void DisplayVersionInfo(char *progname, common_opts *opts);
+#ifdef pp_VOL_OLD
 EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int skipframe);
+#endif
 EXTERNCPP int IsFDSRunning(FILE_SIZE *last_size);
 EXTERNCPP void SetViewPoint(int option);
 EXTERNCPP NORETURN void SMV_EXIT(int code);

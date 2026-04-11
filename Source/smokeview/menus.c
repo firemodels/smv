@@ -3366,9 +3366,11 @@ void LoadUnloadMenu(int value){
     if(global_scase.hvaccoll.nhvacinfo>0){
       LoadHVACMenu(MENU_HVAC_UNLOAD);
     }
+#ifdef pp_VOL_OLD
     if(nvolrenderinfo>0){
       LoadVolsmoke3DMenu(UNLOAD_ALL);
     }
+#endif
 
     LoadVSliceMenu2(UNLOAD_ALL);
 
@@ -3403,9 +3405,11 @@ void LoadUnloadMenu(int value){
     if(global_scase.smoke3dcoll.nsmoke3dinfo > 0){
       UnloadAllSmoke3D(-1);
     }
+#ifdef pp_VOL_OLD
     if(nvolrenderinfo>0){
       UnLoadVolsmoke3DMenu(UNLOAD_ALL);
     }
+#endif
     if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
       vis_device_plot = DEVICE_PLOT_HIDDEN;
       showdevice_val = 0;
@@ -10730,7 +10734,11 @@ if(opengl_finalized == 0)return;
 
 /* -------------------------------- colorbarmenu -------------------------- */
 
-  if(nsmoke3dloaded>0||nvolrenderinfo>0){
+  if(nsmoke3dloaded>0
+#ifdef pp_VOL_OLD
+    ||nvolrenderinfo>0
+#endif
+    ){
     MakeColorbarMenu(&smokecolorbarmenu,
                      &smokecolorbars_submenu1, &smokecolorbars_submenu2, &smokecolorbars_submenu3,
                      &smokecolorbars_submenu4, &smokecolorbars_submenu5, &smokecolorbars_submenu6,
@@ -12110,6 +12118,7 @@ if(opengl_finalized == 0)return;
         glutAddMenuEntry(meshi->label,i);
       }
     }
+#ifdef pp_VOL_OLD
     if(nvolrenderinfo>0){
       char vlabel[256];
       CREATEMENU(loadvolsmoke3dmenu,LoadVolsmoke3DMenu);
@@ -12121,6 +12130,7 @@ if(opengl_finalized == 0)return;
       if(nvolsmoke3dloaded==1)glutAddMenuEntry("Unload",UNLOAD_ALL);
       if(nvolsmoke3dloaded>1)GLUTADDSUBMENU("Unload",unloadvolsmoke3dmenu);
     }
+#endif
 
     /* --------------------------------unload and load 3d smoke menus -------------------------- */
 
@@ -12886,12 +12896,14 @@ if(opengl_finalized == 0)return;
 
       // volume rendered smoke
 
+#ifdef pp_VOL_OLD
       if(nvolrenderinfo>0&&global_scase.smokediff==0){
         char vlabel[256];
 
         strcpy(vlabel,"3D smoke (Volume rendered)");
         GLUTADDSUBMENU(vlabel,loadvolsmoke3dmenu);
       }
+#endif
 
       // terrain
 
