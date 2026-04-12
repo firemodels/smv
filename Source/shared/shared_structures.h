@@ -195,9 +195,11 @@ typedef struct _meshdata {
   struct _meshdata *floor_mesh;
   GLuint blockage_texture_id;
   struct _smoke3ddata *smoke3d_soot, *smoke3d_hrrpuv, *smoke3d_temp, *smoke3d_co2;
+#ifdef pp_VOL_OLD
   GLuint volsmoke_texture_id, volfire_texture_id;
   float *volsmoke_texture_buffer, *volfire_texture_buffer;
   int voltest_update;
+#endif
   float *slice3d_c_buffer;
 #ifdef pp_GPU
   GLuint slice3d_texture_id;
@@ -208,11 +210,15 @@ typedef struct _meshdata {
   float meshrgb[3], *meshrgb_ptr;
   float mesh_offset[3], *mesh_offset_ptr;
   int blockvis, datavis;
+#ifdef pp_VOL_OLD
   int ivolbar, jvolbar, kvolbar;
+#endif
   float  *xplt_smv,     *yplt_smv,     *zplt_smv;
   float  *xplt_fds,     *yplt_fds,     *zplt_fds;
   double *xpltd_fds,    *ypltd_fds,    *zpltd_fds;
+#ifdef pp_VOL_OLD
   float  *xvolplt_smv,  *yvolplt_smv,  *zvolplt_smv;
+#endif
   float  *xplt_cen_smv, *yplt_cen_smv, *zplt_cen_smv;
   float   xcen_smv,      ycen_smv,      zcen_smv;
   float boxmin_fds[3], boxmiddle_fds[3], boxmax_fds[3], boxeps_fds[3];
@@ -361,6 +367,7 @@ typedef struct _cellmeshdata {
   meshdata **cellmeshes;
 } cellmeshdata;
 
+#ifdef pp_VOL_OLD
 /* --------------------------  supermeshdata -------------------------------- */
 
 typedef struct _supermeshdata {
@@ -374,6 +381,7 @@ typedef struct _supermeshdata {
   meshdata **meshes;
   int ibar, jbar, kbar;
 } supermeshdata;
+#endif
 
 /* --------------------------  propdata ------------------------------------- */
 #define PROPVARMAX 100
@@ -581,7 +589,10 @@ typedef struct _slicedata {
   int seq_id, autoload;
   char *file, *size_file, *bound_file;
   int have_bound_file;
-  char *comp_file, *reg_file, *vol_file;
+  char *comp_file, *reg_file;
+#ifdef pp_VOL_OLD
+  char *vol_file;
+#endif
   char *geom_file;
   int finalize;
   int slcf_index;
@@ -1777,8 +1788,10 @@ typedef struct {
 
   float obst_bounding_box[6];
 
+#ifdef pp_VOL_OLD
   int nsupermeshinfo;
   supermeshdata *supermeshinfo;
+#endif
 
   /// @brief The HoC of the fuel if present. -1.0 otherwise.
   float fuel_hoc;
