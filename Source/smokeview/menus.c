@@ -5324,7 +5324,7 @@ void LoadMultiSliceMenu(int value){
       longlabel = slicei->label.longlabel;
       if(strcmp(longlabel,submenulabel)!=0)continue;
       if(dir!=0&&dir!=slicei->idir)continue;
-      if(dir!=0&&slicei->volslice==1)continue;
+      if(dir!=0&&slicei->slice3d==1)continue;
       if(slicei->slice_filetype == SLICE_GEOM){
         load_size += ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, 0, &errorcode);
       }
@@ -5418,7 +5418,7 @@ void LoadAllMultiSliceMenu(void){
 
     mslicei = global_scase.slicecoll.multisliceinfo + i;
     slicei = global_scase.slicecoll.sliceinfo + mslicei->islices[0];
-    if(slicei->volslice == 1)continue;
+    if(slicei->slice3d == 1)continue;
     if(sliceload_dir == 0 && slicei->idir != 1)continue;
     if(sliceload_dir == 1 && slicei->idir != 2)continue;
     if(sliceload_dir == 2 && slicei->idir != 3)continue;
@@ -5447,7 +5447,7 @@ void LoadAllMultiVSliceMenu(void){
     mvslicei = global_scase.slicecoll.multivsliceinfo + i;
     vslicei = global_scase.slicecoll.vsliceinfo + mvslicei->ivslices[0];
     slicei = global_scase.slicecoll.sliceinfo + vslicei->ival;
-    if(slicei->volslice == 1)continue;
+    if(slicei->slice3d == 1)continue;
     if(sliceload_dir == 0 && slicei->idir != 1)continue;
     if(sliceload_dir == 1 && slicei->idir != 2)continue;
     if(sliceload_dir == 2 && slicei->idir != 3)continue;
@@ -8144,7 +8144,7 @@ void InitSubSliceMenuInfo(){
       nsubslicemenuinfo++;
     }
     si = subslicemenuinfo + nsubslicemenuinfo-1;
-    if(si->slicetype!=SLICE_UNKNOWN&&sd->volslice==0){
+    if(si->slicetype!=SLICE_UNKNOWN&&sd->slice3d==0){
       if(sd->idir == 1){
         si->havex = 1;
         nsubslicex++;
@@ -8213,7 +8213,7 @@ void InitSubVectorSliceMenuInfo(){
       nsubvectorslicemenuinfo++;
     }
     vd = subvectorslicemenuinfo + nsubvectorslicemenuinfo - 1;
-    if(vd->slicetype!=SLICE_UNKNOWN&&si->volslice==0){
+    if(vd->slicetype!=SLICE_UNKNOWN&&si->slice3d==0){
       if(si->idir == 1){
         vd->havex = 1;
         nsubvectorslicex++;

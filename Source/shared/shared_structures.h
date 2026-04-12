@@ -634,7 +634,7 @@ typedef struct _slicedata {
   unsigned char *iqsliceframe;
   float above_ground_level;
   int have_agl_data;
-  int volslice;
+  int slice3d;
   int is1, is2, js1, js2, ks1, ks2;
   int iis1, iis2, jjs1, jjs2, kks1, kks2;
   int *imap, *jmap, *kmap;
@@ -696,7 +696,7 @@ typedef struct _multivslicedata {
 typedef struct _vslicedata {
   int seq_id, autoload, reload;
   slicedata *u,*v,*w,*val;
-  int volslice;
+  int slice3d;
   int iu, iv, iw, ival;
   int skip;
   int finalize;

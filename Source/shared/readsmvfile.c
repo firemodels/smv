@@ -2418,7 +2418,7 @@ int IsSliceDup(smv_case *scase, slicedata *sd, int nslice){
     if(strcmp(slicei->label.longlabel,sd->label.longlabel)!=0)continue;
     if(slicei->slice_filetype!=sd->slice_filetype)continue;
     if(slicei->blocknumber!=sd->blocknumber)continue;
-    if(slicei->volslice!=sd->volslice)continue;
+    if(slicei->slice3d!=sd->slice3d)continue;
     if(slicei->idir!=sd->idir)continue;
     return 1;
   }
@@ -4220,10 +4220,10 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   sd->slicecomplevel = NULL;
   sd->qslicedata_compressed = NULL;
   if(sd->is1!=sd->is2&&sd->js1!=sd->js2&&sd->ks1!=sd->ks2){
-    sd->volslice = 1;
+    sd->slice3d = 1;
   }
   else{
-    sd->volslice = 0;
+    sd->slice3d = 0;
   }
   sd->times = NULL;
   sd->times_map = NULL;

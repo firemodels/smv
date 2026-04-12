@@ -1501,7 +1501,7 @@ void UpdateChopColors(void){
       slicedata *slicei;
 
       slicei = global_scase.slicecoll.sliceinfo + i;
-      if(slicei->volslice==1&&slicei->loaded==1&&slicei->display==1){
+      if(slicei->slice3d==1&&slicei->loaded==1&&slicei->display==1){
         slice3d_loaded = 1;
         break;
       }

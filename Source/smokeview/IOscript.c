@@ -2045,7 +2045,7 @@ int SliceMatch(scriptdata *scripti, slicedata *slicei){
     int *min, *max;
     meshdata *meshi;
 
-    if(slicei->volslice==0)return 0;                                              // need a 3d slice file but didn't find it
+    if(slicei->slice3d==0)return 0;                                              // need a 3d slice file but didn't find it
 
     min = slicei->ijk_min;
     max = slicei->ijk_max;
@@ -2235,7 +2235,7 @@ void ScriptLoadSlice(scriptdata *scripti){
     slicei = global_scase.slicecoll.sliceinfo + mslicei->islices[0];
     if(MatchUpper(slicei->label.longlabel,scripti->cval) == NOTMATCH)continue;
     if(scripti->ival==0){
-      if(slicei->volslice==0)continue;
+      if(slicei->slice3d==0)continue;
     }
     else{
       if(slicei->idir != scripti->ival)continue;
@@ -2327,7 +2327,7 @@ int GetNSliceGeomFrames(scriptdata *scripti){
     slicei = global_scase.slicecoll.sliceinfo+mslicei->islices[0];
     if(MatchUpper(slicei->label.longlabel, scripti->cval)==NOTMATCH)continue;
     if(scripti->ival==0){
-      if(slicei->volslice==0)continue;
+      if(slicei->slice3d==0)continue;
     }
     else{
       if(slicei->idir!=scripti->ival)continue;
@@ -2421,7 +2421,7 @@ void ScriptLoadSliceRender(scriptdata *scripti){
     slicei = global_scase.slicecoll.sliceinfo+mslicei->islices[0];
     if(MatchUpper(slicei->label.longlabel, scripti->cval)==NOTMATCH)continue;
     if(scripti->ival==0){
-      if(slicei->volslice==0)continue;
+      if(slicei->slice3d==0)continue;
     }
     else{
       if(slicei->idir!=scripti->ival)continue;
@@ -2638,7 +2638,7 @@ void ScriptLoadSliceM(scriptdata *scripti, int meshnum){
       int *min, *max;
       meshdata *meshi;
 
-      if(slicei->volslice == 0)continue;
+      if(slicei->slice3d == 0)continue;
       min = slicei->ijk_min;
       max = slicei->ijk_max;
       if(min[0] != 0 || min[1] != 0 || min[2] != 0)continue;
@@ -2673,7 +2673,7 @@ void ScriptLoadVSlice(scriptdata *scripti){
     slicei = global_scase.slicecoll.sliceinfo + vslicei->ival;
     if(MatchUpper(slicei->label.longlabel,scripti->cval) == NOTMATCH)continue;
     if(scripti->ival == 0){
-      if(slicei->volslice == 0)continue;
+      if(slicei->slice3d == 0)continue;
     }
     else{
       if(slicei->idir != scripti->ival)continue;
@@ -2725,7 +2725,7 @@ void ScriptLoadVSliceM(scriptdata *scripti, int meshnum){
     if(slicei->blocknumber + 1 != meshnum)continue;
     if(MatchUpper(slicei->label.longlabel,scripti->cval) == NOTMATCH)continue;
     if(scripti->ival == 0){
-      if(slicei->volslice == 0)continue;
+      if(slicei->slice3d == 0)continue;
     }
     else{
       if(slicei->idir != scripti->ival)continue;

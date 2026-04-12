@@ -492,7 +492,7 @@ void UpdateShow(void){
       i=slice_loaded_list[ii];
       sd = global_scase.slicecoll.sliceinfo+i;
       if(sd->display==0||sd->slicefile_labelindex!=slicefile_labelindex)continue;
-      if(sd->volslice==1&&sd->slice_filetype==SLICE_NODE_CENTER&&vis_gslice_data==1)SHOW_gslice_data=1;
+      if(sd->slice3d==1&&sd->slice_filetype==SLICE_NODE_CENTER&&vis_gslice_data==1)SHOW_gslice_data=1;
       if(sd->ntimes>0){
         sliceflag=1;
         break;
@@ -586,7 +586,7 @@ void UpdateShow(void){
       sd = global_scase.slicecoll.sliceinfo + vd->ival;
 
       if(sd->slicefile_labelindex!=slicefile_labelindex)continue;
-      if(sd->volslice==1&&sd->slice_filetype==SLICE_NODE_CENTER&&vis_gslice_data==1)SHOW_gslice_data=1;
+      if(sd->slice3d==1&&sd->slice_filetype==SLICE_NODE_CENTER&&vis_gslice_data==1)SHOW_gslice_data=1;
       vsliceflag=1;
       break;
     }
@@ -950,7 +950,7 @@ int GetLoadvfileinfo(FILE *stream, char *filename){
       fprintf(stream, "//  %s\n", slicei->file);
       fprintf(stream, "LOADVSLICEM\n");
       fprintf(stream, " %s\n", slicei->label.longlabel);
-      if(slicei->volslice==1){
+      if(slicei->slice3d==1){
         fprintf(stream, " %i %f\n", 0, slicei->position_orig);
       }
       else{
@@ -980,7 +980,7 @@ int GetLoadfileinfo(FILE *stream, char *filename){
       fprintf(stream, "//  %s\n", slicei->file);
       fprintf(stream, "LOADSLICEM\n");
       fprintf(stream, " %s\n", slicei->label.longlabel);
-      if(slicei->volslice==1){
+      if(slicei->slice3d==1){
         fprintf(stream, " %i %f\n", 0, slicei->position_orig);
       }
       else{

@@ -678,7 +678,7 @@ void CheckTimeBound(void){
 
       sd=global_scase.slicecoll.sliceinfo+i;
       sd->itime=sd->ntimes-1;
-      if(sd->volslice==1)sd->itime--;
+      if(sd->slice3d==1)sd->itime--;
     }
     for(i=0;i<global_scase.npatchinfo;i++){
       patchdata *patchi;
