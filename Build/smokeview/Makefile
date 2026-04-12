@@ -305,7 +305,7 @@ gnu_linux : $(obj)
 # ------------- clang_linux_db ----------------
 
 clang_linux_db : CFLAGS    = -O0 -ggdb -Wall -Wextra -Wunused-variable -Wunreachable-code -Wno-unused-parameter -Wswitch-default \
-                             -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized \
+                             -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized -Wno-sign-compare\
                              -Wno-address -Wno-undef -Wno-parentheses -Wno-unknown-pragmas \
                              -D _DEBUG $(CFLAGS_COM)
 clang_linux_db : CC        = clang
