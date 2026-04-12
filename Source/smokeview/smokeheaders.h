@@ -796,7 +796,9 @@ EXTERNCPP int  InitShaders(void);
 EXTERNCPP void LoadSmokeShaders(void);
 EXTERNCPP void Load3DSliceShaders(void);
 EXTERNCPP void LoadZoneSmokeShaders(void);
+#ifdef pp_VOL_OLD
 EXTERNCPP void LoadVolsmokeShaders(void);
+#endif
 EXTERNCPP void UnLoadShaders(void);
 #endif
 
