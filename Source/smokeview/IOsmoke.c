@@ -302,6 +302,7 @@ int GetCellindex(float *xyz, meshdata **mesh_tryptr){
 
 }
 
+#ifdef pp_VOL_OLD
 /* ------------------ GetSootDensity ------------------------ */
 
 float GetSootDensity(float *xyz, int itime, meshdata **mesh_try){
@@ -324,7 +325,7 @@ float GetSootDensity(float *xyz, int itime, meshdata **mesh_try){
   soot_val = slice_vals[ijk];
   return soot_val;
 }
-
+#endif
 /* ------------------ IsSmokeComponentPresent ------------------------ */
 
 int IsSmokeComponentPresent(smoke3ddata *smoke3di){

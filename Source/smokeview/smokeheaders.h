@@ -710,7 +710,9 @@ EXTERNCPP void TrainerViewMenu(int var);
 EXTERNCPP void TextureShowMenu(int value);
 EXTERNCPP void UnloadAllSliceFiles(char *longlabel);
 EXTERNCPP void UnloadSliceMenu(int value);
+#ifdef pp_VOL_OLD
 EXTERNCPP void UnLoadVolsmoke3DMenu(int value);
+#endif
 EXTERNCPP void UpdateMenu(void);
 EXTERNCPP void UnloadVSliceMenu(int value);
 EXTERNCPP void UpdateStreakValue(float value);

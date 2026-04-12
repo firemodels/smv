@@ -532,6 +532,7 @@ void Temperature2Emission(float temperature, float *emission){
   emission[2] = (1.0-factor)*rgb_bef[2] + factor*rgb_aft[2];
 }
 
+#ifdef pp_VOL_OLD
 /* ----------------------- GetFireEmission ----------------------------- */
 
 void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
@@ -771,6 +772,7 @@ void InitVolRenderSurface(int flag){
     }
   }
 }
+#endif
 
 /* ------------------ InitVolsmokeSuperTexture ------------------------ */
 #ifdef pp_GPU
@@ -1451,6 +1453,7 @@ meshdata *GetMeshInSmesh(meshdata *mesh_guess, supermeshdata *smesh, float *xyz)
   return NULL;
 }
 
+#ifdef pp_VOL_OLD
 /* ------------------ IntegrateFireColors ------------------------ */
 
 void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlength, meshdata *meshi, int iwall){
@@ -1662,9 +1665,7 @@ void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlen
 void ComputeAllSmokecolors(void){
   int ii;
 
-#ifdef pp_VOL_OLD
   if(freeze_volsmoke==1)return;
-#endif
   for(ii=0;ii<global_scase.meshescoll.nmeshes;ii++){
     meshdata *meshi;
     volrenderdata *vr;
@@ -1801,6 +1802,7 @@ void ComputeAllSmokecolors(void){
     }
   }
 }
+#endif
 
   /* ------------------ DrawSmoke3dVolDebug ------------------------ */
 
@@ -2266,7 +2268,6 @@ void DrawSmoke3DVol(void){
   }
   if(use_transparency_data==1)TransparentOff();
 }
-#endif
 
 /* ------------------ UpdateVolsmokeSupertexture ------------------------ */
 
@@ -2389,7 +2390,6 @@ void UpdateVolsmokeTexture(meshdata *meshi){
 /* ------------------ DrawSmoke3dGpuVol ------------------------ */
 
 #ifdef pp_GPU
-#ifdef pp_VOL_OLD
 void DrawSmoke3DGPUVol(void){
 
   int iwall;
@@ -2899,6 +2899,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
   if(print==1)PRINTF("\n");
 }
 
+#ifdef pp_VOL_OLD
 /* ------------------ UnloadVolsmokeFrameAllMeshes ------------------------ */
 
 void UnloadVolsmokeFrameAllMeshes(int framenum){
@@ -3246,3 +3247,4 @@ void UnloadVolsmokeTextures(void){
     FREEMEMORY(meshi->volfire_texture_buffer);
   }
 }
+#endif

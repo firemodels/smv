@@ -914,8 +914,10 @@ void InitMesh(meshdata *meshi){
   meshi->box_clipinfo = NULL;
   NewMemory((void **)&meshi->gsliceinfo, sizeof(meshplanedata));
   memset(meshi->gsliceinfo, 0, sizeof(meshplanedata));
+#ifdef pp_VOL_OLD
   NewMemory((void **)&meshi->volrenderinfo, sizeof(volrenderdata));
   memset(meshi->volrenderinfo, 0, sizeof(volrenderdata));
+#endif
   for(i=0; i<6; i++){
     meshi->bc_faces[i]   = NULL;
     meshi->n_bc_faces[i] = 0;

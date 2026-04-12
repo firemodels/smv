@@ -339,7 +339,9 @@ typedef struct _meshdata {
 
   char *label;
 
+#ifdef pp_VOL_OLD
   struct _volrenderdata *volrenderinfo;
+#endif
   int  nslicex,  nslicey,  nslicez;
   struct _slicedata **slicex, **slicey, **slicez;
 

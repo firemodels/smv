@@ -3033,7 +3033,7 @@ void AboutMenu(int value){
 }
 
 /* ------------------ LoadVolsmoke3DMenu ------------------------ */
-
+#ifdef pp_VOL_OLD
 void LoadVolsmoke3DMenu(int value){
   if(value == MENU_DUMMY)return;
   updatemenu = 1;
@@ -3106,6 +3106,7 @@ void LoadVolsmoke3DMenu(int value){
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }
+#endif
 
 /* ------------------ UnloadAllSliceFiles ------------------------ */
 
@@ -4567,6 +4568,7 @@ void UnloadMultiSliceMenu(int value){
   }
 }
 
+#ifdef pp_VOL_OLD
 /* ------------------ ShowVolsmoke3DMenu ------------------------ */
 
 void ShowVolsmoke3DMenu(int value){
@@ -4652,6 +4654,7 @@ void UnLoadVolsmoke3DMenu(int value){
   read_vol_mesh=VOL_READNONE;
   GLUTPOSTREDISPLAY;
 }
+#endif
 
 /* ------------------ UnLoadSmoke3DMenu ------------------------ */
 

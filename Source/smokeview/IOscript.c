@@ -1617,6 +1617,7 @@ void ScriptRender360All(scriptdata *scripti){
 
 /* ------------------ GetVolFrameMax ------------------------ */
 
+#ifdef pp_VOL_OLD
 int GetVolFrameMax(int meshnum){
   int i, volframemax=-1;
 
@@ -1733,8 +1734,6 @@ void LoadTimeFrame(int meshnum, float timeval){
   GLUIUpdateLoadFrameVal(smokeframe);
   LoadSmokeFrame(meshnum, smokeframe);
 }
-
-#ifdef pp_VOL_OLD
 
 /* ------------------ ScriptLoadVolSmokeFrame ------------------------ */
 

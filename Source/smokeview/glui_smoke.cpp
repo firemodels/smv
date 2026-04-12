@@ -948,6 +948,7 @@ extern "C" void GLUISmoke3dCB(int var){
     GLUISmoke3dCB(UPDATE_SMOKECOLORS);
     GLUTPOSTREDISPLAY;
     break;
+#ifdef pp_VOL_OLD
   case LOAD_SMOKEFRAME:
     LoadSmokeFrame(-1, smoke_framenumber);
     break;
@@ -962,6 +963,7 @@ extern "C" void GLUISmoke3dCB(int var){
   case VOL_TOUR_LIST:
     TourCB(TOUR_LIST);
     break;
+#endif
   case START_FRAME:
     if(vol_startframe0<0){
       vol_startframe0=0;
@@ -1002,11 +1004,13 @@ extern "C" void GLUISmoke3dCB(int var){
     break;
   case GPU_VOL_FACTOR:
     break;
+#ifdef pp_VOL_SMOKE
   case COMBINE_MESHES:
 #ifdef pp_GPU
     DefineVolsmokeTextures();
 #endif
     break;
+#endif
   case SHOW_FIRECOLORMAP:
     UpdateSmokeColormap();
     if(show_firecolormap!=0){
@@ -1055,6 +1059,7 @@ extern "C" void GLUISmoke3dCB(int var){
     SPINNER_cb_min_index->set_int_val(global_cb_min_index);
     SPINNER_cb_max_index->set_int_val(global_cb_max_index);
     break;
+#ifdef pp_VOL_OLD
   case VOLTEST_DEPTH:
     voltest_soot1 = log(2.0)/(glui_mass_extinct*voltest_depth1);
     voltest_soot2 = log(2.0)/(glui_mass_extinct*voltest_depth2);
@@ -1068,6 +1073,7 @@ extern "C" void GLUISmoke3dCB(int var){
       meshi->voltest_update = 1;
     }
     break;
+#endif
   case BLACKBODY_TEMPS:
     if(nfire_colors<256){
       nfire_colors = 256;
@@ -1348,6 +1354,7 @@ extern "C" void GLUISmoke3dCB(int var){
     IdleCB();
     break;
 #endif
+#ifdef pp_VOL_OLD
   case VOL_NGRID:
     GLUTPOSTREDISPLAY;
     break;
@@ -1393,6 +1400,7 @@ extern "C" void GLUISmoke3dCB(int var){
 #endif
     }
     break;
+#endif
   default:
 #ifdef _DEBUG
     abort();

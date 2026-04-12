@@ -322,6 +322,7 @@ void UpdateFileLoad(void){
     }
   }
 
+#ifdef pp_VOL_OLD
   nvolsmoke3dloaded = 0;
   nvolsmoke3dvis = 0;
   for(i = 0; i<global_scase.meshescoll.nmeshes; i++){
@@ -336,6 +337,7 @@ void UpdateFileLoad(void){
       if(vr->display==1)nvolsmoke3dvis++;
     }
   }
+#endif
 
   npart5loaded = 0;
   npartloaded = 0;
