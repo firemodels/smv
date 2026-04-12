@@ -109,8 +109,10 @@ EXTERNCPP void GLUIUpdateLoadFrameVal(int frames);
 EXTERNCPP void GLUIUpdateLoadFrameMax(int max_frames);
 EXTERNCPP void GLUISmoke3dCB(int var);
 EXTERNCPP void GLUIUpdateSmoke3dFlags(void);
+#ifdef pp_VOL_OLD
 EXTERNCPP void GLUICreateVolTourList(void);
 EXTERNCPP void GLUIDeleteVolTourList(void);
+#endif
 
 #endif
 

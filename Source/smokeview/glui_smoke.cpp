@@ -20,14 +20,18 @@ extern GLUI *glui_bounds;
 
 GLUI *glui_3dsmoke=NULL;
 
+#ifdef pp_VOL_OLD
 GLUI_EditText *EDIT_vol_prefix=NULL;
 
 GLUI_Listbox *LISTBOX_VOL_tour=NULL;
+#endif
 
 GLUI_Button *BUTTON_fds_extinction_reset = NULL;
 GLUI_Button *BUTTON_smv_extinction_reset = NULL;
 GLUI_Button *BUTTON_cutoff_defaults = NULL;
+#ifdef pp_VOL_OLD
 GLUI_Button *BUTTON_volunload=NULL;
+#endif
 GLUI_Button *BUTTON_startrender=NULL;
 GLUI_Button *BUTTON_cancelrender=NULL;
 
@@ -49,16 +53,20 @@ GLUI_Spinner *SPINNER_hrrpuv_min=NULL;
 GLUI_Spinner *SPINNER_hrrpuv_max = NULL;
 GLUI_Spinner *SPINNER_cb_min_index = NULL;
 GLUI_Spinner *SPINNER_cb_max_index = NULL;
+#ifdef pp_VOL_OLD
 GLUI_Spinner *SPINNER_nongpu_vol_factor=NULL;
 GLUI_Spinner *SPINNER_gpu_vol_factor=NULL;
+#endif
 GLUI_Spinner *SPINNER_smoke3d_load_start=NULL;
 GLUI_Spinner *SPINNER_smoke3d_load_skip=NULL;
 
 GLUI_Spinner *SPINNER_fire_temp_min = NULL;
 GLUI_Spinner *SPINNER_fire_temp_max = NULL;
 GLUI_Spinner *SPINNER_nfire_colors  = NULL;
+#ifdef pp_VOL_OLD
 GLUI_Spinner *SPINNER_voltest_depth1  = NULL;
 GLUI_Spinner *SPINNER_voltest_depth2  = NULL;
+#endif
 GLUI_Spinner *SPINNER_temperature_min=NULL;
 GLUI_Spinner *SPINNER_temperature_max=NULL;
 GLUI_Spinner *SPINNER_fire_opacity_factor=NULL;
@@ -147,10 +155,12 @@ GLUI_Panel *PANEL_cb_index = NULL;
 
 GLUI_Rollout *ROLLOUT_smoke_settings = NULL;
 GLUI_Rollout *ROLLOUT_skip = NULL;
+#ifdef pp_VOL_OLD
 GLUI_Rollout *ROLLOUT_voltest = NULL;
-GLUI_Rollout *ROLLOUT_opacity = NULL;
 GLUI_Rollout *ROLLOUT_voldisplay = NULL;
 GLUI_Rollout *ROLLOUT_volsmoke_move = NULL;
+#endif
+GLUI_Rollout *ROLLOUT_opacity = NULL;
 GLUI_Rollout *ROLLOUT_slicehrrpuv = NULL;
 GLUI_Rollout *ROLLOUT_firecolor = NULL;
 GLUI_Rollout *ROLLOUT_smokecolor = NULL;
@@ -159,10 +169,12 @@ GLUI_Rollout *ROLLOUT_loadframe = NULL;
 GLUI_Rollout *ROLLOUT_co2color = NULL;
 GLUI_Rollout *ROLLOUT_temperature_settings=NULL;
 GLUI_Rollout *ROLLOUT_slices = NULL;
-GLUI_Rollout *ROLLOUT_volume = NULL;
 GLUI_Rollout *ROLLOUT_smoke_test = NULL;
+#ifdef pp_VOL_OLD
+GLUI_Rollout *ROLLOUT_volume = NULL;
 GLUI_Rollout *ROLLOUT_volsmoke_load = NULL;
 GLUI_Rollout *ROLLOUT_volsmoke_compute = NULL;
+#endif
 GLUI_Rollout *ROLLOUT_smokedebug = NULL;
 
 GLUI_StaticText *STATIC_smokeframelimit_min = NULL;
@@ -173,7 +185,9 @@ GLUI_StaticText *STATIC_timelimit_min = NULL;
 GLUI_StaticText *STATIC_timelimit_max = NULL;
 GLUI_StaticText *STATIC_pixels_per_triangle=NULL;
 
+#ifdef pp_VOL_OLD
 #define VOLRENDER_ROLLOUT   0
+#endif
 #define SLICERENDER_ROLLOUT 1
 #define SMOKECOLOR_ROLLOUT  2
 #define FIRECOLOR_ROLLOUT   3
@@ -182,8 +196,11 @@ GLUI_StaticText *STATIC_pixels_per_triangle=NULL;
 #define SKIP_ROLLOUT        6
 #define SMOKE_SETTINGS      7
 
-procdata smokeprocinfo[8], volsmokeprocinfo[6];
-int nsmokeprocinfo = 0, nvolsmokeprocinfo=0;
+procdata smokeprocinfo[8];
+int nsmokeprocinfo = 0;
+#ifdef pp_VOL_OLD
+procdata volsmokeprocinfo[6];
+int nvolsmokeprocinfo=0;
 
 #define VOLSMOKE_DISPLAY           0
 #define VOLSMOKE_MOVEMENT          1
@@ -191,6 +208,7 @@ int nsmokeprocinfo = 0, nvolsmokeprocinfo=0;
 #define VOLSMOKE_LOAD_ROLLOUT      3
 #define VOLSMOKE_IMAGES_ROLLOUT    4
 #define VOLSMOKE_LOADFRAME_ROLLOUT 5
+#endif
 
 #define SLICESMOKE_LOAD_ROLLOUT 0
 #define SLICESMOKE_ORIG_ROLLOUT 1
@@ -278,21 +296,26 @@ extern "C" void GLUIUpdateTimeFrameBounds(float time_min, float time_max){
   SPINNER_timeloadframe->set_float_limits(time_min,time_max);
 }
 
+#ifdef pp_VOL_OLD
 /* ------------------ VolSmokeRolloutCB ------------------------ */
 
 void VolSmokeRolloutCB(int var){
   GLUIToggleRollout(volsmokeprocinfo, nvolsmokeprocinfo, var);
 }
+#endif
 
 /* ------------------ SmokeRolloutCB ------------------------ */
 
 void SmokeRolloutCB(int var){
+#ifdef pp_VOL_OLD
   if(var == VOLRENDER_ROLLOUT)smoke_render_option = RENDER_VOLUME;
+#endif
   if(var == SLICERENDER_ROLLOUT)smoke_render_option = RENDER_SLICE;
 //  GLUISmoke3dCB(SMOKE_OPTIONS);
   GLUIToggleRollout(smokeprocinfo, nsmokeprocinfo, var);
 }
 
+#ifdef pp_VOL_OLD
 /* ------------------ GLUIDeleteVolTourList ------------------------ */
 
  extern "C" void GLUIDeleteVolTourList(void){
@@ -329,6 +352,7 @@ extern "C" void GLUICreateVolTourList(void){
     LISTBOX_VOL_tour->set_int_val(selectedtour_index);
   }
 }
+#endif
 
 /* ------------------ UpdateCombineMeshes ------------------------ */
 
