@@ -1082,6 +1082,7 @@ typedef struct {
   csvfiledata *csvfileinfo;
 } csv_collection;
 
+#ifdef pp_VOL_OLD
 /* --------------------------  volrenderdata ------------------------------------ */
 
 typedef struct _volrenderdata {
@@ -1103,7 +1104,7 @@ typedef struct _volrenderdata {
   float *smokecolor_yz1, *smokecolor_xz1, *smokecolor_xy1;
   int loaded, display;
 } volrenderdata;
-
+#endif
 /* --------------------------  meshplanedata ------------------------------------ */
 
 typedef struct _meshplanedata {

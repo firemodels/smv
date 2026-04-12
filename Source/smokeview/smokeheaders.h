@@ -561,6 +561,8 @@ EXTERNCPP void UpdateVSliceBoundIndexes(void);
 
 //*** IOsmoke.c headers
 
+EXTERNCPP void *InitNabors(void *arg);
+EXTERNCPP void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg);
 EXTERNCPP void DrawSmokeFrame(void);
 #ifdef pp_VOL_OLD
 EXTERNCPP void DrawVolSmokeFrame(void);

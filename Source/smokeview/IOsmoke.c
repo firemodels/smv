@@ -4491,3 +4491,277 @@ void MakeIBlankSmoke3D(void){
     }
   }
 }
+
+/* ------------------ IsBottomMesh ------------------------ */
+
+int IsBottomMesh(meshdata *mesh_from){
+  float xyz[3];
+  float *boxmax, *boxmin;
+  int return_val;
+
+  boxmin = mesh_from->boxmin_fds;
+  boxmax = mesh_from->boxmax_fds;
+  xyz[0] = (boxmin[0] + boxmax[0]) / 2.0;
+  xyz[1] = (boxmin[1] + boxmax[1]) / 2.0;
+  xyz[2] = boxmin[2] - (boxmax[2] - boxmin[2]) / 100.0;
+  return_val = 1 - InMesh(xyz);
+  return return_val;
+}
+
+/* ------------------ MeshConnect ------------------------ */
+
+int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to){
+  float *eps;
+
+  //  returns 1 if mesh_from  is 'val' of mesh_to (where val is MLEFT, MRIGHT, MFRONT, MBACK, MDOWN, MBACK )
+
+  eps = mesh_from->boxeps_fds;
+  switch(val){
+  case MLEFT:
+  case MRIGHT:
+    if(mesh_from->jbar != mesh_to->jbar)return 0;
+    if(mesh_from->kbar != mesh_to->kbar)return 0;
+    if(ABS(mesh_from->dbox_fds[1] - mesh_to->dbox_fds[1]) > eps[1])return 0;
+    if(ABS(mesh_from->dbox_fds[2] - mesh_to->dbox_fds[2]) > eps[2])return 0;
+    if(ABS(mesh_from->boxmin_fds[1] - mesh_to->boxmin_fds[1]) > eps[1])return 0;
+    if(ABS(mesh_from->boxmin_fds[2] - mesh_to->boxmin_fds[2]) > eps[2])return 0;
+    break;
+  case MFRONT:
+  case MBACK:
+    if(mesh_from->ibar != mesh_to->ibar)return 0;
+    if(mesh_from->kbar != mesh_to->kbar)return 0;
+    if(ABS(mesh_from->dbox_fds[0] - mesh_to->dbox_fds[0]) > eps[0])return 0;
+    if(ABS(mesh_from->dbox_fds[2] - mesh_to->dbox_fds[2]) > eps[2])return 0;
+    if(ABS(mesh_from->boxmin_fds[0] - mesh_to->boxmin_fds[0]) > eps[0])return 0;
+    if(ABS(mesh_from->boxmin_fds[2] - mesh_to->boxmin_fds[2]) > eps[2])return 0;
+    break;
+  case MDOWN:
+  case MUP:
+    if(mesh_from->ibar != mesh_to->ibar)return 0;
+    if(mesh_from->jbar != mesh_to->jbar)return 0;
+    if(ABS(mesh_from->dbox_fds[0] - mesh_to->dbox_fds[0]) > eps[0])return 0;
+    if(ABS(mesh_from->dbox_fds[1] - mesh_to->dbox_fds[1]) > eps[1])return 0;
+    if(ABS(mesh_from->boxmin_fds[0] - mesh_to->boxmin_fds[0]) > eps[0])return 0;
+    if(ABS(mesh_from->boxmin_fds[1] - mesh_to->boxmin_fds[1]) > eps[1])return 0;
+    break;
+  default:
+    break;
+  }
+  switch(val){
+  case MLEFT:
+    if(ABS(mesh_from->boxmax_fds[0] - mesh_to->boxmin_fds[0]) < eps[0])return 1;
+    break;
+  case MRIGHT:
+    if(ABS(mesh_from->boxmin_fds[0] - mesh_to->boxmax_fds[0]) < eps[0])return 1;
+    break;
+  case MFRONT:
+    if(ABS(mesh_from->boxmax_fds[1] - mesh_to->boxmin_fds[1]) < eps[1])return 1;
+    break;
+  case MBACK:
+    if(ABS(mesh_from->boxmin_fds[1] - mesh_to->boxmax_fds[1]) < eps[1])return 1;
+    break;
+  case MDOWN:
+    if(ABS(mesh_from->boxmax_fds[2] - mesh_to->boxmin_fds[2]) < eps[2])return 1;
+    break;
+  case MUP:
+    if(ABS(mesh_from->boxmin_fds[2] - mesh_to->boxmax_fds[2]) < eps[2])return 1;
+    break;
+  default:
+    break;
+  }
+  return 0;
+}
+
+/* ------------------ InitNabors ------------------------ */
+
+void *InitNabors(void *arg){
+  int i;
+
+  INIT_PRINT_TIMER(timer_init_nabors);
+  if(global_scase.have_mesh_nabors == 0){
+    for(i = 0;i < global_scase.meshescoll.nmeshes;i++){
+      meshdata *meshi;
+      int j;
+
+      meshi = global_scase.meshescoll.meshinfo + i;
+      meshi->is_bottom = IsBottomMesh(meshi);
+      for(j = 0;j < global_scase.meshescoll.nmeshes;j++){
+        meshdata *meshj;
+
+        if(i == j)continue;
+
+        meshj = global_scase.meshescoll.meshinfo + j;
+
+        if(MeshConnect(meshi, MLEFT, meshj) == 1){
+          meshi->nabors[MRIGHT] = meshj;
+          continue;
+        }
+        if(MeshConnect(meshi, MRIGHT, meshj) == 1){
+          meshi->nabors[MLEFT] = meshj;
+          continue;
+        }
+        if(MeshConnect(meshi, MFRONT, meshj) == 1){
+          meshi->nabors[MBACK] = meshj;
+          continue;
+        }
+        if(MeshConnect(meshi, MBACK, meshj) == 1){
+          meshi->nabors[MFRONT] = meshj;
+          continue;
+        }
+        if(MeshConnect(meshi, MDOWN, meshj) == 1){
+          meshi->nabors[MUP] = meshj;
+          continue;
+        }
+        if(MeshConnect(meshi, MUP, meshj) == 1){
+          meshi->nabors[MDOWN] = meshj;
+          continue;
+        }
+      }
+    }
+  }
+  for(i = 0;i < global_scase.meshescoll.nmeshes;i++){
+    meshdata *meshi;
+    float xyzmid[3], xyz[3];
+
+    meshi = global_scase.meshescoll.meshinfo + i;
+    memcpy(xyzmid, meshi->boxmiddle_fds, 3 * sizeof(float));
+
+    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    xyz[0] = meshi->boxmin_fds[0] - meshi->boxeps_fds[0];
+    meshi->skip_nabors[MLEFT] = GetMesh(xyz);
+
+    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    xyz[0] = meshi->boxmax_fds[0] + meshi->boxeps_fds[0];
+    meshi->skip_nabors[MRIGHT] = GetMesh(xyz);
+
+    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    xyz[1] = meshi->boxmin_fds[1] - meshi->boxeps_fds[1];
+    meshi->skip_nabors[MFRONT] = GetMesh(xyz);
+
+    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    xyz[1] = meshi->boxmax_fds[0] + meshi->boxeps_fds[1];
+    meshi->skip_nabors[MBACK] = GetMesh(xyz);
+
+    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    xyz[2] = meshi->boxmin_fds[2] - meshi->boxeps_fds[2];
+    meshi->skip_nabors[MDOWN] = GetMesh(xyz);
+
+    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    xyz[2] = meshi->boxmax_fds[2] + meshi->boxeps_fds[2];
+    meshi->skip_nabors[MUP] = GetMesh(xyz);
+  }
+  PRINT_TIMER(timer_init_nabors, "InitNabors");
+  THREAD_EXIT(meshnabors_threads);
+}
+
+/* ----------------------- GetPlankVal ----------------------------- */
+
+float GetPlankVal(float lambda, float temp){
+  // units
+  // lambda: m
+  // temp:   K
+  // https://en.wikipedia.org/wiki/Planck%27s_law
+  // https://www.fourmilab.ch/documents/specrend/
+  float c1, c2;
+  // (c1/lambda^5)/(exp(c2/(lambda*T)-1)
+  //c1 = 2 pi hc^2 = 3.74183*10^-16 W m2
+  //c2 = hc/k = 0.014388 m K
+  c1 = 3.74183 * pow(10.0, -16);
+  c2 = 0.014388;
+  float return_val = (c1 / pow(lambda, 5.0)) / (exp(c2 / (lambda * temp)) - 1.0);
+  return return_val;
+}
+
+/* ----------------------- GetRGBFireVal ----------------------------- */
+
+void GetRGBFireVal(float temp, float *rgb_arg){
+  // units
+  // temp C
+  int i, n;
+  float valmin, valmax, dval, factor;
+
+  static float cie_colour_match[81][3] = {
+    {0.0014, 0.0000, 0.0065}, {0.0022, 0.0001, 0.0105}, {0.0042, 0.0001, 0.0201},
+    {0.0076, 0.0002, 0.0362}, {0.0143, 0.0004, 0.0679}, {0.0232, 0.0006, 0.1102},
+    {0.0435, 0.0012, 0.2074}, {0.0776, 0.0022, 0.3713}, {0.1344, 0.0040, 0.6456},
+    {0.2148, 0.0073, 1.0391}, {0.2839, 0.0116, 1.3856}, {0.3285, 0.0168, 1.6230},
+    {0.3483, 0.0230, 1.7471}, {0.3481, 0.0298, 1.7826}, {0.3362, 0.0380, 1.7721},
+    {0.3187, 0.0480, 1.7441}, {0.2908, 0.0600, 1.6692}, {0.2511, 0.0739, 1.5281},
+    {0.1954, 0.0910, 1.2876}, {0.1421, 0.1126, 1.0419}, {0.0956, 0.1390, 0.8130},
+    {0.0580, 0.1693, 0.6162}, {0.0320, 0.2080, 0.4652}, {0.0147, 0.2586, 0.3533},
+    {0.0049, 0.3230, 0.2720}, {0.0024, 0.4073, 0.2123}, {0.0093, 0.5030, 0.1582},
+    {0.0291, 0.6082, 0.1117}, {0.0633, 0.7100, 0.0782}, {0.1096, 0.7932, 0.0573},
+    {0.1655, 0.8620, 0.0422}, {0.2257, 0.9149, 0.0298}, {0.2904, 0.9540, 0.0203},
+    {0.3597, 0.9803, 0.0134}, {0.4334, 0.9950, 0.0087}, {0.5121, 1.0000, 0.0057},
+    {0.5945, 0.9950, 0.0039}, {0.6784, 0.9786, 0.0027}, {0.7621, 0.9520, 0.0021},
+    {0.8425, 0.9154, 0.0018}, {0.9163, 0.8700, 0.0017}, {0.9786, 0.8163, 0.0014},
+    {1.0263, 0.7570, 0.0011}, {1.0567, 0.6949, 0.0010}, {1.0622, 0.6310, 0.0008},
+    {1.0456, 0.5668, 0.0006}, {1.0026, 0.5030, 0.0003}, {0.9384, 0.4412, 0.0002},
+    {0.8544, 0.3810, 0.0002}, {0.7514, 0.3210, 0.0001}, {0.6424, 0.2650, 0.0000},
+    {0.5419, 0.2170, 0.0000}, {0.4479, 0.1750, 0.0000}, {0.3608, 0.1382, 0.0000},
+    {0.2835, 0.1070, 0.0000}, {0.2187, 0.0816, 0.0000}, {0.1649, 0.0610, 0.0000},
+    {0.1212, 0.0446, 0.0000}, {0.0874, 0.0320, 0.0000}, {0.0636, 0.0232, 0.0000},
+    {0.0468, 0.0170, 0.0000}, {0.0329, 0.0119, 0.0000}, {0.0227, 0.0082, 0.0000},
+    {0.0158, 0.0057, 0.0000}, {0.0114, 0.0041, 0.0000}, {0.0081, 0.0029, 0.0000},
+    {0.0058, 0.0021, 0.0000}, {0.0041, 0.0015, 0.0000}, {0.0029, 0.0010, 0.0000},
+    {0.0020, 0.0007, 0.0000}, {0.0014, 0.0005, 0.0000}, {0.0010, 0.0004, 0.0000},
+    {0.0007, 0.0002, 0.0000}, {0.0005, 0.0002, 0.0000}, {0.0003, 0.0001, 0.0000},
+    {0.0002, 0.0001, 0.0000}, {0.0002, 0.0001, 0.0000}, {0.0001, 0.0000, 0.0000},
+    {0.0001, 0.0000, 0.0000}, {0.0001, 0.0000, 0.0000}, {0.0000, 0.0000, 0.0000}
+  };
+
+  temp += 273.15;
+  valmin = 380.0;
+  valmax = 780.0;
+  factor = pow(10.0, 9.0);
+  n = 81;
+  dval = (valmax - valmin) / (float)(n - 1);
+  rgb_arg[0] = 0.0;
+  rgb_arg[1] = 0.0;
+  rgb_arg[2] = 0.0;
+  for(i = 0;i < n;i++){
+    float plank_val, lambda_nano, lambda_m;
+    float rgb_val[3];
+
+    lambda_nano = valmin + i * dval;
+    lambda_m = lambda_nano / factor;
+    plank_val = GetPlankVal(lambda_m, temp);
+    rgb_val[0] = plank_val * cie_colour_match[i][0];
+    rgb_val[1] = plank_val * cie_colour_match[i][1];
+    rgb_val[2] = plank_val * cie_colour_match[i][2];
+    if(i == 0 || i == n - 1){
+      rgb_arg[0] += rgb_val[0];
+      rgb_arg[1] += rgb_val[1];
+      rgb_arg[2] += rgb_val[2];
+    }
+    else{
+      rgb_arg[0] += 2.0 * rgb_val[0];
+      rgb_arg[1] += 2.0 * rgb_val[1];
+      rgb_arg[2] += 2.0 * rgb_val[2];
+    }
+  }
+  rgb_arg[0] *= 0.5 * dval;
+  rgb_arg[1] *= 0.5 * dval;
+  rgb_arg[2] *= 0.5 * dval;
+}
+
+/* ----------------------- MakeFireColors ----------------------------- */
+
+void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
+  int i;
+  float dtemp;
+
+  dtemp = (temp_max - temp_min) / (float)(nfire_colors_arg - 1);
+  FREEMEMORY(fire_rgbs);
+  NewMemory((void **)&fire_rgbs, 3*nfire_colors_arg*sizeof(float));
+  for(i = 0; i < nfire_colors_arg; i++){
+    float temp, fire_emission[3];
+
+    temp = temp_min + (float)i*dtemp;
+    //float xyz[3];
+    GetRGBFireVal(temp, fire_emission);
+    //Xyz2Rgb(&HDTVsystem, xyz, fire_rgb);
+    //ConstrainRgb(fire_rgb);
+    memcpy(fire_rgbs + 3*i, fire_emission, 3*sizeof(float));
+  }
+}
