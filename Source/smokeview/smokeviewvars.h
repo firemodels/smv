@@ -409,9 +409,12 @@ SVEXTERN int SVDECL(zone_temp_bounds_defined, 0);
 SVEXTERN int SVDECL(slice_temp_bounds_defined, 0);
 
 SVEXTERN int nplot3dloaded, nsmoke3dloaded, nisoloaded, nsliceloaded, nvsliceloaded;
-SVEXTERN int npartloaded, npatchloaded, nvolsmoke3dloaded, npart5loaded, npartloaded;
+SVEXTERN int npartloaded, npatchloaded, npart5loaded, npartloaded;
 SVEXTERN int nplot3dvis, nsmoke3dvis, nisovis, nslicevis, nvslicevis;
-SVEXTERN int npatchvis, nvolsmoke3dvis, npart5vis, npartvis;
+SVEXTERN int npatchvis, npart5vis, npartvis;
+#ifdef pp_VOL_OLD
+SVEXTERN int nvolsmoke3dloaded, nvolsmoke3dvis;
+#endif
 #ifdef pp_SPEEDUP
 SVEXTERN int SVDECL(vis_smokemesh, 0), SVDECL(vis_only_smokemesh, 0);
 #endif
@@ -2093,9 +2096,12 @@ SVEXTERN int SVDECL(visSkyboxoutline, 0);
 SVEXTERN int SVDECL(visSkyground, 1);
 
 SVEXTERN GLuint texture_colorbar_id, texture_slice_colorbar_id, texture_patch_colorbar_id, texture_plot3d_colorbar_id, texture_iso_colorbar_id, terrain_colorbar_id;
-SVEXTERN GLuint volsmoke_colormap_id,slice3d_colormap_id,slicesmoke_colormap_id;
-SVEXTERN int SVDECL(volsmoke_colormap_id_defined,-1);
+SVEXTERN GLuint slice3d_colormap_id,slicesmoke_colormap_id;
 SVEXTERN int SVDECL(slice3d_colormap_id_defined,-1);
+#ifdef pp_VOL_OLD
+SVEXTERN GLuint volsmoke_colormap_id;
+SVEXTERN int SVDECL(volsmoke_colormap_id_defined, -1);
+#endif
 #ifdef INMAIN
 SVEXTERN float mscale[3]={1.0,1.0,1.0};
 #else

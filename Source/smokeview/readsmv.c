@@ -357,6 +357,7 @@ void InitTextures0(void){
 #endif
   glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,256,0,GL_RGBA,GL_FLOAT,rgb_iso);
 
+#ifdef pp_VOL_OLD
   glGenTextures(1,&volsmoke_colormap_id);
   glBindTexture(GL_TEXTURE_1D,volsmoke_colormap_id);
   glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -366,7 +367,6 @@ void InitTextures0(void){
 #else
   glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 #endif
-#ifdef pp_VOL_OLD
   glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_volsmokecolormap);
 #endif
   if(gpuactive == 1){
