@@ -963,7 +963,6 @@ extern "C" void GLUISmoke3dCB(int var){
   case VOL_TOUR_LIST:
     TourCB(TOUR_LIST);
     break;
-#endif
   case START_FRAME:
     if(vol_startframe0<0){
       vol_startframe0=0;
@@ -976,10 +975,6 @@ extern "C" void GLUISmoke3dCB(int var){
       SPINNER_skipframe->set_int_val(vol_skipframe0);
     }
     break;
-  case CANCEL_GENERATE_IMAGES:
-    ScriptCB(SCRIPT_CANCEL_NOW);
-    break;
-#ifdef pp_VOL_OLD
   case GENERATE_IMAGES:
     if(selected_tour==NULL){
       tour_label=NULL;
@@ -996,15 +991,18 @@ extern "C" void GLUISmoke3dCB(int var){
     InitVolRenderSurface(NOT_FIRSTCALL);
     break;
 #endif
+  case CANCEL_GENERATE_IMAGES:
+    ScriptCB(SCRIPT_CANCEL_NOW);
+    break;
   case MASS_EXTINCTION:
     if(glui_mass_extinct<1.0) {
       glui_mass_extinct = 1.0;
       SPINNER_mass_extinct->set_float_val(glui_mass_extinct);
     }
     break;
+#ifdef pp_VOL_OLD
   case GPU_VOL_FACTOR:
     break;
-#ifdef pp_VOL_SMOKE
   case COMBINE_MESHES:
 #ifdef pp_GPU
     DefineVolsmokeTextures();

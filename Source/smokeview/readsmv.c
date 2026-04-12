@@ -366,8 +366,9 @@ void InitTextures0(void){
 #else
   glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 #endif
+#ifdef pp_VOL_OLD
   glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_volsmokecolormap);
-
+#endif
   if(gpuactive == 1){
     glActiveTexture(GL_TEXTURE2);
     glGenTextures(1, &slicesmoke_colormap_id);

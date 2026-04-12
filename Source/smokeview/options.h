@@ -19,7 +19,7 @@
 #define pp_BNDF_DEBUG         // add 3 checkboxes for controlling different types of boundary file output
 #define pp_SPEEDUP            // speed up smokeview
 //#define pp_READ_KEYBOARD      // read keyboard in the command shell so the visualization can be paused 
-
+//define pp_VOL_OLD           // original volume rendering code
 //*** options: windows
 
 #ifdef _WIN32

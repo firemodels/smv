@@ -37,12 +37,12 @@
 #define VOL_NGRID 18
 #define SMOKE_OPTIONS 19
 #define TEMP_MIN 21
-#ifdef pp_VOL_SMOKE
+#ifdef pp_VOL_OLD
 #define COMBINE_MESHES 24
+#define GPU_VOL_FACTOR 27
+#define NONGPU_VOL_FACTOR 26
 #endif
 #define MASS_EXTINCTION 85
-#define NONGPU_VOL_FACTOR 26
-#define GPU_VOL_FACTOR 27
 #define GENERATE_IMAGES 28
 #define START_FRAME 29
 #define SKIP_FRAME 30

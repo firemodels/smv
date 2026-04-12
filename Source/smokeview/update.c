@@ -360,7 +360,10 @@ void UpdateFileLoad(void){
   if(nplot3dloaded_old != nplot3dloaded         || nsmoke3dloaded_old != nsmoke3dloaded ||
      nisoloaded_old != nisoloaded               || nsliceloaded_old != nsliceloaded ||
      nvsliceloaded_old != nvsliceloaded         || npatchloaded_old != npatchloaded ||
-     nvolsmoke3dloaded_old != nvolsmoke3dloaded || npart5loaded_old != npart5loaded ||
+#ifdef pp_VOL_OLD
+     nvolsmoke3dloaded_old != nvolsmoke3dloaded || 
+#endif
+    npart5loaded_old != npart5loaded ||
     npartloaded_old != npartloaded)updatefacelists=1;
 
   nplot3dloaded_old     = nplot3dloaded;
@@ -369,7 +372,9 @@ void UpdateFileLoad(void){
   nsliceloaded_old      = nsliceloaded;
   nvsliceloaded_old     = nvsliceloaded;
   npatchloaded_old      = npatchloaded;
+#ifdef pp_VOL_OLD
   nvolsmoke3dloaded_old = nvolsmoke3dloaded;
+#endif
   npart5loaded_old      = npart5loaded;
   npartloaded_old       = npartloaded;
 }

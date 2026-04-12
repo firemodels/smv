@@ -933,9 +933,11 @@ void UpdateTexturebar(void){
     glActiveTexture(GL_TEXTURE0);
   }
 
+#ifdef pp_VOL_OLD
   glBindTexture(GL_TEXTURE_1D,volsmoke_colormap_id);
   glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_volsmokecolormap);
   SNIFF_ERRORS("UpdateTexturebar - glTexImage1D (rgb_volsmokecolormap) ");
+#endif
 
 #ifdef pp_GPU
 #ifdef pp_VOL_OLD
