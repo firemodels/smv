@@ -2622,6 +2622,13 @@ int ReadSMV_Configure(){
    ************************************************************************
  */
 
+#ifdef pp_GETMESH_TEST
+  scenedata *InitSceneInfo(void);
+  INIT_PRINT_TIMER(timer_sceneinfo);
+  sceneinfo = InitSceneInfo();
+  PRINT_TIMER(timer_sceneinfo, "sceneinfo");
+#endif
+
   INIT_PRINT_TIMER(total_wrapup_time);
   update_colorbar_orig = 1;
   if(update_filesizes==1){

@@ -350,4 +350,22 @@ typedef struct _skyboxdata {
   texturedata face[6];
 } skyboxdata;
 
+#ifdef pp_GETMESH_TEST
+/* --------------------------  celldata ----------------------------------- */
+
+typedef struct _celldata {
+  int hit, nmeshes;
+  meshdata **meshes, **meshes_temp;
+  float xyz_min[3], xyz_max[3];
+} celldata;
+
+/* --------------------------  scenedata ----------------------------------- */
+
+typedef struct _scenedata {
+  celldata *cellinfo;
+  float cell_dxyz[3];
+  int ncells[3];
+  float xyz_bar0[3], xyz_bar[3];
+} scenedata;
+#endif
 #endif

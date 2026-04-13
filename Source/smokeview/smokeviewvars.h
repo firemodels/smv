@@ -2183,6 +2183,10 @@ SVEXTERN float SVDECL(co2_halfdepth, 10.0);
 
 SVEXTERN int SVDECL(co2_colormap_type, CO2_COLORBAR);
 
+#ifdef pp_GETMESH_TEST
+SVEXTERN scenedata SVDECL(*sceneinfo, NULL);
+#endif
+
 SVEXTERN int SVDECL(show_firecolormap,0);
 SVEXTERN int SVDECL(fire_colormap_type,      FIRECOLOR_COLORBAR);
 SVEXTERN int SVDECL(fire_colormap_type_save, FIRECOLOR_COLORBAR);

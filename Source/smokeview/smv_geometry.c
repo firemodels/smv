@@ -491,6 +491,185 @@ int InExterior(float *xyz){
   return 1;
 }
 
+#ifdef pp_GETMESH_TEST
+#define IJKSCELL(i,j,k) ((k)*nij+(j)*ni+(i))
+
+/* --------------------------  GetCellIndex ----------------------------------- */
+
+int GetCellIndex(float *xyz){
+  scenedata *sd;
+
+  sd = sceneinfo;
+  int *ncells = sd->ncells;
+  float *scene_min = sd->xyz_bar0;
+  float *scene_max = sd->xyz_bar;
+  float *cell_dxyz = sd->cell_dxyz;
+  int ni  = ncells[0];
+  int nj  = ncells[1];
+  int nij = ni * nj;
+  int nijk = ncells[0] * ncells[1] * ncells[2];
+  
+  int kcell = (xyz[2] - scene_min[2]) / cell_dxyz[2];
+  int jcell = (xyz[1] - scene_min[1]) / cell_dxyz[1];
+  int icell = (xyz[0] - scene_min[0]) / cell_dxyz[0];
+  int cellindex = IJKSCELL(icell,jcell,kcell);
+  return cellindex;
+}
+
+/* --------------------------  InitSceneInfo ----------------------------------- */
+
+scenedata *InitSceneInfo(void){
+
+  scenedata *sd = NULL;
+  NewMemory((void **)&sd, sizeof(scenedata));
+
+  int *ncells = sd->ncells;
+  float *scene_min = sd->xyz_bar0;
+  float *scene_max = sd->xyz_bar;
+  float *cell_dxyz = sd->cell_dxyz;
+
+
+  {
+    meshdata *meshi;
+
+    meshi = global_scase.meshescoll.meshinfo;
+    memcpy(scene_min, meshi->xyz_bar0, 3 * sizeof(float));
+    memcpy(scene_max, meshi->xyz_bar, 3 * sizeof(float));
+    cell_dxyz[0] = scene_max[0] - scene_min[0];
+    cell_dxyz[1] = scene_max[1] - scene_min[1];
+    cell_dxyz[2] = scene_max[2] - scene_min[2];
+  }
+  for(int i = 1; i < global_scase.meshescoll.nmeshes; i++){
+    meshdata *meshi;
+
+    meshi = global_scase.meshescoll.meshinfo + i;
+    scene_min[0] = MIN(scene_min[0], meshi->xyz_bar0[0]);
+    scene_min[1] = MIN(scene_min[1], meshi->xyz_bar0[1]);
+    scene_min[2] = MIN(scene_min[2], meshi->xyz_bar0[2]);
+    scene_max[0] = MAX(scene_max[0], meshi->xyz_bar[0]);
+    scene_max[1] = MAX(scene_max[1], meshi->xyz_bar[1]);
+    scene_max[2] = MAX(scene_max[2], meshi->xyz_bar[2]);
+    cell_dxyz[0] = MIN(cell_dxyz[0], meshi->xyz_bar[0] - meshi->xyz_bar0[0]);
+    cell_dxyz[1] = MIN(cell_dxyz[1], meshi->xyz_bar[1] - meshi->xyz_bar0[1]);
+    cell_dxyz[2] = MIN(cell_dxyz[2], meshi->xyz_bar[2] - meshi->xyz_bar0[2]);
+  }
+  ncells[0] = (scene_max[0] - scene_min[0]) / cell_dxyz[0] + 0.5;
+  ncells[1] = (scene_max[1] - scene_min[1]) / cell_dxyz[1] + 0.5;
+  ncells[2] = (scene_max[2] - scene_min[2]) / cell_dxyz[2] + 0.5;
+
+  int nmeshes      = global_scase.meshescoll.nmeshes;
+  int ncells_total = ncells[0] * ncells[1] * ncells[2];
+
+  celldata *cellinfo;
+  NewMemory((void **)&cellinfo, ncells_total*sizeof(celldata));
+
+  meshdata **meshlist = NULL;
+  NewMemory((void **)&meshlist, ncells_total*nmeshes*sizeof(meshdata *));
+  meshdata **md = meshlist;
+
+  sd->cellinfo = cellinfo;
+
+  for(int k = 0;k < ncells[2];k++){
+    float xyz_min[3], xyz_max[3];
+    int j;
+
+    xyz_min[2] = scene_min[2] + k*cell_dxyz[2];
+    xyz_max[2] = scene_min[2] + (k+1)*cell_dxyz[2];
+    for(j = 0;j < ncells[1];j++){
+      xyz_min[1] = scene_min[1] + j*cell_dxyz[1];
+      xyz_max[1] = scene_min[1] + (j+1)*cell_dxyz[1];
+      for(int i = 0;i < ncells[0];i++){
+        xyz_min[0] = scene_min[0] + i*cell_dxyz[0];
+        xyz_max[0] = scene_min[0] + (i+1)*cell_dxyz[0];
+        memcpy(cellinfo->xyz_min, xyz_min, 3*sizeof(float));
+        memcpy(cellinfo->xyz_max, xyz_max, 3*sizeof(float));
+        cellinfo->hit          = 0;
+        cellinfo->meshes_temp  = md;
+        md                    += nmeshes;
+        cellinfo->nmeshes      = 0;
+        cellinfo++;
+      }
+    }
+  }
+  int ni  = ncells[0];
+  int nj  = ncells[1];
+  int nij = ni * nj;
+  int nijk = ncells[0] * ncells[1] * ncells[2];
+  for(int ii = 0;ii < nmeshes;ii++){
+    meshdata *meshi;
+    float *x, *y, *z;
+    int icell, jcell, kcell;
+
+    meshi = global_scase.meshescoll.meshinfo + ii;
+    x = meshi->xplt_fds;
+    y = meshi->yplt_fds;
+    z = meshi->zplt_fds;
+
+    for(int i = 0;i < nijk;i++){
+      celldata *ci;
+
+      ci = sd->cellinfo + i;
+      ci->hit = 0;
+    }
+    for(int k = 1;k < meshi->kbar-1;k++){
+      int j;
+
+      kcell = (z[k] - scene_min[2]) / cell_dxyz[2];
+      for(j = 1;j < meshi->jbar-1;j++){
+        jcell = (y[j] - scene_min[1]) / cell_dxyz[1];
+        for(int i = 1;i < meshi->ibar-1;i++){
+          icell = (x[i] - scene_min[0]) / cell_dxyz[0];
+          int cellindex = IJKSCELL(icell, jcell, kcell);
+          celldata *ci = sd->cellinfo + cellindex;
+          if(ci->hit == 0){
+            ci->hit = 1;
+            ci->meshes_temp[ci->nmeshes] = meshi;
+            ci->nmeshes++;
+          }
+        }
+      }
+    }
+  }
+  int nmeshes_total=0;
+  for(int i=0;i<ncells_total;i++){
+    celldata *ci;
+    
+    ci = sd->cellinfo + i;
+    nmeshes_total += ci->nmeshes;
+  }
+  meshdata **meshlist2 = NULL;
+  NewMemory((void **)&meshlist2, nmeshes_total * sizeof(meshdata *));
+  for(int i = 0;i < ncells_total;i++){
+    celldata *ci;
+
+    ci = sd->cellinfo + i;
+    if(ci->nmeshes > 0){
+      ci->meshes = meshlist2;
+      memcpy(ci->meshes, ci->meshes_temp, ci->nmeshes *sizeof(meshdata *));
+    }
+    else{
+      ci->meshes = NULL;
+    }
+    meshlist2 += ci->nmeshes;
+  }
+  FREEMEMORY(meshlist);
+  return sd;
+}
+
+/* ------------------ GetMeshTest ------------------------ */
+
+meshdata *GetMeshTest(float *xyz){
+  int cellindex = GetCellIndex(xyz);
+  celldata *ci = sceneinfo->cellinfo + cellindex;
+  if(ci->nmeshes == 1){
+    meshdata *meshi;
+
+    meshi = ci->meshes[0];
+    return meshi;
+  }
+  return NULL;
+}
+#endif
 /* ------------------ GetMesh ------------------------ */
 
 meshdata *GetMesh(float *xyz){
