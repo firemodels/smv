@@ -675,8 +675,6 @@ int InMeshI(meshdata *meshi, float *xyz){
 /* ------------------ GetMeshWorker ------------------------ */
 
 meshdata *GetMeshWorker(float *xyz){
-  meshdata *return_mesh=NULL;
-
   if(xyz[0] < sceneinfo->xyz_bar0[0] || xyz[0] > sceneinfo->xyz_bar[0])return NULL;
   if(xyz[1] < sceneinfo->xyz_bar0[1] || xyz[1] > sceneinfo->xyz_bar[1])return NULL;
   if(xyz[2] < sceneinfo->xyz_bar0[2] || xyz[2] > sceneinfo->xyz_bar[2])return NULL;
