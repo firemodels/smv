@@ -470,6 +470,10 @@ void ShowScene2(int mode){
     CLIP_GEOMETRY;
     DrawZoneRoomGeom();
     SNIFF_ERRORS("after DrawZoneRoomGeom");
+    if(showzone==1){
+      DrawZoneFireData();
+      SNIFF_ERRORS("after DrawZoneFireData");
+    }
   }
 
   //**********************************************************************************
@@ -578,8 +582,6 @@ void ShowScene2(int mode){
     if(use_transparency_data == 1)TransparentOn();
     DrawZoneRoomData();
     SNIFF_ERRORS("after DrawZoneRoomData");
-    DrawZoneFireData();
-    SNIFF_ERRORS("after DrawZoneFireData");
     if(ReadZoneFile == 1){
       if(global_scase.nzvents > 0){
         DrawZoneVentData();
