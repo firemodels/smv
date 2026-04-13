@@ -497,9 +497,7 @@ int InExterior(float *xyz){
 /* --------------------------  GetCellIndex ----------------------------------- */
 
 int GetCellIndex(float *xyz){
-  scenedata *sd;
-
-  sd = sceneinfo;
+  scenedata *sd = sceneinfo;
   int *ncells = sd->ncells;
   float *scene_min = sd->xyz_bar0;
   float *cell_dxyz = sd->cell_dxyz;
@@ -654,18 +652,52 @@ scenedata *InitSceneInfo(void){
   return sd;
 }
 
+/* ------------------ InMesh ------------------------ */
+
+int InMeshI(meshdata *meshi, float *xyz){
+  int ibar, jbar, kbar;
+  float *xplt, *yplt, *zplt;
+
+  ibar = meshi->ibar;
+  jbar = meshi->jbar;
+  kbar = meshi->kbar;
+
+  xplt = meshi->xplt_fds;
+  yplt = meshi->yplt_fds;
+  zplt = meshi->zplt_fds;
+
+  if(xyz[0] < xplt[0] || xyz[0]>xplt[ibar])return 0;
+  if(xyz[1] < yplt[0] || xyz[1]>yplt[jbar])return 0;
+  if(xyz[2] < zplt[0] || xyz[2]>zplt[kbar])return 0;
+  return 1;
+}
+
+/* ------------------ GetMeshWorker ------------------------ */
+
+meshdata *GetMeshWorker(float *xyz){
+  meshdata *return_mesh=NULL;
+
+  if(xyz[0] < sceneinfo->xyz_bar0[0] || xyz[0] > sceneinfo->xyz_bar[0])return NULL;
+  if(xyz[1] < sceneinfo->xyz_bar0[1] || xyz[1] > sceneinfo->xyz_bar[1])return NULL;
+  if(xyz[2] < sceneinfo->xyz_bar0[2] || xyz[2] > sceneinfo->xyz_bar[2])return NULL;
+  int cellindex = GetCellIndex(xyz);
+  if(cellindex<0)return NULL;
+  celldata *ci = sceneinfo->cellinfo + cellindex;
+  if(ci->nmeshes==1)return ci->meshes[0];
+  for(int i = 0; i < ci->nmeshes; i++){
+    if(InMeshI(ci->meshes[i], xyz) == 1)return ci->meshes[i];
+  }
+  return NULL;
+}
+
 /* ------------------ GetMeshTest ------------------------ */
 
 meshdata *GetMeshTest(float *xyz){
-  int cellindex = GetCellIndex(xyz);
-  celldata *ci = sceneinfo->cellinfo + cellindex;
-  if(ci->nmeshes == 1){
-    meshdata *meshi;
-
-    meshi = ci->meshes[0];
-    return meshi;
-  }
-  return NULL;
+  meshdata *return_mesh = GetMeshWorker(xyz);
+#ifdef _DEBUG
+  assert(return_mesh==GetMesh(xyz));
+#endif
+  return return_mesh;
 }
 #endif
 /* ------------------ GetMesh ------------------------ */

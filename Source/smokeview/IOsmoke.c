@@ -4628,27 +4628,27 @@ void *InitNabors(void *arg){
 
     memcpy(xyz, xyzmid, 3 * sizeof(float));
     xyz[0] = meshi->boxmin_fds[0] - meshi->boxeps_fds[0];
-    meshi->skip_nabors[MLEFT] = GetMesh(xyz);
+    meshi->skip_nabors[MLEFT] = GETMESH(xyz);
 
     memcpy(xyz, xyzmid, 3 * sizeof(float));
     xyz[0] = meshi->boxmax_fds[0] + meshi->boxeps_fds[0];
-    meshi->skip_nabors[MRIGHT] = GetMesh(xyz);
+    meshi->skip_nabors[MRIGHT] = GETMESH(xyz);
 
     memcpy(xyz, xyzmid, 3 * sizeof(float));
     xyz[1] = meshi->boxmin_fds[1] - meshi->boxeps_fds[1];
-    meshi->skip_nabors[MFRONT] = GetMesh(xyz);
+    meshi->skip_nabors[MFRONT] = GETMESH(xyz);
 
     memcpy(xyz, xyzmid, 3 * sizeof(float));
     xyz[1] = meshi->boxmax_fds[0] + meshi->boxeps_fds[1];
-    meshi->skip_nabors[MBACK] = GetMesh(xyz);
+    meshi->skip_nabors[MBACK] = GETMESH(xyz);
 
     memcpy(xyz, xyzmid, 3 * sizeof(float));
     xyz[2] = meshi->boxmin_fds[2] - meshi->boxeps_fds[2];
-    meshi->skip_nabors[MDOWN] = GetMesh(xyz);
+    meshi->skip_nabors[MDOWN] = GETMESH(xyz);
 
     memcpy(xyz, xyzmid, 3 * sizeof(float));
     xyz[2] = meshi->boxmax_fds[2] + meshi->boxeps_fds[2];
-    meshi->skip_nabors[MUP] = GetMesh(xyz);
+    meshi->skip_nabors[MUP] = GETMESH(xyz);
   }
   PRINT_TIMER(timer_init_nabors, "InitNabors");
   THREAD_EXIT(meshnabors_threads);
