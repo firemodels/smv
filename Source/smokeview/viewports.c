@@ -1733,6 +1733,9 @@ void GetSmokeDir(float *mm){
   eye_position_smv[0] = -DOT3(mm + 0, mm + 12) / mscale[0];
   eye_position_smv[1] = -DOT3(mm + 4, mm + 12) / mscale[1];
   eye_position_smv[2] = -DOT3(mm + 8, mm + 12) / mscale[2];
+  eye_position_fds[0] = SMV2FDS_X(eye_position_smv[0]);
+  eye_position_fds[1] = SMV2FDS_Y(eye_position_smv[1]);
+  eye_position_fds[2] = SMV2FDS_Z(eye_position_smv[2]);
 
   for(j = 0;j<global_scase.meshescoll.nmeshes;j++){
     meshdata  *meshj;
