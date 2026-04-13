@@ -522,6 +522,7 @@ scenedata *InitSceneInfo(void){
   int *ncells = sd->ncells;
   float *scene_min = sd->xyz_bar0;
   float *scene_max = sd->xyz_bar;
+  float *scene_mid = sd->xyz_mid_smv;
   float *cell_dxyz = sd->cell_dxyz;
 
 
@@ -529,8 +530,8 @@ scenedata *InitSceneInfo(void){
     meshdata *meshi;
 
     meshi = global_scase.meshescoll.meshinfo;
-    memcpy(scene_min, meshi->xyz_bar0, 3 * sizeof(float));
-    memcpy(scene_max, meshi->xyz_bar, 3 * sizeof(float));
+    memcpy(scene_min, meshi->boxmin_fds, 3 * sizeof(float));
+    memcpy(scene_max, meshi->boxmax_fds, 3 * sizeof(float));
     cell_dxyz[0] = scene_max[0] - scene_min[0];
     cell_dxyz[1] = scene_max[1] - scene_min[1];
     cell_dxyz[2] = scene_max[2] - scene_min[2];
@@ -539,19 +540,26 @@ scenedata *InitSceneInfo(void){
     meshdata *meshi;
 
     meshi = global_scase.meshescoll.meshinfo + i;
-    scene_min[0] = MIN(scene_min[0], meshi->xyz_bar0[0]);
-    scene_min[1] = MIN(scene_min[1], meshi->xyz_bar0[1]);
-    scene_min[2] = MIN(scene_min[2], meshi->xyz_bar0[2]);
-    scene_max[0] = MAX(scene_max[0], meshi->xyz_bar[0]);
-    scene_max[1] = MAX(scene_max[1], meshi->xyz_bar[1]);
-    scene_max[2] = MAX(scene_max[2], meshi->xyz_bar[2]);
-    cell_dxyz[0] = MIN(cell_dxyz[0], meshi->xyz_bar[0] - meshi->xyz_bar0[0]);
-    cell_dxyz[1] = MIN(cell_dxyz[1], meshi->xyz_bar[1] - meshi->xyz_bar0[1]);
-    cell_dxyz[2] = MIN(cell_dxyz[2], meshi->xyz_bar[2] - meshi->xyz_bar0[2]);
+    scene_min[0] = MIN(scene_min[0], meshi->boxmin_fds[0]);
+    scene_min[1] = MIN(scene_min[1], meshi->boxmin_fds[1]);
+    scene_min[2] = MIN(scene_min[2], meshi->boxmin_fds[2]);
+    scene_max[0] = MAX(scene_max[0], meshi->boxmax_fds[0]);
+    scene_max[1] = MAX(scene_max[1], meshi->boxmax_fds[1]);
+    scene_max[2] = MAX(scene_max[2], meshi->boxmax_fds[2]);
+    cell_dxyz[0] = MIN(cell_dxyz[0], meshi->boxmax_fds[0] - meshi->boxmin_fds[0]);
+    cell_dxyz[1] = MIN(cell_dxyz[1], meshi->boxmax_fds[1] - meshi->boxmin_fds[1]);
+    cell_dxyz[2] = MIN(cell_dxyz[2], meshi->boxmax_fds[2] - meshi->boxmin_fds[2]);
   }
   ncells[0] = (scene_max[0] - scene_min[0]) / cell_dxyz[0] + 0.5;
   ncells[1] = (scene_max[1] - scene_min[1]) / cell_dxyz[1] + 0.5;
   ncells[2] = (scene_max[2] - scene_min[2]) / cell_dxyz[2] + 0.5;
+  scene_mid[0] = (scene_min[0] + scene_max[0]) / 2.0;
+  scene_mid[1] = (scene_min[1] + scene_max[1]) / 2.0;
+  scene_mid[2] = (scene_min[2] + scene_max[2]) / 2.0;
+  scene_mid[0] = FDS2SMV_X(scene_mid[0]);
+  scene_mid[1] = FDS2SMV_X(scene_mid[1]);
+  scene_mid[2] = FDS2SMV_X(scene_mid[2]);
+  sd->eyedist = 0.0;
 
   int nmeshes      = global_scase.meshescoll.nmeshes;
   int ncells_total = ncells[0] * ncells[1] * ncells[2];

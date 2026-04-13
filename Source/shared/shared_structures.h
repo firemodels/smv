@@ -300,7 +300,11 @@ typedef struct _meshdata {
   int iso_itime;
   int smokedir,smokedir_old;
   float dxDdx, dyDdx, dzDdx, dxyDdx, dxzDdx, dyzDdx, dxyz_fds[3];
+#ifdef pp_VOL_OLD
   float smoke_dist[6];
+#else
+  float smoke_dist[3];
+#endif
   float norm[3];
   float dplane_min[4], dplane_max[4];
 
@@ -1460,9 +1464,11 @@ typedef struct _smoke3ddata {
 #define ALPHA_X 0
 #define ALPHA_Y 1
 #define ALPHA_Z 2
+#ifdef pp_VOL_OLD
 #define ALPHA_XY 3
 #define ALPHA_YZ 4
 #define ALPHA_XZ 5
+#endif
   unsigned char *alphas_smokedir[6], *alphas_firedir[6];
   unsigned char alphas_smokebuffer[6*256], alphas_firebuffer[6*256];
   int fire_alpha, co2_alpha;

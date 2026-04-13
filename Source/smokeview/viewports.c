@@ -1737,17 +1737,37 @@ void GetSmokeDir(float *mm){
   eye_position_fds[1] = SMV2FDS_Y(eye_position_smv[1]);
   eye_position_fds[2] = SMV2FDS_Z(eye_position_smv[2]);
 
+#ifdef pp_VOL_OLD
   for(j = 0;j<global_scase.meshescoll.nmeshes;j++){
-    meshdata  *meshj;
+#else
+  for(j = 0; j < global_scase.meshescoll.nmeshes + 1; j++){
+#endif
+    meshdata *meshj;
     int i;
     float absangle, cosangle, minangle, mincosangle;
     int iminangle, alphadir, minalphadir;
 
+#ifdef pp_VOL_OLD
     meshj = global_scase.meshescoll.meshinfo + j;
     dx = meshj->boxmiddle_smv[0] - eye_position_smv[0];
     dy = meshj->boxmiddle_smv[1] - eye_position_smv[1];
     dz = meshj->boxmiddle_smv[2] - eye_position_smv[2];
-    meshj->eyedist = sqrt(dx*dx + dy*dy + dz*dz);
+    meshj->eyedist = sqrt(dx * dx + dy * dy + dz * dz);
+#else
+    if(j < global_scase.meshescoll.nmeshes){
+      meshj = global_scase.meshescoll.meshinfo + j;
+      dx = meshj->boxmiddle_smv[0] - eye_position_smv[0];
+      dy = meshj->boxmiddle_smv[1] - eye_position_smv[1];
+      dz = meshj->boxmiddle_smv[2] - eye_position_smv[2];
+      meshj->eyedist = sqrt(dx * dx + dy * dy + dz * dz);
+    }
+    else{
+      dx = sceneinfo->xyz_mid_smv[0] - eye_position_smv[0];
+      dy = sceneinfo->xyz_mid_smv[1] - eye_position_smv[1];
+      dz = sceneinfo->xyz_mid_smv[2] - eye_position_smv[2];
+      sceneinfo->eyedist = sqrt(dx * dx + dy * dy + dz * dz);
+    }
+#endif
 
     minalphadir = ALPHA_X;
     mincosangle = 2.0;
@@ -1755,16 +1775,24 @@ void GetSmokeDir(float *mm){
     iminangle = -10;
     int ibeg, iend;
 
-    if(smoke_offaxis==1){
+#ifdef pp_VOL_OLD
+    if(smoke_offaxis == 1){
       ibeg = -9;
-      iend =  9;
+      iend = 9;
     }
     else{
       ibeg = -3;
-      iend =  3;
+      iend = 3;
     }
-    for(i = ibeg;i <= iend;i++){
-      float scalednorm[3], norm[3], normdir[3], factor;
+#else
+    ibeg = -3;
+    iend = 3;
+#endif
+    for(i = ibeg; i <= iend; i++){
+      float scalednorm[3], norm[3], normdir[3];
+#ifdef pp_VOL_OLD
+      float factor;
+#endif
       int ii;
 
       if(i == 0)continue;
@@ -1788,6 +1816,7 @@ void GetSmokeDir(float *mm){
         if(i<0)norm[2] = -1.0;
         if(i>0)norm[2] = 1.0;
         break;
+#ifdef pp_VOL_OLD
       case 4:
         alphadir = ALPHA_XY;
         dx = meshj->xplt_fds[1] - meshj->xplt_fds[0];
@@ -1908,6 +1937,7 @@ void GetSmokeDir(float *mm){
           norm[2] = dx*factor;
         }
         break;
+#endif
       default:
         assert(FFALSE);
         break;
@@ -1928,38 +1958,61 @@ void GetSmokeDir(float *mm){
         iminangle = i;
         minangle = absangle;
         mincosangle = ABS(cosangle);
+#ifdef pp_VOL_OLD
         meshj->norm[0] = norm[0];
         meshj->norm[1] = norm[1];
         meshj->norm[2] = norm[2];
+#else
+        if(j < global_scase.meshescoll.nmeshes){
+          meshj->norm[0] = norm[0];
+          meshj->norm[1] = norm[1];
+          meshj->norm[2] = norm[2];
+        }
+#endif
       }
     }
+#ifdef pp_VOL_OLD
     meshj->smokedir = iminangle;
-
-    if(meshj->smoke3d_soot != NULL){
-      smoke3ddata *soot;
-      float smoke_dist;
-
-      soot = meshj->smoke3d_soot;
-      if(smoke_adjust == 1){
-        smoke_dist = meshj->smoke_dist[minalphadir]/mincosangle;
-      }
-      else{
-        smoke_dist = meshj->smoke_dist[minalphadir];
-      }
-      int use_soot_density;
-      float maxval;
-
-      use_soot_density = 0;
-      maxval = soot->maxval;
-      if(soot->soot_loaded == 1 && soot->maxvals!=NULL){
-        use_soot_density = 1;
-        maxval = soot->maxvals[soot->ismoke3d_time];
-      }
-      InitAlphas(soot->alphas_smokedir[minalphadir], soot->alphas_firedir[minalphadir], soot->extinct, use_soot_density, maxval, glui_mass_extinct, meshj->dxyz_fds[0], smoke_dist);
+#else
+    if(j < global_scase.meshescoll.nmeshes){
+      meshj->smokedir = iminangle;
     }
-    if(demo_mode != 0){
-      meshj->smokedir = 1;
+    else{
+      sceneinfo->smokedir = iminangle;
     }
+#endif
+
+#ifndef pp_VOL_OLD
+    if(j < global_scase.meshescoll.nmeshes){
+#endif
+      if(meshj->smoke3d_soot != NULL){
+        smoke3ddata *soot;
+        float smoke_dist;
+
+        soot = meshj->smoke3d_soot;
+        if(smoke_adjust == 1){
+          smoke_dist = meshj->smoke_dist[minalphadir] / mincosangle;
+        }
+        else{
+          smoke_dist = meshj->smoke_dist[minalphadir];
+        }
+        int use_soot_density;
+        float maxval;
+
+        use_soot_density = 0;
+        maxval = soot->maxval;
+        if(soot->soot_loaded == 1 && soot->maxvals != NULL){
+          use_soot_density = 1;
+          maxval = soot->maxvals[soot->ismoke3d_time];
+        }
+        InitAlphas(soot->alphas_smokedir[minalphadir], soot->alphas_firedir[minalphadir], soot->extinct, use_soot_density, maxval, glui_mass_extinct, meshj->dxyz_fds[0], smoke_dist);
+      }
+      if(demo_mode != 0){
+        meshj->smokedir = 1;
+      }
+#ifndef pp_VOL_OLD
+    }
+#endif
   }
 }
 

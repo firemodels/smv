@@ -364,8 +364,10 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   int i, j, k, n;
   float constval, x1, x3, z1, z3, yy1, y3;
   int is1, is2, js1, js2, ks1, ks2;
+#ifdef pp_VOL_OLD
   int ii, jj, kk;
   int ibeg, iend, jbeg, jend, kbeg, kend;
+#endif
 
   float *xplt, *yplt, *zplt;
   float *znode_offset, z_offset[4];
@@ -711,7 +713,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
     }
     glEnd();
     break;
-
+#ifdef pp_VOL_OLD
     // +++++++++++++++++++++++++++++++++++ DIR 4 +++++++++++++++++++++++++++++++++++++++
 
   case 4:
@@ -1276,6 +1278,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
     }
     glEnd();
     break;
+#endif
   default:
     assert(FFALSE);
     break;
@@ -1356,9 +1359,11 @@ void UpdateSmokeAlphas(void){
     dists[ALPHA_X]  = dx;
     dists[ALPHA_Y]  = smoke_mesh->dxyz_fds[1];
     dists[ALPHA_Z]  = smoke_mesh->dxyz_fds[2];
+#ifdef pp_VOL_OLD
     dists[ALPHA_XY] = smoke_mesh->dxyDdx*dx;
     dists[ALPHA_YZ] = smoke_mesh->dyzDdx*dx;
     dists[ALPHA_XZ] = smoke_mesh->dxzDdx*dx;
+#endif
     for(j=0;j<6;j++){
       float maxval;
 
@@ -1381,8 +1386,10 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
   int i, j, k, n;
   float constval, x1, x3, z1, z3, yy1, y3;
   int is1, is2, js1, js2, ks1, ks2;
+#ifdef pp_VOL_OLD
   int ii, jj, kk;
   int ibeg, iend, jbeg, jend, kbeg, kend;
+#endif
   float *znode_offset=NULL, z_offset[4];
 
   float *xplt, *yplt, *zplt;
@@ -1759,6 +1766,7 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
     glEnd();
     break;
 
+#ifdef pp_VOL_OLD
     // +++++++++++++++++++++++++++++++++++ DIR 4 +++++++++++++++++++++++++++++++++++++++
 
   case 4:
@@ -2525,6 +2533,7 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
     }
     glEnd();
     break;
+#endif
   default:
     assert(FFALSE);
     break;

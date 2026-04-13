@@ -1880,7 +1880,10 @@ SVEXTERN int  SVDECL(have_multislice, 0), SVDECL(have_multivslice, 0);
 SVEXTERN char SVDECL(*part_globalbound_filename, NULL);
 SVEXTERN char SVDECL(*smokeview_casedir, NULL);
 SVEXTERN int SVDECL(update_vectorskip, 0);
-SVEXTERN int SVDECL(smoke_offaxis, 0), SVDECL(smoke_adjust, 1);
+#ifdef pp_VOL_OLD
+SVEXTERN int SVDECL(smoke_offaxis, 0);
+#endif
+SVEXTERN int SVDECL(smoke_adjust, 1);
 SVEXTERN scriptfiledata first_scriptfile, last_scriptfile, SVDECL(*default_script,NULL);
 SVEXTERN scriptdata SVDECL(*scriptinfo,NULL), SVDECL(*current_script_command,NULL);
 SVEXTERN char SVDECL(*script_dir_path,NULL), SVDECL(*script_htmldir_path, NULL);

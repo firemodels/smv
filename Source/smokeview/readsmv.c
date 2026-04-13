@@ -1717,9 +1717,11 @@ void UpdateMeshCoords(void){
     meshi->smoke_dist[ALPHA_X]  = dx;
     meshi->smoke_dist[ALPHA_Y]  = dy;
     meshi->smoke_dist[ALPHA_Z]  = dz;
+#ifdef pp_VOL_OLD
     meshi->smoke_dist[ALPHA_XY] = dx*dy/sqrt(dx*dx + dy*dy);
     meshi->smoke_dist[ALPHA_YZ] = dy*dz/sqrt(dy*dy + dz*dz);
     meshi->smoke_dist[ALPHA_XZ] = dx*dz/sqrt(dx*dx + dz*dz);
+#endif
   }
 }
 
@@ -2622,13 +2624,6 @@ int ReadSMV_Configure(){
    ************************************************************************
  */
 
-#ifdef pp_GETMESH_TEST
-  scenedata *InitSceneInfo(void);
-  INIT_PRINT_TIMER(timer_sceneinfo);
-  sceneinfo = InitSceneInfo();
-  PRINT_TIMER(timer_sceneinfo, "sceneinfo");
-#endif
-
   INIT_PRINT_TIMER(total_wrapup_time);
   update_colorbar_orig = 1;
   if(update_filesizes==1){
@@ -2898,6 +2893,13 @@ int ReadSMV_Configure(){
       InitDevicePlane(devicei);
     }
   }
+
+#ifdef pp_GETMESH_TEST
+  scenedata *InitSceneInfo(void);
+  INIT_PRINT_TIMER(timer_sceneinfo);
+  sceneinfo = InitSceneInfo();
+  PRINT_TIMER(timer_sceneinfo, "sceneinfo");
+#endif
 
   START_TIMER(timer_readsmv);
 
