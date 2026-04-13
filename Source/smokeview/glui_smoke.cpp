@@ -20,14 +20,18 @@ extern GLUI *glui_bounds;
 
 GLUI *glui_3dsmoke=NULL;
 
+#ifdef pp_VOL_OLD
 GLUI_EditText *EDIT_vol_prefix=NULL;
 
 GLUI_Listbox *LISTBOX_VOL_tour=NULL;
+#endif
 
 GLUI_Button *BUTTON_fds_extinction_reset = NULL;
 GLUI_Button *BUTTON_smv_extinction_reset = NULL;
 GLUI_Button *BUTTON_cutoff_defaults = NULL;
+#ifdef pp_VOL_OLD
 GLUI_Button *BUTTON_volunload=NULL;
+#endif
 GLUI_Button *BUTTON_startrender=NULL;
 GLUI_Button *BUTTON_cancelrender=NULL;
 
@@ -49,16 +53,20 @@ GLUI_Spinner *SPINNER_hrrpuv_min=NULL;
 GLUI_Spinner *SPINNER_hrrpuv_max = NULL;
 GLUI_Spinner *SPINNER_cb_min_index = NULL;
 GLUI_Spinner *SPINNER_cb_max_index = NULL;
+#ifdef pp_VOL_OLD
 GLUI_Spinner *SPINNER_nongpu_vol_factor=NULL;
 GLUI_Spinner *SPINNER_gpu_vol_factor=NULL;
+#endif
 GLUI_Spinner *SPINNER_smoke3d_load_start=NULL;
 GLUI_Spinner *SPINNER_smoke3d_load_skip=NULL;
 
 GLUI_Spinner *SPINNER_fire_temp_min = NULL;
 GLUI_Spinner *SPINNER_fire_temp_max = NULL;
 GLUI_Spinner *SPINNER_nfire_colors  = NULL;
+#ifdef pp_VOL_OLD
 GLUI_Spinner *SPINNER_voltest_depth1  = NULL;
 GLUI_Spinner *SPINNER_voltest_depth2  = NULL;
+#endif
 GLUI_Spinner *SPINNER_temperature_min=NULL;
 GLUI_Spinner *SPINNER_temperature_max=NULL;
 GLUI_Spinner *SPINNER_fire_opacity_factor=NULL;
@@ -147,10 +155,12 @@ GLUI_Panel *PANEL_cb_index = NULL;
 
 GLUI_Rollout *ROLLOUT_smoke_settings = NULL;
 GLUI_Rollout *ROLLOUT_skip = NULL;
+#ifdef pp_VOL_OLD
 GLUI_Rollout *ROLLOUT_voltest = NULL;
-GLUI_Rollout *ROLLOUT_opacity = NULL;
 GLUI_Rollout *ROLLOUT_voldisplay = NULL;
 GLUI_Rollout *ROLLOUT_volsmoke_move = NULL;
+#endif
+GLUI_Rollout *ROLLOUT_opacity = NULL;
 GLUI_Rollout *ROLLOUT_slicehrrpuv = NULL;
 GLUI_Rollout *ROLLOUT_firecolor = NULL;
 GLUI_Rollout *ROLLOUT_smokecolor = NULL;
@@ -159,10 +169,12 @@ GLUI_Rollout *ROLLOUT_loadframe = NULL;
 GLUI_Rollout *ROLLOUT_co2color = NULL;
 GLUI_Rollout *ROLLOUT_temperature_settings=NULL;
 GLUI_Rollout *ROLLOUT_slices = NULL;
-GLUI_Rollout *ROLLOUT_volume = NULL;
 GLUI_Rollout *ROLLOUT_smoke_test = NULL;
+#ifdef pp_VOL_OLD
+GLUI_Rollout *ROLLOUT_volume = NULL;
 GLUI_Rollout *ROLLOUT_volsmoke_load = NULL;
 GLUI_Rollout *ROLLOUT_volsmoke_compute = NULL;
+#endif
 GLUI_Rollout *ROLLOUT_smokedebug = NULL;
 
 GLUI_StaticText *STATIC_smokeframelimit_min = NULL;
@@ -173,7 +185,9 @@ GLUI_StaticText *STATIC_timelimit_min = NULL;
 GLUI_StaticText *STATIC_timelimit_max = NULL;
 GLUI_StaticText *STATIC_pixels_per_triangle=NULL;
 
+#ifdef pp_VOL_OLD
 #define VOLRENDER_ROLLOUT   0
+#endif
 #define SLICERENDER_ROLLOUT 1
 #define SMOKECOLOR_ROLLOUT  2
 #define FIRECOLOR_ROLLOUT   3
@@ -182,8 +196,11 @@ GLUI_StaticText *STATIC_pixels_per_triangle=NULL;
 #define SKIP_ROLLOUT        6
 #define SMOKE_SETTINGS      7
 
-procdata smokeprocinfo[8], volsmokeprocinfo[6];
-int nsmokeprocinfo = 0, nvolsmokeprocinfo=0;
+procdata smokeprocinfo[8];
+int nsmokeprocinfo = 0;
+#ifdef pp_VOL_OLD
+procdata volsmokeprocinfo[6];
+int nvolsmokeprocinfo=0;
 
 #define VOLSMOKE_DISPLAY           0
 #define VOLSMOKE_MOVEMENT          1
@@ -191,6 +208,7 @@ int nsmokeprocinfo = 0, nvolsmokeprocinfo=0;
 #define VOLSMOKE_LOAD_ROLLOUT      3
 #define VOLSMOKE_IMAGES_ROLLOUT    4
 #define VOLSMOKE_LOADFRAME_ROLLOUT 5
+#endif
 
 #define SLICESMOKE_LOAD_ROLLOUT 0
 #define SLICESMOKE_ORIG_ROLLOUT 1
@@ -278,21 +296,26 @@ extern "C" void GLUIUpdateTimeFrameBounds(float time_min, float time_max){
   SPINNER_timeloadframe->set_float_limits(time_min,time_max);
 }
 
+#ifdef pp_VOL_OLD
 /* ------------------ VolSmokeRolloutCB ------------------------ */
 
 void VolSmokeRolloutCB(int var){
   GLUIToggleRollout(volsmokeprocinfo, nvolsmokeprocinfo, var);
 }
+#endif
 
 /* ------------------ SmokeRolloutCB ------------------------ */
 
 void SmokeRolloutCB(int var){
+#ifdef pp_VOL_OLD
   if(var == VOLRENDER_ROLLOUT)smoke_render_option = RENDER_VOLUME;
+#endif
   if(var == SLICERENDER_ROLLOUT)smoke_render_option = RENDER_SLICE;
 //  GLUISmoke3dCB(SMOKE_OPTIONS);
   GLUIToggleRollout(smokeprocinfo, nsmokeprocinfo, var);
 }
 
+#ifdef pp_VOL_OLD
 /* ------------------ GLUIDeleteVolTourList ------------------------ */
 
  extern "C" void GLUIDeleteVolTourList(void){
@@ -329,6 +352,7 @@ extern "C" void GLUICreateVolTourList(void){
     LISTBOX_VOL_tour->set_int_val(selectedtour_index);
   }
 }
+#endif
 
 /* ------------------ UpdateCombineMeshes ------------------------ */
 
@@ -456,7 +480,11 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   int i;
 
 
-  if(global_scase.smoke3dcoll.nsmoke3dinfo<=0&&nvolrenderinfo<=0)return;
+  if(global_scase.smoke3dcoll.nsmoke3dinfo<=0
+#ifdef pp_VOL_OLD
+    &&nvolrenderinfo<=0
+#endif
+    )return;
   if(CHECKBOX_meshvisptr!=NULL)FREEMEMORY(CHECKBOX_meshvisptr);
   NewMemory((void **)&CHECKBOX_meshvisptr,global_scase.meshescoll.nmeshes*sizeof(GLUI_Checkbox *));
 
@@ -659,10 +687,16 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   GLUISmoke3dCB(UPDATE_CO2_COLORS);
   GLUISmoke3dCB(USE_SMOKE_RGB);
 
-  if(global_scase.smoke3dcoll.nsmoke3dinfo<=0||nvolrenderinfo<=0){
+  if(global_scase.smoke3dcoll.nsmoke3dinfo<=0
+#ifdef pp_VOL_OLD
+    ||nvolrenderinfo<=0
+#endif
+    ){
     smoke_render_option=RENDER_SLICE;
     if(global_scase.smoke3dcoll.nsmoke3dinfo>0)smoke_render_option=RENDER_SLICE;
+#ifdef pp_VOL_OLD
     if(nvolrenderinfo>0)smoke_render_option=RENDER_VOLUME;
+#endif
   }
 
   //---------------------------------------------Skip planes--------------------------------------------------------------
@@ -697,6 +731,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
 
   //---------------------------------------------Volume render settings--------------------------------------------------------------
 
+#ifdef pp_VOL_OLD
   if(nvolrenderinfo > 0){
     ROLLOUT_volume = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoke3d, "Volume render settings", false, VOLRENDER_ROLLOUT, SmokeRolloutCB);
     TOGGLE_ROLLOUT(smokeprocinfo, nsmokeprocinfo, ROLLOUT_volume, VOLRENDER_ROLLOUT, glui_3dsmoke);
@@ -817,6 +852,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     SPINNER_smokeloadframe = glui_3dsmoke->add_spinner_to_panel(PANEL_loadframe, "smoke frame", GLUI_SPINNER_INT, &smoke_framenumber);
     SPINNER_timeloadframe = glui_3dsmoke->add_spinner_to_panel(PANEL_loadframe, "time", GLUI_SPINNER_FLOAT, &time_frameval);
   }
+#endif
 
 #ifdef pp_GPU
   GLUISmoke3dCB(VOL_SMOKE);
@@ -872,8 +908,10 @@ void GLUIGetPixelsPerTriangle(void){
 
 extern "C" void GLUISmoke3dCB(int var){
   int i;
+#ifdef pp_VOL_OLD
   char *tour_label;
   char *vol_prefixptr;
+#endif
 
   updatemenu=1;
   switch(var){
@@ -934,6 +972,7 @@ extern "C" void GLUISmoke3dCB(int var){
     GLUISmoke3dCB(UPDATE_SMOKECOLORS);
     GLUTPOSTREDISPLAY;
     break;
+#ifdef pp_VOL_OLD
   case LOAD_SMOKEFRAME:
     LoadSmokeFrame(-1, smoke_framenumber);
     break;
@@ -960,9 +999,6 @@ extern "C" void GLUISmoke3dCB(int var){
       SPINNER_skipframe->set_int_val(vol_skipframe0);
     }
     break;
-  case CANCEL_GENERATE_IMAGES:
-    ScriptCB(SCRIPT_CANCEL_NOW);
-    break;
   case GENERATE_IMAGES:
     if(selected_tour==NULL){
       tour_label=NULL;
@@ -978,12 +1014,17 @@ extern "C" void GLUISmoke3dCB(int var){
   case NONGPU_VOL_FACTOR:
     InitVolRenderSurface(NOT_FIRSTCALL);
     break;
+#endif
+  case CANCEL_GENERATE_IMAGES:
+    ScriptCB(SCRIPT_CANCEL_NOW);
+    break;
   case MASS_EXTINCTION:
     if(glui_mass_extinct<1.0) {
       glui_mass_extinct = 1.0;
       SPINNER_mass_extinct->set_float_val(glui_mass_extinct);
     }
     break;
+#ifdef pp_VOL_OLD
   case GPU_VOL_FACTOR:
     break;
   case COMBINE_MESHES:
@@ -991,6 +1032,7 @@ extern "C" void GLUISmoke3dCB(int var){
     DefineVolsmokeTextures();
 #endif
     break;
+#endif
   case SHOW_FIRECOLORMAP:
     UpdateSmokeColormap();
     if(show_firecolormap!=0){
@@ -1039,6 +1081,7 @@ extern "C" void GLUISmoke3dCB(int var){
     SPINNER_cb_min_index->set_int_val(global_cb_min_index);
     SPINNER_cb_max_index->set_int_val(global_cb_max_index);
     break;
+#ifdef pp_VOL_OLD
   case VOLTEST_DEPTH:
     voltest_soot1 = log(2.0)/(glui_mass_extinct*voltest_depth1);
     voltest_soot2 = log(2.0)/(glui_mass_extinct*voltest_depth2);
@@ -1052,6 +1095,7 @@ extern "C" void GLUISmoke3dCB(int var){
       meshi->voltest_update = 1;
     }
     break;
+#endif
   case BLACKBODY_TEMPS:
     if(nfire_colors<256){
       nfire_colors = 256;
@@ -1332,6 +1376,7 @@ extern "C" void GLUISmoke3dCB(int var){
     IdleCB();
     break;
 #endif
+#ifdef pp_VOL_OLD
   case VOL_NGRID:
     GLUTPOSTREDISPLAY;
     break;
@@ -1377,6 +1422,7 @@ extern "C" void GLUISmoke3dCB(int var){
 #endif
     }
     break;
+#endif
   default:
 #ifdef _DEBUG
     abort();

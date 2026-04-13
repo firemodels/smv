@@ -2011,6 +2011,7 @@ extern "C" void GLUISceneMotionCB(int var){
   }
 
 #ifdef pp_GPU
+#ifdef pp_VOL_OLD
   if(usegpu==1&&showvolrender==1&&show_volsmoke_moving==1&&
      (var==EYE_ROTATE||var==EYE_ROTATE_90||var==ROTATE_2AXIS||
       var==TRANSLATE_XY||var==TRANSLATE_X||TRANSLATE_Y||
@@ -2028,6 +2029,7 @@ extern "C" void GLUISceneMotionCB(int var){
       MOTIONnframes=0;
     }
   }
+#endif
 #endif
 
   if(var==CURSOR){

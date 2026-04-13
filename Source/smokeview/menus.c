@@ -3033,7 +3033,7 @@ void AboutMenu(int value){
 }
 
 /* ------------------ LoadVolsmoke3DMenu ------------------------ */
-
+#ifdef pp_VOL_OLD
 void LoadVolsmoke3DMenu(int value){
   if(value == MENU_DUMMY)return;
   updatemenu = 1;
@@ -3106,6 +3106,7 @@ void LoadVolsmoke3DMenu(int value){
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }
+#endif
 
 /* ------------------ UnloadAllSliceFiles ------------------------ */
 
@@ -3366,9 +3367,11 @@ void LoadUnloadMenu(int value){
     if(global_scase.hvaccoll.nhvacinfo>0){
       LoadHVACMenu(MENU_HVAC_UNLOAD);
     }
+#ifdef pp_VOL_OLD
     if(nvolrenderinfo>0){
       LoadVolsmoke3DMenu(UNLOAD_ALL);
     }
+#endif
 
     LoadVSliceMenu2(UNLOAD_ALL);
 
@@ -3403,9 +3406,11 @@ void LoadUnloadMenu(int value){
     if(global_scase.smoke3dcoll.nsmoke3dinfo > 0){
       UnloadAllSmoke3D(-1);
     }
+#ifdef pp_VOL_OLD
     if(nvolrenderinfo>0){
       UnLoadVolsmoke3DMenu(UNLOAD_ALL);
     }
+#endif
     if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
       vis_device_plot = DEVICE_PLOT_HIDDEN;
       showdevice_val = 0;
@@ -4563,6 +4568,7 @@ void UnloadMultiSliceMenu(int value){
   }
 }
 
+#ifdef pp_VOL_OLD
 /* ------------------ ShowVolsmoke3DMenu ------------------------ */
 
 void ShowVolsmoke3DMenu(int value){
@@ -4648,6 +4654,7 @@ void UnLoadVolsmoke3DMenu(int value){
   read_vol_mesh=VOL_READNONE;
   GLUTPOSTREDISPLAY;
 }
+#endif
 
 /* ------------------ UnLoadSmoke3DMenu ------------------------ */
 
@@ -5317,7 +5324,7 @@ void LoadMultiSliceMenu(int value){
       longlabel = slicei->label.longlabel;
       if(strcmp(longlabel,submenulabel)!=0)continue;
       if(dir!=0&&dir!=slicei->idir)continue;
-      if(dir!=0&&slicei->volslice==1)continue;
+      if(dir!=0&&slicei->slice3d==1)continue;
       if(slicei->slice_filetype == SLICE_GEOM){
         load_size += ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, 0, &errorcode);
       }
@@ -5411,7 +5418,7 @@ void LoadAllMultiSliceMenu(void){
 
     mslicei = global_scase.slicecoll.multisliceinfo + i;
     slicei = global_scase.slicecoll.sliceinfo + mslicei->islices[0];
-    if(slicei->volslice == 1)continue;
+    if(slicei->slice3d == 1)continue;
     if(sliceload_dir == 0 && slicei->idir != 1)continue;
     if(sliceload_dir == 1 && slicei->idir != 2)continue;
     if(sliceload_dir == 2 && slicei->idir != 3)continue;
@@ -5440,7 +5447,7 @@ void LoadAllMultiVSliceMenu(void){
     mvslicei = global_scase.slicecoll.multivsliceinfo + i;
     vslicei = global_scase.slicecoll.vsliceinfo + mvslicei->ivslices[0];
     slicei = global_scase.slicecoll.sliceinfo + vslicei->ival;
-    if(slicei->volslice == 1)continue;
+    if(slicei->slice3d == 1)continue;
     if(sliceload_dir == 0 && slicei->idir != 1)continue;
     if(sliceload_dir == 1 && slicei->idir != 2)continue;
     if(sliceload_dir == 2 && slicei->idir != 3)continue;
@@ -8137,7 +8144,7 @@ void InitSubSliceMenuInfo(){
       nsubslicemenuinfo++;
     }
     si = subslicemenuinfo + nsubslicemenuinfo-1;
-    if(si->slicetype!=SLICE_UNKNOWN&&sd->volslice==0){
+    if(si->slicetype!=SLICE_UNKNOWN&&sd->slice3d==0){
       if(sd->idir == 1){
         si->havex = 1;
         nsubslicex++;
@@ -8206,7 +8213,7 @@ void InitSubVectorSliceMenuInfo(){
       nsubvectorslicemenuinfo++;
     }
     vd = subvectorslicemenuinfo + nsubvectorslicemenuinfo - 1;
-    if(vd->slicetype!=SLICE_UNKNOWN&&si->volslice==0){
+    if(vd->slicetype!=SLICE_UNKNOWN&&si->slice3d==0){
       if(si->idir == 1){
         vd->havex = 1;
         nsubvectorslicex++;
@@ -8854,8 +8861,11 @@ static int hvacvaluemenu = 0, hvacnodevaluemenu = 0, hvacductvaluemenu = 0;
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
 static int loadplot3dmenu=0, unloadvslicemenu=0, unloadslicemenu=0;
 static int loadsmoke3dmenu = 0;
+#ifdef pp_VOL_OLD
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
-static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
+static unloadvolsmoke3dmenu=0;
+#endif
+static int unloadsmoke3dmenu = 0;
 static int loadslicemenu=0, loadmultislicemenu = 0, loadhvacmenu = 0;
 static int *loadsubvslicemenu=NULL, nloadsubvslicemenu=0;
 static int *loadsubpatchmenu_b = NULL, *nsubpatchmenus_b=NULL, iloadsubpatchmenu_b=0, nloadsubpatchmenu_b = 0;
@@ -10730,7 +10740,11 @@ if(opengl_finalized == 0)return;
 
 /* -------------------------------- colorbarmenu -------------------------- */
 
-  if(nsmoke3dloaded>0||nvolrenderinfo>0){
+  if(nsmoke3dloaded>0
+#ifdef pp_VOL_OLD
+    ||nvolrenderinfo>0
+#endif
+    ){
     MakeColorbarMenu(&smokecolorbarmenu,
                      &smokecolorbars_submenu1, &smokecolorbars_submenu2, &smokecolorbars_submenu3,
                      &smokecolorbars_submenu4, &smokecolorbars_submenu5, &smokecolorbars_submenu6,
@@ -11056,6 +11070,7 @@ if(opengl_finalized == 0)return;
 
  /* --------------------------------Show Volume smoke menu -------------------------- */
 
+#ifdef pp_VOL_OLD
   if(nvolsmoke3dloaded>0){
     char vlabel[256];
 
@@ -11066,6 +11081,7 @@ if(opengl_finalized == 0)return;
     glutAddMenuEntry(vlabel,TOGGLE_VOLSMOKE);
     GLUTADDSUBMENU("Smoke colorbar",smokecolorbarmenu);
   }
+#endif
 
   CREATEMENU(aperturemenu,ApertureMenu);
   if(apertureindex==0)glutAddMenuEntry("*30",0);
@@ -11227,6 +11243,7 @@ if(opengl_finalized == 0)return;
     showhide_data = 1;
     GLUTADDSUBMENU("3D smoke", smoke3dshowmenu);
   }
+#ifdef pp_VOL_OLD
   if(nvolsmoke3dloaded>0){
     char vlabel[256];
 
@@ -11234,6 +11251,7 @@ if(opengl_finalized == 0)return;
     strcpy(vlabel, "3D smoke (Volume rendered)");
     GLUTADDSUBMENU(vlabel, showvolsmoke3dmenu);
   }
+#endif
   if(npatchloaded>0){
     showhide_data = 1;
     GLUTADDSUBMENU("Boundary", showpatchmenu);
@@ -12091,6 +12109,7 @@ if(opengl_finalized == 0)return;
 
 /* --------------------------------unload and load 3d vol smoke menus -------------------------- */
 
+#ifdef pp_VOL_OLD
     if(nvolsmoke3dloaded>0){
       CREATEMENU(unloadvolsmoke3dmenu,UnLoadVolsmoke3DMenu);
       if(nvolsmoke3dloaded>1){
@@ -12121,6 +12140,7 @@ if(opengl_finalized == 0)return;
       if(nvolsmoke3dloaded==1)glutAddMenuEntry("Unload",UNLOAD_ALL);
       if(nvolsmoke3dloaded>1)GLUTADDSUBMENU("Unload",unloadvolsmoke3dmenu);
     }
+#endif
 
     /* --------------------------------unload and load 3d smoke menus -------------------------- */
 
@@ -12886,12 +12906,14 @@ if(opengl_finalized == 0)return;
 
       // volume rendered smoke
 
+#ifdef pp_VOL_OLD
       if(nvolrenderinfo>0&&global_scase.smokediff==0){
         char vlabel[256];
 
         strcpy(vlabel,"3D smoke (Volume rendered)");
         GLUTADDSUBMENU(vlabel,loadvolsmoke3dmenu);
       }
+#endif
 
       // terrain
 

@@ -914,8 +914,10 @@ void InitMesh(meshdata *meshi){
   meshi->box_clipinfo = NULL;
   NewMemory((void **)&meshi->gsliceinfo, sizeof(meshplanedata));
   memset(meshi->gsliceinfo, 0, sizeof(meshplanedata));
+#ifdef pp_VOL_OLD
   NewMemory((void **)&meshi->volrenderinfo, sizeof(volrenderdata));
   memset(meshi->volrenderinfo, 0, sizeof(volrenderdata));
+#endif
   for(i=0; i<6; i++){
     meshi->bc_faces[i]   = NULL;
     meshi->n_bc_faces[i] = 0;
@@ -965,12 +967,14 @@ void InitMesh(meshdata *meshi){
   meshi->iplotz_all = NULL;
 #ifdef pp_GPU
 
+#ifdef pp_VOL_OLD
   meshi->volsmoke_texture_buffer = NULL;
   meshi->volsmoke_texture_id = 0;
   meshi->voltest_update = 0;
 
   meshi->volfire_texture_buffer = NULL;
   meshi->volfire_texture_id = 0;
+#endif
 
 #ifdef pp_WINGPU
   meshi->slice3d_texture_buffer = NULL;
@@ -1075,9 +1079,11 @@ void InitMesh(meshdata *meshi){
   meshi->xplt_smv = NULL;
   meshi->yplt_smv = NULL;
   meshi->zplt_smv = NULL;
+#ifdef pp_VOL_OLD
   meshi->xvolplt_smv = NULL;
   meshi->yvolplt_smv = NULL;
   meshi->zvolplt_smv = NULL;
+#endif
   meshi->xplt_cen_smv = NULL;
   meshi->yplt_cen_smv = NULL;
   meshi->zplt_cen_smv = NULL;
@@ -2412,7 +2418,7 @@ int IsSliceDup(smv_case *scase, slicedata *sd, int nslice){
     if(strcmp(slicei->label.longlabel,sd->label.longlabel)!=0)continue;
     if(slicei->slice_filetype!=sd->slice_filetype)continue;
     if(slicei->blocknumber!=sd->blocknumber)continue;
-    if(slicei->volslice!=sd->volslice)continue;
+    if(slicei->slice3d!=sd->slice3d)continue;
     if(slicei->idir!=sd->idir)continue;
     return 1;
   }
@@ -4011,7 +4017,9 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
  // sd->file_size = 0;
   sd->reg_file = NULL;
   sd->comp_file = NULL;
+#ifdef pp_VOL_OLD
   sd->vol_file = NULL;
+#endif
   sd->slicelabel = NULL;
   sd->cell_center_edge = 0;
   sd->file_size = 0;
@@ -4212,10 +4220,10 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   sd->slicecomplevel = NULL;
   sd->qslicedata_compressed = NULL;
   if(sd->is1!=sd->is2&&sd->js1!=sd->js2&&sd->ks1!=sd->ks2){
-    sd->volslice = 1;
+    sd->slice3d = 1;
   }
   else{
-    sd->volslice = 0;
+    sd->slice3d = 0;
   }
   sd->times = NULL;
   sd->times_map = NULL;
@@ -5547,9 +5555,9 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
     meshi = scase->meshescoll.meshinfo + i;
     InitMesh(meshi); // initialize mesh here so order of order GRID/TERRAIN keywords won't cause a problem
   }
+#ifdef pp_VOL_OLD
   FREEMEMORY(scase->supermeshinfo);
   if(NewMemory((void **)&scase->supermeshinfo,scase->meshescoll.nmeshes*sizeof(supermeshdata))==0)return 2;
-  scase->meshescoll.meshinfo->plot3dfilenum=-1;
   for(i=0;i<scase->meshescoll.nmeshes;i++){
     meshdata *meshi;
     supermeshdata *smeshi;
@@ -5567,6 +5575,8 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
     meshi->plotn=1;
     meshi->itextureoffset=0;
   }
+#endif
+  scase->meshescoll.meshinfo->plot3dfilenum=-1;
   if(scase->setPDIM==0){
     meshdata *meshi;
 

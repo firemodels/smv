@@ -357,6 +357,7 @@ void InitTextures0(void){
 #endif
   glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,256,0,GL_RGBA,GL_FLOAT,rgb_iso);
 
+#ifdef pp_VOL_OLD
   glGenTextures(1,&volsmoke_colormap_id);
   glBindTexture(GL_TEXTURE_1D,volsmoke_colormap_id);
   glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -367,7 +368,7 @@ void InitTextures0(void){
   glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 #endif
   glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_volsmokecolormap);
-
+#endif
   if(gpuactive == 1){
     glActiveTexture(GL_TEXTURE2);
     glGenTextures(1, &slicesmoke_colormap_id);
@@ -2621,6 +2622,13 @@ int ReadSMV_Configure(){
    ************************************************************************
  */
 
+#ifdef pp_GETMESH_TEST
+  scenedata *InitSceneInfo(void);
+  INIT_PRINT_TIMER(timer_sceneinfo);
+  sceneinfo = InitSceneInfo();
+  PRINT_TIMER(timer_sceneinfo, "sceneinfo");
+#endif
+
   INIT_PRINT_TIMER(total_wrapup_time);
   update_colorbar_orig = 1;
   if(update_filesizes==1){
@@ -3026,8 +3034,10 @@ int ReadSMV_Configure(){
   }
 
   START_TIMER(timer_readsmv);
+#ifdef pp_VOL_OLD
   InitVolRender();
   InitVolRenderSurface(FIRSTCALL);
+#endif
   radius_windrose = 0.2*xyzmaxdiff;
   PRINT_TIMER(timer_readsmv, "InitVolRender");
 
@@ -3535,11 +3545,13 @@ int ReadIni2(const char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i,%i", &slices3d_max_blending, &hrrpuv_max_blending,&showall_3dslices);
     }
+#ifdef pp_VOL_OLD
     if(MatchINI(buffer, "FREEZEVOLSMOKE")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i", &freeze_volsmoke,&autofreeze_volsmoke);
       continue;
     }
+#endif
     if(MatchINI(buffer, "VISBOUNDARYTYPE")==1){
       int *vbt = vis_boundary_type;
 
@@ -3907,6 +3919,7 @@ int ReadIni2(const char *inifile, int localfile){
       sscanf(buffer, "%i %f %i %f %i %i", &use_tload_begin, &global_scase.tload_begin, &use_tload_end, &global_scase.tload_end, &use_tload_skip, &tload_skip);
       continue;
     }
+#ifdef pp_VOL_OLD
     if(MatchINI(buffer, "VOLSMOKE") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i %i %i %i",
@@ -3926,6 +3939,7 @@ int ReadIni2(const char *inifile, int localfile){
       InitVolRenderSurface(NOT_FIRSTCALL);
       continue;
     }
+#endif
     if(MatchINI(buffer, "WINDROSEMERGE")==1){
       float *xyzt;
 
@@ -8111,8 +8125,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", fontindex);
   fprintf(fileout, "FRAMERATEVALUE\n");
   fprintf(fileout, " %i\n", frameratevalue);
+#ifdef pp_VOL_OLD
   fprintf(fileout, "FREEZEVOLSMOKE\n");
   fprintf(fileout, " %i %i\n", freeze_volsmoke, autofreeze_volsmoke);
+#endif
   fprintf(fileout, "GEOMBOUNDARYPROPS\n");
   fprintf(fileout, " %i %i %i %f %f %i\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize, boundary_edgetype);
   if(global_scase.hvaccoll.nhvacinfo > 0){
@@ -8510,6 +8526,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "USEGPU\n");
   fprintf(fileout, " %i\n", usegpu);
 #endif
+#ifdef pp_VOL_OLD
   fprintf(fileout, "VOLSMOKE\n");
   fprintf(fileout, " %i %i %i %i %i\n",
     glui_compress_volsmoke, use_multi_threading, load_at_rendertimes, volbw, show_volsmoke_moving);
@@ -8517,6 +8534,7 @@ void WriteIni(int flag,char *filename){
           global_temp_cb_min, global_temp_cb_max, fire_opacity_factor,
           glui_mass_extinct, gpu_vol_factor, nongpu_vol_factor);
 
+#endif
   fprintf(fileout, "\n *** ZONE FIRE PARAMETRES ***\n\n");
 
   fprintf(fileout, "SHOWHAZARDCOLORS\n");
@@ -8661,6 +8679,7 @@ void UpdateLoadedLists(void){
     if(patchi->loaded==1&&patchi->boundary == 0)ngeomslice_loaded++;
   }
 
+#ifdef pp_VOL_OLD
   nvolsmoke_loaded = 0;
   if(nvolrenderinfo>0){
     for(i=0;i<global_scase.meshescoll.nmeshes;i++){
@@ -8674,4 +8693,5 @@ void UpdateLoadedLists(void){
       nvolsmoke_loaded++;
     }
   }
+#endif
 }

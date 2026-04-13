@@ -170,6 +170,7 @@ void SetViewPoint(int option){
   GLUIUpdateZoom();
 }
 
+#ifdef pp_VOL_OLD
 /* ------------------ InitVolrenderScript ------------------------ */
 
 void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int skipframe){
@@ -202,6 +203,7 @@ void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int ski
     fclose(script_stream);
   }
 }
+#endif
 
 /* ------------------ DisplayVersionInfo ------------------------ */
 

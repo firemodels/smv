@@ -1482,6 +1482,7 @@ int CompareVolFaceListData(const void *arg1, const void *arg2){
   return 0;
 }
 
+#ifdef pp_VOL_OLD
 /* ------------------ GetVolSmokeDir ------------------------ */
 
 void GetVolSmokeDir(float *mm){
@@ -1521,7 +1522,9 @@ void GetVolSmokeDir(float *mm){
 
   volfacelistdata *vi;
 
+#ifdef pp_VOL_OLD
   if(freeze_volsmoke == 1)return;
+#endif
 
   eye_position_smv[0] = -DOT3(mm + 0, mm + 12) / mscale[0];
   eye_position_smv[1] = -DOT3(mm + 4, mm + 12) / mscale[1];
@@ -1704,6 +1707,7 @@ void GetVolSmokeDir(float *mm){
     qsort((volfacelistdata *)volfacelistinfoptrs, nvolfacelistinfo, sizeof(volfacelistdata *), CompareVolFaceListData);
   }
 }
+#endif
 
 /* ------------------ GetSmokeDir ------------------------ */
 
@@ -2585,6 +2589,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     if(global_scase.nrooms>0){
       GetZoneSmokeDir(modelview_scratch);
     }
+#ifdef pp_VOL_OLD
     if(nvolrenderinfo>0&&showvolrender==1&&usevolrender==1){
       GetVolSmokeDir(modelview_scratch);
       SNIFF_ERRORS("after GetVolSmokeDir");
@@ -2594,6 +2599,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       ComputeAllSmokecolors();
 #endif
     }
+#endif
     if(global_scase.smoke3dcoll.nsmoke3dinfo>0&&show3dsmoke==1){
       INIT_PRINT_TIMER(timer_sort_smokemeshes);
       SortSmoke3dinfo();

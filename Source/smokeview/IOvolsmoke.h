@@ -2,6 +2,7 @@
 #define IOVOLSMOKE_H_DEFINED
 #define GPU_VOLframemax 1.5
 
+#ifdef pp_VOL_OLD
 EXTERNCPP void UnloadVolsmokeFrameAllMeshes(int framenum);
 EXTERNCPP void ComputeAllSmokecolors(void);
 EXTERNCPP void DrawSmoke3DGPUVol(void);
@@ -21,9 +22,8 @@ EXTERNCPP void UnloadVolsmokeAllFrames(volrenderdata *vr);
 EXTERNCPP void DefineVolsmokeTextures(void);
 #endif
 EXTERNCPP void DrawSmoke3DVol(void);
-EXTERNCPP void *InitNabors(void *arg);
-EXTERNCPP void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg);
 EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
+#endif
 
 #endif
 

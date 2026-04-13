@@ -334,12 +334,16 @@ void DrawColorbarPathRGB(void){
       float zbot, ztop;
       float black[3] = {0.0, 0.0, 0.0};
 
+#ifdef pp_VOL_OLD
       if(show_firecolormap!=0){
         rgbi=rgb_volsmokecolormap+4*i;
       }
       else{
         rgbi=cbi->colorbar_rgb+3*i;
       }
+#else
+      rgbi = cbi->colorbar_rgb + 3 * i;
+#endif
       if(show_Lab_dist_bars == 1 && ncolors == 255 && cbi->dist_ind[i] == 1){
         rgbi = black;
       }
@@ -496,12 +500,16 @@ void DrawColorbarPathCIELab(void){
     float zbot, ztop;
     float black[3] = {0.0,0.0,0.0};
 
+#ifdef pp_VOL_OLD
     if(show_firecolormap!=0){
       rgbi=rgb_volsmokecolormap+4*i;
     }
     else{
       rgbi=cbi->colorbar_rgb+3*i;
     }
+#else
+    rgbi = cbi->colorbar_rgb + 3 * i;
+#endif
     if(show_Lab_dist_bars==1&&ncolors == 255&&cbi->dist_ind[i]==1){
       rgbi = black;
     }

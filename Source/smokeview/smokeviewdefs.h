@@ -835,7 +835,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define CO2_COLORBAR 1
 
 #define RENDER_SLICE  0
+#ifdef pp_VOL_OLD
 #define RENDER_VOLUME 1
+#endif
 
 #define COLORBAR_FLIP             -2
 #define COLORBAR_AUTOFLIP         -6

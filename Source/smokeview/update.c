@@ -47,6 +47,7 @@ void UpdateFrameNumber(int changetime){
         parti->itime=parti->timeslist[iglobal_times];
       }
     }
+#ifdef pp_VOL_OLD
     if(showvolrender==1){
       int imesh;
 
@@ -110,6 +111,7 @@ void UpdateFrameNumber(int changetime){
         }
       }
     }
+#endif
     for(i=0;i<ngeominfoptrs;i++){
       geomdata *geomi;
 
@@ -320,6 +322,7 @@ void UpdateFileLoad(void){
     }
   }
 
+#ifdef pp_VOL_OLD
   nvolsmoke3dloaded = 0;
   nvolsmoke3dvis = 0;
   for(i = 0; i<global_scase.meshescoll.nmeshes; i++){
@@ -334,6 +337,7 @@ void UpdateFileLoad(void){
       if(vr->display==1)nvolsmoke3dvis++;
     }
   }
+#endif
 
   npart5loaded = 0;
   npartloaded = 0;
@@ -356,7 +360,10 @@ void UpdateFileLoad(void){
   if(nplot3dloaded_old != nplot3dloaded         || nsmoke3dloaded_old != nsmoke3dloaded ||
      nisoloaded_old != nisoloaded               || nsliceloaded_old != nsliceloaded ||
      nvsliceloaded_old != nvsliceloaded         || npatchloaded_old != npatchloaded ||
-     nvolsmoke3dloaded_old != nvolsmoke3dloaded || npart5loaded_old != npart5loaded ||
+#ifdef pp_VOL_OLD
+     nvolsmoke3dloaded_old != nvolsmoke3dloaded || 
+#endif
+    npart5loaded_old != npart5loaded ||
     npartloaded_old != npartloaded)updatefacelists=1;
 
   nplot3dloaded_old     = nplot3dloaded;
@@ -365,7 +372,9 @@ void UpdateFileLoad(void){
   nsliceloaded_old      = nsliceloaded;
   nvsliceloaded_old     = nvsliceloaded;
   npatchloaded_old      = npatchloaded;
+#ifdef pp_VOL_OLD
   nvolsmoke3dloaded_old = nvolsmoke3dloaded;
+#endif
   npart5loaded_old      = npart5loaded;
   npartloaded_old       = npartloaded;
 }
@@ -393,7 +402,9 @@ void UpdateShow(void){
   showsmoke            = 0;
   showzone             = 0;
   showiso              = 0;
+#ifdef pp_VOL_OLD
   showvolrender        = 0;
+#endif
   have_extreme_mindata = 0;
   have_extreme_maxdata = 0;
   showshooter          = 0;
@@ -453,6 +464,7 @@ void UpdateShow(void){
       }
     }
   }
+#ifdef pp_VOL_OLD
   if(nvolrenderinfo>0&&usevolrender==1){
     for(i=0;i<global_scase.meshescoll.nmeshes;i++){
       meshdata *meshi;
@@ -466,6 +478,7 @@ void UpdateShow(void){
       break;
     }
   }
+#endif
 
   sliceflag=0;
   slicecolorbarflag=0;
@@ -479,7 +492,7 @@ void UpdateShow(void){
       i=slice_loaded_list[ii];
       sd = global_scase.slicecoll.sliceinfo+i;
       if(sd->display==0||sd->slicefile_labelindex!=slicefile_labelindex)continue;
-      if(sd->volslice==1&&sd->slice_filetype==SLICE_NODE_CENTER&&vis_gslice_data==1)SHOW_gslice_data=1;
+      if(sd->slice3d==1&&sd->slice_filetype==SLICE_NODE_CENTER&&vis_gslice_data==1)SHOW_gslice_data=1;
       if(sd->ntimes>0){
         sliceflag=1;
         break;
@@ -573,7 +586,7 @@ void UpdateShow(void){
       sd = global_scase.slicecoll.sliceinfo + vd->ival;
 
       if(sd->slicefile_labelindex!=slicefile_labelindex)continue;
-      if(sd->volslice==1&&sd->slice_filetype==SLICE_NODE_CENTER&&vis_gslice_data==1)SHOW_gslice_data=1;
+      if(sd->slice3d==1&&sd->slice_filetype==SLICE_NODE_CENTER&&vis_gslice_data==1)SHOW_gslice_data=1;
       vsliceflag=1;
       break;
     }
@@ -644,7 +657,10 @@ void UpdateShow(void){
   if( plotstate==DYNAMIC_PLOTS &&
     ( showdeviceflag==1 || showhrrflag==1 || sliceflag==1 || vsliceflag==1 || partflag==1 || patchflag==1 ||
     shooter_flag==1|| smoke3dflag==1 || showtours==1 || showhvacflag == 1 || plot2dflag == 1 ||
-    (ReadZoneFile==1&&visZone==1&&visTimeZone==1)||showvolrender==1
+    (ReadZoneFile==1&&visZone==1&&visTimeZone==1)
+#ifdef pp_VOL_OLD
+      ||showvolrender==1
+#endif
     )
     )showtime=1;
   if(plotstate==DYNAMIC_PLOTS&&ReadIsoFile==1&&visAIso!=0&&isoflag==1)showtime2=1;
@@ -682,7 +698,11 @@ void UpdateShow(void){
     if(shooter_flag==1)showshooter=1;
   }
   if(showsmoke==1||showpatch==1||showslice==1||showvslice==1||showzone==1||showiso==1)RenderTime=1;
-  if(showtours==1||show3dsmoke==1||touring==1||showvolrender==1)RenderTime=1;
+  if(showtours==1||show3dsmoke==1||touring==1
+#ifdef pp_VOL_OLD
+    ||showvolrender==1
+#endif
+    )RenderTime=1;
   if(showhvacflag == 1)RenderTime = 1;
   if(showshooter==1)RenderTime=1;
   if(plotstate==STATIC_PLOTS&&nplot3dloaded>0&&plotn>0&&plotn<=numplot3dvars)showplot3d=1;
@@ -888,6 +908,7 @@ void SynchTimes(void){
 
   /* synchronize volume render times */
 
+#ifdef pp_VOL_OLD
     if(nvolrenderinfo>0){
       for(igrid=0;igrid<global_scase.meshescoll.nmeshes;igrid++){
         volrenderdata *vr;
@@ -901,6 +922,7 @@ void SynchTimes(void){
         vr->timeslist[n] = GetDataTimeFrame(global_times[n], vr->smokeslice->times_map, vr->times,vr->ntimes);
       }
     }
+#endif
     /* synchronize zone times */
 
     if(showzone==1){
@@ -928,7 +950,7 @@ int GetLoadvfileinfo(FILE *stream, char *filename){
       fprintf(stream, "//  %s\n", slicei->file);
       fprintf(stream, "LOADVSLICEM\n");
       fprintf(stream, " %s\n", slicei->label.longlabel);
-      if(slicei->volslice==1){
+      if(slicei->slice3d==1){
         fprintf(stream, " %i %f\n", 0, slicei->position_orig);
       }
       else{
@@ -958,7 +980,7 @@ int GetLoadfileinfo(FILE *stream, char *filename){
       fprintf(stream, "//  %s\n", slicei->file);
       fprintf(stream, "LOADSLICEM\n");
       fprintf(stream, " %s\n", slicei->label.longlabel);
-      if(slicei->volslice==1){
+      if(slicei->slice3d==1){
         fprintf(stream, " %i %f\n", 0, slicei->position_orig);
       }
       else{
@@ -1369,6 +1391,7 @@ void UpdateTimes(void){
     }
     PRINT_TIMER(iso_timer, "UpdateTimes: iso");
   }
+#ifdef pp_VOL_OLD
   if(nvolrenderinfo>0){
     for(i=0;i<global_scase.meshescoll.nmeshes;i++){
       volrenderdata *vr;
@@ -1381,6 +1404,7 @@ void UpdateTimes(void){
       MergeGlobalTimes(vr->times, vr->ntimes);
     }
   }
+#endif
   {
     smoke3ddata *smoke3di;
 
@@ -1461,6 +1485,7 @@ void UpdateTimes(void){
       if(nglobal_times > 0)NewMemory((void **)&sd->timeslist, nglobal_times * sizeof(int));
     }
   }
+#ifdef pp_VOL_OLD
   if(nvolrenderinfo>0){
     for(i=0;i<global_scase.meshescoll.nmeshes;i++){
       meshdata *meshi;
@@ -1474,6 +1499,7 @@ void UpdateTimes(void){
       if(nglobal_times>0)NewMemory((void **)&vr->timeslist,nglobal_times*sizeof(int));
     }
   }
+#endif
   {
     smoke3ddata *smoke3di;
 
@@ -1517,7 +1543,11 @@ void UpdateTimes(void){
   CheckMemory;
 
   if(current_script_command!=NULL&&
-    (current_script_command->command==SCRIPT_VOLSMOKERENDERALL||current_script_command->command==SCRIPT_ISORENDERALL)
+    (
+#ifdef pp_VOL_OLD
+      current_script_command->command==SCRIPT_VOLSMOKERENDERALL||
+#endif
+      current_script_command->command==SCRIPT_ISORENDERALL)
     ){
     if(current_script_command->first==1){
       current_script_command->first=0;
@@ -1808,6 +1838,7 @@ int GetPlotStateSub(int choice){
         if(smoke3di->loaded==0||smoke3di->display==0)continue;
         return DYNAMIC_PLOTS;
       }
+#ifdef pp_VOL_OLD
       if(nvolrenderinfo>0){
         for(i=0;i<global_scase.meshescoll.nmeshes;i++){
           meshdata *meshi;
@@ -1820,6 +1851,7 @@ int GetPlotStateSub(int choice){
           return DYNAMIC_PLOTS;
         }
       }
+#endif
       if(visShooter!=0&&shooter_active==1){
         return DYNAMIC_PLOTS;
       }
@@ -1902,7 +1934,12 @@ int ISearch(float *list, int nlist, float key, int guess){
 /* ------------------ ResetItimes0 ------------------------ */
 
 void ResetItimes0(void){
-  if(current_script_command==NULL||(current_script_command->command!=SCRIPT_VOLSMOKERENDERALL&&current_script_command->command!=SCRIPT_ISORENDERALL)){
+  if(current_script_command==NULL||
+    (
+#ifdef pp_VOL_OLD
+      current_script_command->command!=SCRIPT_VOLSMOKERENDERALL&&
+#endif
+      current_script_command->command!=SCRIPT_ISORENDERALL)){
     iglobal_times=first_frame_index;
   }
 }

@@ -255,6 +255,7 @@ int Set3DSliceShaders(void){
   return 1;
 }
 
+#ifdef pp_VOL_OLD
 /* ------------------ SetVolSmokeShaders ------------------------ */
 
 int SetVolSmokeShaders(){
@@ -471,6 +472,7 @@ int SetVolSmokeShaders(){
 
   return 1;
 }
+#endif
 
 /* ------------------ SetSmokeShaders ------------------------ */
 
@@ -619,6 +621,7 @@ int InitShaders(void){
       PRINTF("    3D smoke failed to load\n");
       err=1;
     }
+#ifdef pp_VOL_OLD
     if(SetVolSmokeShaders()==1){
       if(verbose_output==1)PRINTF("    volume smoke loaded\n");
     }
@@ -626,6 +629,7 @@ int InitShaders(void){
       PRINTF("    volume smoke failed to load\n");
       err=1;
     }
+#endif
     if(Set3DSliceShaders()==1){
       if(verbose_output==1)PRINTF("    3D slice loaded\n");
     }
