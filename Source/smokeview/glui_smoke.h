@@ -33,7 +33,9 @@
 #define SMOKE_RTHICK 8
 #endif
 #define SAVE_SETTINGS_SMOKE 9
+#ifdef pp_VOL_OLD
 #define VOL_SMOKE 13
+#endif
 #define VOL_NGRID 18
 #define SMOKE_OPTIONS 19
 #define TEMP_MIN 21

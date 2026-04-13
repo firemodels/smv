@@ -367,7 +367,9 @@ extern "C" void GLUIUpdateSmoke3dFlags(void){
   if(CHECKBOX_smokeGPU!=NULL)CHECKBOX_smokeGPU->set_int_val(usegpu);
 #endif
   if(SPINNER_smoke3d_frame_inc!=NULL)SPINNER_smoke3d_frame_inc->set_int_val(smoke3d_frame_inc);
+#ifdef pp_VOL_OLD
   GLUISmoke3dCB(VOL_SMOKE);
+#endif
   GLUTPOSTREDISPLAY;
 }
 
@@ -505,8 +507,10 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   TOGGLE_ROLLOUT(smokeprocinfo, nsmokeprocinfo, ROLLOUT_smoke_settings, SMOKE_SETTINGS, glui_3dsmoke);
 
   PANEL_settings1 = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoke_settings, "");
+#ifdef pp_VOL_OLD
 #ifdef pp_GPU
   CHECKBOX_smokeGPU=glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1,"Use GPU",&usegpu,VOL_SMOKE,GLUISmoke3dCB);
+#endif
 #endif
   glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "max blending", &hrrpuv_max_blending);
   CHECKBOX_smoke_flip    = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "flip background", &background_flip,BACKGROUND_FLIP, GLUISmoke3dCB);
@@ -852,10 +856,9 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     SPINNER_smokeloadframe = glui_3dsmoke->add_spinner_to_panel(PANEL_loadframe, "smoke frame", GLUI_SPINNER_INT, &smoke_framenumber);
     SPINNER_timeloadframe = glui_3dsmoke->add_spinner_to_panel(PANEL_loadframe, "time", GLUI_SPINNER_FLOAT, &time_frameval);
   }
-#endif
-
 #ifdef pp_GPU
   GLUISmoke3dCB(VOL_SMOKE);
+#endif
 #endif
   GLUISmoke3dCB(SMOKE_OPTIONS);
   GLUISmoke3dCB(FIRECOLORMAP_TYPE);
