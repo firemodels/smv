@@ -502,12 +502,10 @@ int GetCellIndex(float *xyz){
   sd = sceneinfo;
   int *ncells = sd->ncells;
   float *scene_min = sd->xyz_bar0;
-  float *scene_max = sd->xyz_bar;
   float *cell_dxyz = sd->cell_dxyz;
   int ni  = ncells[0];
   int nj  = ncells[1];
   int nij = ni * nj;
-  int nijk = ncells[0] * ncells[1] * ncells[2];
   
   int kcell = (xyz[2] - scene_min[2]) / cell_dxyz[2];
   int jcell = (xyz[1] - scene_min[1]) / cell_dxyz[1];
