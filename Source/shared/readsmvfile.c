@@ -960,7 +960,9 @@ void InitMesh(meshdata *meshi){
   meshi->s_offset[0] = -1;
   meshi->s_offset[1] = -1;
   meshi->s_offset[2] = -1;
+#ifdef pp_VOL_OLD
   meshi->super = NULL;
+#endif
   meshi->update_smoke3dcolors = 0;
   meshi->iplotx_all = NULL;
   meshi->iploty_all = NULL;

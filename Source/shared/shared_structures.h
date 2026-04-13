@@ -303,7 +303,9 @@ typedef struct _meshdata {
   float dplane_min[4], dplane_max[4];
 
   struct _meshdata *skip_nabors[6], *nabors[6];
+#ifdef pp_VOL_OLD
   struct _supermeshdata *super;
+#endif
 
   int *ptype;
   unsigned int *zipoffset, *zipsize;
