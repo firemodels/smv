@@ -372,10 +372,9 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   float *xplt, *yplt, *zplt;
   float *znode_offset, z_offset[4];
 
-  int nx, ny, nz;
   int xyzindex1[6], xyzindex2[6], *xyzindex, node;
   float xnode[4], znode[4], ynode[4];
-  int iterm, jterm, kterm, nxy;
+  int iterm, jterm, kterm;
   int n11, n12, n22, n21;
   int iii, jjj, kkk;
   int slice_end, slice_beg;
@@ -453,10 +452,12 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
     ks2 = CLAMP(ks2, 1, smoke3di->ks2);
   }
 
-  nx = smoke3di->is2+1-smoke3di->is1;
-  ny = js2+1-js1;
-  nz = ks2+1-ks1;
-  nxy = nx*ny;
+  int nx = smoke3di->is2+1-smoke3di->is1;
+  int ny = js2+1-js1;
+#ifdef pp_VOL_OLD
+  int nz = ks2+1-ks1;
+#endif
+  int nxy = nx*ny;
 
   ssmokedir = meshi->smokedir;
 
@@ -1394,12 +1395,11 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
 
   float *xplt, *yplt, *zplt;
   unsigned char *smokealpha_ptr, *smokecolor_ptr;
-  int nx, ny, nz;
   unsigned char *alphaf_out, *alphaf_ptr;
   unsigned char *colorptr;
   int xyzindex1[6], xyzindex2[6], *xyzindex, node;
   float xnode[4], znode[4], ynode[4];
-  int iterm, jterm, kterm, nxy;
+  int iterm, jterm, kterm;
   unsigned int n11, n12, n22, n21;
   int iii, jjj, kkk;
   int slice_end, slice_beg;
@@ -1462,10 +1462,12 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
   if(smoke3d_jmax > 0 && js2 > smoke3d_jmax)js2 = smoke3d_jmax;
   if(smoke3d_kmax > 0 && ks2 > smoke3d_kmax)ks2 = smoke3d_kmax;
 
-  nx = smoke3di->is2+1-smoke3di->is1;
-  ny = js2+1-js1;
-  nz = ks2+1-ks1;
-  nxy = nx*ny;
+  int nx = smoke3di->is2+1-smoke3di->is1;
+  int ny = js2+1-js1;
+#ifdef pp_VOL_OLD
+  int nz = ks2+1-ks1;
+#endif
+  int nxy = nx*ny;
 
   ssmokedir = meshi->smokedir;
 
