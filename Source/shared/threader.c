@@ -52,6 +52,7 @@ threaderdata *THREADinit(int *nthreads_ptr, int *use_threads_ptr, void *(*run_ar
   thi->n_threads       = nthreads_local;
   thi->use_threads     = use_threads_local;
   thi->run             = run_arg;
+  thi->has_joined = 0;
 #ifdef pp_THREAD
   NewMemory((void **)&thi->thread_ids, MAX_THREADS * sizeof(pthread_t));
   pthread_mutex_init(&thi->mutex, NULL);
@@ -79,9 +80,10 @@ void THREADcontrol(threaderdata *thi, int var){
     if(thi->use_threads == 1)pthread_mutex_unlock(&thi->mutex);
     break;
   case THREAD_JOIN:
-    if(thi->use_threads == 1){
+    if(thi->has_joined==0&&thi->use_threads == 1){
       int i;
 
+      thi->has_joined = 1;
       for(i = 0;i < thi->n_threads;i++){
         pthread_join(thi->thread_ids[i], NULL);
       }
