@@ -1034,8 +1034,10 @@ void InitOpenGL(int option){
         if(patchi->loaded==1)fprintf(fileout," %i\n",patchi->seq_id);
      }
    }
+#ifdef pp_COMPRESS
    fprintf(fileout,"COMPRESSAUTO\n");
    fprintf(fileout," %i \n",compress_autoloaded);
+#endif
  }
 
  /* ------------------ GetStartupPart ------------------------ */

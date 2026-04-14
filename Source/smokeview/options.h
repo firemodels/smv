@@ -21,6 +21,8 @@
 //#define pp_READ_KEYBOARD      // read keyboard in the command shell so the visualization can be paused 
 //#define pp_VOL_OLD           // original volume rendering code
 #define pp_GETMESH_TEST
+//#define pp_COMPRESS           // isolate smokezip compression code for later removal
+
 //*** options: windows
 
 #ifdef _WIN32
