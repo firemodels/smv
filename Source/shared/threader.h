@@ -22,6 +22,7 @@ enum threaderparms {
 typedef struct _threaderdata{
   int n_threads,   *n_threads_ptr;
   int use_threads, *use_threads_ptr;
+  int has_joined;
 #ifdef pp_THREAD
   pthread_t *thread_ids;
   pthread_mutex_t mutex;
