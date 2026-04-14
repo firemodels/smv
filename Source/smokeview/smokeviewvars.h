@@ -1626,7 +1626,6 @@ SVEXTERN float SVDECL(tload_begin2, 0.0), SVDECL(tload_end2, 0.0);
 SVEXTERN int SVDECL(use_tload_begin2, 0), SVDECL(use_tload_end2, 0);
 SVEXTERN int SVDECL(use_tload_skip, 0);
 
-SVEXTERN int SVDECL(tload_zipskip, 0), SVDECL(tload_zipstep, 1);
 SVEXTERN int SVDECL(tload_skip, 0), SVDECL(tload_step, 1);
 
 SVEXTERN float SVDECL(frameinterval,1);

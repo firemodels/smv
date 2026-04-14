@@ -4968,17 +4968,6 @@ int ReadIni2(const char *inifile, int localfile){
       ONEORZERO(output_slicedata);
       continue;
     }
-    if(MatchINI(buffer, "SMOKE3DZIPSTEP") == 1 ||
-       MatchINI(buffer, "SLICEZIPSTEP")   == 1 ||
-       MatchINI(buffer, "ISOZIPSTEP")     == 1 ||
-       MatchINI(buffer, "BOUNDZIPSTEP")   == 1 ||
-       MatchINI(buffer, "ZIPSTEP")        == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &tload_zipstep);
-      tload_zipstep = MAX(tload_zipstep, 1);
-      tload_zipskip = tload_zipstep - 1;
-      continue;
-    }
     if(MatchINI(buffer, "LOADINC") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &load_incremental);
@@ -8034,8 +8023,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i \n", output_slicedata);
   fprintf(fileout, "USER_ROTATE\n");
   fprintf(fileout, " %i %i %f %f %f\n", glui_rotation_index, show_rotation_center, xcenCUSTOM, ycenCUSTOM, zcenCUSTOM);
-  fprintf(fileout, "ZIPSTEP\n");
-  fprintf(fileout, " %i\n", tload_zipstep);
 
   fprintf(fileout,"\n *** VIEW PARAMETERS ***\n\n");
 

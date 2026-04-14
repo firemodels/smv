@@ -2687,7 +2687,6 @@ GLUI_Rollout *ROLLOUT_iso_bounds;
 GLUI_Rollout *ROLLOUT_iso_color;
 GLUI_Rollout *ROLLOUT_script = NULL;
 GLUI_Rollout *ROLLOUT_config = NULL;
-GLUI_Rollout *ROLLOUT_compress=NULL;
 GLUI_Rollout *ROLLOUT_plot3d=NULL,*ROLLOUT_part=NULL,*ROLLOUT_slice=NULL,*ROLLOUT_bound=NULL,*ROLLOUT_iso=NULL;
 GLUI_Rollout *ROLLOUT_hvacduct=NULL, *ROLLOUT_hvacnode=NULL;
 GLUI_Rollout *ROLLOUT_iso_colors = NULL;
@@ -6941,7 +6940,6 @@ extern "C" void GLUISliceBoundCB(int var){
     }
     break;
   case FRAMELOADING:
-    tload_zipstep = tload_zipskip + 1;
     if(use_tload_skip==0){
       tload_step = 1;
     }
