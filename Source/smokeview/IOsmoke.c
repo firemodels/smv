@@ -1342,13 +1342,17 @@ void InitAlphas(unsigned char *smokealphanew, unsigned char *firealphanew, float
 }
 
 /* ------------------ UpdateSmokeAlphas ------------------------ */
-
+#ifdef pp_VOL_OLD
+#define NDISTS 6
+#else
+#define NDISTS 3
+#endif
 void UpdateSmokeAlphas(void){
   int i;
 
   for(i = 0; i<global_scase.smoke3dcoll.nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
-    float dists[6];
+    float dists[NDISTS];
     meshdata *smoke_mesh;
     int j;
     float dx;
@@ -1365,7 +1369,7 @@ void UpdateSmokeAlphas(void){
     dists[ALPHA_YZ] = smoke_mesh->dyzDdx*dx;
     dists[ALPHA_XZ] = smoke_mesh->dxzDdx*dx;
 #endif
-    for(j=0;j<6;j++){
+    for(j=0;j<NDISTS;j++){
       float maxval;
 
 #ifndef pp_SPEEDUP
