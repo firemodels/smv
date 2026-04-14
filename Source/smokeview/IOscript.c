@@ -2773,15 +2773,8 @@ void ScriptLoadBoundary(scriptdata *scripti, int meshnum){
     patchi = global_scase.patchinfo + i;
     if(meshnum == -1 || patchi->blocknumber + 1 == meshnum){
       if(scripti->cval != NULL && strcmp(patchi->label.longlabel, scripti->cval) == 0){
-#ifdef pp_COMPRESS
-        THREADcontrol(compress_threads, THREAD_LOCK);
         ReadBoundary(i, LOAD, &errorcode);
         count++;
-        THREADcontrol(compress_threads, THREAD_UNLOCK);
-#else
-        ReadBoundary(i, LOAD, &errorcode);
-        count++;
-#endif
         if(meshnum != -1)break;
       }
     }

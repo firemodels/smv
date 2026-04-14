@@ -719,11 +719,6 @@ int main(int argc, char **argv){
 
   InitTextureDir();
   InitScriptErrorFiles();
-#ifdef pp_COMPRESS
-  char *smv_bindir = GetSmvRootDir();
-  smokezippath= GetSmokeZipPath(smv_bindir);
-  FREEMEMORY(smv_bindir);
-#endif
   InitStartupDirs();
   DisplayVersionInfo("Smokeview ", &opts);
   SetupGlut(n_args,utf8_args);

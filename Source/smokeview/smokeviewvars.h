@@ -53,12 +53,6 @@ SVEXTERN threaderdata SVDECL(*makeiblank_threads,       NULL);
 SVEXTERN int SVDECL(n_checkfiles_threads, 1), SVDECL(use_checkfiles_threads, 1);
 SVEXTERN threaderdata SVDECL(*checkfiles_threads,       NULL);
 
-#ifdef pp_COMPRESS
-//*** compress
-SVEXTERN int SVDECL(n_compress_threads, 1), SVDECL(use_compress_threads, 1);
-SVEXTERN threaderdata SVDECL(*compress_threads,        NULL);
-#endif
-
 //*** ffmpeg
 SVEXTERN int SVDECL(n_ffmpeg_threads, 1), SVDECL(use_ffmpeg_threads, 1);
 SVEXTERN threaderdata SVDECL(*ffmpeg_threads,         NULL);
@@ -1880,10 +1874,6 @@ SVEXTERN FILE SVDECL(*scriptoutstream,NULL);
 SVEXTERN FILE SVDECL(*LOG_FILENAME,NULL);
 SVEXTERN char SVDECL(*flushfile,NULL);
 SVEXTERN int SVDECL(csv_loaded, 0), SVDECL(devices_setup,0),SVDECL(update_csv_load,0);
-#ifdef pp_COMPRESS
-SVEXTERN char SVDECL(*smokezippath, NULL);
-SVEXTERN int SVDECL(compress_autoloaded,0);
-#endif
 SVEXTERN int SVDECL(*smokeviewpath, NULL), SVDECL(*fdsprog, NULL);
 SVEXTERN char SVDECL(*INI_fds_filein,NULL);
 SVEXTERN int SVDECL(event_file_exists,0);

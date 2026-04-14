@@ -248,32 +248,6 @@ int HaveProg(char *prog){
   return 0;
 }
 
-#ifdef pp_COMPRESS
-/* ------------------ GetSmokeZipPath ------------------------ */
-
-char *GetSmokeZipPath(char *progdir){
-  char *zip_path;
-
-  if(progdir!=NULL){
-    NewMemory((void **)&zip_path,strlen(progdir)+20);
-    strcpy(zip_path,progdir);
-  }
-  else{
-    NewMemory((void **)&zip_path,2+20);
-    strcpy(zip_path,".");
-    strcat(zip_path,dirseparator);
-  }
-
-  strcat(zip_path,"smokezip");
-#ifdef _WIN32
-  strcat(zip_path,".exe");
-#endif
-  if(FILE_EXISTS(zip_path)==YES)return zip_path;
-  FREEMEMORY(zip_path);
-  return NULL;
-}
-#endif
-
 /* ------------------ SetDir ------------------------ */
 
 char *SetDir(char *argdir){
