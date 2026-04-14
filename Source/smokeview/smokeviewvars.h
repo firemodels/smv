@@ -53,9 +53,11 @@ SVEXTERN threaderdata SVDECL(*makeiblank_threads,       NULL);
 SVEXTERN int SVDECL(n_checkfiles_threads, 1), SVDECL(use_checkfiles_threads, 1);
 SVEXTERN threaderdata SVDECL(*checkfiles_threads,       NULL);
 
+#ifdef pp_COMPRESS
 //*** compress
 SVEXTERN int SVDECL(n_compress_threads, 1), SVDECL(use_compress_threads, 1);
 SVEXTERN threaderdata SVDECL(*compress_threads,        NULL);
+#endif
 
 //*** ffmpeg
 SVEXTERN int SVDECL(n_ffmpeg_threads, 1), SVDECL(use_ffmpeg_threads, 1);
@@ -83,7 +85,12 @@ SVEXTERN int SVDECL(n_playmovie_threads, 1), SVDECL(use_playmovie_threads, 1);
 SVEXTERN threaderdata SVDECL(*playmovie_threads,       NULL);
 
 //*** merge smoke
-SVEXTERN int SVDECL(n_mergesmoke3d_threads, 4), SVDECL(use_mergesmoke3d_threads, 1);
+SVEXTERN int SVDECL(n_mergesmoke3d_threads, 4);
+#ifdef pp_OSX
+SVEXTERN int SVDECL(use_mergesmoke3d_threads, 0);
+#else
+SVEXTERN int SVDECL(use_mergesmoke3d_threads, 1);
+#endif
 SVEXTERN threaderdata SVDECL(*mergesmoke3d_threads, NULL);
 
 //*** read test
@@ -96,7 +103,12 @@ SVEXTERN unsigned char abort_char;
 #endif
 
 //*** uncompress smoke
-SVEXTERN int SVDECL(n_uncompresssmoke3d_threads, 4), SVDECL(use_uncompresssmoke3d_threads, 1);
+SVEXTERN int SVDECL(n_uncompresssmoke3d_threads, 4);
+#ifdef pp_OSX
+SVEXTERN int SVDECL(use_uncompresssmoke3d_threads, 0);
+#else
+SVEXTERN int SVDECL(use_uncompresssmoke3d_threads, 1);
+#endif
 SVEXTERN threaderdata SVDECL(*uncompresssmoke3d_threads, NULL);
 
 //*** readallgeom
@@ -1868,12 +1880,15 @@ SVEXTERN FILE SVDECL(*scriptoutstream,NULL);
 SVEXTERN FILE SVDECL(*LOG_FILENAME,NULL);
 SVEXTERN char SVDECL(*flushfile,NULL);
 SVEXTERN int SVDECL(csv_loaded, 0), SVDECL(devices_setup,0),SVDECL(update_csv_load,0);
-SVEXTERN char SVDECL(*smokezippath,NULL), SVDECL(*smokeviewpath,NULL), SVDECL(*fdsprog, NULL);
+#ifdef pp_COMPRESS
+SVEXTERN char SVDECL(*smokezippath, NULL);
+SVEXTERN int SVDECL(compress_autoloaded,0);
+#endif
+SVEXTERN int SVDECL(*smokeviewpath, NULL), SVDECL(*fdsprog, NULL);
 SVEXTERN char SVDECL(*INI_fds_filein,NULL);
 SVEXTERN int SVDECL(event_file_exists,0);
 SVEXTERN char SVDECL(*zonelonglabels,NULL), SVDECL(*zoneshortlabels,NULL), SVDECL(*zoneunits,NULL);
 SVEXTERN int SVDECL(overwrite_all,0),SVDECL(erase_all,0);
-SVEXTERN int SVDECL(compress_autoloaded,0);
 SVEXTERN tridata SVDECL(**opaque_triangles,NULL),SVDECL(**transparent_triangles,NULL),SVDECL(**alltriangles,NULL);
 SVEXTERN int SVDECL(nopaque_triangles,0),SVDECL(ntransparent_triangles,0),SVDECL(nalltriangles,0);
 #ifdef _WIN32

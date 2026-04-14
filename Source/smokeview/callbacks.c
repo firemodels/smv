@@ -2879,6 +2879,7 @@ void Keyboard(unsigned char key, int flag){
         }
         GLUIUpdateClip();
       }
+#ifdef pp_COMPRESS
       if(keystate==GLUT_ACTIVE_ALT){
         DialogMenu(DIALOG_SMOKEZIP); // compress dialog
       }
@@ -2887,6 +2888,11 @@ void Keyboard(unsigned char key, int flag){
         plotstate = GetPlotState(STATIC_PLOTS);
         updatemenu = 1;
       }
+#else
+    visz_all = 1 - visz_all;
+    plotstate = GetPlotState(STATIC_PLOTS);
+    updatemenu = 1;
+#endif
       if(visx_all==1||visy_all==1||visz_all==1)update_slice2device = 1;
       break;
     case '0':

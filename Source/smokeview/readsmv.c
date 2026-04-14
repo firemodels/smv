@@ -2229,6 +2229,7 @@ void UpdateEvents(void){
   }
   fclose(stream);
 }
+#ifdef pp_COMPRESS
 /* ------------------ Compress ------------------------ */
 
 void *Compress(void *arg){
@@ -2265,6 +2266,7 @@ void *Compress(void *arg){
   PRINTF("Compression completed\n");
   THREAD_EXIT(compress_threads);
 }
+#endif
 
 #ifdef pp_READ_KEYBOARD
 
@@ -4411,11 +4413,13 @@ int ReadIni2(const char *inifile, int localfile){
       sscanf(buffer, "%i", &trainer_mode);
       continue;
     }
+#ifdef pp_COMPRESS
     if(MatchINI(buffer, "COMPRESSAUTO") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &compress_autoloaded);
       continue;
     }
+#endif
     if(MatchINI(buffer, "PLOT3DAUTO") == 1){
       int n3dsmokes = 0;
       int seq_id;
