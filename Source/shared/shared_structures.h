@@ -224,8 +224,8 @@ typedef struct _meshdata {
   float boxmin_fds[3], boxmiddle_fds[3], boxmax_fds[3], boxeps_fds[3];
   float boxmin_smv[3], boxmiddle_smv[3], boxmax_smv[3], boxeps_smv[3];
   float dbox_fds[3], dcell_smv, dcell3_smv[3];
-  int drawsides[7];
 #ifdef pp_VOL_OLD
+  int drawsides[7];
   int extsides[7];   // 1 if on exterior side of a supermesh, 0 otherwise
 #endif
   int is_extface[6]; // 1 if adjacent to exterior, 0 if adjacent to interior, -1 if unknown
