@@ -1710,9 +1710,11 @@ void UpdateMeshCoords(void){
     meshi->dxDdx  = 1.0;
     meshi->dyDdx  = dy/dx;
     meshi->dzDdx  = dz/dx;
+#ifdef pp_VOL_OLD
     meshi->dxyDdx = dy/sqrt(dx*dx+dy*dy);
     meshi->dxzDdx = dz/sqrt(dx*dx+dz*dz);
     meshi->dyzDdx = (dy*dz/dx)/sqrt(dy*dy+dz*dz);
+#endif
 
     meshi->smoke_dist[ALPHA_X]  = dx;
     meshi->smoke_dist[ALPHA_Y]  = dy;

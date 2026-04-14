@@ -1001,9 +1001,11 @@ void InitMesh(meshdata *meshi){
   meshi->dxDdx  = 1.0;
   meshi->dyDdx  = 1.0;
   meshi->dzDdx  = 1.0;
+#ifdef pp_VOL_OLD
   meshi->dxyDdx = 1.0;
   meshi->dxzDdx = 1.0;
   meshi->dyzDdx = 1.0;
+#endif
   meshi->label = NULL;
   meshi->maxtimes_boundary = 0;
   meshi->slicedir = YDIR;

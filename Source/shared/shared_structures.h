@@ -299,8 +299,10 @@ typedef struct _meshdata {
   int *iso_timeslist;
   int iso_itime;
   int smokedir,smokedir_old;
-  float dxDdx, dyDdx, dzDdx, dxyDdx, dxzDdx, dyzDdx, dxyz_fds[3];
+  float dxDdx, dyDdx, dzDdx;
+  float dxyz_fds[3];
 #ifdef pp_VOL_OLD
+  float dxyDdx, dxzDdx, dyzDdx;
   float smoke_dist[6];
 #else
   float smoke_dist[3];
