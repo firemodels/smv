@@ -3098,6 +3098,7 @@ int ReadSMV(bufferstreamdata *stream) {
     use_readallgeom_threads       = 0;
     use_isosurface_threads        = 0;
     use_meshnabors_threads        = 0;
+    use_triangles_threads         = 0;
 #ifdef pp_SPEEDUP
     use_makeiblank_threads        = 0;
     use_mergesmoke3d_threads      = 0;
