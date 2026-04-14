@@ -2316,7 +2316,6 @@ void DrawZoneFireData(void){
       }
     }
   }
-  if(use_transparency_data==1)TransparentOff();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
 }
 
@@ -2337,7 +2336,6 @@ void DrawZoneRoomData(void){
   if(zone_times[0]>GetTime())return;
 
   if(cullfaces==1)glDisable(GL_CULL_FACE);
-  if(use_transparency_data==1)TransparentOn();
 
   izonetubase = izonetu + izone*global_scase.nrooms;
   izonetlbase = izonetl + izone*global_scase.nrooms;
@@ -2449,6 +2447,5 @@ void DrawZoneRoomData(void){
   }
 #endif
 
-  if(use_transparency_data==1)TransparentOff();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
 }
