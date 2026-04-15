@@ -415,11 +415,10 @@ octtreedata *InitOctTree(unsigned char *vals, int *nijk, unsigned char level, in
 void MakeSubOctTrees(octtreedata *oi, unsigned char level, unsigned char *vals, int *nijk){
   int i, j, k;
   int ijkmin[3], ijkmax[3];
-  int nx, nxy;
   unsigned char submask[8] = {1, 2, 4, 8,16,32,64,128};
 
-  nx = nijk[0];
-  nxy = nijk[0] * nijk[1];
+//  nx = nijk[0];
+//  nxy = nijk[0] * nijk[1];
 
   if(oi->bottom==1)return;
   if(ijkmin[0] == ijkmax[0] && ijkmin[1] == ijkmax[1] && ijkmin[2] == ijkmax[2])return;
@@ -469,8 +468,7 @@ void MakeSubOctTrees(octtreedata *oi, unsigned char level, unsigned char *vals, 
 
 /* ------------------ OctTreeCompress ------------------------ */
 
-void OctTreeCompress(char *vals, int *nijk, unsigned char level){
-  octtreedata *rootnode;
+octtreedata *OctTreeCompress(unsigned char *vals, int *nijk, unsigned char level){
   int ijkmin[3], ijkmax[3];
 
   ijkmin[0] = 0;
@@ -480,5 +478,5 @@ void OctTreeCompress(char *vals, int *nijk, unsigned char level){
   ijkmax[1] = nijk[1] - 1;
   ijkmax[2] = nijk[2] - 1;
 
-  rootnode = InitOctTree(vals, nijk, level, ijkmin, ijkmax);
+  return InitOctTree(vals, nijk, level, ijkmin, ijkmax);
 }
