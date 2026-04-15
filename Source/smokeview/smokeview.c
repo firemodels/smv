@@ -199,6 +199,7 @@ void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int ski
     fprintf(script_stream," %i %i\n",skipframe,startframe);
     fprintf(script_stream," %s\n",prefix);
     runscript=1;
+    serial_override = 1;
     fclose(script_stream);
   }
 }

@@ -679,14 +679,13 @@ FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE
 #ifdef pp_THREAD
   else{
     threaderdata *read_threads;
-    int use_read_threads, i;
+    int use_read_threads=1, serial_override = 0;
 
-    use_read_threads = 1;
-    read_threads = THREADinit(&nthreads, &use_read_threads, fread_mt);
+    read_threads = THREADinit(&nthreads, &use_read_threads, serial_override, fread_mt);
     THREADruni(read_threads, (unsigned char *)mtfileinfo, sizeof(mtfiledata));
     THREADcontrol(read_threads, THREAD_JOIN);
     chars_read = 0;
-    for(i = 0;i < nthreads;i++){
+    for(int i = 0;i < nthreads;i++){
       chars_read += mtfileinfo[i].chars_read;
     }
   }

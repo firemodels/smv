@@ -2762,6 +2762,7 @@ void ScriptMenu(int value){
       use_iso_threads = use_iso_threads_save;
       current_script_command=NULL;
       runscript=0;
+      serial_override = 0;
       first_frame_index=0;
       script_startframe=-1;
       script_skipframe=-1;
@@ -4042,9 +4043,7 @@ void LoadAllPartFilesMT(int partnum){
   int i;
 
   INIT_PRINT_TIMER(part_load_timer);
-  if(partload_threads == NULL){
-    partload_threads = THREADinit(&n_partload_threads, &use_partload_threads, MtLoadAllPartFiles);
-  }
+  partload_threads = THREADinit(&n_partload_threads, &use_partload_threads, serial_override, MtLoadAllPartFiles);
   int partnuminfo[1];
   partnuminfo[0] = partnum;
   THREADruni(partload_threads, (unsigned char *)partnuminfo, 0);

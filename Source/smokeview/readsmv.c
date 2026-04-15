@@ -734,16 +734,12 @@ void UpdateBoundInfo(void){
   PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
 
   GetGlobalSliceBoundsReduced();
-  if(slicebound_threads == NULL){
-    slicebound_threads = THREADinit(&n_slicebound_threads, &use_slicebound_threads, GetGlobalSliceBoundsFull);
-  }
+  slicebound_threads = THREADinit(&n_slicebound_threads, &use_slicebound_threads, serial_override, GetGlobalSliceBoundsFull);
   THREADrun(slicebound_threads);
   PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
 
   GetGlobalPatchBoundsReduced();
-  if(patchbound_threads == NULL){
-    patchbound_threads = THREADinit(&n_patchbound_threads, &use_patchbound_threads, GetGlobalPatchBoundsFull);
-  }
+  patchbound_threads = THREADinit(&n_patchbound_threads, &use_patchbound_threads, serial_override, GetGlobalPatchBoundsFull);
   THREADrun(patchbound_threads);
   PRINT_TIMER(bound_timer, "GetGlobalPatchBounds");
 
@@ -2665,9 +2661,7 @@ int ReadSMV_Configure(){
     }
   }
 
-  if(checkfiles_threads != NULL){
-    checkfiles_threads = THREADinit(&n_checkfiles_threads, &use_checkfiles_threads, CheckFiles);
-  }
+  checkfiles_threads = THREADinit(&n_checkfiles_threads, &use_checkfiles_threads, serial_override, CheckFiles);
   THREADrun(checkfiles_threads);
   PRINT_TIMER(timer_readsmv, "CheckFiles");
   CheckMemory;
@@ -2741,9 +2735,7 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
 
   SetupReadAllGeom();
-  if(readallgeom_threads == NULL){
-    readallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, ReadAllGeom);
-  }
+  readallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, serial_override, ReadAllGeom);
   THREADrun(readallgeom_threads);
   THREADcontrol(readallgeom_threads, THREAD_JOIN);
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
@@ -2814,9 +2806,7 @@ int ReadSMV_Configure(){
   global_scase.slicecoll.nmultisliceinfo       = 0;
   global_scase.slicecoll.nmultivsliceinfo      = 0;
   global_scase.slicecoll.nvsliceinfo           = 0;
-  if(sliceparms_threads == NULL){
-    sliceparms_threads = THREADinit(&n_sliceparms_threads, &use_sliceparms_threads, UpdateVSlices);
-  }
+  sliceparms_threads = THREADinit(&n_sliceparms_threads, &use_sliceparms_threads, serial_override, UpdateVSlices);
   THREADruni(sliceparms_threads, (unsigned char *)&sliceparminfo, 0);
   THREADcontrol(sliceparms_threads, THREAD_JOIN);
   PRINT_TIMER(timer_readsmv, "UpdateVSlices");
@@ -2860,21 +2850,15 @@ int ReadSMV_Configure(){
   MakeIBlankCarve();
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
 
-  if(ffmpeg_threads == NULL){
-    ffmpeg_threads = THREADinit(&n_ffmpeg_threads, &use_ffmpeg_threads, SetupFF);
-  }
+  ffmpeg_threads = THREADinit(&n_ffmpeg_threads, &use_ffmpeg_threads, serial_override, SetupFF);
   THREADrun(ffmpeg_threads);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
 
-  if(sorttags_threads == NULL){
-    if(runscript==1)use_sorttags_threads = 0;
-    sorttags_threads = THREADinit(&n_sorttags_threads, &use_sorttags_threads, SortAllPartTags);
-  }
+  if(runscript==1)use_sorttags_threads = 0;
+  sorttags_threads = THREADinit(&n_sorttags_threads, &use_sorttags_threads, serial_override, SortAllPartTags);
 
-  if(isosurface_threads == NULL){
-    isosurface_threads = THREADinit(&n_isosurface_threads, &use_isosurface_threads, SetupAllIsosurfaces);
-  }
-  THREADrun(isosurface_threads);
+  isosurface_threads = THREADinit(&n_isosurface_threads, &use_isosurface_threads, runscript, SetupAllIsosurfaces);
+   THREADrun(isosurface_threads);
   THREADcontrol(isosurface_threads, THREAD_JOIN);
   PRINT_TIMER(timer_readsmv, "SetupAllIsosurfaces");
 
@@ -2882,15 +2866,12 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
 
 #ifdef pp_READ_KEYBOARD
-  readkeyboard_threads = THREADinit(&n_readkeyboard_threads, &use_readkeyboard_threads, ReadKeyboard);
+  readkeyboard_threads = THREADinit(&n_readkeyboard_threads, &use_readkeyboard_threads, serial_override, ReadKeyboard);
   update_readkeyboard = 1;
 #endif
 #ifdef pp_SPEEDUP
-  makeiblank_threads = THREADinit(&n_makeiblank_threads, &use_makeiblank_threads, MakeIBlank);
+  makeiblank_threads = THREADinit(&n_makeiblank_threads, &use_makeiblank_threads, serial_override, MakeIBlank);
   THREADrun(makeiblank_threads);
-
-  mergesmoke3d_threads      = THREADinit(&n_mergesmoke3d_threads,      &use_mergesmoke3d_threads,      MergeSmoke3DAll);
-  uncompresssmoke3d_threads = THREADinit(&n_uncompresssmoke3d_threads, &use_uncompresssmoke3d_threads, UncompressSmoke3DAll);
 #else
   MakeIBlank();
 #endif
@@ -2934,9 +2915,7 @@ int ReadSMV_Configure(){
   UpdateBoundaryTypes();
   PRINT_TIMER(timer_readsmv, "UpdateBoundaryTypes");
 
-  if(meshnabors_threads == NULL){
-    meshnabors_threads = THREADinit(&n_meshnabors_threads, &use_meshnabors_threads, InitNabors);
-  }
+  meshnabors_threads = THREADinit(&n_meshnabors_threads, &use_meshnabors_threads, serial_override, InitNabors);
   THREADrun(meshnabors_threads);
 
   UpdateTerrain(1); // xxslow
@@ -2998,9 +2977,7 @@ int ReadSMV_Configure(){
   if(large_case==0){
     SetupReadAllGeom();
 
-    if(classifyallgeom_threads == NULL){
-      classifyallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, ClassifyAllGeom);
-    }
+    classifyallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, serial_override, ClassifyAllGeom);
     THREADrun(classifyallgeom_threads);
   }
   PRINT_TIMER(timer_readsmv, "ClassifyGeom");
@@ -3091,20 +3068,6 @@ int ReadSMV(bufferstreamdata *stream) {
   // currenly initialised in InitVars for a few compatability reasons. This
   // would be a better location when those compatbilities are resolved.
   // InitScase(&global_scase);
-  //** initialize multi-threading
-  if(runscript == 1){
-    use_checkfiles_threads        = 0;
-    use_ffmpeg_threads            = 0;
-    use_readallgeom_threads       = 0;
-    use_isosurface_threads        = 0;
-    use_meshnabors_threads        = 0;
-    use_triangles_threads         = 0;
-#ifdef pp_SPEEDUP
-    use_makeiblank_threads        = 0;
-    use_mergesmoke3d_threads      = 0;
-    use_uncompresssmoke3d_threads = 0;
-#endif
-  }
   ReadSMV_Init(&global_scase);
   ReadSMV_Parse(&global_scase, stream);
   ReadSMV_Configure();

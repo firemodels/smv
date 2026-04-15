@@ -484,6 +484,7 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
       from_commandline = 1;
       use_iso_threads=0;
       runscript = 1;
+      serial_override = 1;
     }
     if(args->runhtmlscript){
       from_commandline = 1;
@@ -542,6 +543,7 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
       if(sfd != NULL)default_script = sfd;
       if(!is_htmlscript){
         runscript = 1;
+        serial_override = 1;
       }
     }
     if(args->noexit){
