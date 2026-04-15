@@ -231,6 +231,7 @@ int UnCompressVolSliceFrame(unsigned char *compressed_data_in,
   return countout;
 }
 
+#ifdef pp_COMPRESS
 #ifndef IJKMAP
 #define IJKMAP(i,j,k,nx,nxy) ((i)+(j)*nx+(k)*nxy)
 #endif
@@ -480,3 +481,4 @@ octtreedata *OctTreeCompress(unsigned char *vals, int *nijk, unsigned char level
 
   return InitOctTree(vals, nijk, level, ijkmin, ijkmax);
 }
+#endif
