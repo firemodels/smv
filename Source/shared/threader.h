@@ -34,7 +34,7 @@ EXTERNCPP void THREADjoin(threaderdata **thiptr);
 
 #ifdef pp_THREAD
 #define THREAD_EXIT(threads)  \
-    if(use_ ## threads==1)pthread_exit(NULL);\
+    if(threads->use_threads==1)pthread_exit(NULL);\
     return NULL
 #else
 #define THREAD_EXIT(threads) return NULL
