@@ -67,6 +67,7 @@ threaderdata *THREADinit(int *nthreads_ptr,
 
 void THREADcontrol(threaderdata *thi, int var){
 #ifdef pp_THREAD
+  assert(thi != NULL);
   if(thi == NULL)return;
   switch(var){
   case THREAD_UPDATE:
@@ -82,16 +83,6 @@ void THREADcontrol(threaderdata *thi, int var){
   case THREAD_UNLOCK:
     if(thi->use_threads == 1)pthread_mutex_unlock(&thi->mutex);
     break;
-  case THREAD_JOIN:
-    if(thi->has_joined==0&&thi->use_threads == 1){
-      int i;
-
-      thi->has_joined = 1;
-      for(i = 0;i < thi->n_threads;i++){
-        pthread_join(thi->thread_ids[i], NULL);
-      }
-    }
-    break;
   default:
     assert(FFALSE);
     break;
@@ -99,10 +90,26 @@ void THREADcontrol(threaderdata *thi, int var){
 #endif
 }
 
+/* ------------------ THREADcontrol ------------------------ */
+
+void THREADjoin(threaderdata **thiptr){
+#ifdef pp_THREAD
+  assert(thiptr != NULL && *thiptr != NULL);
+  if(thiptr == NULL || *thiptr == NULL || (*thiptr)->use_threads == 0)return;
+  threaderdata *thi = *thiptr;
+  for(int i = 0; i < thi->n_threads; i++){
+    pthread_join(thi->thread_ids[i], NULL);
+  }
+  FREEMEMORY(thi);
+  *thiptr = thi;
+#endif
+}
+
 /* ------------------ THREADruni ------------------------ */
 
 void THREADruni(threaderdata *thi, unsigned char *datainfo, int sizedatai){
 #ifdef pp_THREAD
+  assert(thi != NULL);
   if(thi == NULL)return;
   if(thi->use_threads_ptr != NULL)thi->use_threads = *(thi->use_threads_ptr);
   if(thi->n_threads_ptr != NULL){
@@ -138,6 +145,7 @@ void THREADruni(threaderdata *thi, unsigned char *datainfo, int sizedatai){
 /* ------------------ THREADrunloop ------------------------ */
 
 void THREADrunloop(threaderdata *thi){
+  assert(thi != NULL);
   int i, thread_ids[MAX_THREADS];
 
   for(i = 0;i < MAX_THREADS;i++){
@@ -149,5 +157,6 @@ void THREADrunloop(threaderdata *thi){
 /* ------------------ THREADrun ------------------------ */
 
 void THREADrun(threaderdata *thi){
+  assert(thi != NULL);
   THREADruni(thi, NULL, 0);
 }

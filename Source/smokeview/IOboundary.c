@@ -1995,7 +1995,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     GLUIUpdateBoundaryListIndex(patchfilenum);
 
     if(runscript == 0){
-      THREADcontrol(patchbound_threads, THREAD_JOIN);
+      THREADjoin(&patchbound_threads);
     }
     else{
       force_bound_update = 1;

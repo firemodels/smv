@@ -174,7 +174,7 @@ void UpdateFrameNumber(int changetime){
 #ifdef pp_SPEEDUP
       uncompresssmoke3d_threads = THREADinit(&n_uncompresssmoke3d_threads, &use_uncompresssmoke3d_threads, serial_override, UncompressSmoke3DAll);
       THREADrunloop(uncompresssmoke3d_threads);
-      THREADcontrol(uncompresssmoke3d_threads, THREAD_JOIN);
+      THREADjoin(&uncompresssmoke3d_threads);
 #else
       UncompressSmoke3DAll();
 #endif
@@ -184,7 +184,7 @@ void UpdateFrameNumber(int changetime){
 #ifdef pp_SPEEDUP
       mergesmoke3d_threads = THREADinit(&n_mergesmoke3d_threads, &use_mergesmoke3d_threads, serial_override, MergeSmoke3DAll);
       THREADrunloop(mergesmoke3d_threads);
-      THREADcontrol(mergesmoke3d_threads, THREAD_JOIN);
+      THREADjoin(&mergesmoke3d_threads);
 #else
       MergeSmoke3DAll();
 #endif

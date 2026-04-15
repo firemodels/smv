@@ -2737,7 +2737,7 @@ int ReadSMV_Configure(){
   SetupReadAllGeom();
   readallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, serial_override, ReadAllGeom);
   THREADrun(readallgeom_threads);
-  THREADcontrol(readallgeom_threads, THREAD_JOIN);
+  THREADjoin(&readallgeom_threads);
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
   UpdateMeshCoords();
@@ -2808,7 +2808,7 @@ int ReadSMV_Configure(){
   global_scase.slicecoll.nvsliceinfo           = 0;
   sliceparms_threads = THREADinit(&n_sliceparms_threads, &use_sliceparms_threads, serial_override, UpdateVSlices);
   THREADruni(sliceparms_threads, (unsigned char *)&sliceparminfo, 0);
-  THREADcontrol(sliceparms_threads, THREAD_JOIN);
+  THREADjoin(&sliceparms_threads);
   PRINT_TIMER(timer_readsmv, "UpdateVSlices");
 
   GetSliceParmInfo(&sliceparminfo);
@@ -2858,8 +2858,8 @@ int ReadSMV_Configure(){
   sorttags_threads = THREADinit(&n_sorttags_threads, &use_sorttags_threads, serial_override, SortAllPartTags);
 
   isosurface_threads = THREADinit(&n_isosurface_threads, &use_isosurface_threads, runscript, SetupAllIsosurfaces);
-   THREADrun(isosurface_threads);
-  THREADcontrol(isosurface_threads, THREAD_JOIN);
+  THREADrun(isosurface_threads);
+  THREADjoin(&isosurface_threads);
   PRINT_TIMER(timer_readsmv, "SetupAllIsosurfaces");
 
   MakeIBlankSmoke3D();

@@ -4047,7 +4047,7 @@ void LoadAllPartFilesMT(int partnum){
   int partnuminfo[1];
   partnuminfo[0] = partnum;
   THREADruni(partload_threads, (unsigned char *)partnuminfo, 0);
-  THREADcontrol(partload_threads, THREAD_JOIN);
+  THREADjoin(&partload_threads);
   PRINT_TIMER(part_load_timer, "LoadAllPartFilesMT");
 
   INIT_PRINT_TIMER(part_timer);
@@ -5668,7 +5668,7 @@ FILE_SIZE LoadIsoI(int value){
   float total_time;
 
   START_TIMER(total_time);
-  THREADcontrol(isosurface_threads, THREAD_JOIN);
+  THREADjoin(&isosurface_threads);
   ReadIsoFile=1;
   isoi = global_scase.isoinfo + value;
   file=isoi->file;
@@ -5750,7 +5750,7 @@ void LoadIsoMenu(int value){
   int i;
   int ii;
 
-  THREADcontrol(isosurface_threads, THREAD_JOIN);
+  THREADjoin(&isosurface_threads);
   if(value==MENU_DUMMY3)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){

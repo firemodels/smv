@@ -1478,7 +1478,7 @@ partpropdata *GetPartProp(char *label){
 
 void SetStreakShow(int show){
   if(show == 1 && sorting_tags==1){
-    THREADcontrol(sorttags_threads, THREAD_JOIN);
+    THREADjoin(&sorttags_threads);
   }
   streak5show = show;
 }
@@ -1957,7 +1957,7 @@ void FinalizePartLoad(partdata *parti){
   sorting_tags = 1;
   THREADrun(sorttags_threads);
   if(runscript == 1 || streak5show == 1){
-    THREADcontrol(sorttags_threads, THREAD_JOIN);
+    THREADjoin(&sorttags_threads);
   }
 
   // generate histograms now rather than in the background if a script is running

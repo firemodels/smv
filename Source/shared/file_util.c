@@ -683,7 +683,7 @@ FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE
 
     read_threads = THREADinit(&nthreads, &use_read_threads, serial_override, fread_mt);
     THREADruni(read_threads, (unsigned char *)mtfileinfo, sizeof(mtfiledata));
-    THREADcontrol(read_threads, THREAD_JOIN);
+    THREADjoin(&read_threads);
     chars_read = 0;
     for(int i = 0;i < nthreads;i++){
       chars_read += mtfileinfo[i].chars_read;

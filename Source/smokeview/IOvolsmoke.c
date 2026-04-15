@@ -1143,7 +1143,7 @@ void InitSuperMesh(void){
 
   // determine mesh connectivity
 
-  THREADcontrol(meshnabors_threads, THREAD_JOIN);
+  THREADjoin(&meshnabors_threads);
 
   // merge connected meshes to form supermeshes
 

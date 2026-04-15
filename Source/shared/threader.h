@@ -14,7 +14,6 @@ enum threaderparms {
   THREAD_LOCK,
   THREAD_FORCE_UNLOCK,
   THREAD_UNLOCK,
-  THREAD_JOIN
 };
 
 //*** structure
@@ -37,6 +36,7 @@ EXTERNCPP void THREADrun(threaderdata *thi);
 EXTERNCPP void THREADrunloop(threaderdata *thi);
 EXTERNCPP void THREADruni(threaderdata * thi, unsigned char *datainfo, int sizedatai);
 EXTERNCPP threaderdata *THREADinit(int *nthreads_arg, int *threading_on_arg, int run_serial_override, void *(*run_arg)(void *arg));
+EXTERNCPP void THREADjoin(threaderdata **thiptr);
 
 //*** threader controls
 
