@@ -75,14 +75,6 @@ float     part_load_time;
 
 #define MENU_DUMMY3 -2
 
-#ifdef pp_COMPRESS
-#define MENU_ERASECOMPRESS 1
-#define MENU_OVERWRITECOMPRESS 2
-#define MENU_COMPRESSNOW 3
-#define MENU_COMPRESSAUTOLOAD 4
-#define MENU_COMPRESS_SETTINGS 5
-#endif
-
 #define MENU_TRAINER_CLEAR 998
 #define MENU_MAIN_QUIT 3
 
@@ -1530,9 +1522,6 @@ void DialogMenu(int value){
   case DIALOG_CONFIG:
   case DIALOG_SCRIPT:
   case DIALOG_SHOWFILES:
-#ifdef pp_COMPRESS
-  case DIALOG_SMOKEZIP:
-#endif
   case DIALOG_TIME:
     GLUIShowBounds(value);
     break;
@@ -2666,48 +2655,6 @@ void GridSliceMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-#ifdef pp_COMPRESS
-/* ------------------ CompressMenu ------------------------ */
-
-void CompressMenu(int value){
-  if(value==MENU_DUMMY)return;
-  switch(value){
-  case MENU_CONFIG_SETTINGS:
-    GLUIShowBounds(DIALOG_SMOKEZIP);
-    break;
-  case MENU_ERASECOMPRESS:
-    erase_all=1;
-    overwrite_all=0;
-    GLUIUpdateOverwrite();
-    if(compress_threads == NULL){
-      compress_threads = THREADinit(&n_compress_threads, &use_compress_threads, Compress);
-    }
-    THREADrun(compress_threads);
-    break;
-  case MENU_OVERWRITECOMPRESS:
-    erase_all=0;
-    overwrite_all=1-overwrite_all;
-    GLUIUpdateOverwrite();
-    break;
-  case MENU_COMPRESSNOW:
-    erase_all=0;
-    if(compress_threads == NULL){
-      compress_threads = THREADinit(&n_compress_threads, &use_compress_threads, Compress);
-    }
-    THREADrun(compress_threads);
-    break;
-  case MENU_COMPRESSAUTOLOAD:
-    compress_autoloaded=1-compress_autoloaded;
-    GLUIUpdateOverwrite();
-    break;
-  default:
-    assert(FFALSE);
-    break;
-  }
-  updatemenu=1;
-}
-#endif
-
 /* ------------------ IniSubMenu ------------------------ */
 
 void IniSubMenu(int value){
@@ -2815,6 +2762,7 @@ void ScriptMenu(int value){
       use_iso_threads = use_iso_threads_save;
       current_script_command=NULL;
       runscript=0;
+      serial_override = 0;
       first_frame_index=0;
       script_startframe=-1;
       script_skipframe=-1;
@@ -3424,9 +3372,6 @@ void LoadUnloadMenu(int value){
   case RELOADALL:
   case RELOAD_INCREMENTAL_ALL:
     load_flag = LOAD;
-#ifdef pp_COMPRESS
-    THREADcontrol(compress_threads, THREAD_LOCK);
-#endif
     char *hrr_csv_filename = CasePathHrrCsv(&global_scase);
     if(FileExistsCaseDir(&global_scase, hrr_csv_filename) == YES) {
       ReadHRR(&global_scase, LOAD);
@@ -3544,9 +3489,6 @@ void LoadUnloadMenu(int value){
 
     updatemenu=1;
     GLUTPOSTREDISPLAY;
-#ifdef pp_COMPRESS
-    THREADcontrol(compress_threads, THREAD_UNLOCK);
-#endif
     break;
   case SHOWFILES:
     GLUTPOSTREDISPLAY;
@@ -4101,9 +4043,7 @@ void LoadAllPartFilesMT(int partnum){
   int i;
 
   INIT_PRINT_TIMER(part_load_timer);
-  if(partload_threads == NULL){
-    partload_threads = THREADinit(&n_partload_threads, &use_partload_threads, MtLoadAllPartFiles);
-  }
+  partload_threads = THREADinit(&n_partload_threads, &use_partload_threads, serial_override, MtLoadAllPartFiles);
   int partnuminfo[1];
   partnuminfo[0] = partnum;
   THREADruni(partload_threads, (unsigned char *)partnuminfo, 0);
@@ -5909,17 +5849,11 @@ void LoadBoundaryMenu(int value){
 
         patchi = global_scase.patchinfo + value;
         IF_NOT_USEMESH_CONTINUE(patchi->loaded, patchi->blocknumber);
-#ifdef pp_COMPRESS
-        THREADcontrol(compress_threads, THREAD_LOCK);
-#endif
         SetLoadedPatchBounds(&value, 1);
         if(patchi->structured == YES){
           PRINTF("\nLoading %s(%s)\n", patchi->file, patchi->label.shortlabel);
         }
         ReadBoundary(value, LOAD, &errorcode);
-#ifdef pp_COMPRESS
-        THREADcontrol(compress_threads, THREAD_UNLOCK);
-#endif
       }
     }
   }
@@ -5972,13 +5906,7 @@ void LoadBoundaryMenu(int value){
         IF_NOT_USEMESH_CONTINUE(patchi->loaded,patchi->blocknumber);
         if(FileExistsOrig(patchi->reg_file) == NO)continue;
         if(InPatchList(patchj, patchi)==1){
-#ifdef pp_COMPRESS
-          THREADcontrol(compress_threads, THREAD_LOCK);
           patchi->finalize = 1;
-          THREADcontrol(compress_threads, THREAD_UNLOCK);
-#else
-          patchi->finalize = 1;
-#endif
           break;
         }
       }
@@ -5988,9 +5916,6 @@ void LoadBoundaryMenu(int value){
         patchi = global_scase.patchinfo + i;
         IF_NOT_USEMESH_CONTINUE(patchi->loaded,patchi->blocknumber);
         if(InPatchList(patchj, patchi)==1){
-#ifdef pp_COMPRESS
-          THREADcontrol(compress_threads, THREAD_LOCK);
-#endif
           if(patchi->structured == YES){
             PRINTF("\nLoading %s(%s)\n", patchi->file, patchi->label.shortlabel);
           }
@@ -5999,9 +5924,6 @@ void LoadBoundaryMenu(int value){
             UpdateTriangles(GEOM_STATIC, GEOM_UPDATE_ALL);
           }
           file_count++;
-#ifdef pp_COMPRESS
-          THREADcontrol(compress_threads, THREAD_UNLOCK);
-#endif
         }
       }
       STOP_TIMER(load_time);
@@ -8849,9 +8771,6 @@ static int resetmenu=0, defaultviewmenu=0, frameratemenu=0, rendermenu=0, smokev
 static int terrain_geom_showmenu = 0;
 static int render_resolutionmenu=0, render_filetypemenu=0, render_filesuffixmenu=0, render_skipmenu=0;
 static int render_startmenu = 0;
-#ifdef pp_COMPRESS
-static int compressmenu=0;
-#endif
 static int showhideslicemenu=0, sliceskipmenu=0, showvslicemenu=0;
 static int loadsubslicexmenu=0, loadsubsliceymenu=0, loadsubslicezmenu=0, loadsubslicexyzmenu=0;
 static int loadsubvectorslicexmenu=0, loadsubvectorsliceymenu=0, loadsubvectorslicezmenu=0, loadsubvectorslicexyzmenu=0;
@@ -11551,11 +11470,6 @@ if(opengl_finalized == 0)return;
 
   CREATEMENU(filesdialogmenu, DialogMenu);
   glutAddMenuEntry("Auto load data files...", DIALOG_AUTOLOAD);
-#ifdef pp_COMPRESS
-  if(smokezippath!=NULL&&(global_scase.npatchinfo>0||global_scase.smoke3dcoll.nsmoke3dinfo>0||global_scase.slicecoll.nsliceinfo>0)){
-    glutAddMenuEntry("Compress data files...  ALT z", DIALOG_SMOKEZIP);
-  }
-#endif
   glutAddMenuEntry("Save/load configuration files...", DIALOG_CONFIG);
   glutAddMenuEntry("Render images...", DIALOG_RENDER);
   THREADcontrol(ffmpeg_threads, THREAD_LOCK);
@@ -12659,30 +12573,6 @@ if(opengl_finalized == 0)return;
       glutAddMenuEntry("Unload",UNLOAD_ALL);
     }
 
-#ifdef pp_COMPRESS
-/* -------------------------------- compress menu -------------------------- */
-    if(smokezippath != NULL && (global_scase.npatchinfo > 0 || global_scase.smoke3dcoll.nsmoke3dinfo > 0 || global_scase.slicecoll.nsliceinfo > 0)){
-    CREATEMENU(compressmenu,CompressMenu);
-    glutAddMenuEntry("Compression options",MENU_DUMMY);  // -c
-    if(overwrite_all==1){
-      glutAddMenuEntry("  *Overwrite compressed files",MENU_OVERWRITECOMPRESS);  // -f
-    }
-    else{
-      glutAddMenuEntry("  Overwrite compressed files",MENU_OVERWRITECOMPRESS);  // -f
-    }
-    if(compress_autoloaded==1){
-      glutAddMenuEntry("  *Compress only autoloaded files",MENU_COMPRESSAUTOLOAD);  // -f
-    }
-    else{
-      glutAddMenuEntry("  Compress only autoloaded files",MENU_COMPRESSAUTOLOAD);  // -f
-    }
-    glutAddMenuEntry("-",MENU_DUMMY);  // -c
-    glutAddMenuEntry("Compress now",MENU_COMPRESSNOW);
-    glutAddMenuEntry("Erase compressed files",MENU_ERASECOMPRESS);  // -c
-    glutAddMenuEntry("Settings...", MENU_COMPRESS_SETTINGS);
-  }
-#endif
-
 /* --------------------------------inisub menu -------------------------- */
   {
     int n_inifiles;
@@ -12993,11 +12883,6 @@ if(opengl_finalized == 0)return;
       }
       GLUTADDSUBMENU("Configuration files",smokeviewinimenu);
       GLUTADDSUBMENU("Scripts",scriptmenu);
-#ifdef pp_COMPRESS
-      if(smokezippath!=NULL&&(global_scase.npatchinfo>0||global_scase.smoke3dcoll.nsmoke3dinfo>0||global_scase.slicecoll.nsliceinfo>0)){
-        GLUTADDSUBMENU("Compression",compressmenu);
-      }
-#endif
       GLUTADDSUBMENU("Misc",fileinfomenu);
       {
         char menulabel[1024];
