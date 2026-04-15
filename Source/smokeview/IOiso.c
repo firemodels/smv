@@ -156,7 +156,7 @@ void *UpdateTrianglesAll(void *arg){
 void ReadIsoGeomWrapup(int flag){
   update_readiso_geom_wrapup = UPDATE_ISO_OFF;
 
-  triangles_threads = THREADinit(&n_triangles_threads, &use_triangles_threads, serial_override, UpdateTrianglesAll);
+  triangles_threads = THREADinit(n_triangles_threads, use_triangles_threads, serial_override, UpdateTrianglesAll);
   THREADrun(triangles_threads);
   if(flag == FOREGROUND)THREADjoin(&triangles_threads);
   UpdateTimes();

@@ -3949,21 +3949,21 @@ void LoadAllPartFiles(int partnum){
     IF_NOT_USEMESH_CONTINUE(parti->loaded,parti->blocknumber);
     if(parti->skipload==1)continue;
     if(partnum>=0&&i!=partnum)continue;  //  load only particle file with file index partnum
-    THREADcontrol(partload_threads, THREAD_LOCK);                      //  or load all particle files
+    ThreadLock(partload_threads);                      //  or load all particle files
     if(parti->loadstatus==FILE_UNLOADED
      ){
       if(partnum==LOAD_ALL_PART_FILES||(partnum==RELOAD_LOADED_PART_FILES&&parti->loaded==1)||partnum==i){
         parti->loadstatus = FILE_LOADING;
-        THREADcontrol(partload_threads, THREAD_UNLOCK);
+        ThreadUnlock(partload_threads);
         file_size = ReadPart(parti->file, i, LOAD, &errorcode);
-        THREADcontrol(partload_threads, THREAD_LOCK);
+        ThreadLock(partload_threads);
         parti->loadstatus = FILE_LOADED;
         part_load_size += file_size;
         part_file_count++;
         parti->file_size = file_size;
       }
     }
-    THREADcontrol(partload_threads, THREAD_UNLOCK);
+    ThreadUnlock(partload_threads);
   }
 }
 
@@ -4042,7 +4042,7 @@ void LoadAllPartFilesMT(int partnum){
   int i;
 
   INIT_PRINT_TIMER(part_load_timer);
-  partload_threads = THREADinit(&n_partload_threads, &use_partload_threads, serial_override, MtLoadAllPartFiles);
+  partload_threads = THREADinit(n_partload_threads, use_partload_threads, serial_override, MtLoadAllPartFiles);
   int partnuminfo[1];
   partnuminfo[0] = partnum;
   THREADruni(partload_threads, (unsigned char *)partnuminfo, 0);
@@ -11471,7 +11471,7 @@ if(opengl_finalized == 0)return;
   glutAddMenuEntry("Auto load data files...", DIALOG_AUTOLOAD);
   glutAddMenuEntry("Save/load configuration files...", DIALOG_CONFIG);
   glutAddMenuEntry("Render images...", DIALOG_RENDER);
-  THREADcontrol(ffmpeg_threads, THREAD_LOCK);
+  ThreadLock(ffmpeg_threads);
   if(have_slurm==1&&have_ffmpeg==1){
     glutAddMenuEntry("Make movies(local)...", DIALOG_MOVIE);
     glutAddMenuEntry("Make movies(cluster)...", DIALOG_MOVIE_BATCH);
@@ -11479,7 +11479,7 @@ if(opengl_finalized == 0)return;
   if(have_slurm==0&&have_ffmpeg==1){
     glutAddMenuEntry("Make movies...", DIALOG_MOVIE);
   }
-  THREADcontrol(ffmpeg_threads, THREAD_UNLOCK);
+  ThreadUnlock(ffmpeg_threads);
   glutAddMenuEntry("Record/run scripts...", DIALOG_SCRIPT);
 
   /* --------------------------------viewdialog menu -------------------------- */

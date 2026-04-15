@@ -1182,9 +1182,9 @@ void GetGlobalPatchBounds(int flag, int set_flag, char *label){
 /* ------------------ GetGlobalPatchBoundsFull ------------------------ */
 
 void *GetGlobalPatchBoundsFull(void *arg){
-  THREADcontrol(patchbound_threads, THREAD_LOCK);
+  ThreadLock(patchbound_threads);
   GetGlobalPatchBounds(1,SET_MINMAX_FLAG,NULL);
-  THREADcontrol(patchbound_threads, THREAD_UNLOCK);
+  ThreadUnlock(patchbound_threads);
   THREAD_EXIT(patchbound_threads);
 }
 
@@ -1506,9 +1506,9 @@ void GetGlobalSliceBounds(int flag, int set_flag, char *label){
 /* ------------------ GetGlobalSliceBoundsFull ------------------------ */
 
 void *GetGlobalSliceBoundsFull(void *arg){
-  THREADcontrol(slicebound_threads, THREAD_LOCK);
+  ThreadLock(slicebound_threads);
   GetGlobalSliceBounds(1,SET_MINMAX_FLAG,NULL);
-  THREADcontrol(slicebound_threads, THREAD_UNLOCK);
+  ThreadUnlock(slicebound_threads);
   THREAD_EXIT(slicebound_threads);
 }
 
@@ -1921,7 +1921,7 @@ void GetAllPartBounds(void){
   int i;
   FILE *stream = NULL;
 
-  THREADcontrol(partload_threads, THREAD_LOCK);
+  ThreadLock(partload_threads);
   if(globalmin_part == NULL){
     NewMemory((void **)&globalmin_part, npart5prop*sizeof(float));
   }
@@ -1966,27 +1966,27 @@ void GetAllPartBounds(void){
         globalmin_part[i] = propi->dlg_global_valmin;
         globalmax_part[i] = propi->dlg_global_valmax;
       }
-      THREADcontrol(partload_threads, THREAD_UNLOCK);
+      ThreadUnlock(partload_threads);
       return;
     }
     fclose(stream);
   }
-  THREADcontrol(partload_threads, THREAD_UNLOCK);
+  ThreadUnlock(partload_threads);
 
   for(i = 0; i<global_scase.npartinfo; i++){
     partdata *parti;
 
     parti = global_scase.partinfo+i;
-    THREADcontrol(partload_threads, THREAD_LOCK);
+    ThreadLock(partload_threads);
     if(parti->boundstatus!=PART_BOUND_UNDEFINED){
-      THREADcontrol(partload_threads, THREAD_UNLOCK);
+      ThreadUnlock(partload_threads);
       continue;
     }
     parti->boundstatus = PART_BOUND_COMPUTING;
-    THREADcontrol(partload_threads, THREAD_UNLOCK);
+    ThreadUnlock(partload_threads);
     ReadPartBounds(parti,global_have_global_bound_file);
-    THREADcontrol(partload_threads, THREAD_LOCK);
+    ThreadLock(partload_threads);
     parti->boundstatus = PART_BOUND_DEFINED;
-    THREADcontrol(partload_threads, THREAD_UNLOCK);
+    ThreadUnlock(partload_threads);
   }
 }

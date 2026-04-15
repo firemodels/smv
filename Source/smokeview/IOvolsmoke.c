@@ -3211,7 +3211,7 @@ void ReadVolsmokeAllFramesAllMeshes(void){
   stept=1;
   UpdateTimes();
 
-  volsmokeload_threads =  THREADinit(&n_volsmokeload_threads, &use_volsmokeload_threads, serial_override, ReadVolsmokeAllFramesAllMeshes2);
+  volsmokeload_threads =  THREADinit(n_volsmokeload_threads, use_volsmokeload_threads, serial_override, ReadVolsmokeAllFramesAllMeshes2);
   THREADrun(volsmokeload_threads);
 }
 
