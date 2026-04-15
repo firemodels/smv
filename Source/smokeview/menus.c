@@ -2759,7 +2759,6 @@ void ScriptMenu(int value){
       break;
     case SCRIPT_CANCEL:
       script_defer_loading = 0;
-      use_iso_threads = use_iso_threads_save;
       current_script_command=NULL;
       runscript=0;
       serial_override = 0;
