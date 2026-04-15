@@ -248,6 +248,7 @@ int HaveProg(char *prog){
   return 0;
 }
 
+#ifdef pp_COMPRESS
 /* ------------------ GetSmokeZipPath ------------------------ */
 
 char *GetSmokeZipPath(char *progdir){
@@ -271,6 +272,7 @@ char *GetSmokeZipPath(char *progdir){
   FREEMEMORY(zip_path);
   return NULL;
 }
+#endif
 
 /* ------------------ SetDir ------------------------ */
 

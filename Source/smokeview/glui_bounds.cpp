@@ -1880,11 +1880,15 @@ extern "C" void GLUIHVACSliceBoundsCPP_CB(int var){
       break;
     case BOUND_RELOAD_DATA:
       SetLoadedSliceBounds(NULL, 0);
+#ifdef pp_COMPRESS
       THREADcontrol(compress_threads, THREAD_LOCK);
+#endif
       SetLoadedSliceBounds(NULL, 0);
       ReloadAllVectorSliceFiles(LOAD);
       ReloadAllSliceFiles(LOAD);
+#ifdef pp_COMPRESS
       THREADcontrol(compress_threads, THREAD_UNLOCK);
+#endif
       GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
       break;
     case BOUND_RESEARCH_MODE:
@@ -2653,7 +2657,9 @@ extern GLUI *glui_shooter, *glui_tour, *glui_stereo, *glui_trainer;
 
 GLUI_Button *BUTTON_globalalpha = NULL;
 GLUI_Button *BUTTON_updatebound = NULL;
+#ifdef pp_COMPRESS
 GLUI_Button *BUTTON_compress=NULL;
+#endif
 GLUI_Button *BUTTON_step=NULL;
 GLUI_Button *BUTTON_script_stop=NULL;
 GLUI_Button *BUTTON_script_start=NULL;
@@ -2818,7 +2824,9 @@ GLUI_Spinner *SPINNER_tload_skip=NULL;
 GLUI_Spinner *SPINNER_plot3d_vectorpointsize=NULL,*SPINNER_plot3d_vectorlinewidth=NULL,*SPINNER_plot3d_vectorlinelength=NULL;
 GLUI_Spinner *SPINNER_sliceaverage=NULL;
 GLUI_Spinner *SPINNER_boundaryaverage=NULL;
+#ifdef pp_COMPRESS
 GLUI_Spinner *SPINNER_zipstep=NULL;
+#endif
 GLUI_Spinner *SPINNER_partstreaklength=NULL;
 GLUI_Spinner *SPINNER_partpointsize=NULL;
 GLUI_Spinner *SPINNER_isopointsize=NULL;
@@ -2907,9 +2915,11 @@ GLUI_Checkbox *CHECKBOX_constant_coloring=NULL;
 GLUI_Checkbox *CHECKBOX_data_coloring=NULL;
 GLUI_Checkbox *CHECKBOX_sort2=NULL;
 GLUI_Checkbox *CHECKBOX_smooth2=NULL;
-GLUI_Checkbox *CHECKBOX_overwrite_all=NULL;
-GLUI_Checkbox *CHECKBOX_compress_autoloaded=NULL;
+#ifdef pp_COMPRESS
+GLUI_Checkbox *CHECKBOX_compress_autoloaded = NULL;
+GLUI_Checkbox *CHECKBOX_overwrite_all = NULL;
 GLUI_Checkbox *CHECKBOX_erase_all=NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_multi_task=NULL;
 GLUI_Checkbox *CHECKBOX_showtracer=NULL;
 GLUI_Checkbox *CHECKBOX_cellcenter_slice_interp=NULL;
@@ -3057,12 +3067,19 @@ procdata  filedatacolprocinfo[4];
 int      nfiledatacolprocinfo = 0;
 
 //*** fileprocinfo entries
+#ifdef pp_COMPRESS
 #define SHOWHIDE_ROLLOUT   0
 #define COMPRESS_ROLLOUT   1
 #define SCRIPT_ROLLOUT     2
 #define CONFIG_ROLLOUT     3
-
 procdata  fileprocinfo[4];
+#else
+#define SHOWHIDE_ROLLOUT   0
+#define SCRIPT_ROLLOUT     1
+#define CONFIG_ROLLOUT     2
+procdata  fileprocinfo[3];
+#endif
+
 int      nfileprocinfo = 0;
 
 //*** particleprocinfo entries
@@ -3830,9 +3847,11 @@ void BoundsDlgCB(int var){
   case SAVE_SETTINGS_BOUNDS:
     WriteIni(LOCAL_INI, NULL);
     break;
+#ifdef pp_COMPRESS
   case COMPRESS_FILES:
     PRINTF("compressing\n");
     break;
+#endif
   default:
     assert(FFALSE);
     break;
@@ -4155,6 +4174,7 @@ extern "C" void BoundBoundCB(int var){
       }
     }
     break;
+#ifdef pp_COMPRESS
   case COMPRESS_FILES:
     if(compress_threads == NULL){
       compress_threads = THREADinit(&n_compress_threads, &use_compress_threads, Compress);
@@ -4176,6 +4196,7 @@ extern "C" void BoundBoundCB(int var){
     }
     updatemenu = 1;
     break;
+#endif
   case BOUND_STARTUP:
     BoundsDlgCB(SAVE_SETTINGS_BOUNDS);
     break;
@@ -4989,7 +5010,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
     glui_bounds->add_button_to_panel(ROLLOUT_showhide, "File Sizes", FILESHOW_sizes, FileShowCB);
     GLUIUpdateShowHideButtons();
   }
-
+  #ifdef pp_COMPRESS
   if(smokezippath != NULL && (global_scase.npatchinfo > 0 || global_scase.smoke3dcoll.nsmoke3dinfo > 0 || global_scase.slicecoll.nsliceinfo > 0)){
     ROLLOUT_compress = glui_bounds->add_rollout_to_panel(ROLLOUT_files, "Compress", false, COMPRESS_ROLLOUT, FileRolloutCB);
     TOGGLE_ROLLOUT(fileprocinfo, nfileprocinfo, ROLLOUT_compress, COMPRESS_ROLLOUT, glui_bounds);
@@ -5005,6 +5026,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
     SPINNER_zipstep->set_int_limits(0, 100);
     BUTTON_compress = glui_bounds->add_button_to_panel(ROLLOUT_compress, "Run smokezip", COMPRESS_FILES, BoundBoundCB);
   }
+  #endif
 
   ROLLOUT_script = glui_bounds->add_rollout_to_panel(ROLLOUT_files, "Scripts", false, SCRIPT_ROLLOUT, FileRolloutCB);
   TOGGLE_ROLLOUT(fileprocinfo, nfileprocinfo, ROLLOUT_script, SCRIPT_ROLLOUT, glui_bounds);
@@ -6014,6 +6036,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
   glui_bounds->set_main_gfx_window( main_window );
 }
 
+#ifdef pp_COMPRESS
 /* ------------------ GLUICompressOnOff ------------------------ */
 
 extern "C" void GLUICompressOnOff(int flag){
@@ -6035,6 +6058,7 @@ extern "C" void GLUICompressOnOff(int flag){
       break;
   }
 }
+#endif
 
 /* ------------------ GLUIPlot3DBoundCB ------------------------ */
 
@@ -7153,12 +7177,14 @@ extern "C" void GLUIShowBounds(int menu_id){
   case DIALOG_SCRIPT:
     FileRolloutCB(SCRIPT_ROLLOUT);
     break;
+#ifdef pp_COMPRESS
   case DIALOG_SMOKEZIP:
     if(ROLLOUT_files->is_open == 0) {
       FileDataColRolloutCB(FILE_ROLLOUT);
     }
     FileRolloutCB(COMPRESS_ROLLOUT);
     break;
+#endif
   case DIALOG_3DSMOKE:
     FileDataColRolloutCB(DATA_ROLLOUT);
     BoundRolloutCB(SMOKE3D_ROLLOUT);
@@ -7219,12 +7245,14 @@ extern "C" void GLUIShowBoundsDialog(int type){
   }
 }
 
+#ifdef pp_COMPRESS
 /* ------------------ GLUIUpdateOverwrite ------------------------ */
 
 extern "C" void GLUIUpdateOverwrite(void){
   if(CHECKBOX_overwrite_all!=NULL)CHECKBOX_overwrite_all->set_int_val(overwrite_all);
   if(CHECKBOX_compress_autoloaded!=NULL)CHECKBOX_compress_autoloaded->set_int_val(compress_autoloaded);
 }
+#endif
 
 /* ------------------ GLUIHideBounds ------------------------ */
 
