@@ -22,15 +22,15 @@
 // }
 // //*** call before first use of threading routines
 
-// sample_threads = THREADinit(n_sample_threads, use_sample_threads, serial_override, Sample);
+// sample_threads = ThreadInit(n_sample_threads, use_sample_threads, serial_override, Sample);
 //
 // //*** call to do the work
-// THREADrun(sample_threads);
+// ThreadRun(sample_threads);
 
 
 /* ------------------ THREADinit ------------------------ */
 
-threaderdata *THREADinit(int n_threads, int use_threads, int run_serial_override,
+threaderdata *ThreadInit(int n_threads, int use_threads, int run_serial_override,
   void *(*run_arg)(void *arg)){
   threaderdata *thi;
 
@@ -78,7 +78,7 @@ void ThreadUnlock(threaderdata *thi){
 
 /* ------------------ THREADcontrol ------------------------ */
 
-void THREADjoin(threaderdata **thiptr){
+void ThreadJoin(threaderdata **thiptr){
 #ifdef pp_THREAD
   if(thiptr == NULL || *thiptr == NULL || (*thiptr)->use_threads == 0)return;
   threaderdata *thi = *thiptr;
@@ -92,7 +92,7 @@ void THREADjoin(threaderdata **thiptr){
 
 /* ------------------ THREADruni ------------------------ */
 
-void THREADruni(threaderdata *thi, unsigned char *datainfo, int sizedatai){
+void ThreadRuni(threaderdata *thi, unsigned char *datainfo, int sizedatai){
 #ifdef pp_THREAD
   if(thi == NULL)return;
   for(int i = 0; i < thi->n_threads; i++){
@@ -121,17 +121,17 @@ void THREADruni(threaderdata *thi, unsigned char *datainfo, int sizedatai){
 
 /* ------------------ THREADrunloop ------------------------ */
 
-void THREADrunloop(threaderdata *thi){
+void ThreadRunLoop(threaderdata *thi){
   int i, thread_ids[MAX_THREADS];
 
   for(i = 0;i < MAX_THREADS;i++){
     thread_ids[i] = i;
   }
-  THREADruni(thi, (unsigned char *)thread_ids, sizeof(int));
+  ThreadRuni(thi, (unsigned char *)thread_ids, sizeof(int));
 }
 
 /* ------------------ THREADrun ------------------------ */
 
-void THREADrun(threaderdata *thi){
-  THREADruni(thi, NULL, 0);
+void ThreadRun(threaderdata *thi){
+  ThreadRuni(thi, NULL, 0);
 }

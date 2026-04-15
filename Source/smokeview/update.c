@@ -172,9 +172,9 @@ void UpdateFrameNumber(int changetime){
     if(show3dsmoke==1 && global_scase.smoke3dcoll.nsmoke3dinfo > 0){
       INIT_PRINT_TIMER(update_smoke_time);
 #ifdef pp_SPEEDUP
-      uncompresssmoke3d_threads = THREADinit(n_uncompresssmoke3d_threads, use_uncompresssmoke3d_threads, serial_override, UncompressSmoke3DAll);
-      THREADrunloop(uncompresssmoke3d_threads);
-      THREADjoin(&uncompresssmoke3d_threads);
+      uncompresssmoke3d_threads = ThreadInit(n_uncompresssmoke3d_threads, use_uncompresssmoke3d_threads, serial_override, UncompressSmoke3DAll);
+      ThreadRunLoop(uncompresssmoke3d_threads);
+      ThreadJoin(&uncompresssmoke3d_threads);
 #else
       UncompressSmoke3DAll();
 #endif
@@ -182,9 +182,9 @@ void UpdateFrameNumber(int changetime){
       
       INIT_PRINT_TIMER(merge_smoke_time);
 #ifdef pp_SPEEDUP
-      mergesmoke3d_threads = THREADinit(n_mergesmoke3d_threads, use_mergesmoke3d_threads, serial_override, MergeSmoke3DAll);
-      THREADrunloop(mergesmoke3d_threads);
-      THREADjoin(&mergesmoke3d_threads);
+      mergesmoke3d_threads = ThreadInit(n_mergesmoke3d_threads, use_mergesmoke3d_threads, serial_override, MergeSmoke3DAll);
+      ThreadRunLoop(mergesmoke3d_threads);
+      ThreadJoin(&mergesmoke3d_threads);
 #else
       MergeSmoke3DAll();
 #endif
@@ -2089,7 +2089,7 @@ void UpdateShowScene(void){
 #ifdef pp_READ_KEYBOARD
   if(update_readkeyboard == 1){
     update_readkeyboard = 0;
-    THREADrun(readkeyboard_threads);
+    ThreadRun(readkeyboard_threads);
   }
 #endif
   if(update_set_clipplanes == 1){

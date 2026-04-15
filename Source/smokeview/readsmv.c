@@ -734,13 +734,13 @@ void UpdateBoundInfo(void){
   PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
 
   GetGlobalSliceBoundsReduced();
-  slicebound_threads = THREADinit(n_slicebound_threads, use_slicebound_threads, serial_override, GetGlobalSliceBoundsFull);
-  THREADrun(slicebound_threads);
+  slicebound_threads = ThreadInit(n_slicebound_threads, use_slicebound_threads, serial_override, GetGlobalSliceBoundsFull);
+  ThreadRun(slicebound_threads);
   PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
 
   GetGlobalPatchBoundsReduced();
-  patchbound_threads = THREADinit(n_patchbound_threads, use_patchbound_threads, serial_override, GetGlobalPatchBoundsFull);
-  THREADrun(patchbound_threads);
+  patchbound_threads = ThreadInit(n_patchbound_threads, use_patchbound_threads, serial_override, GetGlobalPatchBoundsFull);
+  ThreadRun(patchbound_threads);
   PRINT_TIMER(bound_timer, "GetGlobalPatchBounds");
 
   GetGlobalHVACDuctBounds(0);
@@ -2661,8 +2661,8 @@ int ReadSMV_Configure(){
     }
   }
 
-  checkfiles_threads = THREADinit(n_checkfiles_threads, use_checkfiles_threads, serial_override, CheckFiles);
-  THREADrun(checkfiles_threads);
+  checkfiles_threads = ThreadInit(n_checkfiles_threads, use_checkfiles_threads, serial_override, CheckFiles);
+  ThreadRun(checkfiles_threads);
   PRINT_TIMER(timer_readsmv, "CheckFiles");
   CheckMemory;
   UpdateIsoColors();
@@ -2735,9 +2735,9 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
 
   SetupReadAllGeom();
-  readallgeom_threads = THREADinit(n_readallgeom_threads, use_readallgeom_threads, serial_override, ReadAllGeom);
-  THREADrun(readallgeom_threads);
-  THREADjoin(&readallgeom_threads);
+  readallgeom_threads = ThreadInit(n_readallgeom_threads, use_readallgeom_threads, serial_override, ReadAllGeom);
+  ThreadRun(readallgeom_threads);
+  ThreadJoin(&readallgeom_threads);
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
   UpdateMeshCoords();
@@ -2806,9 +2806,9 @@ int ReadSMV_Configure(){
   global_scase.slicecoll.nmultisliceinfo       = 0;
   global_scase.slicecoll.nmultivsliceinfo      = 0;
   global_scase.slicecoll.nvsliceinfo           = 0;
-  sliceparms_threads = THREADinit(n_sliceparms_threads, use_sliceparms_threads, serial_override, UpdateVSlices);
-  THREADruni(sliceparms_threads, (unsigned char *)&sliceparminfo, 0);
-  THREADjoin(&sliceparms_threads);
+  sliceparms_threads = ThreadInit(n_sliceparms_threads, use_sliceparms_threads, serial_override, UpdateVSlices);
+  ThreadRuni(sliceparms_threads, (unsigned char *)&sliceparminfo, 0);
+  ThreadJoin(&sliceparms_threads);
   PRINT_TIMER(timer_readsmv, "UpdateVSlices");
 
   GetSliceParmInfo(&sliceparminfo);
@@ -2850,25 +2850,25 @@ int ReadSMV_Configure(){
   MakeIBlankCarve();
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
 
-  ffmpeg_threads = THREADinit(n_ffmpeg_threads, use_ffmpeg_threads, serial_override, SetupFF);
-  THREADrun(ffmpeg_threads);
+  ffmpeg_threads = ThreadInit(n_ffmpeg_threads, use_ffmpeg_threads, serial_override, SetupFF);
+  ThreadRun(ffmpeg_threads);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
 
-  isosurface_threads = THREADinit(n_isosurface_threads, use_isosurface_threads, runscript, SetupAllIsosurfaces);
-  THREADrun(isosurface_threads);
-  THREADjoin(&isosurface_threads);
+  isosurface_threads = ThreadInit(n_isosurface_threads, use_isosurface_threads, runscript, SetupAllIsosurfaces);
+  ThreadRun(isosurface_threads);
+  ThreadJoin(&isosurface_threads);
   PRINT_TIMER(timer_readsmv, "SetupAllIsosurfaces");
 
   MakeIBlankSmoke3D();
   PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
 
 #ifdef pp_READ_KEYBOARD
-  readkeyboard_threads = THREADinit(n_readkeyboard_threads, use_readkeyboard_threads, serial_override, ReadKeyboard);
+  readkeyboard_threads = ThreadInit(n_readkeyboard_threads, use_readkeyboard_threads, serial_override, ReadKeyboard);
   update_readkeyboard = 1;
 #endif
 #ifdef pp_SPEEDUP
-  makeiblank_threads = THREADinit(n_makeiblank_threads, use_makeiblank_threads, serial_override, MakeIBlank);
-  THREADrun(makeiblank_threads);
+  makeiblank_threads = ThreadInit(n_makeiblank_threads, use_makeiblank_threads, serial_override, MakeIBlank);
+  ThreadRun(makeiblank_threads);
 #else
   MakeIBlank();
 #endif
@@ -2912,8 +2912,8 @@ int ReadSMV_Configure(){
   UpdateBoundaryTypes();
   PRINT_TIMER(timer_readsmv, "UpdateBoundaryTypes");
 
-  meshnabors_threads = THREADinit(n_meshnabors_threads, use_meshnabors_threads, serial_override, InitNabors);
-  THREADrun(meshnabors_threads);
+  meshnabors_threads = ThreadInit(n_meshnabors_threads, use_meshnabors_threads, serial_override, InitNabors);
+  ThreadRun(meshnabors_threads);
 
   UpdateTerrain(1); // xxslow
   UpdateTerrainColors();
@@ -2974,8 +2974,8 @@ int ReadSMV_Configure(){
   if(large_case==0){
     SetupReadAllGeom();
 
-    classifyallgeom_threads = THREADinit(n_readallgeom_threads, use_readallgeom_threads, serial_override, ClassifyAllGeom);
-    THREADrun(classifyallgeom_threads);
+    classifyallgeom_threads = ThreadInit(n_readallgeom_threads, use_readallgeom_threads, serial_override, ClassifyAllGeom);
+    ThreadRun(classifyallgeom_threads);
   }
   PRINT_TIMER(timer_readsmv, "ClassifyGeom");
 

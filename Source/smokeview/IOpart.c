@@ -151,7 +151,7 @@ int GetTagIndex(const partdata *partin_arg, part5data **datain_arg, int tagval_a
   part5data *data_local;
   int i;
 
-  THREADjoin(&sorttags_threads);
+  ThreadJoin(&sorttags_threads);
   assert(sorting_tags == 0);
   if(sorting_tags == 1){
     printf("***error: particle tags accessed while being sorted\n");
@@ -1479,7 +1479,7 @@ partpropdata *GetPartProp(char *label){
 
 void SetStreakShow(int show){
   if(show == 1 && sorting_tags==1){
-    THREADjoin(&sorttags_threads);
+    ThreadJoin(&sorttags_threads);
   }
   streak5show = show;
 }
@@ -1956,10 +1956,10 @@ void FinalizePartLoad(partdata *parti){
   }
   visParticles = 1;
   sorting_tags = 1;
-  sorttags_threads = THREADinit(n_sorttags_threads, use_sorttags_threads, serial_override, SortAllPartTags);
-  THREADrun(sorttags_threads);
+  sorttags_threads = ThreadInit(n_sorttags_threads, use_sorttags_threads, serial_override, SortAllPartTags);
+  ThreadRun(sorttags_threads);
   if(runscript == 1 || streak5show == 1){
-    THREADjoin(&sorttags_threads);
+    ThreadJoin(&sorttags_threads);
   }
 
   // generate histograms now rather than in the background if a script is running

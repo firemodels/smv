@@ -3578,7 +3578,7 @@ void ReorderFace(int *faces){
 
 void CancelUpdateTriangles(void){
   cancel_update_triangles = 1;
-  THREADjoin(&triangles_threads);
+  ThreadJoin(&triangles_threads);
   cancel_update_triangles = 0;
 }
 

@@ -156,9 +156,9 @@ void *UpdateTrianglesAll(void *arg){
 void ReadIsoGeomWrapup(int flag){
   update_readiso_geom_wrapup = UPDATE_ISO_OFF;
 
-  triangles_threads = THREADinit(n_triangles_threads, use_triangles_threads, serial_override, UpdateTrianglesAll);
-  THREADrun(triangles_threads);
-  if(flag == FOREGROUND)THREADjoin(&triangles_threads);
+  triangles_threads = ThreadInit(n_triangles_threads, use_triangles_threads, serial_override, UpdateTrianglesAll);
+  ThreadRun(triangles_threads);
+  if(flag == FOREGROUND)ThreadJoin(&triangles_threads);
   UpdateTimes();
   GetFaceInfo();
   ForceIdle();
@@ -451,7 +451,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
 
   isoi = global_scase.isoinfo + ifile;
   if(load_flag==LOAD||load_flag==RELOAD){
-    THREADjoin(&isosurface_threads);
+    ThreadJoin(&isosurface_threads);
   }
   if(load_flag==UNLOAD){
     CancelUpdateTriangles();
@@ -620,7 +620,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
 
   START_TIMER(total_time);
   if(flag==LOAD){
-    THREADjoin(&isosurface_threads);
+    ThreadJoin(&isosurface_threads);
   }
   assert(ifile>=0&&ifile<global_scase.nisoinfo);
   ib = global_scase.isoinfo+ifile;

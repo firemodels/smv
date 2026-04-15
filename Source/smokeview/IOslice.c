@@ -3743,7 +3743,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
     update_slice2device = 1;
     if(runscript == 0){
-      THREADjoin(&slicebound_threads);
+      ThreadJoin(&slicebound_threads);
     }
     int set_valmin_save, set_valmax_save;
     float qmin_save, qmax_save;

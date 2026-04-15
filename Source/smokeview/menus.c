@@ -4042,11 +4042,11 @@ void LoadAllPartFilesMT(int partnum){
   int i;
 
   INIT_PRINT_TIMER(part_load_timer);
-  partload_threads = THREADinit(n_partload_threads, use_partload_threads, serial_override, MtLoadAllPartFiles);
+  partload_threads = ThreadInit(n_partload_threads, use_partload_threads, serial_override, MtLoadAllPartFiles);
   int partnuminfo[1];
   partnuminfo[0] = partnum;
-  THREADruni(partload_threads, (unsigned char *)partnuminfo, 0);
-  THREADjoin(&partload_threads);
+  ThreadRuni(partload_threads, (unsigned char *)partnuminfo, 0);
+  ThreadJoin(&partload_threads);
   PRINT_TIMER(part_load_timer, "LoadAllPartFilesMT");
 
   INIT_PRINT_TIMER(part_timer);
@@ -5667,7 +5667,7 @@ FILE_SIZE LoadIsoI(int value){
   float total_time;
 
   START_TIMER(total_time);
-  THREADjoin(&isosurface_threads);
+  ThreadJoin(&isosurface_threads);
   ReadIsoFile=1;
   isoi = global_scase.isoinfo + value;
   file=isoi->file;
@@ -5749,7 +5749,7 @@ void LoadIsoMenu(int value){
   int i;
   int ii;
 
-  THREADjoin(&isosurface_threads);
+  ThreadJoin(&isosurface_threads);
   if(value==MENU_DUMMY3)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){

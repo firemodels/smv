@@ -24,11 +24,11 @@ typedef struct _threaderdata{
 
 EXTERNCPP void ThreadLock(threaderdata *thi);
 EXTERNCPP void ThreadUnlock(threaderdata *thi);
-EXTERNCPP void THREADrun(threaderdata *thi);
-EXTERNCPP void THREADrunloop(threaderdata *thi);
-EXTERNCPP void THREADruni(threaderdata * thi, unsigned char *datainfo, int sizedatai);
-EXTERNCPP threaderdata *THREADinit(int nthreads_arg, int threading_on_arg, int run_serial_override, void *(*run_arg)(void *arg));
-EXTERNCPP void THREADjoin(threaderdata **thiptr);
+EXTERNCPP void ThreadRun(threaderdata *thi);
+EXTERNCPP void ThreadRunLoop(threaderdata *thi);
+EXTERNCPP void ThreadRuni(threaderdata * thi, unsigned char *datainfo, int sizedatai);
+EXTERNCPP threaderdata *ThreadInit(int nthreads_arg, int threading_on_arg, int run_serial_override, void *(*run_arg)(void *arg));
+EXTERNCPP void ThreadJoin(threaderdata **thiptr);
 
 //*** threader controls
 
