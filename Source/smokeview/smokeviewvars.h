@@ -53,12 +53,6 @@ SVEXTERN threaderdata SVDECL(*makeiblank_threads,       NULL);
 SVEXTERN int SVDECL(n_checkfiles_threads, 1), SVDECL(use_checkfiles_threads, 1);
 SVEXTERN threaderdata SVDECL(*checkfiles_threads,       NULL);
 
-#ifdef pp_COMPRESS
-//*** compress
-SVEXTERN int SVDECL(n_compress_threads, 1), SVDECL(use_compress_threads, 1);
-SVEXTERN threaderdata SVDECL(*compress_threads,        NULL);
-#endif
-
 //*** ffmpeg
 SVEXTERN int SVDECL(n_ffmpeg_threads, 1), SVDECL(use_ffmpeg_threads, 1);
 SVEXTERN threaderdata SVDECL(*ffmpeg_threads,         NULL);
@@ -1632,7 +1626,6 @@ SVEXTERN float SVDECL(tload_begin2, 0.0), SVDECL(tload_end2, 0.0);
 SVEXTERN int SVDECL(use_tload_begin2, 0), SVDECL(use_tload_end2, 0);
 SVEXTERN int SVDECL(use_tload_skip, 0);
 
-SVEXTERN int SVDECL(tload_zipskip, 0), SVDECL(tload_zipstep, 1);
 SVEXTERN int SVDECL(tload_skip, 0), SVDECL(tload_step, 1);
 
 SVEXTERN float SVDECL(frameinterval,1);
@@ -1868,6 +1861,7 @@ SVEXTERN char SVDECL(*script_dir_path,NULL), SVDECL(*script_htmldir_path, NULL);
 SVEXTERN int SVDECL(nscriptinfo,0);
 SVEXTERN scriptfiledata SVDECL(*script_recording,NULL);
 SVEXTERN int SVDECL(runscript,0), SVDECL(noexit,0);
+SVEXTERN int SVDECL(serial_override, 0);
 SVEXTERN int SVDECL(runhtmlscript, 0);
 #ifdef INMAIN
 SVEXTERN float slice_xyz[3]={0.0,0.0,0.0}, slice_dxyz[3] = {0.0, 0.0, 0.0};
@@ -1880,10 +1874,6 @@ SVEXTERN FILE SVDECL(*scriptoutstream,NULL);
 SVEXTERN FILE SVDECL(*LOG_FILENAME,NULL);
 SVEXTERN char SVDECL(*flushfile,NULL);
 SVEXTERN int SVDECL(csv_loaded, 0), SVDECL(devices_setup,0),SVDECL(update_csv_load,0);
-#ifdef pp_COMPRESS
-SVEXTERN char SVDECL(*smokezippath, NULL);
-SVEXTERN int SVDECL(compress_autoloaded,0);
-#endif
 SVEXTERN int SVDECL(*smokeviewpath, NULL), SVDECL(*fdsprog, NULL);
 SVEXTERN char SVDECL(*INI_fds_filein,NULL);
 SVEXTERN int SVDECL(event_file_exists,0);

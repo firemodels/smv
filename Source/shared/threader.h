@@ -36,7 +36,7 @@ EXTERNCPP void THREADcontrol(threaderdata *thi, int var);
 EXTERNCPP void THREADrun(threaderdata *thi);
 EXTERNCPP void THREADrunloop(threaderdata *thi);
 EXTERNCPP void THREADruni(threaderdata * thi, unsigned char *datainfo, int sizedatai);
-EXTERNCPP threaderdata *THREADinit(int *nthreads_arg, int *threading_on_arg, void *(*run_arg)(void *arg));
+EXTERNCPP threaderdata *THREADinit(int *nthreads_arg, int *threading_on_arg, int run_serial_override, void *(*run_arg)(void *arg));
 
 //*** threader controls
 

@@ -22,7 +22,7 @@
 // }
 // //*** call before first use of threading routines
 
-// sample_threads = THREADinit(&n_sample_threads, &use_sample_threads, Sample);
+// sample_threads = THREADinit(&n_sample_threads, &use_sample_threads, serial_override, Sample);
 //
 // //*** call to do the work
 // THREADrun(sample_threads);
@@ -30,7 +30,9 @@
 
 /* ------------------ THREADinit ------------------------ */
 
-threaderdata *THREADinit(int *nthreads_ptr, int *use_threads_ptr, void *(*run_arg)(void *arg)){
+threaderdata *THREADinit(int *nthreads_ptr, 
+  int *use_threads_ptr, int run_serial_override,
+  void *(*run_arg)(void *arg)){
   threaderdata *thi;
   int nthreads_local=1, use_threads_local=0;
 
@@ -46,6 +48,7 @@ threaderdata *THREADinit(int *nthreads_ptr, int *use_threads_ptr, void *(*run_ar
   if(nthreads_ptr != NULL && *nthreads_ptr > 1)nthreads_local = *nthreads_ptr;
   if(nthreads_local > MAX_THREADS)nthreads_local = MAX_THREADS;
   if(use_threads_ptr != NULL && *use_threads_ptr != 0)use_threads_local = 1;
+  if(run_serial_override == 1)use_threads_local = 0;
 
   thi->n_threads_ptr   = nthreads_ptr;
   thi->use_threads_ptr = use_threads_ptr;
