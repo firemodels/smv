@@ -248,32 +248,6 @@ int HaveProg(char *prog){
   return 0;
 }
 
-#ifdef pp_COMPRESS
-/* ------------------ GetSmokeZipPath ------------------------ */
-
-char *GetSmokeZipPath(char *progdir){
-  char *zip_path;
-
-  if(progdir!=NULL){
-    NewMemory((void **)&zip_path,strlen(progdir)+20);
-    strcpy(zip_path,progdir);
-  }
-  else{
-    NewMemory((void **)&zip_path,2+20);
-    strcpy(zip_path,".");
-    strcat(zip_path,dirseparator);
-  }
-
-  strcat(zip_path,"smokezip");
-#ifdef _WIN32
-  strcat(zip_path,".exe");
-#endif
-  if(FILE_EXISTS(zip_path)==YES)return zip_path;
-  FREEMEMORY(zip_path);
-  return NULL;
-}
-#endif
-
 /* ------------------ SetDir ------------------------ */
 
 char *SetDir(char *argdir){
@@ -705,14 +679,13 @@ FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE
 #ifdef pp_THREAD
   else{
     threaderdata *read_threads;
-    int use_read_threads, i;
+    int use_read_threads=1, serial_override = 0;
 
-    use_read_threads = 1;
-    read_threads = THREADinit(&nthreads, &use_read_threads, fread_mt);
+    read_threads = THREADinit(&nthreads, &use_read_threads, serial_override, fread_mt);
     THREADruni(read_threads, (unsigned char *)mtfileinfo, sizeof(mtfiledata));
     THREADcontrol(read_threads, THREAD_JOIN);
     chars_read = 0;
-    for(i = 0;i < nthreads;i++){
+    for(int i = 0;i < nthreads;i++){
       chars_read += mtfileinfo[i].chars_read;
     }
   }

@@ -484,6 +484,7 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
       from_commandline = 1;
       use_iso_threads=0;
       runscript = 1;
+      serial_override = 1;
     }
     if(args->runhtmlscript){
       from_commandline = 1;
@@ -544,6 +545,7 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
       if(sfd != NULL)default_script = sfd;
       if(!is_htmlscript){
         runscript = 1;
+        serial_override = 1;
       }
     }
     if(args->noexit){
@@ -723,11 +725,6 @@ int main(int argc, char **argv){
 
   InitTextureDir();
   InitScriptErrorFiles();
-#ifdef pp_COMPRESS
-  char *smv_bindir = GetSmvRootDir();
-  smokezippath= GetSmokeZipPath(smv_bindir);
-  FREEMEMORY(smv_bindir);
-#endif
   InitStartupDirs();
   DisplayVersionInfo("Smokeview ", &opts);
   SetupGlut(n_args,utf8_args);

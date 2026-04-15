@@ -112,13 +112,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Pin vcpkg version
-        run: |
-      - name: Pin vcpkg version
+        shell: bash
         run: |
           cd C:\vcpkg
-          git pull
-          git checkout master
-          .\\bootstrap-vcpkg.bat
+          for i in {1..3}; do
+            git pull && git checkout master && ./bootstrap-vcpkg.bat && exit 0
+            echo "Attempt $i failed, retrying..."
+            sleep 10
+          done
+          exit 1
       - name: build smokeview
         shell: cmd
         run: |

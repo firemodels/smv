@@ -2887,20 +2887,9 @@ void Keyboard(unsigned char key, int flag){
         }
         GLUIUpdateClip();
       }
-#ifdef pp_COMPRESS
-      if(keystate==GLUT_ACTIVE_ALT){
-        DialogMenu(DIALOG_SMOKEZIP); // compress dialog
-      }
-      else{
-        visz_all = 1 - visz_all;
-        plotstate = GetPlotState(STATIC_PLOTS);
-        updatemenu = 1;
-      }
-#else
-    visz_all = 1 - visz_all;
-    plotstate = GetPlotState(STATIC_PLOTS);
-    updatemenu = 1;
-#endif
+      visz_all = 1 - visz_all;
+      plotstate = GetPlotState(STATIC_PLOTS);
+      updatemenu = 1;
       if(visx_all==1||visy_all==1||visz_all==1)update_slice2device = 1;
       break;
     case '0':
@@ -4089,6 +4078,7 @@ void DoScript(void){
   if(runscript==1&&default_script!=NULL){
     ScriptMenu(default_script->id);
     runscript=2;
+    serial_override = 1;
   }
   script_render_flag=0;
   if(nscriptinfo>0&&current_script_command!=NULL&&(script_step==0||(script_step==1&&script_step_now==1))){

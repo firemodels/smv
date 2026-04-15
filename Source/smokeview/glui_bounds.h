@@ -116,12 +116,6 @@
 
 #define SAVE_SETTINGS_BOUNDS 99
 #define CLOSE_BOUNDS 98
-#ifdef pp_COMPRESS
-#define COMPRESS_FILES 97
-#define OVERWRITE 96
-#define COMPRESS_AUTOLOADED 91
-#define ERASE 95
-#endif
 #define BOUND_STARTUP 94
 #define SAVE_FILE_LIST 93
 #define LOAD_FILES 92
@@ -252,10 +246,6 @@ EXTERNCPP void GLUIUpdateTimeBounds(float time_min, float time_max);
 EXTERNCPP void GLUIUpdateColorbarFlip(void);
 EXTERNCPP void GLUIUpdateColorbarListBound(int flag);
 EXTERNCPP void GLUIUpdateColorbarBound(void);
-#ifdef pp_COMPRESS
-EXTERNCPP void GLUICompressOnOff(int flag);
-EXTERNCPP void GLUIUpdateOverwrite(void);
-#endif
 EXTERNCPP void GLUIUpdatePlot3dDisplay(void);
 EXTERNCPP void GLUIUpdateSortSlices(void);
 EXTERNCPP void GLUIUpdateExtreme(void);
