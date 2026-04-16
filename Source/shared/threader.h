@@ -31,7 +31,7 @@ EXTERNCPP void ThreadUnlock(threaderdata *thi);
 EXTERNCPP void ThreadRun(threaderdata *thi);
 EXTERNCPP void ThreadRunLoop(threaderdata *thi);
 EXTERNCPP void ThreadRuni(threaderdata * thi, unsigned char *datainfo, int sizedatai);
-EXTERNCPP threaderdata *ThreadInit(int nthreads_arg, int threading_on_arg, int run_serial_override, void *(*run_arg)(void *arg));
+EXTERNCPP void ThreadInit(threaderdata **thiptr, int nthreads_arg, int threading_on_arg, int run_serial_override, void *(*run_arg)(void *arg));
 EXTERNCPP void ThreadJoin(threaderdata **thiptr);
 
 //*** threader controls

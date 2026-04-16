@@ -172,7 +172,7 @@ void UpdateFrameNumber(int changetime){
     if(show3dsmoke==1 && global_scase.smoke3dcoll.nsmoke3dinfo > 0){
       INIT_PRINT_TIMER(update_smoke_time);
 #ifdef pp_SPEEDUP
-      uncompresssmoke3d_threads = ThreadInit(n_uncompresssmoke3d_threads, use_uncompresssmoke3d_threads, serial_override, UncompressSmoke3DAll);
+      ThreadInit(&uncompresssmoke3d_threads, n_uncompresssmoke3d_threads, use_uncompresssmoke3d_threads, serial_override, UncompressSmoke3DAll);
       ThreadRunLoop(uncompresssmoke3d_threads);
       ThreadJoin(&uncompresssmoke3d_threads);
 #else
@@ -182,7 +182,7 @@ void UpdateFrameNumber(int changetime){
       
       INIT_PRINT_TIMER(merge_smoke_time);
 #ifdef pp_SPEEDUP
-      mergesmoke3d_threads = ThreadInit(n_mergesmoke3d_threads, use_mergesmoke3d_threads, serial_override, MergeSmoke3DAll);
+      ThreadInit(&mergesmoke3d_threads, n_mergesmoke3d_threads, use_mergesmoke3d_threads, serial_override, MergeSmoke3DAll);
       ThreadRunLoop(mergesmoke3d_threads);
       ThreadJoin(&mergesmoke3d_threads);
 #else

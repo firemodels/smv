@@ -22,7 +22,7 @@
 // }
 // //*** call before first use of threading routines
 
-// sample_threads = ThreadInit(n_sample_threads, use_sample_threads, serial_override, Sample);
+// ThreadInit(&sample_threads, n_sample_threads, use_sample_threads, serial_override, Sample);
 //
 // //*** call to do the work
 // ThreadRun(sample_threads);
@@ -30,7 +30,7 @@
 
 /* ------------------ THREADinit ------------------------ */
 
-threaderdata *ThreadInit(int n_threads, int use_threads, int run_serial_override,
+void ThreadInit(threaderdata **thiptr, int n_threads, int use_threads, int run_serial_override,
   void *(*run_arg)(void *arg)){
   threaderdata *thi;
 
@@ -55,7 +55,7 @@ threaderdata *ThreadInit(int n_threads, int use_threads, int run_serial_override
   NewMemory((void **)&thi->thread_ids, n_threads*sizeof(pthread_t));
   pthread_mutex_init(&thi->mutex, NULL);
 #endif
-  return thi;
+  *thiptr = thi;
 }
 
 /* ------------------ THREADlock ------------------------ */

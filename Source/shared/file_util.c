@@ -678,10 +678,10 @@ FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE
   }
 #ifdef pp_THREAD
   else{
-    threaderdata *read_threads;
+    threaderdata *read_threads=NULL;
     int use_read_threads=1, serial_override = 0;
 
-    read_threads = ThreadInit(nthreads, use_read_threads, serial_override, fread_mt);
+    ThreadInit(&read_threads, nthreads, use_read_threads, serial_override, fread_mt);
     ThreadRuni(read_threads, (unsigned char *)mtfileinfo, sizeof(mtfiledata));
     ThreadJoin(&read_threads);
     chars_read = 0;
