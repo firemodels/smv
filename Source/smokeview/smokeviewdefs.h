@@ -884,10 +884,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define DRAW_OPAQUE      0
 #define DRAW_TRANSPARENT 1
 
-#define VOL_READALL  -1
-#define VOL_UNLOAD   -2
-#define VOL_READNONE -3
-
 #define MENU_LABEL_colorbar_vertical    0
 #define MENU_LABEL_colorbar_horizontal  1
 #define MENU_LABEL_timebar              2

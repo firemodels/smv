@@ -33,7 +33,6 @@
 #define SMOKE_RTHICK 8
 #endif
 #define SAVE_SETTINGS_SMOKE 9
-#define VOL_NGRID 18
 #define SMOKE_OPTIONS 19
 #define TEMP_MIN 21
 #define MASS_EXTINCTION 85
