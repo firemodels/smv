@@ -681,9 +681,9 @@ FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE
     threaderdata *read_threads;
     int use_read_threads=1, serial_override = 0;
 
-    read_threads = THREADinit(&nthreads, &use_read_threads, serial_override, fread_mt);
-    THREADruni(read_threads, (unsigned char *)mtfileinfo, sizeof(mtfiledata));
-    THREADcontrol(read_threads, THREAD_JOIN);
+    read_threads = ThreadInit(nthreads, use_read_threads, serial_override, fread_mt);
+    ThreadRuni(read_threads, (unsigned char *)mtfileinfo, sizeof(mtfiledata));
+    ThreadJoin(&read_threads);
     chars_read = 0;
     for(int i = 0;i < nthreads;i++){
       chars_read += mtfileinfo[i].chars_read;

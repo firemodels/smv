@@ -22,19 +22,17 @@
 // }
 // //*** call before first use of threading routines
 
-// sample_threads = THREADinit(&n_sample_threads, &use_sample_threads, serial_override, Sample);
+// sample_threads = ThreadInit(n_sample_threads, use_sample_threads, serial_override, Sample);
 //
 // //*** call to do the work
-// THREADrun(sample_threads);
+// ThreadRun(sample_threads);
 
 
 /* ------------------ THREADinit ------------------------ */
 
-threaderdata *THREADinit(int *nthreads_ptr, 
-  int *use_threads_ptr, int run_serial_override,
+threaderdata *ThreadInit(int n_threads, int use_threads, int run_serial_override,
   void *(*run_arg)(void *arg)){
   threaderdata *thi;
-  int nthreads_local=1, use_threads_local=0;
 
   //create a routine
     // void *run(void *arg){
@@ -45,73 +43,59 @@ threaderdata *THREADinit(int *nthreads_ptr,
 
   NewMemory((void **)&thi, sizeof(threaderdata));
 
-  if(nthreads_ptr != NULL && *nthreads_ptr > 1)nthreads_local = *nthreads_ptr;
-  if(nthreads_local > MAX_THREADS)nthreads_local = MAX_THREADS;
-  if(use_threads_ptr != NULL && *use_threads_ptr != 0)use_threads_local = 1;
-  if(run_serial_override == 1)use_threads_local = 0;
+  if(n_threads<1)n_threads = 1;
+  if(n_threads > MAX_THREADS)n_threads = MAX_THREADS;
+  if(run_serial_override != 0)use_threads = 0;
+  if(use_threads != 0)use_threads = 1;
 
-  thi->n_threads_ptr   = nthreads_ptr;
-  thi->use_threads_ptr = use_threads_ptr;
-  thi->n_threads       = nthreads_local;
-  thi->use_threads     = use_threads_local;
+  thi->n_threads       = n_threads;
+  thi->use_threads     = use_threads;
   thi->run             = run_arg;
-  thi->has_joined = 0;
 #ifdef pp_THREAD
-  NewMemory((void **)&thi->thread_ids, MAX_THREADS * sizeof(pthread_t));
+  NewMemory((void **)&thi->thread_ids, n_threads*sizeof(pthread_t));
   pthread_mutex_init(&thi->mutex, NULL);
 #endif
   return thi;
 }
 
-/* ------------------ THREADcontrol ------------------------ */
+/* ------------------ THREADlock ------------------------ */
 
-void THREADcontrol(threaderdata *thi, int var){
+void ThreadLock(threaderdata *thi){
 #ifdef pp_THREAD
   if(thi == NULL)return;
-  switch(var){
-  case THREAD_UPDATE:
-    thi->use_threads = *thi->use_threads_ptr;
-    thi->n_threads   = *thi->n_threads_ptr;
-    break;
-  case THREAD_LOCK:
-    if(thi->use_threads == 1)pthread_mutex_lock(&thi->mutex);
-    break;
-  case THREAD_FORCE_UNLOCK:
-    pthread_mutex_unlock(&thi->mutex);
-    break;
-  case THREAD_UNLOCK:
-    if(thi->use_threads == 1)pthread_mutex_unlock(&thi->mutex);
-    break;
-  case THREAD_JOIN:
-    if(thi->has_joined==0&&thi->use_threads == 1){
-      int i;
+  if(thi->use_threads == 1)pthread_mutex_lock(&thi->mutex);
+#endif
+}
 
-      thi->has_joined = 1;
-      for(i = 0;i < thi->n_threads;i++){
-        pthread_join(thi->thread_ids[i], NULL);
-      }
-    }
-    break;
-  default:
-    assert(FFALSE);
-    break;
+/* ------------------ THREADunlock ------------------------ */
+
+void ThreadUnlock(threaderdata *thi){
+#ifdef pp_THREAD
+  if(thi == NULL)return;
+  if(thi->use_threads == 1)pthread_mutex_unlock(&thi->mutex);
+#endif
+}
+
+/* ------------------ THREADcontrol ------------------------ */
+
+void ThreadJoin(threaderdata **thiptr){
+#ifdef pp_THREAD
+  if(thiptr == NULL || *thiptr == NULL || (*thiptr)->use_threads == 0)return;
+  threaderdata *thi = *thiptr;
+  for(int i = 0; i < thi->n_threads; i++){
+    pthread_join(thi->thread_ids[i], NULL);
   }
+  FREEMEMORY(thi);
+  *thiptr = thi;
 #endif
 }
 
 /* ------------------ THREADruni ------------------------ */
 
-void THREADruni(threaderdata *thi, unsigned char *datainfo, int sizedatai){
+void ThreadRuni(threaderdata *thi, unsigned char *datainfo, int sizedatai){
 #ifdef pp_THREAD
   if(thi == NULL)return;
-  if(thi->use_threads_ptr != NULL)thi->use_threads = *(thi->use_threads_ptr);
-  if(thi->n_threads_ptr != NULL){
-    thi->n_threads = *(thi->n_threads_ptr);
-    if(thi->n_threads > MAX_THREADS)thi->n_threads = MAX_THREADS;
-  }
-  int i;
-
-  for(i = 0; i < thi->n_threads; i++){
+  for(int i = 0; i < thi->n_threads; i++){
     unsigned char *datai;
 
     datai = NULL;
@@ -137,17 +121,17 @@ void THREADruni(threaderdata *thi, unsigned char *datainfo, int sizedatai){
 
 /* ------------------ THREADrunloop ------------------------ */
 
-void THREADrunloop(threaderdata *thi){
+void ThreadRunLoop(threaderdata *thi){
   int i, thread_ids[MAX_THREADS];
 
   for(i = 0;i < MAX_THREADS;i++){
     thread_ids[i] = i;
   }
-  THREADruni(thi, (unsigned char *)thread_ids, sizeof(int));
+  ThreadRuni(thi, (unsigned char *)thread_ids, sizeof(int));
 }
 
 /* ------------------ THREADrun ------------------------ */
 
-void THREADrun(threaderdata *thi){
-  THREADruni(thi, NULL, 0);
+void ThreadRun(threaderdata *thi){
+  ThreadRuni(thi, NULL, 0);
 }

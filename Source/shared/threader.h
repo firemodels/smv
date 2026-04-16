@@ -9,20 +9,10 @@
 
 #define MAX_THREADS 16
 
-enum threaderparms {
-  THREAD_UPDATE,
-  THREAD_LOCK,
-  THREAD_FORCE_UNLOCK,
-  THREAD_UNLOCK,
-  THREAD_JOIN
-};
-
 //*** structure
 
 typedef struct _threaderdata{
-  int n_threads,   *n_threads_ptr;
-  int use_threads, *use_threads_ptr;
-  int has_joined;
+  int n_threads, use_threads;
 #ifdef pp_THREAD
   pthread_t *thread_ids;
   pthread_mutex_t mutex;
@@ -32,25 +22,21 @@ typedef struct _threaderdata{
 
 //*** routines
 
-EXTERNCPP void THREADcontrol(threaderdata *thi, int var);
-EXTERNCPP void THREADrun(threaderdata *thi);
-EXTERNCPP void THREADrunloop(threaderdata *thi);
-EXTERNCPP void THREADruni(threaderdata * thi, unsigned char *datainfo, int sizedatai);
-EXTERNCPP threaderdata *THREADinit(int *nthreads_arg, int *threading_on_arg, int run_serial_override, void *(*run_arg)(void *arg));
+EXTERNCPP void ThreadLock(threaderdata *thi);
+EXTERNCPP void ThreadUnlock(threaderdata *thi);
+EXTERNCPP void ThreadRun(threaderdata *thi);
+EXTERNCPP void ThreadRunLoop(threaderdata *thi);
+EXTERNCPP void ThreadRuni(threaderdata * thi, unsigned char *datainfo, int sizedatai);
+EXTERNCPP threaderdata *ThreadInit(int nthreads_arg, int threading_on_arg, int run_serial_override, void *(*run_arg)(void *arg));
+EXTERNCPP void ThreadJoin(threaderdata **thiptr);
 
 //*** threader controls
 
 #ifdef pp_THREAD
-#define LOCK_THREADS(thi)   THREADcontrol(thi, THEAD_LOCK)
-#define UNLOCK_THREADS(thi) THREADcontrol(thi, THEAD_UNLOCK)
-#define JOIN_THREADS(thi)   THREADcontrol(thi, THEAD_JOIN)
 #define THREAD_EXIT(threads)  \
-    if(use_ ## threads==1)pthread_exit(NULL);\
+    if(threads->use_threads==1)pthread_exit(NULL);\
     return NULL
 #else
-#define LOCK_THREADS(thi)
-#define UNLOCK_THREADS(thi)
-#define JOIN_THREADS(thi)
 #define THREAD_EXIT(threads) return NULL
 #endif
 

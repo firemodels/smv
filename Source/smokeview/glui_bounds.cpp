@@ -5317,7 +5317,6 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
     CHECKBOX_sort2 = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, "Sort transparent surfaces:", &sort_iso_triangles, SORT_SURFACES, GLUISliceBoundCB);
     CHECKBOX_smooth2 = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, "Smooth isosurfaces", &smooth_iso_normal, SMOOTH_SURFACES, GLUISliceBoundCB);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, "wrapup in background", &use_iso_threads);
     glui_bounds->add_button_to_panel(ROLLOUT_iso_settings, "Output isosurface bounds", ISO_BOUNDS_OUTPUT, GLUISliceBoundCB);
   }
 

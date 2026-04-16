@@ -848,7 +848,7 @@ void InitSuperMesh(void){
 
   // determine mesh connectivity
 
-  THREADcontrol(meshnabors_threads, THREAD_JOIN);
+  ThreadJoin(&meshnabors_threads);
 
   // merge connected meshes to form supermeshes
 
@@ -2916,8 +2916,8 @@ void ReadVolsmokeAllFramesAllMeshes(void){
   stept=1;
   UpdateTimes();
 
-  volsmokeload_threads =  THREADinit(&n_volsmokeload_threads, &use_volsmokeload_threads, serial_override, ReadVolsmokeAllFramesAllMeshes2);
-  THREADrun(volsmokeload_threads);
+  volsmokeload_threads =  ThreadInit(n_volsmokeload_threads, use_volsmokeload_threads, serial_override, ReadVolsmokeAllFramesAllMeshes2);
+  ThreadRun(volsmokeload_threads);
 }
 
 /* ------------------ UnloadVolsmokeTextures ------------------------ */

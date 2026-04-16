@@ -151,6 +151,7 @@ int GetTagIndex(const partdata *partin_arg, part5data **datain_arg, int tagval_a
   part5data *data_local;
   int i;
 
+  ThreadJoin(&sorttags_threads);
   assert(sorting_tags == 0);
   if(sorting_tags == 1){
     printf("***error: particle tags accessed while being sorted\n");
@@ -1478,7 +1479,7 @@ partpropdata *GetPartProp(char *label){
 
 void SetStreakShow(int show){
   if(show == 1 && sorting_tags==1){
-    THREADcontrol(sorttags_threads, THREAD_JOIN);
+    ThreadJoin(&sorttags_threads);
   }
   streak5show = show;
 }
@@ -1955,9 +1956,10 @@ void FinalizePartLoad(partdata *parti){
   }
   visParticles = 1;
   sorting_tags = 1;
-  THREADrun(sorttags_threads);
+  sorttags_threads = ThreadInit(n_sorttags_threads, use_sorttags_threads, serial_override, SortAllPartTags);
+  ThreadRun(sorttags_threads);
   if(runscript == 1 || streak5show == 1){
-    THREADcontrol(sorttags_threads, THREAD_JOIN);
+    ThreadJoin(&sorttags_threads);
   }
 
   // generate histograms now rather than in the background if a script is running
@@ -2024,9 +2026,9 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
       updatemenu = 1;
       UpdatePart5Extremes();
       PrintMemoryInfo;
-      THREADcontrol(partload_threads, THREAD_LOCK);
+      ThreadLock(partload_threads);
       plotstate = GetPlotState(DYNAMIC_PLOTS);
-      THREADcontrol(partload_threads, THREAD_UNLOCK);
+      ThreadUnlock(partload_threads);
     }
     return 0.0;
   }
@@ -2039,9 +2041,9 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
   }
 
   if(use_partload_threads==1){
-    THREADcontrol(partload_threads, THREAD_LOCK);
+    ThreadLock(partload_threads);
     PrintPartLoadSummary(PART_BEFORE, PART_LOADING);
-    THREADcontrol(partload_threads, THREAD_UNLOCK);
+    ThreadUnlock(partload_threads);
   }
   else{
     PRINTF("\nLoading %s\n", file_arg);
@@ -2058,14 +2060,14 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
   GetPartData(parti, nf_all_local, &file_size_local);
   PRINT_TIMER(timer_getpartdata, "GetPartData");
   CheckMemory;
-  THREADcontrol(partload_threads, THREAD_LOCK);
+  ThreadLock(partload_threads);
   parti->loaded = 1;
   parti->display = 1;
   parti->hist_update=1;
   if(cache_part_data==0){
     UpdatePartColors(parti, 0);
   }
-  THREADcontrol(partload_threads, THREAD_UNLOCK);
+  ThreadUnlock(partload_threads);
   if(cache_part_data==0){
     fclose_m(parti->stream);
     parti->stream = NULL;
@@ -2076,9 +2078,9 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
   parti->request_load = 1;
   if(use_partload_threads==1){
     if(global_scase.npartinfo>1){
-      THREADcontrol(partload_threads, THREAD_LOCK);
+      ThreadLock(partload_threads);
       PrintPartLoadSummary(PART_AFTER, PART_LOADING);
-      THREADcontrol(partload_threads, THREAD_UNLOCK);
+      ThreadUnlock(partload_threads);
     }
   }
   else{

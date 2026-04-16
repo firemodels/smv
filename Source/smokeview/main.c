@@ -482,14 +482,12 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
     if(args->runscript){
       from_commandline = 1;
-      use_iso_threads=0;
       runscript = 1;
       serial_override = 1;
     }
     if(args->runhtmlscript){
       from_commandline = 1;
       use_graphics = 0;
-      use_iso_threads = 0;
       runhtmlscript = 1;
     }
     if(args->scriptrenderdir != NULL){
@@ -523,7 +521,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
         runhtmlscript = 1;
       }
       from_commandline = 1;
-      use_iso_threads=0;
       if(args->script != NULL){
         if(strlen(args->script) < MAX_SCRIPT_FILENAME_BUFFER){
           strcpy(scriptbuffer, args->script);
