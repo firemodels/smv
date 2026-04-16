@@ -769,10 +769,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define SMOKE3D_ZEROS_ALL     1
 #define SMOKE3D_ZEROS_UNKNOWN 2
 
-#define SHOW_VOLSMOKE   -2
-#define HIDE_VOLSMOKE   -1
-#define TOGGLE_VOLSMOKE -3
-
 #define MAXPOINTS          50000000
 #define INCFRAMES                20
 #define MAXFRAMES              5001

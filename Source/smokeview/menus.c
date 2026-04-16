@@ -120,7 +120,6 @@ float     part_load_time;
 #define MENU_BOUNDARY_SETTINGS    -7
 #define MENU_PART_SETTINGS        -4
 #define MENU_PLOT3D_SETTINGS      -4
-#define MENU_VOLSMOKE_SETTINGS    -4
 #define MENU_SLICE_SETTINGS       -6
 #define MENU_PART_PARTFAST        -7
 #define MENU_PART_NUM_FILE_SIZE   -8
