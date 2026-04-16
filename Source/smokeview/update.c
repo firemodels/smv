@@ -1944,12 +1944,6 @@ void UpdateShowScene(void){
     IdleCB();
     update_idle = 0;
   }
-#ifdef pp_READ_KEYBOARD
-  if(update_readkeyboard == 1){
-    update_readkeyboard = 0;
-    ThreadRun(readkeyboard_threads);
-  }
-#endif
   if(update_set_clipplanes == 1){
     int i;
 

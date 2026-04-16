@@ -164,7 +164,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #ifdef pp_READ_KEYBOARD
 #ifndef ABORTVIS
-#define ABORTVIS(check_state) if(CheckMouseKeyState(check_state)==1)return
+#define ABORTVIS(check_state) if(check_state == 1 && CheckMouseKeyState(check_state)==1)return
 #endif
 #else
 #undef  ABORTVIS

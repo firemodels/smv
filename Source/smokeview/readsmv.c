@@ -2256,9 +2256,9 @@ void *ReadKeyboard(void *arg){
     }
     ThreadUnlock(readkeyboard_threads);
 #ifdef _WIN32
-      Sleep(1000);
+      Sleep(100);
 #else
-      usleep(1000000);
+      usleep(100000);
 #endif
   }
   THREAD_EXIT(readkeyboard_threads);
@@ -2269,7 +2269,7 @@ void *ReadKeyboard(void *arg){
 int CheckMouseKeyState(int check_state){
   ThreadLock(readkeyboard_threads);
   if(abort_vis == 1){
-    if(check_state == 1)Keyboard(abort_char, FROM_SMOKEVIEW);
+    if(check_state == 1)Keyboard('t', FROM_SMOKEVIEW);
     if(check_state == 0)abort_vis = 0;
     ThreadUnlock(readkeyboard_threads);
     return 1;
@@ -2853,7 +2853,7 @@ int ReadSMV_Configure(){
 
 #ifdef pp_READ_KEYBOARD
   ThreadInit(&readkeyboard_threads, n_readkeyboard_threads, use_readkeyboard_threads, serial_override, ReadKeyboard);
-  update_readkeyboard = 1;
+  ThreadRun(readkeyboard_threads);
 #endif
 #ifdef pp_SPEEDUP
   ThreadInit(&makeiblank_threads, n_makeiblank_threads, use_makeiblank_threads, serial_override, MakeIBlank);
