@@ -2617,7 +2617,7 @@ void RenderCB(int var){
       EnableDisablePlayMovie();
       break;
     case PLAY_MOVIE:
-      playmovie_threads = ThreadInit(n_playmovie_threads, use_playmovie_threads, serial_override, PlayMovie);
+      ThreadInit(&playmovie_threads, n_playmovie_threads, use_playmovie_threads, serial_override, PlayMovie);
       ThreadRun(playmovie_threads);
       break;
     case OUTPUT_FFMPEG:

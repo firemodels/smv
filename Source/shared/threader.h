@@ -18,23 +18,41 @@ typedef struct _threaderdata{
   pthread_mutex_t mutex;
 #endif
   void *(*run)(void *arg);
+  struct _threaderdata *prev, *next, **address;
 } threaderdata;
+
+#ifndef CCC
+#ifdef __cplusplus
+#define CCC "C"
+#else
+#define CCC
+#endif
+#endif
+
+#ifdef INTHREADER
+threaderdata threadfirst, threadlast;
+#else
+extern CCC threaderdata threadfirst, threadlast;
+#endif
 
 //*** routines
 
+EXTERNCPP void ThreadSetup(void);
 EXTERNCPP void ThreadLock(threaderdata *thi);
 EXTERNCPP void ThreadUnlock(threaderdata *thi);
 EXTERNCPP void ThreadRun(threaderdata *thi);
 EXTERNCPP void ThreadRunLoop(threaderdata *thi);
 EXTERNCPP void ThreadRuni(threaderdata * thi, unsigned char *datainfo, int sizedatai);
-EXTERNCPP threaderdata *ThreadInit(int nthreads_arg, int threading_on_arg, int run_serial_override, void *(*run_arg)(void *arg));
+EXTERNCPP void ThreadInit(threaderdata **thiptr, int nthreads_arg, int threading_on_arg, int run_serial_override, void *(*run_arg)(void *arg));
 EXTERNCPP void ThreadJoin(threaderdata **thiptr);
+EXTERNCPP void ThreadJoinAll(void);
+EXTERNCPP int  ThreadCount(void);
 
 //*** threader controls
 
 #ifdef pp_THREAD
 #define THREAD_EXIT(threads)  \
-    if(threads->use_threads==1)pthread_exit(NULL);\
+    if(threads!=NULL&&threads->use_threads==1)pthread_exit(NULL);\
     return NULL
 #else
 #define THREAD_EXIT(threads) return NULL
