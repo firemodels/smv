@@ -2009,29 +2009,6 @@ extern "C" void GLUISceneMotionCB(int var){
     GLUIUpdateShowRotationCenter2();
     return;
   }
-
-#ifdef pp_GPU
-#ifdef pp_VOL_OLD
-  if(usegpu==1&&showvolrender==1&&show_volsmoke_moving==1&&
-     (var==EYE_ROTATE||var==EYE_ROTATE_90||var==ROTATE_2AXIS||
-      var==TRANSLATE_XY||var==TRANSLATE_X||TRANSLATE_Y||
-      var==GLUI_Z)
-    ){
-    float fps;
-
-    START_TIMER(thisMOTIONtime);
-    fps = MOTIONnframes/(thisMOTIONtime-lastMOTIONtime);
-    if(fps>GPU_VOLframemax)return;
-    MOTIONnframes++;
-    if(thisMOTIONtime>lastMOTIONtime+0.25){
-      PRINTF("MOTION: %4.1f fps\n",fps);
-      lastMOTIONtime=thisMOTIONtime;
-      MOTIONnframes=0;
-    }
-  }
-#endif
-#endif
-
   if(var==CURSOR){
     updatemenu=1;
     return;

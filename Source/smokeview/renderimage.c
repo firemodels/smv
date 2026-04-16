@@ -210,17 +210,11 @@ void Render(int view_mode){
   if(render_status == RENDER_OFF)return;
   if(current_script_command!=NULL&&
     (
-#ifdef pp_VOL_OLD
-      current_script_command->command==SCRIPT_VOLSMOKERENDERALL||
-#endif
       current_script_command->command==SCRIPT_ISORENDERALL)){
     int command;
 
     command = current_script_command->command;
     if(
-#ifdef pp_VOL_OLD
-      command == SCRIPT_VOLSMOKERENDERALL ||
-#endif
       command == SCRIPT_ISORENDERALL){
       if(iglobal_times == 0){
         current_script_command->remove_frame = iglobal_times;
@@ -280,9 +274,6 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
     if(
       ( command == SCRIPT_RENDERONCE   || command == SCRIPT_RENDERALL         ||
         command == SCRIPT_RENDER360ALL || 
-#ifdef pp_VOL_OLD
-        command == SCRIPT_VOLSMOKERENDERALL ||
-#endif
         command == SCRIPT_ISORENDERALL || command == SCRIPT_LOADSLICERENDER   || command == SCRIPT_LOADSMOKERENDER ||
         command == SCRIPT_RENDERDOUBLEONCE
         ) &&
@@ -330,9 +321,6 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
     (current_script_command != NULL &&
     (current_script_command->command == SCRIPT_RENDERALL ||
       current_script_command->command == SCRIPT_RENDER360ALL ||
-#ifdef pp_VOL_OLD
-      current_script_command->command == SCRIPT_VOLSMOKERENDERALL ||
-#endif
       current_script_command->command == SCRIPT_LOADSLICERENDER || current_script_command->command == SCRIPT_LOADSMOKERENDER ||
       current_script_command->command == SCRIPT_ISORENDERALL
       ))){

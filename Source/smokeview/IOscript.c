@@ -267,10 +267,6 @@ void InitKeywords(void){
   InitKeyword("dummy", -999, 0);         // dummy entry used to report errors
 // 3d smoke
   InitKeyword("LOAD3DSMOKE",         SCRIPT_LOAD3DSMOKE, 1);
-#ifdef pp_VOL_OLD
-  InitKeyword("LOADVOLSMOKE",        SCRIPT_LOADVOLSMOKE, 1);
-  InitKeyword("LOADVOLSMOKEFRAME",   SCRIPT_LOADVOLSMOKEFRAME, 1);
-#endif
   InitKeyword("SMOKEPROP",           SCRIPT_SMOKEPROP, 1);
 
 // boundary files
@@ -383,9 +379,6 @@ void InitKeywords(void){
   InitKeyword("RENDERSIZE",          SCRIPT_RENDERSIZE, 1);
   InitKeyword("RENDERSTART",         SCRIPT_RENDERSTART, 1);
   InitKeyword("RENDERTYPE",          SCRIPT_RENDERTYPE, 1);
-#ifdef pp_VOL_OLD
-  InitKeyword("VOLSMOKERENDERALL",   SCRIPT_VOLSMOKERENDERALL, 2);
-#endif
 
 // miscellaneous
 
@@ -953,15 +946,6 @@ int CompileScript(char *scriptfile){
 //  clip mode (int)
       case SCRIPT_SCENECLIP:
 
-#ifdef pp_VOL_OLD
-// LOADVOLSMOKE
-//  mesh number (-1 for all meshes) (int)
-      case SCRIPT_LOADVOLSMOKE:
-        scripti->need_graphics = 0;
-        SETival;
-        break;
-#endif
-
 // X/y/ZSCENECLIP
 // imin (int) min (float) imax (int) max (float)
       case SCRIPT_XSCENECLIP:
@@ -1023,25 +1007,6 @@ int CompileScript(char *scriptfile){
 
         SETcval2;
         break;
-
-#ifdef pp_VOL_OLD
-// VOLSMOKERENDERALL
-//  skip (int) start_frame (int)
-// file name base (char) (or blank to use smokeview default)
-      case SCRIPT_VOLSMOKERENDERALL:
-        SETbuffer;
-        scripti->ival3=0;  // first frame
-        scripti->ival=1;
-        sscanf(param_buffer,"%i %i",&scripti->ival,&scripti->ival3);
-        scripti->ival=CLAMP(scripti->ival,1,20); // skip
-        scripti->exit=0;
-        scripti->first=1;
-        scripti->remove_frame=-1;
-        first_frame_index=scripti->ival3;
-
-        SETcval2;
-        break;
-#endif
 
 // LOADISOM
 //  type (char)
@@ -1224,15 +1189,6 @@ case SCRIPT_LOADSMV:
           sscanf(param_buffer,"%i %i %i %i %i",&scripti->ival,&scripti->ival2,&scripti->ival3,&scripti->ival4,&scripti->ival5);
         }
         break;
-
-#ifdef pp_VOL_OLD
-// LOADVOLSMOKEFRAME
-//  mesh index, frame (int)
-      case SCRIPT_LOADVOLSMOKEFRAME:
-        SETbuffer;
-        sscanf(param_buffer,"%i %i",&scripti->ival,&scripti->ival2);
-        break;
-#endif
 
 // LOADSLICERENDER
 //  (char)quantity
@@ -1613,176 +1569,6 @@ void ScriptRender360All(scriptdata *scripti){
   RenderCB(RENDER_START);
 }
 
-/* ------------------ GetVolFrameMax ------------------------ */
-
-#ifdef pp_VOL_OLD
-int GetVolFrameMax(int meshnum){
-  int i, volframemax=-1;
-
-  volframemax = -1;
-  for(i = 0; i<global_scase.meshescoll.nmeshes; i++){
-    meshdata *meshi;
-    volrenderdata *vr;
-
-    if(meshnum!=i && meshnum>=0)continue;
-    meshi = global_scase.meshescoll.meshinfo+i;
-    vr = meshi->volrenderinfo;
-    volframemax = MAX(volframemax,vr->ntimes);
-  }
-  return volframemax;
-}
-
-/* ------------------ LoadSmokeFrame ------------------------ */
-
-void LoadSmokeFrame(int meshnum, int framenum){
-  int first = 1;
-  int i;
-  int max_frames = -1, frame_old;
-  float valtime=0.0;
-
-  if(meshnum > global_scase.meshescoll.nmeshes - 1||meshnum<-1)meshnum = -1;
-
-  max_frames = GetVolFrameMax(meshnum);
-  if(max_frames > 0)GLUIUpdateLoadFrameMax(max_frames);
-  frame_old = framenum;
-  framenum = CLAMP(framenum, 0, max_frames-1);
-  if(framenum!=frame_old)GLUIUpdateLoadFrameVal(framenum);
-
-  for(i = 0; i<global_scase.meshescoll.nmeshes; i++){
-    meshdata *meshi;
-    volrenderdata *vr;
-
-    if(meshnum != i && meshnum >= 0)continue;
-    meshi = global_scase.meshescoll.meshinfo + i;
-    vr = meshi->volrenderinfo;
-    FreeVolsmokeFrame(vr, framenum);
-    ReadVolsmokeFrame(vr, framenum, &first);
-    if(vr->times_defined == 0){
-      vr->times_defined = 1;
-      GetVolsmokeAllTimes(vr);
-    }
-    vr->loaded = 1;
-    vr->display = 1;
-    valtime = vr->times[framenum];
-  }
-  plotstate = GetPlotState(DYNAMIC_PLOTS);
-  stept = 1;
-  UpdateTimes();
-  force_redisplay = 1;
-  UpdateFrameNumber(framenum);
-  i = framenum;
-  iglobal_times = i;
-  script_itime = i;
-  stept = 1;
-  force_redisplay = 1;
-  UpdateFrameNumber(0);
-  stept=1;
-  Keyboard('t', FROM_SMOKEVIEW);
-  UpdateTimeLabels();
-  GLUIUpdateLoadTimeVal(valtime);
-}
-
-/* ------------------ LoadTimeFrame ------------------------ */
-
-void LoadTimeFrame(int meshnum, float timeval){
-  int i, smokeframe;
-  float vrtime, mindiff;
-  meshdata *meshi;
-  volrenderdata *vr;
-  int meshnum_orig;
-  int update_timebounds = 0;
-
-  meshnum_orig = meshnum;
-  if(meshnum<0||meshnum>global_scase.meshescoll.nmeshes-1)meshnum = 0;
-
-  meshi = global_scase.meshescoll.meshinfo+meshnum;
-  vr = meshi->volrenderinfo;
-
-  if(vr->times_defined==0)LoadSmokeFrame(meshnum_orig, 0);
-  if(time_framemin>time_framemax){
-    time_framemin = vr->times[0];
-    time_framemax = vr->times[vr->ntimes-1];
-    update_timebounds = 1;
-  }
-  else{
-    if(vr->times[0]<time_framemin){
-      time_framemin = vr->times[0];
-      update_timebounds = 1;
-    }
-    if(vr->times[vr->ntimes-1]>time_framemax){
-      time_framemax = vr->times[vr->ntimes-1];
-      update_timebounds = 1;
-    }
-  }
-  if(update_timebounds==1)GLUIUpdateTimeFrameBounds(time_framemin, time_framemax);
-
-  vrtime = vr->times[0];
-  mindiff = ABS(timeval-vrtime);
-  smokeframe = 0;
-  for(i = 1;i<vr->ntimes;i++){
-    float diff;
-
-    vrtime = vr->times[i];
-    diff = ABS(timeval-vrtime);
-    if(diff<mindiff){
-      mindiff = diff;
-      smokeframe = i;
-    }
-  }
-  GLUIUpdateLoadFrameVal(smokeframe);
-  LoadSmokeFrame(meshnum, smokeframe);
-}
-
-/* ------------------ ScriptLoadVolSmokeFrame ------------------------ */
-
-void ScriptLoadVolSmokeFrame(scriptdata *scripti, int flag){
-  int framenum, index;
-
-  index = scripti->ival;
-  framenum = scripti->ival2;
-  LoadSmokeFrame(index, framenum);
-  Keyboard('r', FROM_SMOKEVIEW);
-  if(flag == 1)script_render = 1;// called when only rendering a single frame
-}
-
-/* ------------------ ScriptLoadVolSmokeFrame2 ------------------------ */
-
-void ScriptLoadVolSmokeFrame2(void){
-  scriptdata scripti;
-
-  scripti.ival = -1;
-  scripti.ival2 = iglobal_times;
-  ScriptLoadVolSmokeFrame(&scripti, 0);
-}
-
-/* ------------------ ScriptVolSmokeRenderAll ------------------------ */
-
-void ScriptVolSmokeRenderAll(scriptdata *scripti){
-  int skip_local;
-
-  if(nvolrenderinfo==0){
-    PRINTF("*** Error: there is no volume rendered smoke data to render\n");
-    ScriptMenu(SCRIPT_CANCEL);
-    return;
-  }
-  ScriptLoadVolSmokeFrame2();
-
-  if(script_startframe>0)scripti->ival3=script_startframe;
-  if(vol_startframe0>0)scripti->ival3=vol_startframe0;
-  // check first_frame_index
-  first_frame_index=scripti->ival3;
-  iglobal_times=first_frame_index;
-
-  if(script_skipframe>0)scripti->ival=script_skipframe;
-  if(vol_skipframe0>0)scripti->ival=vol_skipframe0;
-  skip_local=MAX(1,scripti->ival);
-
-  PRINTF("script: Rendering every %i frame(s) starting at frame %i\n\n",skip_local,scripti->ival3);
-  scripti->ival=skip_local;
-  RenderMenu(skip_local);
-}
-#endif
-
 /* ------------------ ScriptLoadIsoFrame ------------------------ */
 
 void ScriptLoadIsoFrame(scriptdata *scripti, int flag){
@@ -1946,27 +1732,6 @@ void ScriptLoadIso(scriptdata *scripti, int meshnum){
   force_redisplay=1;
   updatemenu=1;
 }
-
-/* ------------------ ScriptLoadVolSmoke ------------------------ */
-#ifdef pp_VOL_OLD
-void ScriptLoadVolSmoke(scriptdata *scripti){
-  int imesh;
-
-  imesh = scripti->ival;
-  if(imesh==-1){
-    read_vol_mesh=VOL_READALL;
-    ReadVolsmokeAllFramesAllMeshes2(NULL);
-  }
-  else if(imesh>=0&&imesh<global_scase.meshescoll.nmeshes){
-    meshdata *meshi;
-    volrenderdata *vr;
-
-    meshi = global_scase.meshescoll.meshinfo + imesh;
-    vr = meshi->volrenderinfo;
-    ReadVolsmokeAllFrames(vr);
-  }
-}
-#endif
 
 /* ------------------ ScriptLoad3dSmoke ------------------------ */
 
@@ -3948,11 +3713,6 @@ int RunScriptCommand(scriptdata *script_command){
     case SCRIPT_RENDER360ALL:
       ScriptRender360All(scripti);
       break;
-#ifdef pp_VOL_OLD
-    case SCRIPT_VOLSMOKERENDERALL:
-      ScriptVolSmokeRenderAll(scripti);
-      break;
-#endif
     case SCRIPT_ISORENDERALL:
       ScriptIsoRenderAll(scripti);
       break;
@@ -4092,15 +3852,6 @@ int RunScriptCommand(scriptdata *script_command){
     case SCRIPT_LOAD3DSMOKE:
       ScriptLoad3dSmoke(scripti);
       break;
-#ifdef pp_VOL_OLD
-    case SCRIPT_LOADVOLSMOKE:
-      ScriptLoadVolSmoke(scripti);
-      break;
-    case SCRIPT_LOADVOLSMOKEFRAME:
-      ScriptLoadVolSmokeFrame(scripti,1);
-      returnval=1;
-      break;
-#endif
     case SCRIPT_LOADPARTICLES:
       ScriptLoadParticles(scripti);
       break;

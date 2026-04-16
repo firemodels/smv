@@ -533,19 +533,6 @@ void ShowScene2(int mode){
     ABORTVIS(0);
 #endif
   }
-
-#ifdef pp_VOL_OLD
-  /* ++++++++++++++++++++++++ draw vol smoke +++++++++++++++++++++++++ */
-
-  if(showvolrender == 1 && show3dsmoke==0 && (hide_scene == 0 || mouse_down == 0)){
-    CLIP_VALS;
-    DrawVolSmokeFrame();
-#ifdef pp_READ_KEYBOARD
-    ABORTVIS(0);
-#endif
-  }
-#endif
-
   if(active_smokesensors == 1 && show_smokesensors != SMOKESENSORS_HIDDEN && (hide_scene == 0 || mouse_down == 0)){
     CLIP_VALS;
     GetSmokeSensors();

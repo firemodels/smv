@@ -170,42 +170,6 @@ void SetViewPoint(int option){
   GLUIUpdateZoom();
 }
 
-#ifdef pp_VOL_OLD
-/* ------------------ InitVolrenderScript ------------------------ */
-
-void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int skipframe){
-  scriptfiledata *sfd;
-  FILE *script_stream;
-
-  if(volrender_scriptname==NULL){
-    int len;
-
-    len = strlen(global_scase.fdsprefix)+strlen("_volrender.ssf")+1;
-    NewMemory((void **)&volrender_scriptname,(unsigned int)(len));
-    STRCPY(volrender_scriptname,global_scase.fdsprefix);
-    STRCAT(volrender_scriptname,"_volrender.ssf");
-  }
-
-  sfd = InsertScriptFile(volrender_scriptname);
-  if(sfd!=NULL)default_script=sfd;
-  script_stream=FOPEN(volrender_scriptname,"w");
-  if(script_stream!=NULL){
-    fprintf(script_stream,"RENDERDIR\n");
-    fprintf(script_stream," .\n");
-    if(tour_label!=NULL&&strcmp(tour_label,"Manual")!=0){
-      fprintf(script_stream,"LOADTOUR\n");
-      fprintf(script_stream," %s\n",tour_label);
-    }
-    fprintf(script_stream,"VOLSMOKERENDERALL\n");
-    fprintf(script_stream," %i %i\n",skipframe,startframe);
-    fprintf(script_stream," %s\n",prefix);
-    runscript=1;
-    serial_override = 1;
-    fclose(script_stream);
-  }
-}
-#endif
-
 /* ------------------ DisplayVersionInfo ------------------------ */
 
 void DisplayVersionInfo(char *progname, common_opts *opts){
