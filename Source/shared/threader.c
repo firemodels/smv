@@ -135,3 +135,12 @@ void ThreadRunLoop(threaderdata *thi){
 void ThreadRun(threaderdata *thi){
   ThreadRuni(thi, NULL, 0);
 }
+
+/* ------------------ THREADrun ------------------------ */
+
+void ThreadSetup(void){
+  threadfirst.prev = NULL;
+  threadfirst.next = &threadlast;
+  threadlast.prev  = &threadfirst;
+  threadlast.next  = NULL;
+}

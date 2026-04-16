@@ -18,10 +18,14 @@ typedef struct _threaderdata{
   pthread_mutex_t mutex;
 #endif
   void *(*run)(void *arg);
+  struct _threaderdata *prev, *next;
 } threaderdata;
+
+SVEXTERN threaderdata threadfirst, threadlast;
 
 //*** routines
 
+EXTERNCPP void ThreadSetup(void);
 EXTERNCPP void ThreadLock(threaderdata *thi);
 EXTERNCPP void ThreadUnlock(threaderdata *thi);
 EXTERNCPP void ThreadRun(threaderdata *thi);
