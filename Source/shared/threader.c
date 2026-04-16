@@ -46,8 +46,8 @@ void ThreadRemove(threaderdata *thi){
   for(threaderdata *t=(&threadfirst)->next;t!=NULL;t=t->next){
     if(t==thi){
       threaderdata *p=t->prev, *n=t->next;
-      p->next = n;
-      n->prev = p;
+      if(p!=NULL)p->next = n;
+      if(n!=NULL)n->prev = p;
       break;
     }
   }
