@@ -27,6 +27,31 @@
 // //*** call to do the work
 // ThreadRun(sample_threads);
 
+/* ------------------ ThreadInsert ------------------------ */
+
+void ThreadInsert(threaderdata *thi){
+  threaderdata *n = &threadlast;
+  threaderdata *p = n->prev;
+
+  p->next = thi;
+  n->prev = thi;
+
+  thi->prev = p;
+  thi->next = n;
+}
+
+/* ------------------ ThreadRemove ------------------------ */
+
+void ThreadRemove(threaderdata *thi){
+  for(threaderdata *t=(&threadfirst)->next;t!=NULL;t=t->next){
+    if(t==thi){
+      threaderdata *p=t->prev, *n=t->next;
+      p->next = n;
+      n->prev = p;
+      break;
+    }
+  }
+}
 
 /* ------------------ THREADinit ------------------------ */
 
@@ -41,6 +66,7 @@ void ThreadInit(threaderdata **thiptr, int n_threads, int use_threads, int run_s
     //   return NULL;
     // }
 
+  assert(*thiptr == NULL);
   NewMemory((void **)&thi, sizeof(threaderdata));
 
   if(n_threads<1)n_threads = 1;
@@ -51,10 +77,12 @@ void ThreadInit(threaderdata **thiptr, int n_threads, int use_threads, int run_s
   thi->n_threads       = n_threads;
   thi->use_threads     = use_threads;
   thi->run             = run_arg;
+  thi->address         = thiptr;
 #ifdef pp_THREAD
   NewMemory((void **)&thi->thread_ids, n_threads*sizeof(pthread_t));
   pthread_mutex_init(&thi->mutex, NULL);
 #endif
+  ThreadInsert(thi);
   *thiptr = thi;
 }
 
@@ -85,9 +113,38 @@ void ThreadJoin(threaderdata **thiptr){
   for(int i = 0; i < thi->n_threads; i++){
     pthread_join(thi->thread_ids[i], NULL);
   }
+  ThreadRemove(thi);
   FREEMEMORY(thi);
   *thiptr = thi;
 #endif
+}
+
+/* ------------------ ThreadJoinAll ------------------------ */
+
+int ThreadCount(void){
+  int nthreads=0;
+  for(threaderdata *t=(&threadfirst)->next;t!=NULL;t=t->next){
+    nthreads++;
+  }
+  return nthreads;
+}
+
+/* ------------------ ThreadJoinAll ------------------------ */
+
+void ThreadJoinAll(void){
+  threaderdata **threadlist;
+
+  int nthreads=ThreadCount();
+  if(nthreads==0)return;
+  NewMemory((void **)&threadlist, nthreads*sizeof(threaderdata *));
+  nthreads = 0;
+  for(threaderdata *t=(&threadfirst)->next;t!=NULL;t=t->next){
+    threadlist[nthreads++] = t;
+  }
+  for(int i=0;i<nthreads;i++){
+    ThreadJoin(threadlist[i]->address);
+  }
+  FREEMEMORY(threadlist);
 }
 
 /* ------------------ THREADruni ------------------------ */

@@ -18,7 +18,7 @@ typedef struct _threaderdata{
   pthread_mutex_t mutex;
 #endif
   void *(*run)(void *arg);
-  struct _threaderdata *prev, *next;
+  struct _threaderdata *prev, *next, **address;
 } threaderdata;
 
 SVEXTERN threaderdata threadfirst, threadlast;
@@ -33,6 +33,8 @@ EXTERNCPP void ThreadRunLoop(threaderdata *thi);
 EXTERNCPP void ThreadRuni(threaderdata * thi, unsigned char *datainfo, int sizedatai);
 EXTERNCPP void ThreadInit(threaderdata **thiptr, int nthreads_arg, int threading_on_arg, int run_serial_override, void *(*run_arg)(void *arg));
 EXTERNCPP void ThreadJoin(threaderdata **thiptr);
+EXTERNCPP void ThreadJoinAll(void);
+EXTERNCPP int  ThreadCount(void);
 
 //*** threader controls
 
