@@ -505,12 +505,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
       from_commandline = 1;
       render_startframe0 = args->startframe;
     }
-#ifdef pp_VOL_OLD
-    if(args->volrender){
-      from_commandline = 1;
-      make_volrender_script = 1;
-    }
-#endif
     if(args->script!=NULL||args->htmlscript!=NULL){
       char scriptbuffer[MAX_SCRIPT_FILENAME_BUFFER];
       scriptfiledata *sfd;
