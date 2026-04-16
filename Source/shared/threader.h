@@ -21,7 +21,19 @@ typedef struct _threaderdata{
   struct _threaderdata *prev, *next, **address;
 } threaderdata;
 
-SVEXTERN threaderdata threadfirst, threadlast;
+#ifndef CCC
+#ifdef __cplusplus
+#define CCC "C"
+#else
+#define CCC
+#endif
+#endif
+
+#ifdef INTHREADER
+threaderdata threadfirst, threadlast;
+#else
+extern CCC threaderdata threadfirst, threadlast;
+#endif
 
 //*** routines
 
