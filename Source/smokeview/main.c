@@ -505,10 +505,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
       from_commandline = 1;
       render_startframe0 = args->startframe;
     }
-    if(args->volrender){
-      from_commandline = 1;
-      make_volrender_script = 1;
-    }
     if(args->script!=NULL||args->htmlscript!=NULL){
       char scriptbuffer[MAX_SCRIPT_FILENAME_BUFFER];
       scriptfiledata *sfd;
@@ -573,14 +569,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     NewMemory((void **)&ssf_to, len_prefix + 4 + 1);
     strcpy(ssf_to, global_scase.fdsprefix);
     strcat(ssf_to, ".ssf");
-  }
-  if(make_volrender_script == 1){
-
-    NewMemory((void **)&volrender_scriptname, (unsigned int)(len_casename + 14 + 1));
-    STRCPY(volrender_scriptname, global_scase.fdsprefix);
-    STRCAT(volrender_scriptname, "_volrender.ssf");
-
-    InitVolrenderScript(global_scase.fdsprefix, NULL, vol_startframe0, vol_skipframe0);
   }
   return filename_local;
 }

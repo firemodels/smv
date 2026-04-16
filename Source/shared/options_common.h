@@ -195,4 +195,10 @@
 #endif
 #endif
 
+#ifdef pp_GETMESH_TEST
+#define GETMESH GetMeshTest
+#else
+#define GETMESH GetMesh
+#endif
+
 #endif

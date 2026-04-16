@@ -103,12 +103,7 @@ void StereoCB(int var){
 /* ------------------ GLUIStereoSetup ------------------------ */
 
 extern "C" void GLUIStereoSetup(int main_window){
-  if(have_vr==1){
-    glui_stereo = GLUI_Master.create_glui("Stereo/VR settings", 0, dialogX0, dialogY0);
-  }
-  else{
-    glui_stereo = GLUI_Master.create_glui("Stereo settings", 0, dialogX0, dialogY0);
-  }
+  glui_stereo = GLUI_Master.create_glui("Stereo settings", 0, dialogX0, dialogY0);
   glui_stereo->hide();
 
   PANEL_stereo_method = glui_stereo->add_panel("Stereo Method");

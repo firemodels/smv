@@ -1482,229 +1482,6 @@ int CompareVolFaceListData(const void *arg1, const void *arg2){
   return 0;
 }
 
-/* ------------------ GetVolSmokeDir ------------------------ */
-
-void GetVolSmokeDir(float *mm){
-  /*
-  ( m0 m4 m8  m12 ) (x)    (0)
-  ( m1 m5 m9  m13 ) (y)    (0)
-  ( m2 m6 m10 m14 ) (z)  = (0)
-  ( m3 m7 m11 m15 ) (1)    (1)
-
-      ( m0 m4  m8 )      (m12)
-  Q=  ( m1 m5  m9 )  u = (m13)
-      ( m2 m6 m10 )      (m14)
-
-        ( m0 m1  m2 )
-  Q^T=  ( m4 m5  m6 )
-        ( m8 m9 m10 )
-
-      ( M_x  0    0  )
-  M = ( 0   M_y   0  )
-      ( 0    0   M_z )
-
-  (Q   u) (M) (x)     (0)
-  (v^T 1) (1) (y)   = (1)
-
-  m3=m7=m11=0, v^T=0, y=1   QMx+u=0 => x=-inv(M)Q^Tu
-
-       ( m0 m1  m2 ) (m12)   ( m0*m12 + m1*m13 +  m2*m14 )/M_x
-  x = -( m4 m5  m6 ) (m13) = ( m4*m12 + m5*m13 +  m6*m14 )/M_y
-       ( m8 m9 m10 ) (m14)   ( m8*m12 + m9*m13 + m10*m14 )/M_z
-
-  */
-  int i, ii, j;
-  float norm[3];
-  float eyedir[3];
-  float cosdir;
-  float angles[7];
-
-  volfacelistdata *vi;
-
-  if(freeze_volsmoke == 1)return;
-
-  eye_position_smv[0] = -DOT3(mm + 0, mm + 12) / mscale[0];
-  eye_position_smv[1] = -DOT3(mm + 4, mm + 12) / mscale[1];
-  eye_position_smv[2] = -DOT3(mm + 8, mm + 12) / mscale[2];
-
-  for(j = 0;j<global_scase.meshescoll.nmeshes;j++){
-    meshdata *meshj;
-    int *inside;
-    int *drawsides;
-    float x0, x1, yy0, yy1, z0, z1;
-    float xcen, ycen, zcen;
-
-    meshj = global_scase.meshescoll.meshinfo + j;
-
-    inside = &meshj->inside;
-    drawsides = meshj->drawsides;
-
-      x0 = meshj->boxmin_fds[0];
-      x1 = meshj->boxmax_fds[0];
-     yy0 = meshj->boxmin_fds[1];
-     yy1 = meshj->boxmax_fds[1];
-      z0 = meshj->boxmin_fds[2];
-      z1 = meshj->boxmax_fds[2];
-    xcen = meshj->xcen_smv;
-    ycen = meshj->ycen_smv;
-    zcen = meshj->zcen_smv;
-
-    *inside = 0;
-    if(
-      eye_position_smv[0]> x0&&eye_position_smv[0]<x1&&
-      eye_position_smv[1]>yy0&&eye_position_smv[1]<yy1&&
-      eye_position_smv[2]> z0&&eye_position_smv[2]<z1
-      ){
-      for(i = -3;i <= 3;i++){
-        if(i == 0)continue;
-        drawsides[i + 3] = 1;
-      }
-      *inside = 1;
-      continue;
-    }
-
-    for(i = -3;i <= 3;i++){
-      if(i == 0)continue;
-      ii = ABS(i);
-      norm[0] = 0.0;
-      norm[1] = 0.0;
-      norm[2] = 0.0;
-      switch(ii){
-      case XDIR:
-        if(i<0){
-          norm[0] = -1.0;
-          eyedir[0] = x0;
-        }
-        else{
-          norm[0] = 1.0;
-          eyedir[0] = x1;
-        }
-        eyedir[1] = ycen;
-        eyedir[2] = zcen;
-        break;
-      case YDIR:
-        eyedir[0] = xcen;
-        if(i<0){
-          norm[1] = -1.0;
-          eyedir[1] = yy0;
-        }
-        else{
-          norm[1] = 1.0;
-          eyedir[1] = yy1;
-        }
-        eyedir[2] = zcen;
-        break;
-      case ZDIR:
-        eyedir[0] = xcen;
-        eyedir[1] = ycen;
-        if(i<0){
-          norm[2] = -1.0;
-          eyedir[2] = z0;
-        }
-        else{
-          norm[2] = 1.0;
-          eyedir[2] = z1;
-        }
-        break;
-      default:
-        assert(FFALSE);
-        break;
-      }
-      VEC3DIFF(eyedir, eye_position_smv, eyedir);
-      Normalize(eyedir, 3);
-      cosdir = CLAMP(DOT3(eyedir, norm), -1.0, 1.0);
-      cosdir = acos(cosdir)*RAD2DEG;
-      if(cosdir<0.0)cosdir = -cosdir;
-      angles[3 + i] = cosdir;
-    }
-    for(i = -3;i <= 3;i++){
-      if(i == 0)continue;
-      if(angles[i + 3]<90.0){
-        drawsides[i + 3] = 1;
-      }
-      else{
-        drawsides[i + 3] = 0;
-      }
-    }
-  }
-
-  // turn off drawing for mesh sides that are on the inside of a supermesh
-  if(combine_meshes == 1){
-    for(i = 0;i<global_scase.meshescoll.nmeshes;i++){
-      meshdata *meshi;
-      int *drawsides, *extsides;
-      int jj;
-
-      meshi = global_scase.meshescoll.meshinfo + i;
-      drawsides = meshi->drawsides;
-      extsides = meshi->extsides;
-      for(jj = 0;jj<7;jj++){
-        if(extsides[jj] == 0){
-          drawsides[jj] = 0;
-        }
-      }
-    }
-    for(i = 0;i<global_scase.nsupermeshinfo;i++){
-      supermeshdata *smesh;
-
-      smesh = global_scase.supermeshinfo + i;
-      for(j = 0;j<7;j++){
-        smesh->drawsides[j] = 0;
-      }
-      for(j = 0;j<smesh->nmeshes;j++){
-        meshdata *meshj;
-        int k;
-
-        meshj = smesh->meshes[j];
-        for(k = 0;k<7;k++){
-          if(meshj->extsides[k] == 1 && meshj->drawsides[k] == 1)smesh->drawsides[k] = 1;
-        }
-      }
-    }
-  }
-
-  vi = volfacelistinfo;
-  nvolfacelistinfo = 0;
-  for(i = 0;i<global_scase.meshescoll.nmeshes;i++){
-    meshdata *meshi;
-    int facemap[7] = {12,6,0,0,3,9,15};
-    volrenderdata *vr;
-    int *drawsides;
-
-    meshi = global_scase.meshescoll.meshinfo + i;
-
-    drawsides = meshi->drawsides;
-
-    vr = meshi->volrenderinfo;
-    if(vr->firedataptr == NULL&&vr->smokedataptr == NULL)continue;
-    if(vr->loaded == 0 || vr->display == 0)continue;
-    for(j = -3;j <= 3;j++){
-      float dx, dy, dz;
-      float *xyz;
-
-      if(j == 0)continue;
-      if(drawsides[j + 3] == 0)continue;
-      vi->facemesh = meshi;
-      vi->iwall = j;
-      xyz = meshi->face_centers_smv + facemap[j + 3];
-
-      dx = xyz[0] - eye_position_smv[0];
-      dy = xyz[1] - eye_position_smv[1];
-      dz = xyz[2] - eye_position_smv[2];
-      vi->dist2 = dx*dx + dy*dy + dz*dz;
-      vi->xyz = xyz;
-      vi++;
-      nvolfacelistinfo++;
-    }
-  }
-  if(nvolfacelistinfo>0){
-    for(i = 0;i<nvolfacelistinfo;i++){
-      volfacelistinfoptrs[i] = volfacelistinfo + i;
-    }
-    qsort((volfacelistdata *)volfacelistinfoptrs, nvolfacelistinfo, sizeof(volfacelistdata *), CompareVolFaceListData);
-  }
-}
-
 /* ------------------ GetSmokeDir ------------------------ */
 
 void GetSmokeDir(float *mm){
@@ -1729,18 +1506,29 @@ void GetSmokeDir(float *mm){
   eye_position_smv[0] = -DOT3(mm + 0, mm + 12) / mscale[0];
   eye_position_smv[1] = -DOT3(mm + 4, mm + 12) / mscale[1];
   eye_position_smv[2] = -DOT3(mm + 8, mm + 12) / mscale[2];
+  eye_position_fds[0] = SMV2FDS_X(eye_position_smv[0]);
+  eye_position_fds[1] = SMV2FDS_Y(eye_position_smv[1]);
+  eye_position_fds[2] = SMV2FDS_Z(eye_position_smv[2]);
 
-  for(j = 0;j<global_scase.meshescoll.nmeshes;j++){
-    meshdata  *meshj;
+  for(j = 0; j < global_scase.meshescoll.nmeshes + 1; j++){
+    meshdata *meshj;
     int i;
     float absangle, cosangle, minangle, mincosangle;
     int iminangle, alphadir, minalphadir;
 
-    meshj = global_scase.meshescoll.meshinfo + j;
-    dx = meshj->boxmiddle_smv[0] - eye_position_smv[0];
-    dy = meshj->boxmiddle_smv[1] - eye_position_smv[1];
-    dz = meshj->boxmiddle_smv[2] - eye_position_smv[2];
-    meshj->eyedist = sqrt(dx*dx + dy*dy + dz*dz);
+    if(j < global_scase.meshescoll.nmeshes){
+      meshj = global_scase.meshescoll.meshinfo + j;
+      dx = meshj->boxmiddle_smv[0] - eye_position_smv[0];
+      dy = meshj->boxmiddle_smv[1] - eye_position_smv[1];
+      dz = meshj->boxmiddle_smv[2] - eye_position_smv[2];
+      meshj->eyedist = sqrt(dx * dx + dy * dy + dz * dz);
+    }
+    else{
+      dx = sceneinfo->xyz_mid_smv[0] - eye_position_smv[0];
+      dy = sceneinfo->xyz_mid_smv[1] - eye_position_smv[1];
+      dz = sceneinfo->xyz_mid_smv[2] - eye_position_smv[2];
+      sceneinfo->eyedist = sqrt(dx * dx + dy * dy + dz * dz);
+    }
 
     minalphadir = ALPHA_X;
     mincosangle = 2.0;
@@ -1748,16 +1536,10 @@ void GetSmokeDir(float *mm){
     iminangle = -10;
     int ibeg, iend;
 
-    if(smoke_offaxis==1){
-      ibeg = -9;
-      iend =  9;
-    }
-    else{
-      ibeg = -3;
-      iend =  3;
-    }
-    for(i = ibeg;i <= iend;i++){
-      float scalednorm[3], norm[3], normdir[3], factor;
+    ibeg = -3;
+    iend = 3;
+    for(i = ibeg; i <= iend; i++){
+      float scalednorm[3], norm[3], normdir[3];
       int ii;
 
       if(i == 0)continue;
@@ -1781,126 +1563,6 @@ void GetSmokeDir(float *mm){
         if(i<0)norm[2] = -1.0;
         if(i>0)norm[2] = 1.0;
         break;
-      case 4:
-        alphadir = ALPHA_XY;
-        dx = meshj->xplt_fds[1] - meshj->xplt_fds[0];
-        dy = meshj->yplt_fds[1] - meshj->yplt_fds[0];
-        factor = dx*dx + dy*dy;
-        if(factor == 0.0){
-          factor = 1.0;
-        }
-        else{
-          factor = 1.0 / sqrt(factor);
-        }
-        if(i<0){
-          norm[0] = -dy*factor;
-          norm[1] = -dx*factor;
-        }
-        else{
-          norm[0] = dy*factor;
-          norm[1] = dx*factor;
-        }
-        break;
-      case 5:
-        alphadir = ALPHA_XY;
-        dx = meshj->xplt_fds[1] - meshj->xplt_fds[0];
-        dy = meshj->yplt_fds[1] - meshj->yplt_fds[0];
-        factor = dx*dx + dy*dy;
-        if(factor == 0.0){
-          factor = 1.0;
-        }
-        else{
-          factor = 1.0 / sqrt(factor);
-        }
-        if(i<0){
-          norm[0] = dy*factor;
-          norm[1] = -dx*factor;
-        }
-        else{
-          norm[0] = -dy*factor;
-          norm[1] = dx*factor;
-        }
-        break;
-      case 6:
-        alphadir = ALPHA_YZ;
-        dy = meshj->yplt_fds[1] - meshj->yplt_fds[0];
-        dz = meshj->zplt_fds[1] - meshj->zplt_fds[0];
-        factor = dz*dz + dy*dy;
-        if(factor == 0.0){
-          factor = 1.0;
-        }
-        else{
-          factor = 1.0 / sqrt(factor);
-        }
-        if(i<0){
-          norm[1] = -dz*factor;
-          norm[2] = -dy*factor;
-        }
-        else{
-          norm[1] = dz*factor;
-          norm[2] = dy*factor;
-        }
-        break;
-      case 7:
-        alphadir = ALPHA_YZ;
-        dy = meshj->yplt_fds[1] - meshj->yplt_fds[0];
-        dz = meshj->zplt_fds[1] - meshj->zplt_fds[0];
-        factor = dz*dz + dy*dy;
-        if(factor == 0.0){
-          factor = 1.0;
-        }
-        else{
-          factor = 1.0 / sqrt(factor);
-        }
-        if(i<0){
-          norm[1] = dz*factor;
-          norm[2] = -dy*factor;
-        }
-        else{
-          norm[1] = -dz*factor;
-          norm[2] = dy*factor;
-        }
-        break;
-      case 8:
-        alphadir = ALPHA_XZ;
-        dx = meshj->xplt_fds[1] - meshj->xplt_fds[0];
-        dz = meshj->zplt_fds[1] - meshj->zplt_fds[0];
-        factor = dz*dz + dx*dx;
-        if(factor == 0.0){
-          factor = 1.0;
-        }
-        else{
-          factor = 1.0 / sqrt(factor);
-        }
-        if(i<0){
-          norm[0] = -dz*factor;
-          norm[2] = -dx*factor;
-        }
-        else{
-          norm[0] = dz*factor;
-          norm[2] = dx*factor;
-        }
-        break;
-      case 9:
-        alphadir = ALPHA_XZ;
-        dx = meshj->xplt_fds[1] - meshj->xplt_fds[0];
-        dz = meshj->zplt_fds[1] - meshj->zplt_fds[0];
-        factor = dx*dx + dz*dz;
-        if(factor == 0.0){
-          factor = 1.0;
-        }
-        else{
-          factor = 1.0 / sqrt(factor);
-        }
-        if(i<0){
-          norm[0] = dz*factor;
-          norm[2] = -dx*factor;
-        }
-        else{
-          norm[0] = -dz*factor;
-          norm[2] = dx*factor;
-        }
-        break;
       default:
         assert(FFALSE);
         break;
@@ -1921,37 +1583,45 @@ void GetSmokeDir(float *mm){
         iminangle = i;
         minangle = absangle;
         mincosangle = ABS(cosangle);
-        meshj->norm[0] = norm[0];
-        meshj->norm[1] = norm[1];
-        meshj->norm[2] = norm[2];
+        if(j < global_scase.meshescoll.nmeshes){
+          meshj->norm[0] = norm[0];
+          meshj->norm[1] = norm[1];
+          meshj->norm[2] = norm[2];
+        }
       }
     }
-    meshj->smokedir = iminangle;
-
-    if(meshj->smoke3d_soot != NULL){
-      smoke3ddata *soot;
-      float smoke_dist;
-
-      soot = meshj->smoke3d_soot;
-      if(smoke_adjust == 1){
-        smoke_dist = meshj->smoke_dist[minalphadir]/mincosangle;
-      }
-      else{
-        smoke_dist = meshj->smoke_dist[minalphadir];
-      }
-      int use_soot_density;
-      float maxval;
-
-      use_soot_density = 0;
-      maxval = soot->maxval;
-      if(soot->soot_loaded == 1 && soot->maxvals!=NULL){
-        use_soot_density = 1;
-        maxval = soot->maxvals[soot->ismoke3d_time];
-      }
-      InitAlphas(soot->alphas_smokedir[minalphadir], soot->alphas_firedir[minalphadir], soot->extinct, use_soot_density, maxval, glui_mass_extinct, meshj->dxyz_fds[0], smoke_dist);
+    if(j < global_scase.meshescoll.nmeshes){
+      meshj->smokedir = iminangle;
     }
-    if(demo_mode != 0){
-      meshj->smokedir = 1;
+    else{
+      sceneinfo->smokedir = iminangle;
+    }
+    if(j < global_scase.meshescoll.nmeshes){
+      if(meshj->smoke3d_soot != NULL){
+        smoke3ddata *soot;
+        float smoke_dist;
+
+        soot = meshj->smoke3d_soot;
+        if(smoke_adjust == 1){
+          smoke_dist = meshj->smoke_dist[minalphadir] / mincosangle;
+        }
+        else{
+          smoke_dist = meshj->smoke_dist[minalphadir];
+        }
+        int use_soot_density;
+        float maxval;
+
+        use_soot_density = 0;
+        maxval = soot->maxval;
+        if(soot->soot_loaded == 1 && soot->maxvals != NULL){
+          use_soot_density = 1;
+          maxval = soot->maxvals[soot->ismoke3d_time];
+        }
+        InitAlphas(soot->alphas_smokedir[minalphadir], soot->alphas_firedir[minalphadir], soot->extinct, use_soot_density, maxval, glui_mass_extinct, meshj->dxyz_fds[0], smoke_dist);
+      }
+      if(demo_mode != 0){
+        meshj->smokedir = 1;
+      }
     }
   }
 }
@@ -2585,18 +2255,11 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     if(global_scase.nrooms>0){
       GetZoneSmokeDir(modelview_scratch);
     }
-    if(nvolrenderinfo>0&&showvolrender==1&&usevolrender==1){
-      GetVolSmokeDir(modelview_scratch);
-      SNIFF_ERRORS("after GetVolSmokeDir");
-#ifdef pp_GPU
-      if(usegpu==0)ComputeAllSmokecolors();
-#else
-      ComputeAllSmokecolors();
-#endif
-    }
     if(global_scase.smoke3dcoll.nsmoke3dinfo>0&&show3dsmoke==1){
+      INIT_PRINT_TIMER(timer_sort_smokemeshes);
       SortSmoke3dinfo();
       GetSmokeDir(modelview_scratch);
+      PRINT_TIMER(timer_sort_smokemeshes,"SortSmoke3dinfo+GetSmokeDir");
       SNIFF_ERRORS("after GetSmokeDir");
     }
     else if(showslice==1&&(showall_3dslices==1||nslice_loaded>1)){

@@ -302,29 +302,6 @@ int GetCellindex(float *xyz, meshdata **mesh_tryptr){
 
 }
 
-/* ------------------ GetSootDensity ------------------------ */
-
-float GetSootDensity(float *xyz, int itime, meshdata **mesh_try){
-  int ijk;
-  meshdata *mesh_soot;
-  float soot_val=0.0, *slice_vals;
-  volrenderdata *vr;
-
-  ijk = GetCellindex(xyz, mesh_try);
-  if(mesh_try == NULL || *mesh_try == NULL|| ijk<0)return 0.0;
-  mesh_soot = *mesh_try;
-  if(mesh_soot->c_iblank_node != NULL&&mesh_soot->c_iblank_node[ijk] == SOLID){
-    return 1000000.0;
-  }
-  vr = mesh_soot->volrenderinfo;
-  if(vr->smokedataptrs ==NULL)return 0.0;
-  itime = CLAMP(itime,0, vr->ntimes -1);
-  if(vr->smokedataptrs[itime] == NULL)return 0.0;
-  slice_vals = vr->smokedataptrs[itime];
-  soot_val = slice_vals[ijk];
-  return soot_val;
-}
-
 /* ------------------ IsSmokeComponentPresent ------------------------ */
 
 int IsSmokeComponentPresent(smoke3ddata *smoke3di){
@@ -363,16 +340,13 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   int i, j, k, n;
   float constval, x1, x3, z1, z3, yy1, y3;
   int is1, is2, js1, js2, ks1, ks2;
-  int ii, jj, kk;
-  int ibeg, iend, jbeg, jend, kbeg, kend;
 
   float *xplt, *yplt, *zplt;
   float *znode_offset, z_offset[4];
 
-  int nx, ny, nz;
   int xyzindex1[6], xyzindex2[6], *xyzindex, node;
   float xnode[4], znode[4], ynode[4];
-  int iterm, jterm, kterm, nxy;
+  int iterm, jterm, kterm;
   int n11, n12, n22, n21;
   int iii, jjj, kkk;
   int slice_end, slice_beg;
@@ -450,10 +424,9 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
     ks2 = CLAMP(ks2, 1, smoke3di->ks2);
   }
 
-  nx = smoke3di->is2+1-smoke3di->is1;
-  ny = js2+1-js1;
-  nz = ks2+1-ks1;
-  nxy = nx*ny;
+  int nx = smoke3di->is2+1-smoke3di->is1;
+  int ny = js2+1-js1;
+  int nxy = nx*ny;
 
   ssmokedir = meshi->smokedir;
 
@@ -710,571 +683,6 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
     }
     glEnd();
     break;
-
-    // +++++++++++++++++++++++++++++++++++ DIR 4 +++++++++++++++++++++++++++++++++++++++
-
-  case 4:
-  case -4:
-
-    smokealpha_map = smoke3di->alphas_smokedir[ALPHA_XY];
-    firealpha_map  = smoke3di->alphas_firedir[ALPHA_XY];
-
-    // ++++++++++++++++++  draw triangles +++++++++++++++++
-
-    glBegin(GL_TRIANGLES);
-    slice_beg = 1;
-    slice_end = nx+ny-2;
-    for(iii = slice_beg;iii<slice_end;iii += smoke3d_skip_frontback){
-      int ipj;
-
-      ipj = iii;
-      if(ssmokedir<0)ipj = nx+ny-2-iii;
-      ibeg = 0;
-      jbeg = ipj;
-      if(jbeg>ny-1){
-        jbeg = ny-1;
-        ibeg = ipj-jbeg;
-      }
-      iend = nx-1;
-      jend = ipj-iend;
-      if(jend<0){
-        jend = 0;
-        iend = ipj-jend;
-      }
-      for(k = ks1; k<ks2; k+=smoke3d_skip_vert){
-        int k2;
-
-        k2 = MIN(k+smoke3d_skip_vert, ks2);
-        kterm = (k-ks1)*nxy;
-        z1 = zplt[k];
-        z3 = zplt[k2];
-        znode[0] = z1;
-        znode[1] = z1;
-        znode[2] = z3;
-        znode[3] = z3;
-        for(ii = ibeg;ii<iend;ii++){
-          i = is1+ii;
-          iterm = (i-is1);
-          x1 = xplt[i];
-          x3 = xplt[i+1];
-
-          xnode[0] = x1;
-          xnode[1] = x3;
-          xnode[2] = x3;
-          xnode[3] = x1;
-
-          jj = ipj-ii;
-          j = js1+jj;
-          jterm = (j-js1)*nx;
-
-          yy1 = yplt[j];
-          y3 = yplt[j-1];
-
-          ynode[0] = yy1;
-          ynode[1] = y3;
-          ynode[2] = y3;
-          ynode[3] = yy1;
-
-          n11 = iterm+jterm+kterm;
-          n12 = n11-nx+1;
-          n22 = n12+nxy;
-          n21 = n11+nxy;
-
-          //        n11 = (j-js1)*nx   + (i-is1)   + (k-ks1)*nx*ny;
-          //        n12 = (j-1-js1)*nx + (i+1-is1) + (k-ks1)*nx*ny;
-          //        n22 = (j-1-js1)*nx + (i+1-is1) + (k+1-ks1)*nx*ny;
-          //        n21 = (j-js1)*nx   + (i-is1)   + (k+1-ks1)*nx*ny;
-
-          if(global_scase.nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
-            int m11, m12, m22, m21;
-
-            m11 = iterm+jterm;
-            m12 = m11-nx+1;
-            m22 = m12;
-            m21 = m11-nx;
-            DRAWTERRAINVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
-          }
-          else{
-            DRAWVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
-          }
-        }
-      }
-    }
-    glEnd();
-    break;
-
-    // +++++++++++++++++++++++++++++++++++ DIR 5 +++++++++++++++++++++++++++++++++++++++
-
-  case 5:
-  case -5:
-
-    smokealpha_map = smoke3di->alphas_smokedir[ALPHA_XY];
-    firealpha_map  = smoke3di->alphas_firedir[ALPHA_XY];
-
-    // ++++++++++++++++++  draw triangles +++++++++++++++++
-
-    glBegin(GL_TRIANGLES);
-
-    slice_beg = 1;
-    slice_end = nx+ny-2;
-    for(iii = slice_beg;iii<slice_end;iii += smoke3d_skip_frontback){
-      int jmi;
-
-      jmi = iii;
-      if(ssmokedir<0)jmi = nx+ny-2-iii;
-
-      ibeg = 0;
-      jbeg = ibeg-nx+1+jmi;
-      if(jbeg<0){
-        jbeg = 0;
-        ibeg = jbeg+nx-1-jmi;
-      }
-      iend = nx-1;
-      jend = iend+jmi+1-nx;
-      if(jend>ny-1){
-        jend = ny-1;
-        iend = jend+nx-1-jmi;
-      }
-      for(k = ks1; k<ks2; k+=smoke3d_skip_vert){
-        int k2;
-
-        k2 = MIN(k+smoke3d_skip_vert, ks2);
-        kterm = (k-ks1)*nxy;
-        z1 = zplt[k];
-        z3 = zplt[k2];
-        znode[0] = z1;
-        znode[1] = z1;
-        znode[2] = z3;
-        znode[3] = z3;
-        for(ii = ibeg;ii<iend;ii++){
-          i = is1+ii;
-          iterm = (i-is1);
-
-          jj = ii+jmi+1-nx;
-          j = js1+jj;
-          jterm = (j-js1)*nx;
-
-
-          yy1 = yplt[j];
-          y3 = yplt[j+1];
-
-          ynode[0] = yy1;
-          ynode[1] = y3;
-          ynode[2] = y3;
-          ynode[3] = yy1;
-
-          x1 = xplt[i];
-          x3 = xplt[i+1];
-          xnode[0] = x1;
-          xnode[1] = x3;
-          xnode[2] = x3;
-          xnode[3] = x1;
-
-
-          n11 = jterm+iterm+kterm;
-          n12 = n11+nx+1;
-          n22 = n12+nxy;
-          n21 = n11+nxy;
-
-          //    n11 = (j-js1)*nx + (i-is1) + (k-ks1)*nx*ny;
-          //    n12 = (j+1-js1)*nx + (i+1-is1) + (k-ks1)*nx*ny;
-          //    n22 = (j+1-js1)*nx + (i+1-is1) + (k+1-ks1)*nx*ny;
-          //    n21 = (j-js1)*nx + (i-is1) + (k+1-ks1)*nx*ny;
-
-          if(global_scase.nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
-            int m11, m12, m22, m21;
-
-            m11 = iterm+jterm;
-            m12 = m11+nx+1;
-            m22 = m12;
-            m21 = m11;
-            DRAWTERRAINVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
-          }
-          else{
-            DRAWVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
-          }
-        }
-      }
-    }
-    glEnd();
-    break;
-
-    // +++++++++++++++++++++++++++++++++++ DIR 6 +++++++++++++++++++++++++++++++++++++++
-
-  case 6:
-  case -6:
-
-    smokealpha_map = smoke3di->alphas_smokedir[ALPHA_YZ];
-    firealpha_map  = smoke3di->alphas_firedir[ALPHA_YZ];
-
-    // ++++++++++++++++++  draw triangles +++++++++++++++++
-
-    glBegin(GL_TRIANGLES);
-    slice_beg = 1;
-    slice_end = ny+nz-2;
-    for(iii = slice_beg;iii<slice_end;iii += smoke3d_skip_frontback){
-      int jpk;
-
-      jpk = iii;
-      if(ssmokedir<0)jpk = ny+nz-2-iii;
-      jbeg = 0;
-      kbeg = jpk;
-      if(kbeg>nz-1){
-        kbeg = nz-1;
-        jbeg = jpk-kbeg;
-      }
-      jend = ny-1;
-      kend = jpk-jend;
-      if(kend<0){
-        kend = 0;
-        jend = jpk-kend;
-      }
-      for(i = is1; i<is2; i+=smoke3d_skip_horiz){
-        int i2;
-
-        i2 = MIN(i+smoke3d_skip_horiz, is2);
-        iterm = (i-is1);
-        x1 = xplt[i];
-        x3 = xplt[i2];
-        xnode[0] = x1;
-        xnode[1] = x1;
-        xnode[2] = x3;
-        xnode[3] = x3;
-        for(jj = jbeg;jj<jend;jj++){
-          j = js1+jj;
-          jterm = (j-js1)*nx;
-          yy1 = yplt[j];
-          y3 = yplt[j+1];
-
-          ynode[0] = yy1;
-          ynode[1] = y3;
-          ynode[2] = y3;
-          ynode[3] = yy1;
-
-          kk = jpk-jj;
-          k = ks1+kk;
-          kterm = (k-ks1)*nxy;
-
-          z1 = zplt[k];
-          z3 = zplt[k-1];
-
-          znode[0] = z1;
-          znode[1] = z3;
-          znode[2] = z3;
-          znode[3] = z1;
-
-          n11 = iterm+jterm+kterm;
-          n12 = n11+nx-nxy;
-          n22 = n12+1;
-          n21 = n22-nx+nxy;
-
-          //        n11 = (i-is1)   + (j-js1)*nx   + (k-ks1)*nx*ny;
-          //        n12 = (i-is1)   + (j+1-js1)*nx + (k-1-ks1)*nx*ny;
-          //        n22 = (i+1-is1) + (j+1-js1)*nx + (k-1-ks1)*nx*ny;
-          //        n21 = (i+1-is1) + (j-js1)*nx   + (k-ks1)*nx*ny;
-
-          if(global_scase.nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
-            int m11, m12, m22, m21;
-
-            m11 = iterm+jterm;
-            m12 = m11+nx;
-            m22 = m12+1;
-            m21 = m22-nx;
-            DRAWTERRAINVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
-          }
-          else{
-            DRAWVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
-          }
-        }
-      }
-    }
-    glEnd();
-    break;
-
-    // +++++++++++++++++++++++++++++++++++ DIR 7 +++++++++++++++++++++++++++++++++++++++
-
-  case 7:
-  case -7:
-
-    smokealpha_map = smoke3di->alphas_smokedir[ALPHA_YZ];
-    firealpha_map  = smoke3di->alphas_firedir[ALPHA_YZ];
-
-    // ++++++++++++++++++  draw triangles +++++++++++++++++
-
-    glBegin(GL_TRIANGLES);
-
-    slice_beg = 1;
-    slice_end = ny+nz-2;
-    for(iii = slice_beg;iii<slice_end;iii += smoke3d_skip_frontback){
-      int kmj;
-
-      kmj = iii;
-      if(ssmokedir<0)kmj = ny+nz-2-iii;
-
-      jbeg = 0;
-      kbeg = jbeg-ny+1+kmj;
-      if(kbeg<0){
-        kbeg = 0;
-        jbeg = kbeg+ny-1-kmj;
-      }
-      jend = ny-1;
-      kend = jend+kmj+1-ny;
-      if(kend>nz-1){
-        kend = nz-1;
-        jend = kend+ny-1-kmj;
-      }
-      for(i = is1; i<is2; i+=smoke3d_skip_horiz){
-        int i2;
-
-        i2 = MIN(i+smoke3d_skip_horiz, is2);
-        iterm = (i-is1);
-        x1 = xplt[i];
-        x3 = xplt[i2];
-        xnode[0] = x1;
-        xnode[1] = x1;
-        xnode[2] = x3;
-        xnode[3] = x3;
-        for(jj = jbeg;jj<jend;jj++){
-          j = js1+jj;
-          jterm = (j-js1)*nx;
-
-          kk = jj+kmj+1-ny;
-          k = ks1+kk;
-          kterm = (k-ks1)*nxy;
-
-
-          z1 = zplt[k];
-          z3 = zplt[k+1];
-
-          znode[0] = z1;
-          znode[1] = z3;
-          znode[2] = z3;
-          znode[3] = z1;
-
-          yy1 = yplt[j];
-          y3 = yplt[j+1];
-          ynode[0] = yy1;
-          ynode[1] = y3;
-          ynode[2] = y3;
-          ynode[3] = yy1;
-
-
-          n11 = jterm+iterm+kterm;
-          n12 = n11+nxy+nx;
-          n22 = n12+1;
-          n21 = n22-nx-nxy;
-
-          //    n11 = (i-is1)   + (j-js1)*nx    + (k-ks1)*nx*ny;
-          //    n12 = (i-is1)   + (j+1-js1)*nx  + (k+1-ks1)*nx*ny;
-          //    n22 = (i+1-is1) + (j+1-js1)*nx  + (k+1-ks1)*nx*ny;
-          //    n21 = (i+1-is1) + (j-js1)*nx    + (k-ks1)*nx*ny;
-
-          if(global_scase.nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
-            int m11, m12, m22, m21;
-
-            m11 = iterm+jterm;
-            m12 = m11+nx;
-            m22 = m12+1;
-            m21 = m22-nx;
-            DRAWTERRAINVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
-          }
-          else{
-            DRAWVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
-          }
-        }
-      }
-    }
-    glEnd();
-    break;
-
-
-    // +++++++++++++++++++++++++++++++++++ DIR 8 +++++++++++++++++++++++++++++++++++++++
-
-  case 8:
-  case -8:
-
-    smokealpha_map = smoke3di->alphas_smokedir[ALPHA_XZ];
-    firealpha_map  = smoke3di->alphas_firedir[ALPHA_XZ];
-
-    // ++++++++++++++++++  draw triangles +++++++++++++++++
-
-    glBegin(GL_TRIANGLES);
-    slice_beg = 1;
-    slice_end = nx+nz-2;
-    for(iii = slice_beg;iii<slice_end;iii += smoke3d_skip_frontback){
-      int ipk;
-
-      ipk = iii;
-      if(ssmokedir<0)ipk = nx+nz-2-iii;
-      ibeg = 0;
-      kbeg = ipk;
-      if(kbeg>nz-1){
-        kbeg = nz-1;
-        ibeg = ipk-kbeg;
-      }
-      iend = nx-1;
-      kend = ipk-iend;
-      if(kend<0){
-        kend = 0;
-        iend = ipk-kend;
-      }
-      for(j = js1; j<js2; j+=smoke3d_skip_vert){
-        int j2;
-
-        j2 = MIN(j+smoke3d_skip_vert, js2);
-        jterm = (j-js1)*nx;
-        yy1 = yplt[j];
-        y3 = yplt[j2];
-        ynode[0] = yy1;
-        ynode[1] = yy1;
-        ynode[2] = y3;
-        ynode[3] = y3;
-        for(ii = ibeg;ii<iend;ii++){
-          i = is1+ii;
-          iterm = (i-is1);
-          x1 = xplt[i];
-          x3 = xplt[i+1];
-
-          xnode[0] = x1;
-          xnode[1] = x3;
-          xnode[2] = x3;
-          xnode[3] = x1;
-
-          kk = ipk-ii;
-          k = ks1+kk;
-          kterm = (k-ks1)*nxy;
-
-          z1 = zplt[k];
-          z3 = zplt[k-1];
-
-          znode[0] = z1;
-          znode[1] = z3;
-          znode[2] = z3;
-          znode[3] = z1;
-
-          n11 = iterm+jterm+kterm;
-          n12 = n11+1-nxy;
-          n22 = n12+nx;
-          n21 = n22-1+nxy;
-
-          //        n11 = (i-is1)   + (j-js1)*nx   + (k-ks1)*nx*ny;
-          //        n12 = (i+1-is1) + (j-js1)*nx   + (k-1-ks1)*nx*ny;
-          //        n22 = (i+1-is1) + (j+1-js1)*nx + (k-1-ks1)*nx*ny;
-          //        n21 = (i-is1)   + (j+1-js1)*nx + (k-ks1)*nx*ny;
-
-          if(global_scase.nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
-            int m11, m12, m22, m21;
-
-            m11 = iterm+jterm;
-            m12 = m11+1;
-            m22 = m12+nx;
-            m21 = m22-1;
-            DRAWTERRAINVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
-          }
-          else{
-            DRAWVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
-          }
-        }
-      }
-    }
-    glEnd();
-    break;
-
-    // +++++++++++++++++++++++++++++++++++ DIR 9 +++++++++++++++++++++++++++++++++++++++
-
-  case 9:
-  case -9:
-
-    smokealpha_map = smoke3di->alphas_smokedir[ALPHA_XZ];
-    firealpha_map  = smoke3di->alphas_firedir[ALPHA_XZ];
-
-    // ++++++++++++++++++  draw triangles +++++++++++++++++
-
-    glBegin(GL_TRIANGLES);
-
-    slice_beg = 1;
-    slice_end = nx+nz-2;
-    for(iii = slice_beg;iii<slice_end;iii += smoke3d_skip_frontback){
-      int kmi;
-
-      kmi = iii;
-      if(ssmokedir<0)kmi = nx+nz-2-iii;
-
-      ibeg = 0;
-      kbeg = ibeg-nx+1+kmi;
-      if(kbeg<0){
-        kbeg = 0;
-        ibeg = kbeg+nx-1-kmi;
-      }
-      iend = nx-1;
-      kend = iend+kmi+1-nx;
-      if(kend>nz-1){
-        kend = nz-1;
-        iend = kend+nx-1-kmi;
-      }
-      for(j = js1; j<js2; j+=smoke3d_skip_vert){
-        int j2;
-
-        j2 = MIN(j+smoke3d_skip_vert, js2);
-        jterm = (j-js1)*nx;
-        yy1 = yplt[j];
-        y3 = yplt[j2];
-        ynode[0] = yy1;
-        ynode[1] = yy1;
-        ynode[2] = y3;
-        ynode[3] = y3;
-        for(ii = ibeg;ii<iend;ii++){
-          i = is1+ii;
-          iterm = (i-is1);
-
-          kk = ii+kmi+1-nx;
-          k = ks1+kk;
-          kterm = (k-ks1)*nxy;
-
-
-          z1 = zplt[k];
-          z3 = zplt[k+1];
-
-          znode[0] = z1;
-          znode[1] = z3;
-          znode[2] = z3;
-          znode[3] = z1;
-
-          x1 = xplt[i];
-          x3 = xplt[i+1];
-          xnode[0] = x1;
-          xnode[1] = x3;
-          xnode[2] = x3;
-          xnode[3] = x1;
-
-
-          n11 = jterm+iterm+kterm;
-          n12 = n11+nxy+1;
-          n22 = n12+nx;
-          n21 = n22-1-nxy;
-
-          //    n11 = (i-is1)   + (j-js1)*nx   + (k-ks1)*nx*ny;
-          //    n12 = (i+1-is1) + (j-js1)*nx   + (k+1-ks1)*nx*ny;
-          //    n22 = (i+1-is1) + (j+1-js1)*nx + (k+1-ks1)*nx*ny;
-          //    n21 = (i-is1)   + (j+1-js1)*nx + (k-ks1)*nx*ny;
-
-          if(global_scase.nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
-            int m11, m12, m22, m21;
-
-            m11 = iterm+jterm;
-            m12 = m11+1;
-            m22 = m12+nx;
-            m21 = m22-1;
-            DRAWTERRAINVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
-          }
-          else{
-            DRAWVERTEXGPU(xnode[mm], ynode[mm], znode[mm])
-          }
-        }
-      }
-    }
-    glEnd();
-    break;
   default:
     assert(FFALSE);
     break;
@@ -1337,13 +745,13 @@ void InitAlphas(unsigned char *smokealphanew, unsigned char *firealphanew, float
 }
 
 /* ------------------ UpdateSmokeAlphas ------------------------ */
-
+#define NDISTS 3
 void UpdateSmokeAlphas(void){
   int i;
 
   for(i = 0; i<global_scase.smoke3dcoll.nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
-    float dists[6];
+    float dists[NDISTS];
     meshdata *smoke_mesh;
     int j;
     float dx;
@@ -1355,10 +763,7 @@ void UpdateSmokeAlphas(void){
     dists[ALPHA_X]  = dx;
     dists[ALPHA_Y]  = smoke_mesh->dxyz_fds[1];
     dists[ALPHA_Z]  = smoke_mesh->dxyz_fds[2];
-    dists[ALPHA_XY] = smoke_mesh->dxyDdx*dx;
-    dists[ALPHA_YZ] = smoke_mesh->dyzDdx*dx;
-    dists[ALPHA_XZ] = smoke_mesh->dxzDdx*dx;
-    for(j=0;j<6;j++){
+    for(j=0;j<NDISTS;j++){
       float maxval;
 
 #ifndef pp_SPEEDUP
@@ -1380,18 +785,15 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
   int i, j, k, n;
   float constval, x1, x3, z1, z3, yy1, y3;
   int is1, is2, js1, js2, ks1, ks2;
-  int ii, jj, kk;
-  int ibeg, iend, jbeg, jend, kbeg, kend;
   float *znode_offset=NULL, z_offset[4];
 
   float *xplt, *yplt, *zplt;
   unsigned char *smokealpha_ptr, *smokecolor_ptr;
-  int nx, ny, nz;
   unsigned char *alphaf_out, *alphaf_ptr;
   unsigned char *colorptr;
   int xyzindex1[6], xyzindex2[6], *xyzindex, node;
   float xnode[4], znode[4], ynode[4];
-  int iterm, jterm, kterm, nxy;
+  int iterm, jterm, kterm;
   unsigned int n11, n12, n22, n21;
   int iii, jjj, kkk;
   int slice_end, slice_beg;
@@ -1454,10 +856,9 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
   if(smoke3d_jmax > 0 && js2 > smoke3d_jmax)js2 = smoke3d_jmax;
   if(smoke3d_kmax > 0 && ks2 > smoke3d_kmax)ks2 = smoke3d_kmax;
 
-  nx = smoke3di->is2+1-smoke3di->is1;
-  ny = js2+1-js1;
-  nz = ks2+1-ks1;
-  nxy = nx*ny;
+  int nx = smoke3di->is2+1-smoke3di->is1;
+  int ny = js2+1-js1;
+  int nxy = nx*ny;
 
   ssmokedir = meshi->smokedir;
 
@@ -1757,773 +1158,6 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
     }
     glEnd();
     break;
-
-    // +++++++++++++++++++++++++++++++++++ DIR 4 +++++++++++++++++++++++++++++++++++++++
-
-  case 4:
-  case -4:
-
-    // ++++++++++++++++++  adjust transparency +++++++++++++++++
-
-    smokealpha_map = smoke3di->alphas_smokedir[ALPHA_XY];
-    firealpha_map  = smoke3di->alphas_firedir[ALPHA_XY];
-    for(iii = 1;iii<nx+ny-2;iii += smoke3d_skip_frontback){
-      int ipj;
-
-      ipj = iii;
-      if(ssmokedir<0)ipj = nx+ny-2-iii;
-      ibeg = 0;
-      jbeg = ipj;
-      if(jbeg>ny-1){
-        jbeg = ny-1;
-        ibeg = ipj-jbeg;
-      }
-      iend = nx-1;
-      jend = ipj-iend;
-      if(jend<0){
-        jend = 0;
-        iend = ipj-jend;
-      }
-      for(k = ks1;k<=ks2;k++){
-        kterm = (k-ks1)*nxy;
-        for(ii = ibeg;ii<=iend;ii++){
-          i = is1+ii;
-          iterm = (i-is1);
-
-          jj = ipj-ii;
-          j = js1+jj;
-          jterm = (j-js1)*nx;
-
-          n = iterm+jterm+kterm;
-          assert(n>=0&&n<smoke3di->nchars_uncompressed);
-          ADJUSTALPHA(smokealpha_ptr[n]);
-        }
-      }
-    }
-    alphaf_ptr = alphaf_out;
-
-    // ++++++++++++++++++  draw triangles +++++++++++++++++
-
-    glBegin(GL_TRIANGLES);
-    slice_beg = 1;
-    slice_end = nx+ny-2;
-    for(iii = slice_beg;iii<slice_end;iii += smoke3d_skip_frontback){
-      int ipj;
-
-      ipj = iii;
-      if(ssmokedir<0)ipj = nx+ny-2-iii;
-      ibeg = 0;
-      jbeg = ipj;
-      if(jbeg>ny-1){
-        jbeg = ny-1;
-        ibeg = ipj-jbeg;
-      }
-      iend = nx-1;
-      jend = ipj-iend;
-      if(jend<0){
-        jend = 0;
-        iend = ipj-jend;
-      }
-      for(k = ks1; k<ks2; k++){
-        kterm = (k-ks1)*nxy;
-        z1 = zplt[k];
-        z3 = zplt[k+1];
-        znode[0] = z1;
-        znode[1] = z1;
-        znode[2] = z3;
-        znode[3] = z3;
-        for(ii = ibeg;ii<iend;ii++){
-          i = is1+ii;
-          iterm = (i-is1);
-          x1 = xplt[i];
-          x3 = xplt[i+1];
-
-          xnode[0] = x1;
-          xnode[1] = x3;
-          xnode[2] = x3;
-          xnode[3] = x1;
-
-          jj = ipj-ii;
-          j = js1+jj;
-          jterm = (j-js1)*nx;
-
-          yy1 = yplt[j];
-          y3 = yplt[j-1];
-
-          ynode[0] = yy1;
-          ynode[1] = y3;
-          ynode[2] = y3;
-          ynode[3] = yy1;
-
-          n11 = iterm+jterm+kterm;
-          n12 = n11-nx+1;
-          n22 = n12+nxy;
-          n21 = n11+nxy;
-
-          //        n11 = (j  -js1)*nx + (i  -is1) + (k  -ks1)*nx*ny;
-          //        n12 = (j-1-js1)*nx + (i+1-is1) + (k  -ks1)*nx*ny;
-          //        n22 = (j-1-js1)*nx + (i+1-is1) + (k+1-ks1)*nx*ny;
-          //        n21 = (j  -js1)*nx + (i  -is1) + (k+1-ks1)*nx*ny;
-
-          if(global_scase.nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
-            int m11, m12, m22, m21;
-
-            m11 = iterm+jterm;
-            m12 = m11-nx+1;
-            m22 = m12;
-            m21 = m11;
-            DRAWTERRAINVERTEX(xnode[mm], ynode[mm], znode[mm])
-          }
-          else{
-            DRAWVERTEX(xnode[mm], ynode[mm], znode[mm])
-          }
-          nsmoke_triangles += 2;
-        }
-      }
-    }
-    glEnd();
-    break;
-
-    // +++++++++++++++++++++++++++++++++++ DIR 5 +++++++++++++++++++++++++++++++++++++++
-
-  case 5:
-  case -5:
-
-    // ++++++++++++++++++  adjust transparency +++++++++++++++++
-
-    smokealpha_map = smoke3di->alphas_smokedir[ALPHA_XY];
-    firealpha_map  = smoke3di->alphas_firedir[ALPHA_XY];
-    for(iii = 1;iii<nx+ny-2;iii += smoke3d_skip_frontback){
-      int jmi;
-
-      jmi = iii;
-      if(ssmokedir<0)jmi = nx+ny-2-iii;
-
-      ibeg = 0;
-      jbeg = ibeg-nx+1+jmi;
-      if(jbeg<0){
-        jbeg = 0;
-        ibeg = jbeg+nx-1-jmi;
-      }
-      iend = nx-1;
-      jend = iend+jmi+1-nx;
-      if(jend>ny-1){
-        jend = ny-1;
-        iend = jend+nx-1-jmi;
-      }
-      for(k = ks1;k<=ks2;k++){
-        kterm = (k-ks1)*nxy;
-        for(ii = ibeg;ii<=iend;ii++){
-          i = is1+ii;
-          iterm = (i-is1);
-
-          jj = ii+jmi+1-nx;
-          j = js1+jj;
-          jterm = (j-js1)*nx;
-
-          n = iterm+jterm+kterm;
-          assert(n>=0&&n<smoke3di->nchars_uncompressed);
-          ADJUSTALPHA(smokealpha_ptr[n]);
-        }
-      }
-    }
-    alphaf_ptr = alphaf_out;
-
-    // ++++++++++++++++++  draw triangles +++++++++++++++++
-
-    glBegin(GL_TRIANGLES);
-
-    slice_beg = 1;
-    slice_end = nx+ny-2;
-    for(iii = slice_beg;iii<slice_end;iii += smoke3d_skip_frontback){
-      int jmi;
-
-      jmi = iii;
-      if(ssmokedir<0)jmi = nx+ny-2-iii;
-
-      ibeg = 0;
-      jbeg = ibeg-nx+1+jmi;
-      if(jbeg<0){
-        jbeg = 0;
-        ibeg = jbeg+nx-1-jmi;
-      }
-      iend = nx-1;
-      jend = iend+jmi+1-nx;
-      if(jend>ny-1){
-        jend = ny-1;
-        iend = jend+nx-1-jmi;
-      }
-      for(k = ks1; k<ks2; k++){
-        kterm = (k-ks1)*nxy;
-        z1 = zplt[k];
-        z3 = zplt[k+1];
-        znode[0] = z1;
-        znode[1] = z1;
-        znode[2] = z3;
-        znode[3] = z3;
-        for(ii = ibeg;ii<iend;ii++){
-          i = is1+ii;
-          iterm = (i-is1);
-
-          jj = ii+jmi+1-nx;
-          j = js1+jj;
-          jterm = (j-js1)*nx;
-
-          yy1 = yplt[j];
-          y3 = yplt[j+1];
-
-          ynode[0] = yy1;
-          ynode[1] = y3;
-          ynode[2] = y3;
-          ynode[3] = yy1;
-
-          x1 = xplt[i];
-          x3 = xplt[i+1];
-          xnode[0] = x1;
-          xnode[1] = x3;
-          xnode[2] = x3;
-          xnode[3] = x1;
-
-
-          n11 = jterm+iterm+kterm;
-          n12 = n11+nx+1;
-          n22 = n12+nxy;
-          n21 = n11+nxy;
-
-          //    n11 = (j  -js1)*nx + (i  -is1) + (k  -ks1)*nx*ny;
-          //    n12 = (j+1-js1)*nx + (i+1-is1) + (k  -ks1)*nx*ny;
-          //    n22 = (j+1-js1)*nx + (i+1-is1) + (k+1-ks1)*nx*ny;
-          //    n21 = (j  -js1)*nx + (i  -is1) + (k+1-ks1)*nx*ny;
-
-          if(global_scase.nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
-            int m11, m12, m22, m21;
-
-            m11 = iterm+jterm;
-            m12 = m11+nx+1;
-            m22 = m12;
-            m21 = m11-nx;
-            DRAWTERRAINVERTEX(xnode[mm], ynode[mm], znode[mm])
-          }
-          else{
-            DRAWVERTEX(xnode[mm], ynode[mm], znode[mm])
-          }
-          nsmoke_triangles += 2;
-        }
-      }
-    }
-    glEnd();
-    break;
-
-    // +++++++++++++++++++++++++++++++++++ DIR 6 +++++++++++++++++++++++++++++++++++++++
-
-  case 6:
-  case -6:
-
-    // ++++++++++++++++++  adjust transparency +++++++++++++++++
-
-    smokealpha_map = smoke3di->alphas_smokedir[ALPHA_YZ];
-    firealpha_map  = smoke3di->alphas_firedir[ALPHA_YZ];
-    for(iii = 1;iii<ny+nz-2;iii += smoke3d_skip_frontback){
-      int jpk;
-
-      jpk = iii;
-      if(ssmokedir<0)jpk = ny+nz-2-iii;
-      jbeg = 0;
-      kbeg = jpk;
-      if(kbeg>nz-1){
-        kbeg = nz-1;
-        jbeg = jpk-kbeg;
-      }
-      jend = ny-1;
-      kend = jpk-jend;
-      if(kend<0){
-        kend = 0;
-        jend = jpk-kend;
-      }
-      for(i = is1;i<=is2;i++){
-        iterm = (i-is1);
-        for(jj = jbeg;jj<=jend;jj++){
-          j = js1+jj;
-          jterm = (j-js1)*nx;
-
-          kk = jpk-jj;
-          k = ks1+kk;
-          kterm = (k-ks1)*nxy;
-
-          n = iterm+jterm+kterm;
-          assert(n>=0&&n<smoke3di->nchars_uncompressed);
-          ADJUSTALPHA(smokealpha_ptr[n]);
-        }
-      }
-    }
-    alphaf_ptr = alphaf_out;
-
-    // ++++++++++++++++++  draw triangles +++++++++++++++++
-
-    glBegin(GL_TRIANGLES);
-    slice_beg = 1;
-    slice_end = ny+nz-2;
-    for(iii = slice_beg;iii<slice_end;iii += smoke3d_skip_frontback){
-      int jpk;
-
-      jpk = iii;
-      if(ssmokedir<0)jpk = ny+nz-2-iii;
-      jbeg = 0;
-      kbeg = jpk;
-      if(kbeg>nz-1){
-        kbeg = nz-1;
-        jbeg = jpk-kbeg;
-      }
-      jend = ny-1;
-      kend = jpk-jend;
-      if(kend<0){
-        kend = 0;
-        jend = jpk-kend;
-      }
-      for(i = is1; i<is2; i++){
-        iterm = (i-is1);
-        x1 = xplt[i];
-        x3 = xplt[i+1];
-        xnode[0] = x1;
-        xnode[1] = x1;
-        xnode[2] = x3;
-        xnode[3] = x3;
-        for(jj = jbeg;jj<jend;jj++){
-          j = js1+jj;
-          jterm = (j-js1)*nx;
-          yy1 = yplt[j];
-          y3 = yplt[j+1];
-
-          ynode[0] = yy1;
-          ynode[1] = y3;
-          ynode[2] = y3;
-          ynode[3] = yy1;
-
-          kk = jpk-jj;
-          k = ks1+kk;
-          kterm = (k-ks1)*nxy;
-
-          z1 = zplt[k];
-          z3 = zplt[k-1];
-
-          znode[0] = z1;
-          znode[1] = z3;
-          znode[2] = z3;
-          znode[3] = z1;
-
-          n11 = iterm+jterm+kterm;
-          n12 = n11+nx-nxy;
-          n22 = n12+1;
-          n21 = n22-nx+nxy;
-
-          //        n11 = (i  -is1) + (j  -js1)*nx + (k  -ks1)*nx*ny;
-          //        n12 = (i  -is1) + (j+1-js1)*nx + (k-1-ks1)*nx*ny;
-          //        n22 = (i+1-is1) + (j+1-js1)*nx + (k-1-ks1)*nx*ny;
-          //        n21 = (i+1-is1) + (j  -js1)*nx + (k  -ks1)*nx*ny;
-
-          if(global_scase.nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
-            int m11, m12, m22, m21;
-
-            m11 = iterm+jterm;
-            m12 = m11+nx;
-            m22 = m12+1;
-            m21 = m22-nx;
-            DRAWTERRAINVERTEX(xnode[mm], ynode[mm], znode[mm])
-          }
-          else{
-            DRAWVERTEX(xnode[mm], ynode[mm], znode[mm])
-          }
-          nsmoke_triangles += 2;
-        }
-      }
-    }
-    glEnd();
-    break;
-
-    // +++++++++++++++++++++++++++++++++++ DIR 7 +++++++++++++++++++++++++++++++++++++++
-
-  case 7:
-  case -7:
-
-    // ++++++++++++++++++  adjust transparency +++++++++++++++++
-
-    smokealpha_map = smoke3di->alphas_smokedir[ALPHA_YZ];
-    firealpha_map  = smoke3di->alphas_firedir[ALPHA_YZ];
-    for(iii = 1;iii<ny+nz-2;iii += smoke3d_skip_frontback){
-      int kmj;
-
-      kmj = iii;
-      if(ssmokedir<0)kmj = ny+nz-2-iii;
-
-      jbeg = 0;
-      kbeg = jbeg-ny+1+kmj;
-      if(kbeg<0){
-        kbeg = 0;
-        jbeg = kbeg+ny-1-kmj;
-      }
-      jend = ny-1;
-      kend = jend+kmj+1-ny;
-      if(kend>nz-1){
-        kend = nz-1;
-        jend = kend+ny-1-kmj;
-      }
-      for(i = is1;i<=is2;i++){
-        iterm = (i-is1);
-        for(jj = jbeg;jj<=jend;jj++){
-          j = js1+jj;
-          jterm = (j-js1)*nx;
-
-          kk = jj+kmj+1-ny;
-          k = ks1+kk;
-          kterm = (k-ks1)*nxy;
-
-          n = iterm+jterm+kterm;
-          assert(n>=0&&n<smoke3di->nchars_uncompressed);
-          ADJUSTALPHA(smokealpha_ptr[n]);
-        }
-      }
-    }
-    alphaf_ptr = alphaf_out;
-
-    // ++++++++++++++++++  draw triangles +++++++++++++++++
-
-    glBegin(GL_TRIANGLES);
-
-    slice_beg = 1;
-    slice_end = ny+nz-2;
-    for(iii = slice_beg;iii<slice_end;iii += smoke3d_skip_frontback){
-      int kmj;
-
-      kmj = iii;
-      if(ssmokedir<0)kmj = ny+nz-2-iii;
-
-      jbeg = 0;
-      kbeg = jbeg-ny+1+kmj;
-      if(kbeg<0){
-        kbeg = 0;
-        jbeg = kbeg+ny-1-kmj;
-      }
-      jend = ny-1;
-      kend = jend+kmj+1-ny;
-      if(kend>nz-1){
-        kend = nz-1;
-        jend = kend+ny-1-kmj;
-      }
-      for(i = is1; i<is2; i++){
-        iterm = (i-is1);
-        x1 = xplt[i];
-        x3 = xplt[i+1];
-        xnode[0] = x1;
-        xnode[1] = x1;
-        xnode[2] = x3;
-        xnode[3] = x3;
-        for(jj = jbeg;jj<jend;jj++){
-          j = js1+jj;
-          jterm = (j-js1)*nx;
-
-          kk = jj+kmj+1-ny;
-          k = ks1+kk;
-          kterm = (k-ks1)*nxy;
-
-          z1 = zplt[k];
-          z3 = zplt[k+1];
-
-          znode[0] = z1;
-          znode[1] = z3;
-          znode[2] = z3;
-          znode[3] = z1;
-
-          yy1 = yplt[j];
-          y3 = yplt[j+1];
-          ynode[0] = yy1;
-          ynode[1] = y3;
-          ynode[2] = y3;
-          ynode[3] = yy1;
-
-          n11 = jterm+iterm+kterm;
-          n12 = n11+nxy+nx;
-          n22 = n12+1;
-          n21 = n22-nx-nxy;
-
-          //    n11 = (i  -is1) + (j  -js1)*nx  + (k  -ks1)*nx*ny;
-          //    n12 = (i  -is1) + (j+1-js1)*nx  + (k+1-ks1)*nx*ny;
-          //    n22 = (i+1-is1) + (j+1-js1)*nx  + (k+1-ks1)*nx*ny;
-          //    n21 = (i+1-is1) + (j  -js1)*nx  + (k  -ks1)*nx*ny;
-
-          if(global_scase.nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
-            int m11, m12, m22, m21;
-
-            m11 = iterm+jterm;
-            m12 = m11+nx;
-            m22 = m12+1;
-            m21 = m22-nx;
-            DRAWTERRAINVERTEX(xnode[mm], ynode[mm], znode[mm])
-          }
-          else{
-            DRAWVERTEX(xnode[mm], ynode[mm], znode[mm])
-          }
-          nsmoke_triangles += 2;
-        }
-      }
-    }
-    glEnd();
-    break;
-
-    // +++++++++++++++++++++++++++++++++++ DIR 8 +++++++++++++++++++++++++++++++++++++++
-
-  case 8:
-  case -8:
-
-    // ++++++++++++++++++  adjust transparency +++++++++++++++++
-
-    smokealpha_map = smoke3di->alphas_smokedir[ALPHA_XZ];
-    firealpha_map  = smoke3di->alphas_firedir[ALPHA_XZ];
-    for(iii = 1;iii<nx+nz-2;iii += smoke3d_skip_frontback){
-      int ipk;
-
-      ipk = iii;
-      if(ssmokedir<0)ipk = nx+nz-2-iii;
-      ibeg = 0;
-      kbeg = ipk;
-      if(kbeg>nz-1){
-        kbeg = nz-1;
-        ibeg = ipk-kbeg;
-      }
-      iend = nx-1;
-      kend = ipk-iend;
-      if(kend<0){
-        kend = 0;
-        iend = ipk-kend;
-      }
-      for(j = js1;j<=js2;j++){
-        jterm = (j-js1)*nx;
-        for(ii = ibeg;ii<=iend;ii++){
-          i = is1+ii;
-          iterm = (i-is1);
-
-          kk = ipk-ii;
-          k = ks1+kk;
-          kterm = (k-ks1)*nxy;
-
-          n = iterm+jterm+kterm;
-          assert(n>=0&&n<smoke3di->nchars_uncompressed);
-          ADJUSTALPHA(smokealpha_ptr[n]);
-        }
-      }
-    }
-    alphaf_ptr = alphaf_out;
-
-    // ++++++++++++++++++  draw triangles +++++++++++++++++
-
-    glBegin(GL_TRIANGLES);
-    slice_beg = 1;
-    slice_end = nx+nz-2;
-    for(iii = slice_beg;iii<slice_end;iii += smoke3d_skip_frontback){
-      int ipk;
-
-      ipk = iii;
-      if(ssmokedir<0)ipk = nx+nz-2-iii;
-      ibeg = 0;
-      kbeg = ipk;
-      if(kbeg>nz-1){
-        kbeg = nz-1;
-        ibeg = ipk-kbeg;
-      }
-      iend = nx-1;
-      kend = ipk-iend;
-      if(kend<0){
-        kend = 0;
-        iend = ipk-kend;
-      }
-      for(j = js1; j<js2; j++){
-        jterm = (j-js1)*nx;
-        yy1 = yplt[j];
-        y3 = yplt[j+1];
-        ynode[0] = yy1;
-        ynode[1] = yy1;
-        ynode[2] = y3;
-        ynode[3] = y3;
-        for(ii = ibeg;ii<iend;ii++){
-          i = is1+ii;
-          iterm = (i-is1);
-          x1 = xplt[i];
-          x3 = xplt[i+1];
-
-          xnode[0] = x1;
-          xnode[1] = x3;
-          xnode[2] = x3;
-          xnode[3] = x1;
-
-          kk = ipk-ii;
-          k = ks1+kk;
-          kterm = (k-ks1)*nxy;
-
-          z1 = zplt[k];
-          z3 = zplt[k-1];
-
-          znode[0] = z1;
-          znode[1] = z3;
-          znode[2] = z3;
-          znode[3] = z1;
-
-          n11 = iterm+jterm+kterm;
-          n12 = n11+1-nxy;
-          n22 = n12+nx;
-          n21 = n22-1+nxy;
-
-          //        n11 = (i  -is1) + (j  -js1)*nx + (k  -ks1)*nx*ny;
-          //        n12 = (i+1-is1) + (j  -js1)*nx + (k-1-ks1)*nx*ny;
-          //        n22 = (i+1-is1) + (j+1-js1)*nx + (k-1-ks1)*nx*ny;
-          //        n21 = (i  -is1) + (j+1-js1)*nx + (k  -ks1)*nx*ny;
-
-          if(global_scase.nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
-            int m11, m12, m22, m21;
-
-            m11 = iterm+jterm;
-            m12 = m11+1;
-            m22 = m12+nx;
-            m21 = m22-1;
-            DRAWTERRAINVERTEX(xnode[mm], ynode[mm], znode[mm])
-          }
-          else{
-            DRAWVERTEX(xnode[mm], ynode[mm], znode[mm])
-          }
-          nsmoke_triangles += 2;
-        }
-      }
-    }
-    glEnd();
-    break;
-
-    // +++++++++++++++++++++++++++++++++++ DIR 9 +++++++++++++++++++++++++++++++++++++++
-
-  case 9:
-  case -9:
-
-    // ++++++++++++++++++  adjust transparency +++++++++++++++++
-
-    smokealpha_map = smoke3di->alphas_smokedir[ALPHA_XZ];
-    firealpha_map  = smoke3di->alphas_firedir[ALPHA_XZ];
-    for(iii = 1;iii<nx+nz-2;iii += smoke3d_skip_frontback){
-      int kmi;
-
-      kmi = iii;
-      if(ssmokedir<0)kmi = nx+nz-2-iii;
-
-      ibeg = 0;
-      kbeg = ibeg-nx+1+kmi;
-      if(kbeg<0){
-        kbeg = 0;
-        ibeg = kbeg+nx-1-kmi;
-      }
-      iend = nx-1;
-      kend = iend+kmi+1-nx;
-      if(kend>nz-1){
-        kend = nz-1;
-        iend = kend+nx-1-kmi;
-      }
-      for(j = js1;j<=js2;j++){
-        jterm = (j-js1)*nx;
-        for(ii = ibeg;ii<=iend;ii++){
-          i = is1+ii;
-          iterm = (i-is1);
-
-          kk = ii+kmi+1-nx;
-          k = ks1+kk;
-          kterm = (k-ks1)*nxy;
-
-          n = iterm+jterm+kterm;
-          assert(n>=0&&n<smoke3di->nchars_uncompressed);
-          ADJUSTALPHA(smokealpha_ptr[n]);
-        }
-      }
-    }
-    alphaf_ptr = alphaf_out;
-
-    // ++++++++++++++++++  draw triangles +++++++++++++++++
-
-    glBegin(GL_TRIANGLES);
-
-    slice_beg = 1;
-    slice_end = nx+nz-2;
-    for(iii = slice_beg;iii<slice_end;iii += smoke3d_skip_frontback){
-      int kmi;
-
-      kmi = iii;
-      if(ssmokedir<0)kmi = nx+nz-2-iii;
-
-      ibeg = 0;
-      kbeg = ibeg-nx+1+kmi;
-      if(kbeg<0){
-        kbeg = 0;
-        ibeg = kbeg+nx-1-kmi;
-      }
-      iend = nx-1;
-      kend = iend+kmi+1-nx;
-      if(kend>nz-1){
-        kend = nz-1;
-        iend = kend+nx-1-kmi;
-      }
-      for(j = js1; j<js2; j++){
-        jterm = (j-js1)*nx;
-        yy1 = yplt[j];
-        y3 = yplt[j+1];
-        ynode[0] = yy1;
-        ynode[1] = yy1;
-        ynode[2] = y3;
-        ynode[3] = y3;
-        for(ii = ibeg;ii<iend;ii++){
-          i = is1+ii;
-          iterm = (i-is1);
-
-          kk = ii+kmi+1-nx;
-          k = ks1+kk;
-          kterm = (k-ks1)*nxy;
-
-          z1 = zplt[k];
-          z3 = zplt[k+1];
-
-          znode[0] = z1;
-          znode[1] = z3;
-          znode[2] = z3;
-          znode[3] = z1;
-
-          x1 = xplt[i];
-          x3 = xplt[i+1];
-          xnode[0] = x1;
-          xnode[1] = x3;
-          xnode[2] = x3;
-          xnode[3] = x1;
-
-
-          n11 = jterm+iterm+kterm;
-          n12 = n11+nxy+1;
-          n22 = n12+nx;
-          n21 = n22-1-nxy;
-
-          //    n11 = (i  -is1) + (j  -js1)*nx + (k  -ks1)*nx*ny;
-          //    n12 = (i+1-is1) + (j  -js1)*nx + (k+1-ks1)*nx*ny;
-          //    n22 = (i+1-is1) + (j+1-js1)*nx + (k+1-ks1)*nx*ny;
-          //    n21 = (i  -is1) + (j+1-js1)*nx + (k  -ks1)*nx*ny;
-
-          if(global_scase.nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
-            int m11, m12, m22, m21;
-
-            m11 = iterm+jterm;
-            m12 = m11+1;
-            m22 = m12+nx;
-            m21 = m22-1;
-            DRAWTERRAINVERTEX(xnode[mm], ynode[mm], znode[mm])
-          }
-          else{
-            DRAWVERTEX(xnode[mm], ynode[mm], znode[mm])
-          }
-          nsmoke_triangles += 2;
-        }
-      }
-    }
-    glEnd();
-    break;
   default:
     assert(FFALSE);
     break;
@@ -2722,19 +1356,6 @@ void DrawSmokeFrame(void){
     if(smokemesh->in_frustum == 0)continue;
     if(smokemesh->datavis == 0)continue;
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
-    if(smoke3d_use_skip==1){
-      if(smoke3di->smokeframe_loaded==NULL){
-        NewMemory((void **)&smoke3di->smokeframe_loaded, smoke3di->ntimes_full*sizeof(int));
-        int j;
-        for(j=0;j<smoke3di->ntimes_full;j++){
-          smoke3di->smokeframe_loaded[j] = 0;
-        }
-        for(j=smoke3d_start_frame;j<smoke3di->ntimes_full;j+=smoke3d_skip_frame){
-          smoke3di->smokeframe_loaded[j] = 1;
-        }
-      }
-      if(smoke3di->smokeframe_loaded!=NULL&&smoke3di->smokeframe_loaded[smoke3di->ismoke3d_time]==0)continue;
-    }
 #ifdef pp_OPACITY_DEBUG
     char alabel[256];
     float *xyz;
@@ -2746,8 +1367,6 @@ void DrawSmokeFrame(void){
     if(vis_smokemesh == 1||vis_only_smokemesh==1){
       DrawBoxMinMax(smokemesh->boxmin_smv, smokemesh->boxmax_smv, foregroundcolor);
     }
-#endif
-#ifdef pp_SPEEDUP
     if(vis_only_smokemesh == 0){
 #endif
 #ifdef pp_GPU
@@ -2806,47 +1425,6 @@ void DrawSmokeFrame(void){
   if(have_fire != NO_FIRE && show_smoke3d_colorbar == 1){
     DrawSmoke3DColorMap();
   }
-  SNIFF_ERRORS("after drawsmoke");
-}
-
-/* ------------------ DrawSmokeVolFrame ------------------------ */
-
-void DrawVolSmokeFrame(void){
-  int load_shaders = 0;
-
-  if(use_tload_begin==1&&GetTime()<global_scase.tload_begin)return;
-  if(use_tload_end==1&&GetTime()>global_scase.tload_end)return;
-  triangle_count = 0;
-  CheckMemory;
-  if(smoke3dVoldebug==1){
-    DrawSmoke3dVolDebug();
-  }
-#ifdef pp_GPU
-  if(usegpu==1){
-    LoadVolsmokeShaders();
-    load_shaders = 1;
-  }
-#endif
-#ifdef pp_GPU
-  if(usegpu==1){
-    //  glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
-    SNIFF_ERRORS("before DrawSmoke3dGpuVol");
-    DrawSmoke3DGPUVol();
-    SNIFF_ERRORS("after DrawSmoke3dGpuVol");
-    //  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-  }
-  else{
-    DrawSmoke3DVol();
-    SNIFF_ERRORS("after DrawSmoke3dVol");
-  }
-#else
-  DrawSmoke3DVol();
-#endif
-#ifdef pp_GPU
-  if(load_shaders==1){
-    UnLoadShaders();
-  }
-#endif
   SNIFF_ERRORS("after drawsmoke");
 }
 
@@ -4501,5 +3079,279 @@ void MakeIBlankSmoke3D(void){
         }
       }
     }
+  }
+}
+
+/* ------------------ IsBottomMesh ------------------------ */
+
+int IsBottomMesh(meshdata *mesh_from){
+  float xyz[3];
+  float *boxmax, *boxmin;
+  int return_val;
+
+  boxmin = mesh_from->boxmin_fds;
+  boxmax = mesh_from->boxmax_fds;
+  xyz[0] = (boxmin[0] + boxmax[0]) / 2.0;
+  xyz[1] = (boxmin[1] + boxmax[1]) / 2.0;
+  xyz[2] = boxmin[2] - (boxmax[2] - boxmin[2]) / 100.0;
+  return_val = 1 - InMesh(xyz);
+  return return_val;
+}
+
+/* ------------------ MeshConnect ------------------------ */
+
+int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to){
+  float *eps;
+
+  //  returns 1 if mesh_from  is 'val' of mesh_to (where val is MLEFT, MRIGHT, MFRONT, MBACK, MDOWN, MBACK )
+
+  eps = mesh_from->boxeps_fds;
+  switch(val){
+  case MLEFT:
+  case MRIGHT:
+    if(mesh_from->jbar != mesh_to->jbar)return 0;
+    if(mesh_from->kbar != mesh_to->kbar)return 0;
+    if(ABS(mesh_from->dbox_fds[1] - mesh_to->dbox_fds[1]) > eps[1])return 0;
+    if(ABS(mesh_from->dbox_fds[2] - mesh_to->dbox_fds[2]) > eps[2])return 0;
+    if(ABS(mesh_from->boxmin_fds[1] - mesh_to->boxmin_fds[1]) > eps[1])return 0;
+    if(ABS(mesh_from->boxmin_fds[2] - mesh_to->boxmin_fds[2]) > eps[2])return 0;
+    break;
+  case MFRONT:
+  case MBACK:
+    if(mesh_from->ibar != mesh_to->ibar)return 0;
+    if(mesh_from->kbar != mesh_to->kbar)return 0;
+    if(ABS(mesh_from->dbox_fds[0] - mesh_to->dbox_fds[0]) > eps[0])return 0;
+    if(ABS(mesh_from->dbox_fds[2] - mesh_to->dbox_fds[2]) > eps[2])return 0;
+    if(ABS(mesh_from->boxmin_fds[0] - mesh_to->boxmin_fds[0]) > eps[0])return 0;
+    if(ABS(mesh_from->boxmin_fds[2] - mesh_to->boxmin_fds[2]) > eps[2])return 0;
+    break;
+  case MDOWN:
+  case MUP:
+    if(mesh_from->ibar != mesh_to->ibar)return 0;
+    if(mesh_from->jbar != mesh_to->jbar)return 0;
+    if(ABS(mesh_from->dbox_fds[0] - mesh_to->dbox_fds[0]) > eps[0])return 0;
+    if(ABS(mesh_from->dbox_fds[1] - mesh_to->dbox_fds[1]) > eps[1])return 0;
+    if(ABS(mesh_from->boxmin_fds[0] - mesh_to->boxmin_fds[0]) > eps[0])return 0;
+    if(ABS(mesh_from->boxmin_fds[1] - mesh_to->boxmin_fds[1]) > eps[1])return 0;
+    break;
+  default:
+    break;
+  }
+  switch(val){
+  case MLEFT:
+    if(ABS(mesh_from->boxmax_fds[0] - mesh_to->boxmin_fds[0]) < eps[0])return 1;
+    break;
+  case MRIGHT:
+    if(ABS(mesh_from->boxmin_fds[0] - mesh_to->boxmax_fds[0]) < eps[0])return 1;
+    break;
+  case MFRONT:
+    if(ABS(mesh_from->boxmax_fds[1] - mesh_to->boxmin_fds[1]) < eps[1])return 1;
+    break;
+  case MBACK:
+    if(ABS(mesh_from->boxmin_fds[1] - mesh_to->boxmax_fds[1]) < eps[1])return 1;
+    break;
+  case MDOWN:
+    if(ABS(mesh_from->boxmax_fds[2] - mesh_to->boxmin_fds[2]) < eps[2])return 1;
+    break;
+  case MUP:
+    if(ABS(mesh_from->boxmin_fds[2] - mesh_to->boxmax_fds[2]) < eps[2])return 1;
+    break;
+  default:
+    break;
+  }
+  return 0;
+}
+
+/* ------------------ InitNabors ------------------------ */
+
+void *InitNabors(void *arg){
+  int i;
+
+  INIT_PRINT_TIMER(timer_init_nabors);
+  if(global_scase.have_mesh_nabors == 0){
+    for(i = 0;i < global_scase.meshescoll.nmeshes;i++){
+      meshdata *meshi;
+      int j;
+
+      meshi = global_scase.meshescoll.meshinfo + i;
+      meshi->is_bottom = IsBottomMesh(meshi);
+      for(j = 0;j < global_scase.meshescoll.nmeshes;j++){
+        meshdata *meshj;
+
+        if(i == j)continue;
+
+        meshj = global_scase.meshescoll.meshinfo + j;
+
+        if(MeshConnect(meshi, MLEFT, meshj) == 1){
+          meshi->nabors[MRIGHT] = meshj;
+          continue;
+        }
+        if(MeshConnect(meshi, MRIGHT, meshj) == 1){
+          meshi->nabors[MLEFT] = meshj;
+          continue;
+        }
+        if(MeshConnect(meshi, MFRONT, meshj) == 1){
+          meshi->nabors[MBACK] = meshj;
+          continue;
+        }
+        if(MeshConnect(meshi, MBACK, meshj) == 1){
+          meshi->nabors[MFRONT] = meshj;
+          continue;
+        }
+        if(MeshConnect(meshi, MDOWN, meshj) == 1){
+          meshi->nabors[MUP] = meshj;
+          continue;
+        }
+        if(MeshConnect(meshi, MUP, meshj) == 1){
+          meshi->nabors[MDOWN] = meshj;
+          continue;
+        }
+      }
+    }
+  }
+  for(i = 0;i < global_scase.meshescoll.nmeshes;i++){
+    meshdata *meshi;
+    float xyzmid[3], xyz[3];
+
+    meshi = global_scase.meshescoll.meshinfo + i;
+    memcpy(xyzmid, meshi->boxmiddle_fds, 3 * sizeof(float));
+
+    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    xyz[0] = meshi->boxmin_fds[0] - meshi->boxeps_fds[0];
+    meshi->skip_nabors[MLEFT] = GETMESH(xyz);
+
+    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    xyz[0] = meshi->boxmax_fds[0] + meshi->boxeps_fds[0];
+    meshi->skip_nabors[MRIGHT] = GETMESH(xyz);
+
+    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    xyz[1] = meshi->boxmin_fds[1] - meshi->boxeps_fds[1];
+    meshi->skip_nabors[MFRONT] = GETMESH(xyz);
+
+    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    xyz[1] = meshi->boxmax_fds[0] + meshi->boxeps_fds[1];
+    meshi->skip_nabors[MBACK] = GETMESH(xyz);
+
+    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    xyz[2] = meshi->boxmin_fds[2] - meshi->boxeps_fds[2];
+    meshi->skip_nabors[MDOWN] = GETMESH(xyz);
+
+    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    xyz[2] = meshi->boxmax_fds[2] + meshi->boxeps_fds[2];
+    meshi->skip_nabors[MUP] = GETMESH(xyz);
+  }
+  PRINT_TIMER(timer_init_nabors, "InitNabors");
+  THREAD_EXIT(meshnabors_threads);
+}
+
+/* ----------------------- GetPlankVal ----------------------------- */
+
+float GetPlankVal(float lambda, float temp){
+  // units
+  // lambda: m
+  // temp:   K
+  // https://en.wikipedia.org/wiki/Planck%27s_law
+  // https://www.fourmilab.ch/documents/specrend/
+  float c1, c2;
+  // (c1/lambda^5)/(exp(c2/(lambda*T)-1)
+  //c1 = 2 pi hc^2 = 3.74183*10^-16 W m2
+  //c2 = hc/k = 0.014388 m K
+  c1 = 3.74183 * pow(10.0, -16);
+  c2 = 0.014388;
+  float return_val = (c1 / pow(lambda, 5.0)) / (exp(c2 / (lambda * temp)) - 1.0);
+  return return_val;
+}
+
+/* ----------------------- GetRGBFireVal ----------------------------- */
+
+void GetRGBFireVal(float temp, float *rgb_arg){
+  // units
+  // temp C
+  int i, n;
+  float valmin, valmax, dval, factor;
+
+  static float cie_colour_match[81][3] = {
+    {0.0014, 0.0000, 0.0065}, {0.0022, 0.0001, 0.0105}, {0.0042, 0.0001, 0.0201},
+    {0.0076, 0.0002, 0.0362}, {0.0143, 0.0004, 0.0679}, {0.0232, 0.0006, 0.1102},
+    {0.0435, 0.0012, 0.2074}, {0.0776, 0.0022, 0.3713}, {0.1344, 0.0040, 0.6456},
+    {0.2148, 0.0073, 1.0391}, {0.2839, 0.0116, 1.3856}, {0.3285, 0.0168, 1.6230},
+    {0.3483, 0.0230, 1.7471}, {0.3481, 0.0298, 1.7826}, {0.3362, 0.0380, 1.7721},
+    {0.3187, 0.0480, 1.7441}, {0.2908, 0.0600, 1.6692}, {0.2511, 0.0739, 1.5281},
+    {0.1954, 0.0910, 1.2876}, {0.1421, 0.1126, 1.0419}, {0.0956, 0.1390, 0.8130},
+    {0.0580, 0.1693, 0.6162}, {0.0320, 0.2080, 0.4652}, {0.0147, 0.2586, 0.3533},
+    {0.0049, 0.3230, 0.2720}, {0.0024, 0.4073, 0.2123}, {0.0093, 0.5030, 0.1582},
+    {0.0291, 0.6082, 0.1117}, {0.0633, 0.7100, 0.0782}, {0.1096, 0.7932, 0.0573},
+    {0.1655, 0.8620, 0.0422}, {0.2257, 0.9149, 0.0298}, {0.2904, 0.9540, 0.0203},
+    {0.3597, 0.9803, 0.0134}, {0.4334, 0.9950, 0.0087}, {0.5121, 1.0000, 0.0057},
+    {0.5945, 0.9950, 0.0039}, {0.6784, 0.9786, 0.0027}, {0.7621, 0.9520, 0.0021},
+    {0.8425, 0.9154, 0.0018}, {0.9163, 0.8700, 0.0017}, {0.9786, 0.8163, 0.0014},
+    {1.0263, 0.7570, 0.0011}, {1.0567, 0.6949, 0.0010}, {1.0622, 0.6310, 0.0008},
+    {1.0456, 0.5668, 0.0006}, {1.0026, 0.5030, 0.0003}, {0.9384, 0.4412, 0.0002},
+    {0.8544, 0.3810, 0.0002}, {0.7514, 0.3210, 0.0001}, {0.6424, 0.2650, 0.0000},
+    {0.5419, 0.2170, 0.0000}, {0.4479, 0.1750, 0.0000}, {0.3608, 0.1382, 0.0000},
+    {0.2835, 0.1070, 0.0000}, {0.2187, 0.0816, 0.0000}, {0.1649, 0.0610, 0.0000},
+    {0.1212, 0.0446, 0.0000}, {0.0874, 0.0320, 0.0000}, {0.0636, 0.0232, 0.0000},
+    {0.0468, 0.0170, 0.0000}, {0.0329, 0.0119, 0.0000}, {0.0227, 0.0082, 0.0000},
+    {0.0158, 0.0057, 0.0000}, {0.0114, 0.0041, 0.0000}, {0.0081, 0.0029, 0.0000},
+    {0.0058, 0.0021, 0.0000}, {0.0041, 0.0015, 0.0000}, {0.0029, 0.0010, 0.0000},
+    {0.0020, 0.0007, 0.0000}, {0.0014, 0.0005, 0.0000}, {0.0010, 0.0004, 0.0000},
+    {0.0007, 0.0002, 0.0000}, {0.0005, 0.0002, 0.0000}, {0.0003, 0.0001, 0.0000},
+    {0.0002, 0.0001, 0.0000}, {0.0002, 0.0001, 0.0000}, {0.0001, 0.0000, 0.0000},
+    {0.0001, 0.0000, 0.0000}, {0.0001, 0.0000, 0.0000}, {0.0000, 0.0000, 0.0000}
+  };
+
+  temp += 273.15;
+  valmin = 380.0;
+  valmax = 780.0;
+  factor = pow(10.0, 9.0);
+  n = 81;
+  dval = (valmax - valmin) / (float)(n - 1);
+  rgb_arg[0] = 0.0;
+  rgb_arg[1] = 0.0;
+  rgb_arg[2] = 0.0;
+  for(i = 0;i < n;i++){
+    float plank_val, lambda_nano, lambda_m;
+    float rgb_val[3];
+
+    lambda_nano = valmin + i * dval;
+    lambda_m = lambda_nano / factor;
+    plank_val = GetPlankVal(lambda_m, temp);
+    rgb_val[0] = plank_val * cie_colour_match[i][0];
+    rgb_val[1] = plank_val * cie_colour_match[i][1];
+    rgb_val[2] = plank_val * cie_colour_match[i][2];
+    if(i == 0 || i == n - 1){
+      rgb_arg[0] += rgb_val[0];
+      rgb_arg[1] += rgb_val[1];
+      rgb_arg[2] += rgb_val[2];
+    }
+    else{
+      rgb_arg[0] += 2.0 * rgb_val[0];
+      rgb_arg[1] += 2.0 * rgb_val[1];
+      rgb_arg[2] += 2.0 * rgb_val[2];
+    }
+  }
+  rgb_arg[0] *= 0.5 * dval;
+  rgb_arg[1] *= 0.5 * dval;
+  rgb_arg[2] *= 0.5 * dval;
+}
+
+/* ----------------------- MakeFireColors ----------------------------- */
+
+void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
+  int i;
+  float dtemp;
+
+  dtemp = (temp_max - temp_min) / (float)(nfire_colors_arg - 1);
+  FREEMEMORY(fire_rgbs);
+  NewMemory((void **)&fire_rgbs, 3*nfire_colors_arg*sizeof(float));
+  for(i = 0; i < nfire_colors_arg; i++){
+    float temp, fire_emission[3];
+
+    temp = temp_min + (float)i*dtemp;
+    //float xyz[3];
+    GetRGBFireVal(temp, fire_emission);
+    //Xyz2Rgb(&HDTVsystem, xyz, fire_rgb);
+    //ConstrainRgb(fire_rgb);
+    memcpy(fire_rgbs + 3*i, fire_emission, 3*sizeof(float));
   }
 }

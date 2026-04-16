@@ -678,7 +678,7 @@ void CheckTimeBound(void){
 
       sd=global_scase.slicecoll.sliceinfo+i;
       sd->itime=sd->ntimes-1;
-      if(sd->volslice==1)sd->itime--;
+      if(sd->slice3d==1)sd->itime--;
     }
     for(i=0;i<global_scase.npatchinfo;i++){
       patchdata *patchi;
@@ -1045,10 +1045,6 @@ void MouseCBWorker(int button, int state, int xm, int ym){
   colorbar_drag = 0;
   timebar_drag  = 0;
 
-  if(autofreeze_volsmoke==ON&&nvolsmoke_loaded>0){
-    if(state==GLUT_DOWN)GLUIUpdateFreeze(ON);
-    if(state==GLUT_UP)GLUIUpdateFreeze(OFF);
-  }
   if(state == GLUT_UP){
     alt_ctrl_key_state = KEY_NONE;
   }
@@ -1479,23 +1475,6 @@ void MoveScene(int xm, int ym){
   }
 }
 
-/* ------------------ ThrottleGpu ------------------------ */
-
-int ThrottleGpu(void){
-  float fps;
-
-  START_TIMER(thisMOTIONtime);
-  fps = MOTIONnframes/(thisMOTIONtime-lastMOTIONtime);
-  if(fps>GPU_VOLframemax)return 1;
-  MOTIONnframes++;
-  if(thisMOTIONtime>lastMOTIONtime+0.25){
-    PRINTF("MOTION: %4.1f fps\n",fps);
-    lastMOTIONtime=thisMOTIONtime;
-    MOTIONnframes=0;
-  }
-  return 0;
-}
-
 /* ------------------ MouseDragCB ------------------------ */
 
 void MouseDragCB(int xm, int ym){
@@ -1507,11 +1486,6 @@ void MouseDragCB(int xm, int ym){
 #endif
 
   in_external=0;
-#ifdef pp_GPU
-  if(usegpu==1&&showvolrender==1&&show_volsmoke_moving==1){
-    if(ThrottleGpu()==1)return;
-  }
-#endif
 
   if( colorbar_drag==1&&(showtime==1 || showplot3d==1)){
     ColorbarDrag(xm,ym);
@@ -2538,33 +2512,6 @@ void Keyboard(unsigned char key, int flag){
             timeval=GetTime();
             fprintf(scriptoutstream,"SETTIMEVAL\n");
             fprintf(scriptoutstream," %f\n",timeval);
-            if(nvolrenderinfo>0&&load_at_rendertimes==1){
-              for(i=0;i<global_scase.meshescoll.nmeshes;i++){
-                meshdata *meshi;
-                volrenderdata *vr;
-                int j;
-                int framenum;
-                float timediffmin;
-
-                meshi = global_scase.meshescoll.meshinfo + i;
-                vr = meshi->volrenderinfo;
-                if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
-                if(vr->loaded==0||vr->display==0)continue;
-                timediffmin = ABS(timeval-vr->times[0]);
-                framenum=0;
-                for(j=1;j<vr->ntimes;j++){
-                  float timediff;
-
-                  timediff = ABS(vr->times[j]-timeval);
-                  if(timediff<timediffmin){
-                    timediffmin=timediff;
-                    framenum=j;
-                  }
-                }
-                fprintf(scriptoutstream,"LOADVOLSMOKEFRAME\n");
-                fprintf(scriptoutstream," %i %i\n",i,framenum);
-              }
-            }
           }
           else{
             int show_plot3dkeywords=0;
@@ -2732,16 +2679,6 @@ void Keyboard(unsigned char key, int flag){
           visVector=1-visVector;
           if(vectorspresent==0)visVector=0;
           break;
-      }
-      break;
-    case 'V':
-      if(nvolrenderinfo>0){
-        usevolrender=1-usevolrender;
-        GLUIUpdateSmoke3dFlags();
-#ifdef pp_GPU
-        PrintGPUState();
-#endif
-        return;
       }
       break;
     case 'w':
@@ -4076,18 +4013,8 @@ void DoScript(void){
   if(nscriptinfo>0&&current_script_command!=NULL&&(script_step==0||(script_step==1&&script_step_now==1))){
     script_step_now=0;
     if(current_script_command>=scriptinfo){
-      if(current_script_command->command==SCRIPT_VOLSMOKERENDERALL){
-        if(current_script_command->exit==0){
-          RenderState(RENDER_ON);
-        }
-        else{
-          RenderState(RENDER_OFF);
-          current_script_command->first = 1;
-          current_script_command->exit = 0;
-        }
-      }
-      else if(current_script_command->command==SCRIPT_ISORENDERALL){
-          if(current_script_command->exit==0){
+      if(current_script_command->command == SCRIPT_ISORENDERALL){
+        if(current_script_command->exit == 0){
             RenderState(RENDER_ON);
           }
           else{
@@ -4144,16 +4071,7 @@ void DoScript(void){
       }
     }
     else{
-      if(current_script_command->command==SCRIPT_VOLSMOKERENDERALL){
-        int remove_frame;
-
-        ScriptLoadVolSmokeFrame2();
-        remove_frame=current_script_command->remove_frame;
-        if(remove_frame>=0){
-          UnloadVolsmokeFrameAllMeshes(remove_frame);
-        }
-      }
-      else if(current_script_command->command==SCRIPT_ISORENDERALL){
+      if(current_script_command->command==SCRIPT_ISORENDERALL){
         int remove_frame;
 
         ScriptLoadIsoFrame2(current_script_command);
@@ -4353,9 +4271,7 @@ void DisplayCB(void){
   UpdateDisplay();
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   if(stereotype==STEREO_NONE){
-    if(use_vr==0){
-      DoNonStereo();
-    }
+    DoNonStereo();
   }
   else{
     DoStereo();

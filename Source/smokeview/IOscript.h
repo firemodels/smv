@@ -7,7 +7,6 @@
 #define SCRIPT_RENDERDOUBLEONCE  103
 #define SCRIPT_RENDERALL         104
 #define SCRIPT_RENDER360ALL      106
-#define SCRIPT_VOLSMOKERENDERALL 107
 #define SCRIPT_RENDERDIR         108
 #define SCRIPT_RENDERCLIP        110
 #define SCRIPT_SCENECLIP         111
@@ -40,8 +39,6 @@
 #define SCRIPT_LOADPLOT3D        214
 #define SCRIPT_SHOWPLOT3DDATA    215
 #define SCRIPT_PLOT3DPROPS       216
-#define SCRIPT_LOADVOLSMOKE      217
-#define SCRIPT_LOADVOLSMOKEFRAME 218
 #define SCRIPT_LOADISOM          219
 #define SCRIPT_LOADBOUNDARYM     220
 #define SCRIPT_LOADSLICEM        221
@@ -123,8 +120,6 @@ EXTERNCPP char *GetScriptFileName(int id);
 EXTERNCPP int  GetVolFrameMax(int meshnum);
 EXTERNCPP inifiledata *InsertIniFile(char *file);
 EXTERNCPP scriptfiledata *InsertScriptFile(char *file);
-EXTERNCPP void LoadSmokeFrame(int meshnum, int framenum);
-EXTERNCPP void LoadTimeFrame(int meshnum, float timeval);
 EXTERNCPP int  RunScriptCommand(scriptdata *script_command);
 EXTERNCPP void ScriptLoadIsoFrame2(scriptdata *scripti);
 EXTERNCPP void ScriptLoadSliceRender(scriptdata *scripti);

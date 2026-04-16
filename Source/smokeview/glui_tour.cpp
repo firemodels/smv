@@ -918,7 +918,6 @@ extern "C" void GLUIDeleteTourList(void){
   for(i=0;i<global_scase.tourcoll.ntourinfo;i++){
     LISTBOX_tour->delete_item(i);
   }
-  GLUIDeleteVolTourList(); //xx comment this line if smokebot fails with seg fault
 }
 
 /* ------------------ GLUICreateTourList ------------------------ */
@@ -943,8 +942,6 @@ extern "C" void GLUICreateTourList(void){
     }
   }
   if(selectedtour_index>=-1&&selectedtour_index<global_scase.tourcoll.ntourinfo)LISTBOX_tour->set_int_val(selectedtour_index);
-
-  GLUICreateVolTourList(); //xx comment this line if smokebot fails with seg fault
 }
 
 /* ------------------ GLUIUpdateTourControls ------------------------ */

@@ -932,26 +932,6 @@ void UpdateTexturebar(void){
     SNIFF_ERRORS("UpdateTexturebar - glTexImage1D (rgb_slicesmokecolormap_01)");
     glActiveTexture(GL_TEXTURE0);
   }
-
-  glBindTexture(GL_TEXTURE_1D,volsmoke_colormap_id);
-  glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_volsmokecolormap);
-  SNIFF_ERRORS("UpdateTexturebar - glTexImage1D (rgb_volsmokecolormap) ");
-
-#ifdef pp_GPU
-  if(gpuactive==1&&nvolrenderinfo>0&&showvolrender==1){
-    glActiveTexture(GL_TEXTURE2);
-    glTexSubImage1D(GL_TEXTURE_1D,0,0,MAXSMOKERGB,GL_RGBA,GL_FLOAT, rgb_volsmokecolormap);
-    SNIFF_ERRORS("UpdateTexturebar - glTexSubImage1D (rgb_volsmokecolormap) ");
-    glActiveTexture(GL_TEXTURE0);
-  }
-  if(gpuactive==1&&SHOW_gslice_data==1&& slice3d_colormap_id_defined==1){
-    glActiveTexture(GL_TEXTURE4);
-    glTexSubImage1D(GL_TEXTURE_1D,0,0,256,GL_RGBA,GL_FLOAT, rgb_slice);
-    SNIFF_ERRORS("updatecolors after glTexSubImage1D (rgb_slice)");
-    glActiveTexture(GL_TEXTURE0);
-  }
-#endif
-
 }
 
 /* ------------------ InitRGB ------------------------ */
@@ -1498,7 +1478,7 @@ void UpdateChopColors(void){
       slicedata *slicei;
 
       slicei = global_scase.slicecoll.sliceinfo + i;
-      if(slicei->volslice==1&&slicei->loaded==1&&slicei->display==1){
+      if(slicei->slice3d==1&&slicei->loaded==1&&slicei->display==1){
         slice3d_loaded = 1;
         break;
       }

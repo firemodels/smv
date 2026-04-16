@@ -3442,42 +3442,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   glEnd();
 }
 
-/* ------------------ GetPatchMeshNabor ------------------------ */
-
-meshdata *GetPatchMeshNabor(meshdata *meshi, int *ib){
-  meshdata *return_mesh;
-
-  return_mesh = NULL;
-  if(ib[0] == ib[1]){
-    if(ib[0] == 0){
-      return_mesh = meshi->nabors[MLEFT];
-    }
-    else if(ib[0] == meshi->ibar){
-      return_mesh = meshi->nabors[MRIGHT];
-    }
-    if(return_mesh == NULL || meshi->jbar != return_mesh->jbar || meshi->kbar != return_mesh->kbar)return_mesh = NULL;
-  }
-  else if(ib[2] == ib[3]){
-    if(ib[2] == 0){
-      return_mesh = meshi->nabors[MFRONT];
-    }
-    else if(ib[2] == meshi->jbar){
-      return_mesh = meshi->nabors[MBACK];
-    }
-    if(return_mesh == NULL || meshi->ibar != return_mesh->ibar || meshi->kbar != return_mesh->kbar)return_mesh = NULL;
-  }
-  else if(ib[4]==ib[5]){
-    if(ib[4]==0){
-      return_mesh = meshi->nabors[MDOWN];
-    }
-    else if(ib[4] == meshi->kbar){
-      return_mesh = meshi->nabors[MUP];
-    }
-    if(return_mesh==NULL || meshi->ibar != return_mesh->ibar || meshi->jbar != return_mesh->jbar)return_mesh = NULL;
-  }
-  return return_mesh;
-}
-
 /* ------------------ DrawBoundaryFrame ------------------------ */
 
 void DrawBoundaryFrame(int flag){

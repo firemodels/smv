@@ -5076,7 +5076,8 @@ extern "C" void GLUIBoundsSetup(int main_window){
   // ----------------------------------- 3D smoke ----------------------------------------
 
 
-  if(global_scase.smoke3dcoll.nsmoke3dinfo > 0 || nvolrenderinfo > 0){
+  if(global_scase.smoke3dcoll.nsmoke3dinfo > 0 
+    ){
     ROLLOUT_smoke3d = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "3D smoke", false, SMOKE3D_ROLLOUT, BoundRolloutCB);
     TOGGLE_ROLLOUT(boundprocinfo, nboundprocinfo, ROLLOUT_smoke3d, SMOKE3D_ROLLOUT, glui_bounds);
   }

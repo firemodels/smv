@@ -195,9 +195,6 @@ typedef struct _meshdata {
   struct _meshdata *floor_mesh;
   GLuint blockage_texture_id;
   struct _smoke3ddata *smoke3d_soot, *smoke3d_hrrpuv, *smoke3d_temp, *smoke3d_co2;
-  GLuint volsmoke_texture_id, volfire_texture_id;
-  float *volsmoke_texture_buffer, *volfire_texture_buffer;
-  int voltest_update;
   float *slice3d_c_buffer;
 #ifdef pp_GPU
   GLuint slice3d_texture_id;
@@ -208,18 +205,14 @@ typedef struct _meshdata {
   float meshrgb[3], *meshrgb_ptr;
   float mesh_offset[3], *mesh_offset_ptr;
   int blockvis, datavis;
-  int ivolbar, jvolbar, kvolbar;
   float  *xplt_smv,     *yplt_smv,     *zplt_smv;
   float  *xplt_fds,     *yplt_fds,     *zplt_fds;
   double *xpltd_fds,    *ypltd_fds,    *zpltd_fds;
-  float  *xvolplt_smv,  *yvolplt_smv,  *zvolplt_smv;
   float  *xplt_cen_smv, *yplt_cen_smv, *zplt_cen_smv;
   float   xcen_smv,      ycen_smv,      zcen_smv;
   float boxmin_fds[3], boxmiddle_fds[3], boxmax_fds[3], boxeps_fds[3];
   float boxmin_smv[3], boxmiddle_smv[3], boxmax_smv[3], boxeps_smv[3];
   float dbox_fds[3], dcell_smv, dcell3_smv[3];
-  int drawsides[7];
-  int extsides[7];   // 1 if on exterior side of a supermesh, 0 otherwise
   int is_extface[6]; // 1 if adjacent to exterior, 0 if adjacent to interior, -1 if unknown
   int inside;
   int in_frustum;    // 1 if part or all of mesh is in the view frustum
@@ -291,13 +284,13 @@ typedef struct _meshdata {
   int *iso_timeslist;
   int iso_itime;
   int smokedir,smokedir_old;
-  float dxDdx, dyDdx, dzDdx, dxyDdx, dxzDdx, dyzDdx, dxyz_fds[3];
-  float smoke_dist[6];
+  float dxDdx, dyDdx, dzDdx;
+  float dxyz_fds[3];
+  float smoke_dist[3];
   float norm[3];
   float dplane_min[4], dplane_max[4];
 
   struct _meshdata *skip_nabors[6], *nabors[6];
-  struct _supermeshdata *super;
 
   int *ptype;
   unsigned int *zipoffset, *zipsize;
@@ -339,7 +332,6 @@ typedef struct _meshdata {
 
   char *label;
 
-  struct _volrenderdata *volrenderinfo;
   int  nslicex,  nslicey,  nslicez;
   struct _slicedata **slicex, **slicey, **slicez;
 
@@ -358,20 +350,6 @@ typedef struct _cellmeshdata {
   float xyzminmax[6], dxyz[3];
   meshdata **cellmeshes;
 } cellmeshdata;
-
-/* --------------------------  supermeshdata -------------------------------- */
-
-typedef struct _supermeshdata {
-  float *volsmoke_texture_buffer, *volfire_texture_buffer;
-  GLuint blockage_texture_id;
-  GLuint volsmoke_texture_id, volfire_texture_id;
-  float *f_iblank_cell;
-  float boxmin_smv[3], boxmax_smv[3];
-  int drawsides[7];
-  int nmeshes;
-  meshdata **meshes;
-  int ibar, jbar, kbar;
-} supermeshdata;
 
 /* --------------------------  propdata ------------------------------------- */
 #define PROPVARMAX 100
@@ -579,7 +557,7 @@ typedef struct _slicedata {
   int seq_id, autoload;
   char *file, *size_file, *bound_file;
   int have_bound_file;
-  char *comp_file, *reg_file, *vol_file;
+  char *comp_file, *reg_file;
   char *geom_file;
   int finalize;
   int slcf_index;
@@ -621,7 +599,7 @@ typedef struct _slicedata {
   unsigned char *iqsliceframe;
   float above_ground_level;
   int have_agl_data;
-  int volslice;
+  int slice3d;
   int is1, is2, js1, js2, ks1, ks2;
   int iis1, iis2, jjs1, jjs2, kks1, kks2;
   int *imap, *jmap, *kmap;
@@ -683,7 +661,7 @@ typedef struct _multivslicedata {
 typedef struct _vslicedata {
   int seq_id, autoload, reload;
   slicedata *u,*v,*w,*val;
-  int volslice;
+  int slice3d;
   int iu, iv, iw, ival;
   int skip;
   int finalize;
@@ -1080,28 +1058,6 @@ typedef struct {
   csvfiledata *csvfileinfo;
 } csv_collection;
 
-/* --------------------------  volrenderdata ------------------------------------ */
-
-typedef struct _volrenderdata {
-  char *rendermeshlabel;
-  int is_compressed;
-  struct _slicedata *smokeslice, *fireslice;
-  unsigned char *c_smokedata_view, *c_firedata_view;
-  int *nsmokedata_compressed, *nfiredata_compressed;
-  float *smokedata_full, *firedata_full;
-  float *smokedata_view, *firedata_view;
-  LINT *smokepos, *firepos;
-  void *smokedataptr, *firedataptr;
-  void **smokedataptrs, **firedataptrs;
-  float *times;
-  int *dataready;
-  int itime, ntimes, times_defined;
-  int *timeslist;
-  float *smokecolor_yz0, *smokecolor_xz0, *smokecolor_xy0;
-  float *smokecolor_yz1, *smokecolor_xz1, *smokecolor_xy1;
-  int loaded, display;
-} volrenderdata;
-
 /* --------------------------  meshplanedata ------------------------------------ */
 
 typedef struct _meshplanedata {
@@ -1442,9 +1398,6 @@ typedef struct _smoke3ddata {
 #define ALPHA_X 0
 #define ALPHA_Y 1
 #define ALPHA_Z 2
-#define ALPHA_XY 3
-#define ALPHA_YZ 4
-#define ALPHA_XZ 5
   unsigned char *alphas_smokedir[6], *alphas_firedir[6];
   unsigned char alphas_smokebuffer[6*256], alphas_firebuffer[6*256];
   int fire_alpha, co2_alpha;
@@ -1773,9 +1726,6 @@ typedef struct {
   geomdata *cgeominfo;
 
   float obst_bounding_box[6];
-
-  int nsupermeshinfo;
-  supermeshdata *supermeshinfo;
 
   /// @brief The HoC of the fuel if present. -1.0 otherwise.
   float fuel_hoc;

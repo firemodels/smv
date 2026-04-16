@@ -45,15 +45,15 @@ bin = .
 
 # Definition of the object variables
 
-csrc = callbacks.c camera.c color2rgb.c readimage.c readgeom.c readobject.c readcad.c colortimebar.c  \
-       compress.c csphere.c dmalloc.c  drawGeometry.c file_util.c getdata.c getdatabounds.c \
-       getdatacolors.c glew.c histogram.c infoheader.c readlabel.c readtour.c readhvac.c readslice.c  \
-       readsmoke.c colorbars.c colorbar_defs.c IOboundary.c IOgeometry.c IOhvac.c IOiso.c IOobjects.c \
-       IOpart.c IOplot2d.c IOplot3d.c IOscript.c IOshooter.c IOslice.c IOsmoke.c IOtour.c IOvolsmoke.c \
-       IOwui.c IOzone.c isobox.c main.c md5.c menus.c output.c readsmvfile.c readsmv.c  \
-       renderimage.c scontour2d.c sha1.c sha256.c shaders.c showscene.c skybox.c \
+csrc = callbacks.c camera.c color2rgb.c colorbars.c colorbar_defs.c colortable.c colortimebar.c \
+       command_args.c compress.c csphere.c dmalloc.c  drawGeometry.c file_util.c getdata.c getdatabounds.c \
+       getdatacolors.c glew.c histogram.c infoheader.c IOboundary.c IOgeometry.c IOhvac.c IOiso.c \
+       IOobjects.c  IOpart.c IOplot2d.c IOplot3d.c IOscript.c IOshooter.c IOslice.c IOsmoke.c IOtour.c  \
+       IOwui.c IOzone.c isobox.c main.c md5.c menus.c output.c paths.c  readcad.c readgeom.c readhvac.c \
+       readimage.c  readlabel.c readobject.c readslice.c  readsmoke.c  readsmvfile.c readsmv.c \
+       readtour.c renderimage.c  scontour2d.c sha1.c sha256.c shaders.c showscene.c skybox.c \
        smokeview.c smv_geometry.c startup.c stdio_buffer.c stdio_m.c string_util.c threader.c  \
-       translate.c unit.c update.c viewports.c colortable.c command_args.c paths.c
+       translate.c unit.c update.c viewports.c  
 
 cppsrc = glui_bounds.cpp  glui_clip.cpp glui_colorbar.cpp glui_display.cpp glui_geometry.cpp glui_motion.cpp \
          glui_objects.cpp glui_shooter.cpp glui_smoke.cpp glui_stereo.cpp glui_tour.cpp glui_trainer.cpp
@@ -304,8 +304,8 @@ gnu_linux : $(obj)
 
 # ------------- clang_linux_db ----------------
 
-clang_linux_db : CFLAGS    = -O0 -ggdb -Wall -Wunreachable-code -Wswitch-default \
-                             -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized \
+clang_linux_db : CFLAGS    = -O0 -ggdb -Wall -Wextra -Wunused-variable -Wunreachable-code -Wno-unused-parameter -Wswitch-default \
+                             -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized -Wno-sign-compare\
                              -Wno-address -Wno-undef -Wno-parentheses -Wno-unknown-pragmas \
                              -D _DEBUG $(CFLAGS_COM)
 clang_linux_db : CC        = clang

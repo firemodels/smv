@@ -58,13 +58,7 @@ void ShowScene2(int mode){
     UpdateLights(light_position0, light_position1);
     if(drawlights==1)DrawLights(light_position0, light_position1);
 
-
- // if(render_status==RENDER_ON&&render_mode==RENDER_360){
- //   UpdateLights(light_position0, light_position1);
- // }
-
     glPointSize((float)1.0);
-
 
     /* ++++++++++++++++++++++++ DrawNorth  +++++++++++++++++++++++++ */
 
@@ -155,7 +149,7 @@ void ShowScene2(int mode){
       SNIFF_ERRORS("after drawaxis");
     }
 
-    /* ++++++++++++++++++++++++ draw outlnes when boundary files are displayed +++++++++++++++++++++++++ */
+    /* ++++++++++++++++++++++++ draw outlines when boundary files are displayed +++++++++++++++++++++++++ */
 
     if(hide_internal_blockages == 1){
       if(outline_state == OUTLINE_ONLY || outline_state == OUTLINE_ADDED){
@@ -539,17 +533,6 @@ void ShowScene2(int mode){
     ABORTVIS(0);
 #endif
   }
-
-  /* ++++++++++++++++++++++++ draw vol smoke +++++++++++++++++++++++++ */
-
-  if(showvolrender == 1 && show3dsmoke==0 && (hide_scene == 0 || mouse_down == 0)){
-    CLIP_VALS;
-    DrawVolSmokeFrame();
-#ifdef pp_READ_KEYBOARD
-    ABORTVIS(0);
-#endif
-  }
-
   if(active_smokesensors == 1 && show_smokesensors != SMOKESENSORS_HIDDEN && (hide_scene == 0 || mouse_down == 0)){
     CLIP_VALS;
     GetSmokeSensors();
@@ -672,7 +655,7 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
   if(show_timings != 0){
     char label[256];
 
-    sprintf(label, "\nUpdateShowScene(%i)", iglobal_times);
+    sprintf(label, "UpdateShowScene(%i)", iglobal_times);
     PRINT_TIMER(timer_showscene, label);
   }
   if(stereotype == STEREO_NONE || stereotype == STEREO_TIME)ClearBuffers(mode);

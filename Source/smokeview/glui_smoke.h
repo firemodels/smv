@@ -33,23 +33,14 @@
 #define SMOKE_RTHICK 8
 #endif
 #define SAVE_SETTINGS_SMOKE 9
-#define VOL_SMOKE 13
 #define VOL_NGRID 18
 #define SMOKE_OPTIONS 19
 #define TEMP_MIN 21
-#define COMBINE_MESHES 24
 #define MASS_EXTINCTION 85
-#define NONGPU_VOL_FACTOR 26
-#define GPU_VOL_FACTOR 27
 #define GENERATE_IMAGES 28
 #define START_FRAME 29
 #define SKIP_FRAME 30
 #define CANCEL_GENERATE_IMAGES 31
-#define VOL_TOUR_LIST 46
-#define VOL_PREFIX 47
-#define VOL_UNLOAD_ALL 48
-#define LOAD_SMOKEFRAME 55
-#define LOAD_TIMEFRAME 58
 #define SMOKE3D_LOAD_INCREMENTAL 18
 #define CO2_COLOR 71
 #define SMOKE_SKIP_ALL       107
@@ -71,8 +62,6 @@
 #define EXTINCTION_RESET_FDS 97
 #define EXTINCTION_RESET_SMV 98
 #define BLACKBODY_TEMPS      101
-#define VOLTEST_DEPTH 102
-#define VOLTEST_UPDATE 103
 #define FORCE_ALPHA_OPAQUE 104
 #define SMOKE_FRAME_INC 113
 #define REFRESH_FIRE       114
@@ -103,8 +92,6 @@ EXTERNCPP void GLUIUpdateLoadFrameVal(int frames);
 EXTERNCPP void GLUIUpdateLoadFrameMax(int max_frames);
 EXTERNCPP void GLUISmoke3dCB(int var);
 EXTERNCPP void GLUIUpdateSmoke3dFlags(void);
-EXTERNCPP void GLUICreateVolTourList(void);
-EXTERNCPP void GLUIDeleteVolTourList(void);
 
 #endif
 

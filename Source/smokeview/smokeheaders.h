@@ -561,8 +561,9 @@ EXTERNCPP void UpdateVSliceBoundIndexes(void);
 
 //*** IOsmoke.c headers
 
+EXTERNCPP void *InitNabors(void *arg);
+EXTERNCPP void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg);
 EXTERNCPP void DrawSmokeFrame(void);
-EXTERNCPP void DrawVolSmokeFrame(void);
 EXTERNCPP void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *ntimes_found, int *ntimes_full);
 EXTERNCPP int GetSmokeNFrames(int type, float *tmin, float *tmax);
 EXTERNCPP void InitAlphas(unsigned char *smokealphanew,  unsigned char *firealphanew,
@@ -708,7 +709,6 @@ EXTERNCPP void TrainerViewMenu(int var);
 EXTERNCPP void TextureShowMenu(int value);
 EXTERNCPP void UnloadAllSliceFiles(char *longlabel);
 EXTERNCPP void UnloadSliceMenu(int value);
-EXTERNCPP void UnLoadVolsmoke3DMenu(int value);
 EXTERNCPP void UpdateMenu(void);
 EXTERNCPP void UnloadVSliceMenu(int value);
 EXTERNCPP void UpdateStreakValue(float value);
@@ -790,7 +790,6 @@ EXTERNCPP int  InitShaders(void);
 EXTERNCPP void LoadSmokeShaders(void);
 EXTERNCPP void Load3DSliceShaders(void);
 EXTERNCPP void LoadZoneSmokeShaders(void);
-EXTERNCPP void LoadVolsmokeShaders(void);
 EXTERNCPP void UnLoadShaders(void);
 #endif
 
@@ -809,7 +808,6 @@ EXTERNCPP void LoadSkyTexture(char *filebase, texturedata *texti);
 EXTERNCPP void AntiAliasLine(int flag);
 EXTERNCPP int BuildGbndFile(int file_type);
 EXTERNCPP void DisplayVersionInfo(char *progname, common_opts *opts);
-EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int skipframe);
 EXTERNCPP int IsFDSRunning(FILE_SIZE *last_size);
 EXTERNCPP void SetViewPoint(int option);
 EXTERNCPP NORETURN void SMV_EXIT(int code);
