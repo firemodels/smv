@@ -73,14 +73,17 @@ void ThreadInit(threaderdata **thiptr, int n_threads, int use_threads, int run_s
   if(n_threads > MAX_THREADS)n_threads = MAX_THREADS;
   if(run_serial_override != 0)use_threads = 0;
   if(use_threads != 0)use_threads = 1;
+  if(use_threads == 0)n_threads = 1;
 
   thi->n_threads       = n_threads;
   thi->use_threads     = use_threads;
   thi->run             = run_arg;
   thi->address         = thiptr;
 #ifdef pp_THREAD
-  NewMemory((void **)&thi->thread_ids, n_threads*sizeof(pthread_t));
-  pthread_mutex_init(&thi->mutex, NULL);
+  if(use_threads == 1){
+    NewMemory((void **)&thi->thread_ids, n_threads*sizeof(pthread_t));
+    pthread_mutex_init(&thi->mutex, NULL);
+  }
 #endif
   ThreadInsert(thi);
   *thiptr = thi;
@@ -108,10 +111,12 @@ void ThreadUnlock(threaderdata *thi){
 
 void ThreadJoin(threaderdata **thiptr){
 #ifdef pp_THREAD
-  if(thiptr == NULL || *thiptr == NULL || (*thiptr)->use_threads == 0)return;
+  if(thiptr == NULL || *thiptr == NULL)return;
   threaderdata *thi = *thiptr;
-  for(int i = 0; i < thi->n_threads; i++){
-    pthread_join(thi->thread_ids[i], NULL);
+  if(thi->use_threads == 1){
+    for(int i = 0; i < thi->n_threads; i++){
+      pthread_join(thi->thread_ids[i], NULL);
+    }
   }
   ThreadRemove(thi);
   FREEMEMORY(thi);

@@ -40,7 +40,7 @@ EXTERNCPP int  ThreadCount(void);
 
 #ifdef pp_THREAD
 #define THREAD_EXIT(threads)  \
-    if(threads->use_threads==1)pthread_exit(NULL);\
+    if(threads!=NULL&&threads->use_threads==1)pthread_exit(NULL);\
     return NULL
 #else
 #define THREAD_EXIT(threads) return NULL
