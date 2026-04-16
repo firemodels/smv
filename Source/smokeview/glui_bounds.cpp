@@ -3049,18 +3049,10 @@ procdata  filedatacolprocinfo[4];
 int      nfiledatacolprocinfo = 0;
 
 //*** fileprocinfo entries
-#ifdef pp_COMPRESS
-#define SHOWHIDE_ROLLOUT   0
-#define COMPRESS_ROLLOUT   1
-#define SCRIPT_ROLLOUT     2
-#define CONFIG_ROLLOUT     3
-procdata  fileprocinfo[4];
-#else
 #define SHOWHIDE_ROLLOUT   0
 #define SCRIPT_ROLLOUT     1
 #define CONFIG_ROLLOUT     2
 procdata  fileprocinfo[3];
-#endif
 
 int      nfileprocinfo = 0;
 

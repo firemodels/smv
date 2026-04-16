@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #include "dmalloc.h"
 #include "compress.h"
@@ -229,3 +230,255 @@ int UnCompressVolSliceFrame(unsigned char *compressed_data_in,
   }
   return countout;
 }
+
+#ifdef pp_COMPRESS
+#ifndef IJKMAP
+#define IJKMAP(i,j,k,nx,nxy) ((i)+(j)*nx+(k)*nxy)
+#endif
+
+/* ------------------ Compress3D ------------------------ */
+
+unsigned char AverageCube(unsigned *buffer, int *ijk_start, int *ijk_end, int *nijk, unsigned char *minmax){
+  unsigned char average=0;
+  unsigned int faverage=0;
+  int i, j, k;
+  int nx = nijk[0], nxy = nijk[0] * nijk[1];
+  int sum;
+
+  nx = nijk[0];
+  nxy = nijk[0]*nijk[1];
+  sum  = (ijk_end[0] + 1 - ijk_start[0]);
+  sum *= (ijk_end[1] + 1 - ijk_start[1]);
+  sum *= (ijk_end[2] + 1 - ijk_start[2]);
+
+
+  for(k = ijk_start[2]; k <= ijk_end[2]; k++){
+    for(j = ijk_start[1]; j <= ijk_end[1]; j++){
+      for(i = ijk_start[0]; i <= ijk_end[0]; i++){
+        faverage += buffer[IJKMAP(i, j, k, nx, nxy)];
+      }
+    }
+  }
+  if(sum!=0)average = (unsigned char)(faverage/sum);
+  return average;
+}
+
+/* ------------------ Reorder3D ------------------------ */
+
+void Reorder3D(int **fds2smv, int **smv2fds, int *nijk){
+  int i, j, k;
+  int skipi, skipj, skipk, nsize, nx, nxy;
+  int *state, *fds2smvptr = NULL, *smv2fdsptr = NULL;
+  int count = 0;
+  int nskipi, nskipj, nskipk;
+
+  if(nijk[0] * nijk[1] * nijk[2] <= 0)return;
+
+  skipi = nijk[0];
+  skipj = nijk[1];
+  skipk = nijk[2];
+
+  nskipi = 1;
+  for(;;){
+    if(skipi <= 1)break;
+    nskipi++;
+    skipi /= 2;
+  }
+  nskipj = 1;
+  for(;;){
+    if(skipj <= 1)break;
+    nskipj++;
+    skipj /= 2;
+  }
+  nskipk = 1;
+  for(;;){
+    if(skipk <= 1)break;
+    nskipk++;
+    skipk /= 2;
+  }
+
+  nsize = nskipi * nskipj * nskipk;
+  nx = nskipi;
+  nxy = nskipi * nskipj;
+
+  NewMemory(( void ** )&state, nsize);
+
+  NewMemory(( void ** )&fds2smvptr, nsize);
+  *fds2smv = fds2smvptr;
+
+  NewMemory(( void ** )&smv2fdsptr, nsize);
+  *smv2fds = smv2fdsptr;
+
+  for(i = 0; i < nsize; i++){
+    state[i] = 0;
+    fds2smvptr[i] = -1;
+    smv2fdsptr[i] = -1;
+  }
+
+  skipi = nijk[0];
+  skipj = nijk[1];
+  skipk = nijk[2];
+  for(;;){
+    for(k = 0; k < nijk[2]; k += skipk){
+      for(j = 0; j < nijk[1]; j += skipj){
+        for(i = 0; i < nijk[0]; i += skipi){
+          int ijk;
+
+          ijk = IJKMAP(i, j, k, nx, nxy);
+          if(state[ijk] == 0){
+            fds2smvptr[count] = ijk;
+            smv2fdsptr[ijk] = count;
+            count++;
+          }
+          else{
+            state[ijk] = 1;
+          }
+        }
+      }
+    }
+    if(skipi == 1 && skipj == 1 && skipk == 1)break;
+    skipi = skipi/2;
+    if(skipi < 1)skipi = 1;
+    skipj = skipj/2;
+    if(skipj < 1)skipj = 1;
+    skipk = skipk/2;
+    if(skipk < 1)skipk = 1;
+  }
+  for(i = 0; i < nsize; i++){
+    assert(fds2smvptr[i] >= 0);
+    assert(smv2fdsptr[i] >= 0);
+  }
+
+  FREEMEMORY(state);
+}
+
+
+/* --------------------------  octtreedata ------------------------------- */
+
+typedef struct _octreedata {
+  unsigned char val, valmin, valmax, mask, bottom;
+  struct _octreedata *subtrees[8];
+  int ijkmin[3], ijkmax[3], nsubtrees;
+} octtreedata;
+
+/* ------------------ InitOctTree ------------------------ */
+
+octtreedata *InitOctTree(unsigned char *vals, int *nijk, unsigned char level, int *ijkmin, int *ijkmax){
+  octtreedata *oi;
+  int i,j,k;
+  unsigned char valmin = 255, valmax = 0, val;
+  unsigned int valsum = 0;
+  int nx, ny, nxy, nz, nvals;
+
+  nx = nijk[0];
+  ny = nijk[1];
+  nz = nijk[2];
+  nxy = nx*ny;
+  nvals = nx * ny * nz;
+
+  valmin = vals[IJKMAP(ijkmin[0], ijkmin[1], ijkmin[2], nx, nxy)];
+  valmax = valmin;
+
+  NewMemory((void **)&oi, sizeof(octtreedata));
+
+  memcpy(oi->ijkmin, ijkmin, 3 * sizeof(int));
+  memcpy(oi->ijkmax, ijkmax, 3 * sizeof(int));
+
+  for(k = ijkmin[2];k <= ijkmax[2];k++){
+    for(j = ijkmin[1];1 <= ijkmax[1];j++){
+      for(i = ijkmin[0];i <= ijkmax[0];i++){
+        val = vals[IJKMAP(i,j,k, nx, nxy)];
+        if(val < valmin)valmin = val;
+        if(val > valmax)valmax = val;
+        valsum += val;
+      }
+    }
+  }
+  if(valmax - valmin <= level){
+    oi->bottom = 1;
+  }
+  else{
+    oi->bottom = 0;
+  }
+  oi->mask = 0;
+  oi->valmin = valmin;
+  oi->valmax = valmax;
+  oi->nsubtrees = 0;
+  oi->val = valsum / nvals;
+  for(i = 0;i < 8;i++){
+    oi->subtrees[i] = NULL;
+  }
+  return oi;
+}
+
+/* ------------------ MakeSubOctTrees ------------------------ */
+
+void MakeSubOctTrees(octtreedata *oi, unsigned char level, unsigned char *vals, int *nijk){
+  int i, j, k;
+  int ijkmin[3], ijkmax[3];
+  unsigned char submask[8] = {1, 2, 4, 8,16,32,64,128};
+
+//  nx = nijk[0];
+//  nxy = nijk[0] * nijk[1];
+
+  if(oi->bottom==1)return;
+  if(ijkmin[0] == ijkmax[0] && ijkmin[1] == ijkmax[1] && ijkmin[2] == ijkmax[2])return;
+
+  int index = 0;
+  for(k = 0;k < 2;k++){
+    if(k == 0){
+      ijkmin[2] = oi->ijkmin[2];
+      ijkmax[2] = (oi->ijkmin[2] + oi->ijkmax[2]) / 2;
+    }
+    else{
+      ijkmin[2] = (oi->ijkmin[2] + oi->ijkmax[2]) /2 +1;
+      ijkmax[2] = oi->ijkmax[2];
+    }
+    for(j = 0;j < 2;j++){
+      if(j == 0){
+        ijkmin[1] = oi->ijkmin[1];
+        ijkmax[1] = (oi->ijkmin[1] + oi->ijkmax[1]) / 2;
+      }
+      else{
+        ijkmin[1] = (oi->ijkmin[1] + oi->ijkmax[1]) / 2 +1;
+        ijkmax[1] = oi->ijkmax[1];
+      }
+      for(i = 0;i < 2;i++){
+        if(i == 0){
+          ijkmin[0] = oi->ijkmin[0];
+          ijkmax[0] = (oi->ijkmin[0] + oi->ijkmax[0]) / 2;
+        }
+        else{
+          ijkmin[0] = (oi->ijkmin[0] + oi->ijkmax[0]) / 2 +1;
+          ijkmax[0] = oi->ijkmax[0];
+        }
+        if(ijkmin[0] == ijkmax[0] && ijkmin[1] == ijkmax[1] && ijkmin[2] == ijkmax[2]){
+          memcpy(oi->ijkmin, ijkmin, 3 * sizeof(int));
+          memcpy(oi->ijkmax, ijkmax, 3 * sizeof(int));
+          oi->subtrees[index] = InitOctTree(vals, nijk, level, ijkmin, ijkmax);
+          oi->mask &= submask[index];
+        }
+        else{
+          oi->subtrees[index] = NULL;
+        }
+        index++;
+      }
+    }
+  }
+}
+
+/* ------------------ OctTreeCompress ------------------------ */
+
+octtreedata *OctTreeCompress(unsigned char *vals, int *nijk, unsigned char level){
+  int ijkmin[3], ijkmax[3];
+
+  ijkmin[0] = 0;
+  ijkmin[1] = 0;
+  ijkmin[2] = 0;
+  ijkmax[0] = nijk[0] - 1;
+  ijkmax[1] = nijk[1] - 1;
+  ijkmax[2] = nijk[2] - 1;
+
+  return InitOctTree(vals, nijk, level, ijkmin, ijkmax);
+}
+#endif
