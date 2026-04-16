@@ -2985,82 +2985,6 @@ void AboutMenu(int value){
   if(value == ABOUT_DATA_TRANSFER_TEST)MemoryTest();
 }
 
-/* ------------------ LoadVolsmoke3DMenu ------------------------ */
-#ifdef pp_VOL_OLD
-void LoadVolsmoke3DMenu(int value){
-  if(value == MENU_DUMMY)return;
-  updatemenu = 1;
-  GLUTSETCURSOR(GLUT_CURSOR_WAIT);
-  if(value >= 0){
-    meshdata *meshi;
-    volrenderdata *vr;
-
-    update_smokecolorbar = 1;
-    meshi = global_scase.meshescoll.meshinfo + value;
-    vr = meshi->volrenderinfo;
-    if(vr->smokeslice != NULL&&vr->fireslice != NULL){
-      if(scriptoutstream != NULL){
-        fprintf(scriptoutstream, "LOADVOLSMOKE\n");
-        fprintf(scriptoutstream, " %i\n", value);
-      }
-      if(scriptoutstream==NULL||script_defer_loading==0){
-        if(read_vol_mesh==VOL_READNONE){
-          read_vol_mesh = value;
-          ReadVolsmokeAllFramesAllMeshes();
-        }
-        else{
-          fprintf(stderr, "*** Warning: 3D smoke is currently being loaded\n");
-          fprintf(stderr, "   Load data when this is complete.\n");
-        }
-      }
-    }
-  }
-  else if(value == UNLOAD_ALL){  // unload all
-    if(read_vol_mesh == VOL_READNONE){
-      UnLoadVolsmoke3DMenu(value);
-    }
-    else{
-      if(read_vol_mesh == VOL_UNLOAD){
-        fprintf(stderr, "*** Warning: data is currently being unloaded\n");
-      }
-      else{
-        fprintf(stderr, "*** Warning: data is currently being loaded\n");
-      }
-      fprintf(stderr, "    Continue when this is complete.\n");
-    }
-  }
-  else if(value == LOAD_ALL){  // load all
-    update_smokecolorbar = 1;
-    if(scriptoutstream != NULL){
-      fprintf(scriptoutstream, "LOADVOLSMOKE\n");
-      fprintf(scriptoutstream, " -1\n");
-    }
-    if(read_vol_mesh == VOL_READNONE){
-      read_vol_mesh = VOL_READALL;
-      if(scriptoutstream==NULL||script_defer_loading==0){
-        ReadVolsmokeAllFramesAllMeshes();
-      }
-    }
-    else{
-      if(read_vol_mesh == VOL_UNLOAD){
-        fprintf(stderr, "*** Warning: data is currently being unloaded\n");
-      }
-      else{
-        fprintf(stderr, "*** Warning: data is currently being loaded\n");
-      }
-      fprintf(stderr, "    Continue when this is complete.\n");
-    }
-  }
-  else if(value==MENU_VOLSMOKE_SETTINGS){
-    GLUIShowBoundsDialog(DLG_3DSMOKE);
-  }
-  updatemenu = 1;
-  ForceIdle();
-  GLUTPOSTREDISPLAY;
-  GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
-}
-#endif
-
 /* ------------------ UnloadAllSliceFiles ------------------------ */
 
 void UnloadAllSliceFiles(char *longlabel){
@@ -3320,11 +3244,6 @@ void LoadUnloadMenu(int value){
     if(global_scase.hvaccoll.nhvacinfo>0){
       LoadHVACMenu(MENU_HVAC_UNLOAD);
     }
-#ifdef pp_VOL_OLD
-    if(nvolrenderinfo>0){
-      LoadVolsmoke3DMenu(UNLOAD_ALL);
-    }
-#endif
 
     LoadVSliceMenu2(UNLOAD_ALL);
 
@@ -3359,11 +3278,6 @@ void LoadUnloadMenu(int value){
     if(global_scase.smoke3dcoll.nsmoke3dinfo > 0){
       UnloadAllSmoke3D(-1);
     }
-#ifdef pp_VOL_OLD
-    if(nvolrenderinfo>0){
-      UnLoadVolsmoke3DMenu(UNLOAD_ALL);
-    }
-#endif
     if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
       vis_device_plot = DEVICE_PLOT_HIDDEN;
       showdevice_val = 0;
@@ -4516,94 +4430,6 @@ void UnloadMultiSliceMenu(int value){
     UnloadSliceMenu(UNLOAD_ALL);
   }
 }
-
-#ifdef pp_VOL_OLD
-/* ------------------ ShowVolsmoke3DMenu ------------------------ */
-
-void ShowVolsmoke3DMenu(int value){
-  int i;
-
-  if(value==MENU_DUMMY)return;
-  updatemenu=1;
-  GLUTSETCURSOR(GLUT_CURSOR_WAIT);
-  if(value>=0){
-    meshdata *meshi;
-    volrenderdata *vr;
-
-    meshi = global_scase.meshescoll.meshinfo + value;
-    vr = meshi->volrenderinfo;
-    if(vr->fireslice!=NULL||vr->smokeslice!=NULL){
-      if(vr->loaded==1){
-        vr->display=1-vr->display;
-        PRINTF("%s vis state:%i\n",meshi->label,vr->display);
-      }
-    }
-  }
-  else{
-    if(value==HIDE_VOLSMOKE){  // hide all
-      show_volsmokefiles=0;
-    }
-    else if(value==SHOW_VOLSMOKE){  // show all
-      show_volsmokefiles=1;
-    }
-    else if(value==TOGGLE_VOLSMOKE){  // show all
-      show_volsmokefiles=1-show_volsmokefiles;
-    }
-    for(i=0;i<global_scase.meshescoll.nmeshes;i++){
-      meshdata *meshi;
-      volrenderdata *vr;
-
-      meshi = global_scase.meshescoll.meshinfo + i;
-      vr = meshi->volrenderinfo;
-      if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
-      if(vr->loaded==1){
-        vr->display=show_volsmokefiles;
-        PRINTF("%s vis state:%i\n",meshi->label,vr->display);
-      }
-    }
-  }
-  updatemenu=1;
-  GLUTPOSTREDISPLAY;
-}
-
-/* ------------------ UnLoadVolsmoke3DMenu ------------------------ */
-
-void UnLoadVolsmoke3DMenu(int value){
-  int i;
-
-  if(value==MENU_DUMMY)return;
-  read_vol_mesh=VOL_UNLOAD;
-  updatemenu=1;
-  if(value<0){
-    if(value==UNLOAD_ALL){
-      for(i=0;i<global_scase.meshescoll.nmeshes;i++){
-        meshdata *meshi;
-        volrenderdata *vr;
-
-        meshi = global_scase.meshescoll.meshinfo + i;
-        vr = meshi->volrenderinfo;
-        if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
-        if(vr->loaded==1){
-          UnloadVolsmokeAllFrames(vr);
-        }
-      }
-    }
-  }
-  else{
-    meshdata *meshi;
-    volrenderdata *vr;
-
-    meshi = global_scase.meshescoll.meshinfo + value;
-    vr = meshi->volrenderinfo;
-    if(vr->fireslice!=NULL||vr->smokeslice!=NULL){
-      UnloadVolsmokeAllFrames(vr);
-    }
-  }
-  updatemenu=1;
-  read_vol_mesh=VOL_READNONE;
-  GLUTPOSTREDISPLAY;
-}
-#endif
 
 /* ------------------ UnLoadSmoke3DMenu ------------------------ */
 
@@ -8803,10 +8629,6 @@ static int hvacvaluemenu = 0, hvacnodevaluemenu = 0, hvacductvaluemenu = 0;
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
 static int loadplot3dmenu=0, unloadvslicemenu=0, unloadslicemenu=0;
 static int loadsmoke3dmenu = 0;
-#ifdef pp_VOL_OLD
-static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
-static unloadvolsmoke3dmenu=0;
-#endif
 static int unloadsmoke3dmenu = 0;
 static int loadslicemenu=0, loadmultislicemenu = 0, loadhvacmenu = 0;
 static int *loadsubvslicemenu=NULL, nloadsubvslicemenu=0;
@@ -10683,9 +10505,6 @@ if(opengl_finalized == 0)return;
 /* -------------------------------- colorbarmenu -------------------------- */
 
   if(nsmoke3dloaded>0
-#ifdef pp_VOL_OLD
-    ||nvolrenderinfo>0
-#endif
     ){
     MakeColorbarMenu(&smokecolorbarmenu,
                      &smokecolorbars_submenu1, &smokecolorbars_submenu2, &smokecolorbars_submenu3,
@@ -11010,21 +10829,6 @@ if(opengl_finalized == 0)return;
     glutAddMenuEntry("Settings...", MENU_TOUR_SETTINGS);
   }
 
- /* --------------------------------Show Volume smoke menu -------------------------- */
-
-#ifdef pp_VOL_OLD
-  if(nvolsmoke3dloaded>0){
-    char vlabel[256];
-
-    CREATEMENU(showvolsmoke3dmenu,ShowVolsmoke3DMenu);
-    strcpy(vlabel, "");
-    if(show_volsmokefiles==1)strcat(vlabel, "*");
-    strcat(vlabel,"Show");
-    glutAddMenuEntry(vlabel,TOGGLE_VOLSMOKE);
-    GLUTADDSUBMENU("Smoke colorbar",smokecolorbarmenu);
-  }
-#endif
-
   CREATEMENU(aperturemenu,ApertureMenu);
   if(apertureindex==0)glutAddMenuEntry("*30",0);
   if(apertureindex!=0)glutAddMenuEntry("30",0);
@@ -11185,15 +10989,6 @@ if(opengl_finalized == 0)return;
     showhide_data = 1;
     GLUTADDSUBMENU("3D smoke", smoke3dshowmenu);
   }
-#ifdef pp_VOL_OLD
-  if(nvolsmoke3dloaded>0){
-    char vlabel[256];
-
-    showhide_data = 1;
-    strcpy(vlabel, "3D smoke (Volume rendered)");
-    GLUTADDSUBMENU(vlabel, showvolsmoke3dmenu);
-  }
-#endif
   if(npatchloaded>0){
     showhide_data = 1;
     GLUTADDSUBMENU("Boundary", showpatchmenu);
@@ -12046,41 +11841,6 @@ if(opengl_finalized == 0)return;
   }
 
 
-/* --------------------------------unload and load 3d vol smoke menus -------------------------- */
-
-#ifdef pp_VOL_OLD
-    if(nvolsmoke3dloaded>0){
-      CREATEMENU(unloadvolsmoke3dmenu,UnLoadVolsmoke3DMenu);
-      if(nvolsmoke3dloaded>1){
-        char vlabel[256];
-
-        strcpy(vlabel,"3D smoke (Volume rendered)");
-        glutAddMenuEntry(vlabel,UNLOAD_ALL);
-      }
-      for(i=0;i<global_scase.meshescoll.nmeshes;i++){
-        meshdata *meshi;
-        volrenderdata *vr;
-
-        meshi = global_scase.meshescoll.meshinfo + i;
-        vr = meshi->volrenderinfo;
-        if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
-        if(vr->loaded==0)continue;
-        glutAddMenuEntry(meshi->label,i);
-      }
-    }
-    if(nvolrenderinfo>0){
-      char vlabel[256];
-      CREATEMENU(loadvolsmoke3dmenu,LoadVolsmoke3DMenu);
-
-      strcpy(vlabel,"3D smoke (Volume rendered)");
-      glutAddMenuEntry(vlabel,LOAD_ALL);
-      glutAddMenuEntry("-", MENU_DUMMY);
-      glutAddMenuEntry("Settings...", MENU_VOLSMOKE_SETTINGS);
-      if(nvolsmoke3dloaded==1)glutAddMenuEntry("Unload",UNLOAD_ALL);
-      if(nvolsmoke3dloaded>1)GLUTADDSUBMENU("Unload",unloadvolsmoke3dmenu);
-    }
-#endif
-
     /* --------------------------------unload and load 3d smoke menus -------------------------- */
 
       if(nsmoke3dloaded>0){
@@ -12819,17 +12579,6 @@ if(opengl_finalized == 0)return;
         }
         GLUTADDSUBMENU(loadmenulabel,loadsmoke3dmenu);
       }
-
-      // volume rendered smoke
-
-#ifdef pp_VOL_OLD
-      if(nvolrenderinfo>0&&global_scase.smokediff==0){
-        char vlabel[256];
-
-        strcpy(vlabel,"3D smoke (Volume rendered)");
-        GLUTADDSUBMENU(vlabel,loadvolsmoke3dmenu);
-      }
-#endif
 
       // terrain
 
