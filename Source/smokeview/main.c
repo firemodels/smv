@@ -687,6 +687,7 @@ int main(int argc, char **argv){
   initMALLOC();
   InitRandAB(1000000);
   InitVars();
+  ThreadSetup();
 
   // The number of commandline arguments
   int n_args = 0;

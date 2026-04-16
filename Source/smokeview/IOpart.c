@@ -1956,9 +1956,9 @@ void FinalizePartLoad(partdata *parti){
   }
   visParticles = 1;
   sorting_tags = 1;
-  sorttags_threads = ThreadInit(n_sorttags_threads, use_sorttags_threads, serial_override, SortAllPartTags);
+  ThreadInit(&sorttags_threads, n_sorttags_threads, use_sorttags_threads, serial_override, SortAllPartTags);
   ThreadRun(sorttags_threads);
-  if(runscript == 1 || streak5show == 1){
+  if(runscript != 0 || streak5show == 1){
     ThreadJoin(&sorttags_threads);
   }
 

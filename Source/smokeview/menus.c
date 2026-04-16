@@ -4042,7 +4042,7 @@ void LoadAllPartFilesMT(int partnum){
   int i;
 
   INIT_PRINT_TIMER(part_load_timer);
-  partload_threads = ThreadInit(n_partload_threads, use_partload_threads, serial_override, MtLoadAllPartFiles);
+  ThreadInit(&partload_threads, n_partload_threads, use_partload_threads, serial_override, MtLoadAllPartFiles);
   int partnuminfo[1];
   partnuminfo[0] = partnum;
   ThreadRuni(partload_threads, (unsigned char *)partnuminfo, 0);
