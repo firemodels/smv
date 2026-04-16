@@ -1510,12 +1510,17 @@ void GetSmokeDir(float *mm){
   eye_position_fds[1] = SMV2FDS_Y(eye_position_smv[1]);
   eye_position_fds[2] = SMV2FDS_Z(eye_position_smv[2]);
 
+#ifdef pp_GETMESH_TEST
   for(j = 0; j < global_scase.meshescoll.nmeshes + 1; j++){
+#else
+  for(j = 0; j < global_scase.meshescoll.nmeshes; j++){
+#endif
     meshdata *meshj;
     int i;
     float absangle, cosangle, minangle, mincosangle;
     int iminangle, alphadir, minalphadir;
 
+#ifdef pp_GETMESH_TEST
     if(j < global_scase.meshescoll.nmeshes){
       meshj = global_scase.meshescoll.meshinfo + j;
       dx = meshj->boxmiddle_smv[0] - eye_position_smv[0];
@@ -1529,6 +1534,13 @@ void GetSmokeDir(float *mm){
       dz = sceneinfo->xyz_mid_smv[2] - eye_position_smv[2];
       sceneinfo->eyedist = sqrt(dx * dx + dy * dy + dz * dz);
     }
+#else
+    meshj = global_scase.meshescoll.meshinfo + j;
+    dx = meshj->boxmiddle_smv[0] - eye_position_smv[0];
+    dy = meshj->boxmiddle_smv[1] - eye_position_smv[1];
+    dz = meshj->boxmiddle_smv[2] - eye_position_smv[2];
+    meshj->eyedist = sqrt(dx * dx + dy * dy + dz * dz);
+#endif
 
     minalphadir = ALPHA_X;
     mincosangle = 2.0;
@@ -1590,12 +1602,16 @@ void GetSmokeDir(float *mm){
         }
       }
     }
+#ifdef pp_GETMESH_TEST
     if(j < global_scase.meshescoll.nmeshes){
       meshj->smokedir = iminangle;
     }
     else{
       sceneinfo->smokedir = iminangle;
     }
+#else
+    meshj->smokedir = iminangle;
+#endif
     if(j < global_scase.meshescoll.nmeshes){
       if(meshj->smoke3d_soot != NULL){
         smoke3ddata *soot;
