@@ -172,9 +172,9 @@ void UpdateFrameNumber(int changetime){
     if(show3dsmoke==1 && global_scase.smoke3dcoll.nsmoke3dinfo > 0){
       INIT_PRINT_TIMER(update_smoke_time);
 #ifdef pp_SPEEDUP
-      uncompresssmoke3d_threads = THREADinit(&n_uncompresssmoke3d_threads, &use_uncompresssmoke3d_threads, serial_override, UncompressSmoke3DAll);
-      THREADrunloop(uncompresssmoke3d_threads);
-      THREADcontrol(uncompresssmoke3d_threads, THREAD_JOIN);
+      uncompresssmoke3d_threads = ThreadInit(n_uncompresssmoke3d_threads, use_uncompresssmoke3d_threads, serial_override, UncompressSmoke3DAll);
+      ThreadRunLoop(uncompresssmoke3d_threads);
+      ThreadJoin(&uncompresssmoke3d_threads);
 #else
       UncompressSmoke3DAll();
 #endif
@@ -182,9 +182,9 @@ void UpdateFrameNumber(int changetime){
       
       INIT_PRINT_TIMER(merge_smoke_time);
 #ifdef pp_SPEEDUP
-      mergesmoke3d_threads = THREADinit(&n_mergesmoke3d_threads, &use_mergesmoke3d_threads, serial_override, MergeSmoke3DAll);
-      THREADrunloop(mergesmoke3d_threads);
-      THREADcontrol(mergesmoke3d_threads, THREAD_JOIN);
+      mergesmoke3d_threads = ThreadInit(n_mergesmoke3d_threads, use_mergesmoke3d_threads, serial_override, MergeSmoke3DAll);
+      ThreadRunLoop(mergesmoke3d_threads);
+      ThreadJoin(&mergesmoke3d_threads);
 #else
       MergeSmoke3DAll();
 #endif
@@ -2089,7 +2089,7 @@ void UpdateShowScene(void){
 #ifdef pp_READ_KEYBOARD
   if(update_readkeyboard == 1){
     update_readkeyboard = 0;
-    THREADrun(readkeyboard_threads);
+    ThreadRun(readkeyboard_threads);
   }
 #endif
   if(update_set_clipplanes == 1){
@@ -2760,31 +2760,31 @@ void OutputBounds(void){
 /* ------------------ HandleMakeMovie ------------------------ */
 
 void HandleMakeMovie(void){
-  THREADcontrol(ffmpeg_threads, THREAD_LOCK);
+  ThreadLock(ffmpeg_threads);
   if(have_ffmpeg == 0){
     PRINTF("*** Error: The movie generating program ffmpeg is not available\n");
-    THREADcontrol(ffmpeg_threads, THREAD_UNLOCK);
+    ThreadUnlock(ffmpeg_threads);
     return;
   }
   GLUIEnableDisableMakeMovieCPP(OFF);
   update_makemovie = 1;
-  THREADcontrol(ffmpeg_threads, THREAD_UNLOCK);
+  ThreadUnlock(ffmpeg_threads);
 }
 
 /* ------------------ EnableDisableMakeMovie ------------------------ */
 
 void EnableDisableMakeMovie(int onoff){
-  THREADcontrol(ffmpeg_threads, THREAD_LOCK);
+  ThreadLock(ffmpeg_threads);
   GLUIEnableDisableMakeMovieCPP(onoff);
-  THREADcontrol(ffmpeg_threads, THREAD_UNLOCK);
+  ThreadUnlock(ffmpeg_threads);
 }
 
 /* ------------------ EnableDisablePlayMovie ------------------------ */
 
 void EnableDisablePlayMovie(void){
-  THREADcontrol(ffmpeg_threads, THREAD_LOCK);
+  ThreadLock(ffmpeg_threads);
   GLUIEnableDisablePlayMovieCPP();
-  THREADcontrol(ffmpeg_threads, THREAD_UNLOCK);
+  ThreadUnlock(ffmpeg_threads);
 }
 
 /* ------------------ UpdateDisplay ------------------------ */
@@ -2890,7 +2890,7 @@ void UpdateDisplay(void){
     SetCVentDirs();
     update_setcvents = 0;
   }
-  THREADcontrol(ffmpeg_threads, THREAD_LOCK);
+  ThreadLock(ffmpeg_threads);
   if(update_ff == 1){
     update_ff = 0;
     if(have_ffmpeg == 1){
@@ -2900,7 +2900,7 @@ void UpdateDisplay(void){
       GLUIEnableDisableMakeMovieCPP(OFF);
     }
   }
-  THREADcontrol(ffmpeg_threads, THREAD_UNLOCK);
+  ThreadUnlock(ffmpeg_threads);
   if(update_ini==1){
     update_ini = 0;
     ReadIni(NULL);
@@ -2995,7 +2995,7 @@ void UpdateDisplay(void){
     INIT_PRINT_TIMER(timer_update_menus);
     if(opengl_finalized==1)glutDetachMenu(GLUT_RIGHT_BUTTON);
     attachmenu_status = 0;
-    THREADcontrol(checkfiles_threads, THREAD_LOCK);
+    ThreadLock(checkfiles_threads);
 #ifdef pp_GLUT_DEBUG
     printf("\n***before menu setup\n");
 #endif
@@ -3003,7 +3003,7 @@ void UpdateDisplay(void){
 #ifdef pp_GLUT_DEBUG
     printf("***after menu setup\n\n");
 #endif
-    THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
+    ThreadUnlock(checkfiles_threads);
     if(opengl_finalized==1)glutAttachMenu(GLUT_RIGHT_BUTTON);
     attachmenu_status = 1;
     updatemenu = 0;
