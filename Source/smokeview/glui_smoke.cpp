@@ -6,7 +6,6 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
-#include "IOvolsmoke.h"
 #include "glui_smoke.h"
 #include "glui_tour.h"
 #include "glui_bounds.h"

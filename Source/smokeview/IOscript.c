@@ -8,7 +8,6 @@
 #include GLUT_H
 
 #include "smokeviewvars.h"
-#include "IOvolsmoke.h"
 #include "smokeviewdefs.h"
 #include "IOscript.h"
 #include "glui_motion.h"

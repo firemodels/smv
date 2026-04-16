@@ -14,7 +14,6 @@
 #include "paths.h"
 #include "readsmvfile.h"
 #include "IOscript.h"
-#include "IOvolsmoke.h"
 
 #ifdef _WIN32
 #include <direct.h>
