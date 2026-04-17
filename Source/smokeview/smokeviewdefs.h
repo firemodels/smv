@@ -162,9 +162,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define NO_SMOKE -1
 #define NO_FIRE  -1
 
-#ifdef pp_READ_KEYBOARD
 #define VIS_RETURN   1
 #define VIS_CONTINUE 0
+#ifdef pp_READ_KEYBOARD
 #ifndef BREAK_VIS
 #define BREAK_VIS(check_state) if(check_state == VIS_RETURN && abort_vis==1)return
 #endif

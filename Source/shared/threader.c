@@ -181,7 +181,7 @@ void ThreadRuni(threaderdata *thi, unsigned char *datainfo, int sizedatai){
 #endif
 }
 
-/* ------------------ THREADrunloop ------------------------ */
+/* ------------------ ThreadRunLoop ------------------------ */
 
 void ThreadRunLoop(threaderdata *thi){
   int i, thread_ids[MAX_THREADS];

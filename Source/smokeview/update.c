@@ -1934,7 +1934,9 @@ void UpdateShowScene(void){
   int updating = 0;
 #endif
 
+#ifdef pp_READ_KEYBOARD
   abort_vis = 0;
+#endif
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
   if(update_fire_histogram_now == 1){
