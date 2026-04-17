@@ -163,12 +163,14 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define NO_FIRE  -1
 
 #ifdef pp_READ_KEYBOARD
-#ifndef ABORTVIS
-#define ABORTVIS(check_state) if(check_state == 1 && CheckMouseKeyState(check_state)==1)return
+#define VIS_RETURN   1
+#define VIS_CONTINUE 0
+#ifndef BREAK_VIS
+#define BREAK_VIS(check_state) if(check_state == VIS_RETURN && abort_vis==1)return
 #endif
 #else
-#undef  ABORTVIS
-#define ABORTVIS
+#undef  BREAK_VIS
+#define BREAK_VIS
 #endif
 
 #ifdef pp_GLUT_DEBUG

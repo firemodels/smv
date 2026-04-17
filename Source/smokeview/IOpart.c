@@ -598,9 +598,7 @@ void DrawPartFrame(int mode){
     partdata *parti;
     meshdata *meshi;
 
-#ifdef pp_READ_KEYBOARD
-    ABORTVIS(1);
-#endif
+    BREAK_VIS(VIS_RETURN);
     parti = global_scase.partinfo + i;
     if(parti->loaded==0||parti->display==0)continue;
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,parti->blocknumber);

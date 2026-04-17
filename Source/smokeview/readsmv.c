@@ -2246,19 +2246,20 @@ int ReadCharNonblocking(char *out) {
 /* ------------------ ReadKeyboard ------------------------ */
 
 void *ReadKeyboard(void *arg){
+  static int tcount=0;
   for(;;){
     char key_char;
 
     ThreadLock(readkeyboard_threads);
-    if(ReadCharNonblocking(&key_char)==1){
-      abort_char = (unsigned char)key_char;
+    if(abort_vis==0&&ReadCharNonblocking(&key_char)==1){
       abort_vis = 1;
+      Keyboard('t', FROM_SMOKEVIEW);
     }
     ThreadUnlock(readkeyboard_threads);
 #ifdef _WIN32
-      Sleep(100);
+    Sleep(1000);
 #else
-      usleep(100000);
+    usleep(1000000);
 #endif
   }
   THREAD_EXIT(readkeyboard_threads);
@@ -2269,15 +2270,16 @@ void *ReadKeyboard(void *arg){
 int CheckMouseKeyState(int check_state){
   ThreadLock(readkeyboard_threads);
   if(abort_vis == 1){
-    if(check_state == 1)Keyboard('t', FROM_SMOKEVIEW);
-    if(check_state == 0)abort_vis = 0;
+    if(check_state == VIS_RETURN)Keyboard('t', FROM_SMOKEVIEW);
+    if(check_state == VIS_CONTINUE)abort_vis = 0;
     ThreadUnlock(readkeyboard_threads);
     return 1;
   }
   ThreadUnlock(readkeyboard_threads);
 #ifdef _WIN32
-  if(check_state == 1 && GetAsyncKeyState(VK_LBUTTON) & 0x8000){
-    Keyboard('t', FROM_SMOKEVIEW);
+  if(check_state == VIS_RETURN && GetAsyncKeyState(VK_LBUTTON) & 0x8000){
+    //Keyboard('t', FROM_SMOKEVIEW);
+    printf("left mouse was pressed\n");
     abort_vis = 1;
     return 1;
   }

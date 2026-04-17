@@ -89,7 +89,6 @@ SVEXTERN threaderdata SVDECL(*mergesmoke3d_threads, NULL);
 SVEXTERN int SVDECL(n_readkeyboard_threads, 1), SVDECL(use_readkeyboard_threads, 1);
 SVEXTERN threaderdata SVDECL(*readkeyboard_threads, NULL);
 SVEXTERN int SVDECL(abort_vis, 0);
-SVEXTERN unsigned char abort_char;
 #endif
 
 //*** uncompress smoke
