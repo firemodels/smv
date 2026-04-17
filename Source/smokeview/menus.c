@@ -3964,6 +3964,7 @@ void LoadAllPartFilesMT(int partnum){
   ThreadInit(&partload_threads, n_partload_threads, use_partload_threads, serial_override, MtLoadAllPartFiles);
   int partnuminfo[1];
   partnuminfo[0] = partnum;
+  partload_threads->n_threads = 1;
   ThreadRuni(partload_threads, (unsigned char *)partnuminfo, 0);
   ThreadJoin(&partload_threads);
   PRINT_TIMER(part_load_timer, "LoadAllPartFilesMT");
