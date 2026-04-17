@@ -2246,7 +2246,6 @@ int ReadCharNonblocking(char *out) {
 /* ------------------ ReadKeyboard ------------------------ */
 
 void *ReadKeyboard(void *arg){
-  static int tcount=0;
   for(;;){
     char key_char;
 
