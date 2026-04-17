@@ -31,8 +31,10 @@ typedef struct _threaderdata{
 
 #ifdef INTHREADER
 threaderdata threadfirst, threadlast;
+int thread_ids[MAX_THREADS];
 #else
 extern CCC threaderdata threadfirst, threadlast;
+extern CCC int thread_ids[MAX_THREADS];
 #endif
 
 //*** routines

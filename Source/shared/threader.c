@@ -184,11 +184,6 @@ void ThreadRuni(threaderdata *thi, unsigned char *datainfo, int sizedatai){
 /* ------------------ ThreadRunLoop ------------------------ */
 
 void ThreadRunLoop(threaderdata *thi){
-  int i, thread_ids[MAX_THREADS];
-
-  for(i = 0;i < MAX_THREADS;i++){
-    thread_ids[i] = i;
-  }
   ThreadRuni(thi, (unsigned char *)thread_ids, sizeof(int));
 }
 
@@ -205,4 +200,7 @@ void ThreadSetup(void){
   threadfirst.next = &threadlast;
   threadlast.prev  = &threadfirst;
   threadlast.next  = NULL;
+  for(int i = 0; i < MAX_THREADS; i++){
+    thread_ids[i] = i;
+  }
 }
