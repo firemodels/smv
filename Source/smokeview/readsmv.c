@@ -2250,15 +2250,15 @@ void *ReadKeyboard(void *arg){
     char key_char;
 
     ThreadLock(readkeyboard_threads);
-    if(abort_vis==0&&ReadCharNonblocking(&key_char)==1){
+    if(runscript==0&&abort_vis==0&&ReadCharNonblocking(&key_char)==1){
       abort_vis = 1;
       Keyboard('t', FROM_SMOKEVIEW);
     }
     ThreadUnlock(readkeyboard_threads);
 #ifdef _WIN32
-    Sleep(1000);
+    Sleep(100);
 #else
-    usleep(1000000);
+    usleep(100000);
 #endif
   }
   THREAD_EXIT(readkeyboard_threads);
@@ -2853,8 +2853,10 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
 
 #ifdef pp_READ_KEYBOARD
-  ThreadInit(&readkeyboard_threads, n_readkeyboard_threads, use_readkeyboard_threads, serial_override, ReadKeyboard);
-  ThreadRun(readkeyboard_threads);
+  if(runscript == 0){
+    ThreadInit(&readkeyboard_threads, n_readkeyboard_threads, use_readkeyboard_threads, serial_override, ReadKeyboard);
+    ThreadRun(readkeyboard_threads);
+  }
 #endif
 #ifdef pp_SPEEDUP
   ThreadInit(&makeiblank_threads, n_makeiblank_threads, use_makeiblank_threads, serial_override, MakeIBlank);

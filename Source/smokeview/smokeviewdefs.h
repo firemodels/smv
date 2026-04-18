@@ -166,7 +166,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define VIS_CONTINUE 0
 #ifdef pp_READ_KEYBOARD
 #ifndef BREAK_VIS
-#define BREAK_VIS(check_state) if(check_state == VIS_RETURN && abort_vis==1)return
+#define BREAK_VIS(check_state) if(runscript == 0 && check_state == VIS_RETURN && abort_vis==1)return
 #endif
 #else
 #undef  BREAK_VIS
