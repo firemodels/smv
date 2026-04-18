@@ -1745,23 +1745,24 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile,
     ntimes_full2++;
     if(ntimes_full2 > *ntimes_full)break;
     maxvali = -1.0;
-    if(first == 1){
-      sscanf(buffer, "%f %i %i %f %i %f", &time_local, &nch_uncompressed, &nch_smoke_compressed, &maxvali, &nch_smoke_density, &maxval_density);
-      first = 0;
-      if(nch_smoke_density < 0)read4 = 1;
-    }
-    if(read4 == 1){
-      sscanf(buffer, "%f %i %i %f", &time_local, &nch_uncompressed, &nch_smoke_density, &maxval_density);
-    }
-    else{
-      sscanf(buffer, "%f %i %i %f %i %f", &time_local, &nch_uncompressed, &nch_smoke_compressed, &maxvali, &nch_smoke_density, &maxval_density);
-    }
     if(smoke3di->type == SOOT_index){
+      if(first == 1){
+        sscanf(buffer, "%f %i %i %f %i %f", &time_local, &nch_uncompressed, &nch_smoke_compressed, &maxvali, &nch_smoke_density, &maxval_density);
+        first = 0;
+        if(nch_smoke_density < 0)read4 = 1;
+      }
+      if(read4 == 1){
+        sscanf(buffer, "%f %i %i %f", &time_local, &nch_uncompressed, &nch_smoke_density, &maxval_density);
+      }
+      else{
+        sscanf(buffer, "%f %i %i %f %i %f", &time_local, &nch_uncompressed, &nch_smoke_compressed, &maxvali, &nch_smoke_density, &maxval_density);
+      }
       *maxvals++ = maxval_density;
       *nch_smoke_compressed_full++ = nch_smoke_density;
       *maxval = MAX(maxval_density, *maxval);
     }
     else{
+      sscanf(buffer, "%f %i %i %f %i %f", &time_local, &nch_uncompressed, &nch_smoke_compressed, &maxvali, &nch_smoke_density, &maxval_density);
       *maxval = MAX(maxvali, *maxval);
       *nch_smoke_compressed_full++ = nch_smoke_compressed;
     }
