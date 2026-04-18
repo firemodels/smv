@@ -76,11 +76,11 @@ SVEXTERN int SVDECL(n_playmovie_threads, 1), SVDECL(use_playmovie_threads, 1);
 SVEXTERN threaderdata SVDECL(*playmovie_threads,       NULL);
 
 //*** merge smoke
-SVEXTERN int SVDECL(n_mergesmoke3d_threads, 4);
+SVEXTERN int SVDECL(n_mergesmoke3d_threads, 1);
 #ifdef pp_OSX
 SVEXTERN int SVDECL(use_mergesmoke3d_threads, 0);
 #else
-SVEXTERN int SVDECL(use_mergesmoke3d_threads, 1);
+SVEXTERN int SVDECL(use_mergesmoke3d_threads, 0);
 #endif
 SVEXTERN threaderdata SVDECL(*mergesmoke3d_threads, NULL);
 
@@ -92,11 +92,11 @@ SVEXTERN int SVDECL(abort_vis, 0);
 #endif
 
 //*** uncompress smoke
-SVEXTERN int SVDECL(n_uncompresssmoke3d_threads, 4);
+SVEXTERN int SVDECL(n_uncompresssmoke3d_threads, 1);
 #ifdef pp_OSX
 SVEXTERN int SVDECL(use_uncompresssmoke3d_threads, 0);
 #else
-SVEXTERN int SVDECL(use_uncompresssmoke3d_threads, 1);
+SVEXTERN int SVDECL(use_uncompresssmoke3d_threads, 0);
 #endif
 SVEXTERN threaderdata SVDECL(*uncompresssmoke3d_threads, NULL);
 
