@@ -13,6 +13,9 @@ mkdir "%DIFFDIR%"
 cd %CURDIR%\..\..\Manuals\SMV_User_Guide\SCRIPT_FIGURES
 set TODIR=%CD%
 
+cd %CURDIR%\..\..\Manuals
+set MANDIR=%CD%
+
 cd %CURDIR%\..\..\Manuals\SMV_Summary
 set SUMMARYDIR=%CD%
 
@@ -22,20 +25,18 @@ set WEBDIFFDIR=%SUMMARYDIR%\diffs\images
 
 set HTMLFILE=%SUMMARYDIR%\index.html
 
-cd "%TODIR%"
-echo FROMDIR: %FROMDIR%
-echo   TODIR: %TODIR%
-echo DIFFDIR: %DIFFDIR%
-
+for %%d in ( SMV_User_Guide SMV_Verification_Guide ) do (
+cd %MANDIR%\%%d\SCRIPT_FIGURES
 for %%f in (*.png) do (
     set "FROMFILE=%FROMDIR%\%%f"
-    set "TOFILE=%TODIR%\%%f"
+    set "TOFILE=%%f"
     set "DIFFFILE=%DIFFDIR%\%%f"
     set "OUTFILE=%DIFFDIR%\%%f.txt"
     if exist "!FROMFILE!" if exist "!TOFILE!" (
        echo comparing %%f
        magick compare -metric RMSE "!FROMFILE!" "!TOFILE!" "!DIFFFILE!" > "!OUTFILE!" 2>&1
     )
+)
 )
 
 set WIDTH=300
@@ -49,11 +50,12 @@ echo ^</HEAD^>
 echo ^<BODY BGCOLOR="#FFFFFF" ^>
 echo ^<h2^>h2 title^</h2^>
 
-echo ^<table^>
-cd "%TODIR%"
+echo ^<table border=on^>
+for %%d in (SMV_User_Guide SMV_Verification_Guide) do (
+cd %MANDIR%\%%d\SCRIPT_FIGURES
 for %%f in (*.png) do (
     set "FROMFILE=%FROMDIR%\%%f"
-    set "TOFILE=%TODIR%\%%f"
+    set "TOFILE=%%f"
     set "DIFFFILE=%DIFFDIR%\%%f"
     set "OUTFILE=%DIFFDIR%\%%f.txt"
     if exist "!FROMFILE!" if exist "!TOFILE!" (
@@ -66,8 +68,9 @@ for %%f in (*.png) do (
       echo ^<td^>^<img src="images/%%f"       width=%WIDTH% ^>^</td^>
       echo ^<td^>^<img src="diffs/images/%%f" width=%WIDTH% ^>^</td^>
       echo ^</tr^>
-      echo ^<tr^>^<td colspan=3^>%%f - !FIRSTLINE!^</th^>^</tr^>
+      echo ^<tr^>^<td colspan=3 align=center^>%%f - !FIRSTLINE!^</th^>^</tr^>
     )
+)
 )
 echo ^</table^>
 echo ^<p^>^<hr^>
