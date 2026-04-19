@@ -16,6 +16,11 @@ set TODIR=%CD%
 cd %CURDIR%\..\..\Manuals
 set MANDIR=%CD%
 
+cd %CURDIR%\..\..\..\smv
+set SMVREPODIR=%CD%
+git describe --dirty --long > %CURDIR%\smvrepo.txt
+set /p SMVREPO=<%CURDIR%\smvrepo.txt
+
 cd %CURDIR%\..\..\Manuals\SMV_Summary
 set SUMMARYDIR=%CD%
 
@@ -45,13 +50,19 @@ echo creating %HTMLFILE%
 (
 echo ^<html^>
 echo ^<head^>
-echo ^<TITLE^>title^</TITLE^>
+echo ^<TITLE^> %SMVREPO% %date% %time% ^</TITLE^>
 echo ^</HEAD^>
 echo ^<BODY BGCOLOR="#FFFFFF" ^>
-echo ^<h2^>h2 title^</h2^>
+echo ^<h2^>  %date% %time% ^<br^>%SMVREPO% ^</h2^>
+
+for %%d in (SMV_User_Guide SMV_Verification_Guide) do (
+echo ^<a name="%%d"^>
+if %%d == SMV_User_Guide         echo [SMV_User_Guide]
+if %%d == SMV_User_Guide         echo [^<a href="#SMV_Verification_Guide"^>SMV_Verification_Guide^</a^>]
+if %%d == SMV_Verification_Guide echo [^<a href="#SMV_User_Guide"^>SMV_User_Guide^</a^>]
+if %%d == SMV_Verification_Guide echo [SMV_Verification_Guide]
 
 echo ^<table border=on^>
-for %%d in (SMV_User_Guide SMV_Verification_Guide) do (
 cd %MANDIR%\%%d\SCRIPT_FIGURES
 for %%f in (*.png) do (
     set "FROMFILE=%FROMDIR%\%%f"
@@ -71,12 +82,10 @@ for %%f in (*.png) do (
       echo ^<tr^>^<td colspan=3 align=center^>%%f - !FIRSTLINE!^</th^>^</tr^>
     )
 )
-)
 echo ^</table^>
+)
 echo ^<p^>^<hr^>
 echo ^</BODY^>
 echo ^</HTML^>
 ) > %HTMLFILE%
 start explorer %HTMLFILE%
-
-
