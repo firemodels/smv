@@ -2758,7 +2758,7 @@ void ScriptMenu(int value){
     case SCRIPT_CANCEL:
       script_defer_loading = 0;
       current_script_command=NULL;
-      SetRunScript(0);
+      SetRunScriptVal(0);
       first_frame_index=0;
       script_startframe=-1;
       script_skipframe=-1;

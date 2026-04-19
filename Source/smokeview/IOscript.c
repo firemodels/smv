@@ -3954,9 +3954,9 @@ int RunScriptCommand(scriptdata *script_command){
   return returnval;
 }
 
-/* ------------------ SetRunScript ------------------------ */
+/* ------------------ SetRunScriptVal ------------------------ */
 
-void SetRunScript(int val){
+void SetRunScriptVal(int val){
   ThreadLock(readkeyboard_threads);
   runscript = val;
   if(val == 0){

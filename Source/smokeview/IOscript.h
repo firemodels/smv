@@ -126,7 +126,7 @@ EXTERNCPP void ScriptLoadSliceRender(scriptdata *scripti);
 EXTERNCPP void ScriptLoadSmokeRender(scriptdata *scripti);
 EXTERNCPP void ScriptLoadVolSmokeFrame2(void);
 EXTERNCPP void ScriptViewXYZMINMAXOrtho(int option);
-EXTERNCPP void SetRunScript(int val);
+EXTERNCPP void SetRunScriptVal(int val);
 EXTERNCPP void SetViewZMAXPersp(void);
 EXTERNCPP void StartScript(void);
 #endif
