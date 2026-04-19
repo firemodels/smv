@@ -26,6 +26,14 @@ set BOTREPODIR=%CD%
 set GAWK=%BOTREPODIR%\Scripts\bin\gawk.exe
 set SORT=%BOTREPODIR%\Scripts\bin\sort.exe
 
+set BLURFROMDIR=%CURDIR%\blurfrom
+if exist %BLURFROMDIR% rmdir /s /q %BLURFROMDIR%
+mkdir %BLURFROMDIR%
+
+set BLURTODIR=%CURDIR%\blurto
+if exist %BLURTODIR% rmdir /s /q %BLURTODIR%
+mkdir %BLURTODIR%
+
 cd %CURDIR%\..\..\Manuals\SMV_Summary
 set SUMMARYDIR=%CD%
 
@@ -43,11 +51,18 @@ cd %MANDIR%\%%d\SCRIPT_FIGURES
 for %%f in (*.png) do (
     set "FROMFILE=%FROMDIR%\%%f"
     set "TOFILE=%%f"
+    set "BLURFROMFILE=%BLURFROMDIR%\%%f"
+    set "BLURTOFILE=%BLURTODIR%\%%f"
     set "DIFFFILE=%DIFFDIR%\%%f"
     set "OUTFILE=%DIFFDIR%\%%f.txt"
     if exist "!FROMFILE!" if exist "!TOFILE!" (
        echo comparing %%f
-       magick compare -metric RMSE "!FROMFILE!" "!TOFILE!" "!DIFFFILE!" > "!OUTFILE!" 2>&1
+
+       magick "!FROMFILE!" -blur 0x2 "!BLURFROMFILE!"
+       magick "!TOFILE!"   -blur 0x2 "!BLURTOFILE!"
+
+       magick compare -metric RMSE "!BLURFROMFILE!" "!BLURTOFILE!" "!DIFFFILE!" > "!OUTFILE!" 2>&1
+       magick "!BLURFROMFILE!" "!BLURTOFILE!" -compose difference -composite -negate "!DIFFFILE!"       
        %GAWK% -v fname="%%f" -F"[()]" "{print fname, $2}" !OUTFILE! >> !FILELIST!
     )
 )
@@ -79,6 +94,7 @@ if %%d == SMV_User_Guide         set FILELOOP=%CURDIR%\user_filelist.txt
 if %%d == SMV_Verification_Guide set FILELOOP=%CURDIR%\veri_filelist.txt 
 
 echo ^<table border=on^>
+echo ^<tr^>^<th^>Reference^</th^>^<th^>Current^</th^>^<th^>Difference^</th^>^</tr^>
 cd %MANDIR%\%%d\SCRIPT_FIGURES
 for /f "tokens=1,2" %%A in (!FILELOOP!) do (
     set "FROMFILE=%FROMDIR%\%%A"
