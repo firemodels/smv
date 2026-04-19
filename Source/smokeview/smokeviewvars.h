@@ -75,7 +75,17 @@ SVEXTERN threaderdata SVDECL(*patchbound_threads, NULL);
 SVEXTERN int SVDECL(n_playmovie_threads, 1), SVDECL(use_playmovie_threads, 1);
 SVEXTERN threaderdata SVDECL(*playmovie_threads,       NULL);
 
-//*** merge smoke
+//*** read test
+#ifdef pp_READ_KEYBOARD
+SVEXTERN int SVDECL(n_readkeyboard_threads, 1), SVDECL(use_readkeyboard_threads, 1);
+SVEXTERN threaderdata SVDECL(*readkeyboard_threads, NULL);
+SVEXTERN int SVDECL(abort_vis, 0);
+#endif
+
+//*** glui variables for setting merge and uncompress parameters
+SVEXTERN int SVDECL(glui_use_smoke3d_threads, 1);
+SVEXTERN int SVDECL(glui_n_smoke3d_threads, 4);
+
 SVEXTERN int SVDECL(n_mergesmoke3d_threads, 4);
 #ifdef pp_OSX
 SVEXTERN int SVDECL(use_mergesmoke3d_threads, 0);
@@ -83,13 +93,6 @@ SVEXTERN int SVDECL(use_mergesmoke3d_threads, 0);
 SVEXTERN int SVDECL(use_mergesmoke3d_threads, 1);
 #endif
 SVEXTERN threaderdata SVDECL(*mergesmoke3d_threads, NULL);
-
-//*** read test
-#ifdef pp_READ_KEYBOARD
-SVEXTERN int SVDECL(n_readkeyboard_threads, 1), SVDECL(use_readkeyboard_threads, 1);
-SVEXTERN threaderdata SVDECL(*readkeyboard_threads, NULL);
-SVEXTERN int SVDECL(abort_vis, 0);
-#endif
 
 //*** uncompress smoke
 SVEXTERN int SVDECL(n_uncompresssmoke3d_threads, 4);
