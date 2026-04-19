@@ -3953,4 +3953,18 @@ int RunScriptCommand(scriptdata *script_command){
   GLUTPOSTREDISPLAY;
   return returnval;
 }
+
+/* ------------------ SetRunScript ------------------------ */
+
+void SetRunScript(int val){
+  ThreadLock(readkeyboard_threads);
+  runscript = val;
+  if(val == 0){
+    serial_override = 0;
+  }
+  else{
+    serial_override = 1;
+  };
+  ThreadUnlock(readkeyboard_threads);
+}
  

@@ -4005,8 +4005,7 @@ void DoScript(void){
   SNIFF_ERRORS("DoScript: start");
   if(runscript==1&&default_script!=NULL){
     ScriptMenu(default_script->id);
-    runscript=2;
-    serial_override = 1;
+    SetRunScript(2);
   }
   script_render_flag=0;
   if(nscriptinfo>0&&current_script_command!=NULL&&(script_step==0||(script_step==1&&script_step_now==1))){

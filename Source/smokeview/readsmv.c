@@ -2243,6 +2243,26 @@ int ReadCharNonblocking(char *out) {
 #endif
 }
 
+/* ------------------ IsLeftMousePressed ------------------------ */
+static float mouse_timer = 0.0;
+int IsLeftMousePressed(void){
+#ifdef _WIN32
+    if(GetAsyncKeyState(VK_LBUTTON) & 0x8000){
+      int returnval = 0;
+
+      STOP_TIMER(mouse_timer);
+      if(mouse_timer > 0.5)returnval = 1;
+      START_TIMER(mouse_timer);
+      return returnval;
+    }
+    return 0;
+#elif defined(__APPLE__)
+    return 0;
+#elif defined(__linux__)
+    return 0;
+#endif
+}
+
 /* ------------------ ReadKeyboard ------------------------ */
 
 void *ReadKeyboard(void *arg){
@@ -2250,9 +2270,11 @@ void *ReadKeyboard(void *arg){
     char key_char;
 
     ThreadLock(readkeyboard_threads);
-    if(runscript==0&&abort_vis==0&&ReadCharNonblocking(&key_char)==1){
-      abort_vis = 1;
-      Keyboard('t', FROM_SMOKEVIEW);
+    if(runscript==0&&abort_vis==0){
+      if(ReadCharNonblocking(&key_char)==1 || IsLeftMousePressed()==1){
+        abort_vis = 1;
+        Keyboard('t', FROM_SMOKEVIEW);
+      }
     }
     ThreadUnlock(readkeyboard_threads);
 #ifdef _WIN32
@@ -2262,32 +2284,6 @@ void *ReadKeyboard(void *arg){
 #endif
   }
   THREAD_EXIT(readkeyboard_threads);
-}
-
-/* ------------------ CheckMouseKeyState ------------------------ */
-
-int CheckMouseKeyState(int check_state){
-  ThreadLock(readkeyboard_threads);
-  if(abort_vis == 1){
-    if(check_state == VIS_RETURN)Keyboard('t', FROM_SMOKEVIEW);
-    if(check_state == VIS_CONTINUE)abort_vis = 0;
-    ThreadUnlock(readkeyboard_threads);
-    return 1;
-  }
-  ThreadUnlock(readkeyboard_threads);
-#ifdef _WIN32
-  if(check_state == VIS_RETURN && GetAsyncKeyState(VK_LBUTTON) & 0x8000){
-    //Keyboard('t', FROM_SMOKEVIEW);
-    printf("left mouse was pressed\n");
-    abort_vis = 1;
-    return 1;
-  }
-  if(check_state == 0 && abort_vis == 1){
-    abort_vis = 0;
-    return 1;
-  }
-#endif
-  return 0;
 }
 #endif
 

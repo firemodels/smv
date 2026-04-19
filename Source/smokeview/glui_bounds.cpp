@@ -4553,8 +4553,7 @@ void ScriptCB(int var){
     break;
   case SCRIPT_CANCEL_NOW:
     current_script_command = NULL;
-    runscript = 0;
-    serial_override = 0;
+    SetRunScript(0);
     first_frame_index = 0;
     script_startframe = -1;
     script_skipframe = -1;

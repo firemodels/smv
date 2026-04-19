@@ -481,8 +481,7 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
     if(args->runscript){
       from_commandline = 1;
-      runscript = 1;
-      serial_override = 1;
+      SetRunScript(1);
     }
     if(args->runhtmlscript){
       from_commandline = 1;
@@ -534,8 +533,7 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
       sfd = InsertScriptFile(scriptbuffer);
       if(sfd != NULL)default_script = sfd;
       if(!is_htmlscript){
-        runscript = 1;
-        serial_override = 1;
+      SetRunScript(1);
       }
     }
     if(args->noexit){
