@@ -3957,7 +3957,9 @@ int RunScriptCommand(scriptdata *script_command){
 /* ------------------ SetRunScriptVal ------------------------ */
 
 void SetRunScriptVal(int val){
+#ifdef pp_READ_KEYBOARD
   ThreadLock(readkeyboard_threads);
+#endif
   runscript = val;
   if(val == 0){
     serial_override = 0;
@@ -3965,6 +3967,8 @@ void SetRunScriptVal(int val){
   else{
     serial_override = 1;
   };
+#ifdef pp_READ_KEYBOARD
   ThreadUnlock(readkeyboard_threads);
+#endif
 }
  

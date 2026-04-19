@@ -83,23 +83,23 @@ SVEXTERN int SVDECL(abort_vis, 0);
 #endif
 
 //*** glui variables for setting merge and uncompress parameters
-SVEXTERN int SVDECL(glui_use_smoke3d_threads, 1);
-SVEXTERN int SVDECL(glui_n_smoke3d_threads, 4);
+SVEXTERN int SVDECL(glui_use_smoke3d_threads, 0);
+SVEXTERN int SVDECL(glui_n_smoke3d_threads, 1);
 
-SVEXTERN int SVDECL(n_mergesmoke3d_threads, 4);
+SVEXTERN int SVDECL(n_mergesmoke3d_threads, 1);
 #ifdef pp_OSX
 SVEXTERN int SVDECL(use_mergesmoke3d_threads, 0);
 #else
-SVEXTERN int SVDECL(use_mergesmoke3d_threads, 1);
+SVEXTERN int SVDECL(use_mergesmoke3d_threads, 0);
 #endif
 SVEXTERN threaderdata SVDECL(*mergesmoke3d_threads, NULL);
 
 //*** uncompress smoke
-SVEXTERN int SVDECL(n_uncompresssmoke3d_threads, 4);
+SVEXTERN int SVDECL(n_uncompresssmoke3d_threads, 1);
 #ifdef pp_OSX
 SVEXTERN int SVDECL(use_uncompresssmoke3d_threads, 0);
 #else
-SVEXTERN int SVDECL(use_uncompresssmoke3d_threads, 1);
+SVEXTERN int SVDECL(use_uncompresssmoke3d_threads, 0);
 #endif
 SVEXTERN threaderdata SVDECL(*uncompresssmoke3d_threads, NULL);
 
