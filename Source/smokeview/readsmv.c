@@ -2210,6 +2210,26 @@ void UpdateEvents(void){
 
 #ifdef pp_READ_KEYBOARD
 
+/* ------------------ IsMouseInWindow ------------------------ */
+
+int IsMouseInWindow(void){
+#ifdef _WIN32
+  int width = glutGet(GLUT_WINDOW_WIDTH);
+  int height = glutGet(GLUT_WINDOW_HEIGHT);
+  int x = glutGet(GLUT_WINDOW_X);
+  int y = glutGet(GLUT_WINDOW_Y);
+  POINT p;
+  GetCursorPos(&p);
+  if(p.x<x || p.x>x + width)return 0;
+  if(p.y<y || p.y>y + height)return 0;
+  return 1;
+#elif defined(__APPLE__)
+return 0;
+#elif defined(__linux__)
+return 0;
+#endif
+}
+
 /* ------------------ ReadCharNonblocking ------------------------ */
 
 int ReadCharNonblocking(char *out) {
@@ -2271,7 +2291,9 @@ void *ReadKeyboard(void *arg){
 
     ThreadLock(readkeyboard_threads);
     if(runscript==0&&abort_vis==0){
-      if(ReadCharNonblocking(&key_char)==1 || IsLeftMousePressed()==1){
+      if(ReadCharNonblocking(&key_char)==1 || 
+        (IsMouseInWindow()==1&&IsLeftMousePressed()==1)
+        ){
         abort_vis = 1;
         Keyboard('t', FROM_SMOKEVIEW);
       }
