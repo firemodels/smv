@@ -20,11 +20,8 @@ cd %CURDIR%\..\..\..\smv
 set SMVREPODIR=%CD%
 git describe --dirty --long > %CURDIR%\smvrepo.txt
 set /p SMVREPO=<%CURDIR%\smvrepo.txt
-
-cd %CURDIR%\..\..\..\bot
-set BOTREPODIR=%CD%
-set GAWK=%BOTREPODIR%\Scripts\bin\gawk.exe
-set SORT=%BOTREPODIR%\Scripts\bin\sort.exe
+set GAWK=%SMVREPODIR%\Verification\scripts\bin\gawk.exe
+set SORT=%SMVREPODIR%\Verification\scripts\bin\sort.exe
 
 set BLURFROMDIR=%CURDIR%\blurfrom
 if exist %BLURFROMDIR% rmdir /s /q %BLURFROMDIR%
@@ -84,9 +81,11 @@ echo ^<h2^>  %date% %time% ^<br^>%SMVREPO% ^</h2^>
 
 for %%d in (SMV_User_Guide SMV_Verification_Guide) do (
 echo ^<a name="%%d"^>
+if %%d == SMV_User_Guide         echo ^<h2^>User Guide Cases^</h2^>
 if %%d == SMV_User_Guide         echo [SMV_User_Guide]
 if %%d == SMV_User_Guide         echo [^<a href="#SMV_Verification_Guide"^>SMV_Verification_Guide^</a^>]
 
+if %%d == SMV_Verification_Guide echo ^<h2^>Verification Guide Cases^</h2^>
 if %%d == SMV_Verification_Guide echo [^<a href="#SMV_User_Guide"^>SMV_User_Guide^</a^>]
 if %%d == SMV_Verification_Guide echo [SMV_Verification_Guide]
 
