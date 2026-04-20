@@ -24,4 +24,12 @@ cd %VISDIR%
 %SMVEXE% plume5c
 %SMVEXE% mplume5c8
 
+%SMVEXE%  cell_test
+%SMVEXE%  colorbar
+%SMVEXE%  part_color
+%SMVEXE%  slicemask
+%SMVEXE%  sprinkler_many
+%SMVEXE%  vcirctest
+
+
 cd %CURDIR%
