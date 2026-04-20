@@ -2264,7 +2264,9 @@ int ReadCharNonblocking(char *out) {
 }
 
 /* ------------------ IsLeftMousePressed ------------------------ */
+#ifdef _WIN32
 static float mouse_timer = 0.0;
+#endif
 int IsLeftMousePressed(void){
 #ifdef _WIN32
     if(GetAsyncKeyState(VK_LBUTTON) & 0x8000){
