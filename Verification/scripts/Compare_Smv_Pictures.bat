@@ -40,7 +40,6 @@ set WEBDIFFDIR=%SUMMARYDIR%\diffs\images
 
 set HTMLFILE=%SUMMARYDIR%\index.html
 
-goto skip
 for %%d in ( SMV_User_Guide SMV_Verification_Guide ) do (
 if %%d == SMV_User_Guide         set FILELIST=%CURDIR%\user_filelist.txt
 if %%d == SMV_Verification_Guide set FILELIST=%CURDIR%\veri_filelist.txt
@@ -66,7 +65,6 @@ for %%f in (*.png) do (
 )
 )
 
-:skip
 cd %CURDIR%
 
 %SORT% -k2,2gr user_filelist.txt -o user_filelist.txt 
