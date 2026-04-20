@@ -40,6 +40,7 @@ set WEBDIFFDIR=%SUMMARYDIR%\diffs\images
 
 set HTMLFILE=%SUMMARYDIR%\index.html
 
+goto skip
 for %%d in ( SMV_User_Guide SMV_Verification_Guide ) do (
 if %%d == SMV_User_Guide         set FILELIST=%CURDIR%\user_filelist.txt
 if %%d == SMV_Verification_Guide set FILELIST=%CURDIR%\veri_filelist.txt
@@ -60,15 +61,23 @@ for %%f in (*.png) do (
 
        magick compare -metric RMSE "!BLURFROMFILE!" "!BLURTOFILE!" "!DIFFFILE!" > "!OUTFILE!" 2>&1
        magick "!BLURFROMFILE!" "!BLURTOFILE!" -compose difference -composite -negate "!DIFFFILE!"       
-       %GAWK% -v fname="%%f" -F"[()]" "{print fname, $2}" !OUTFILE! >> !FILELIST!
+       %GAWK% -v fname="%%f" -F"[()]" "{ if ($2 < 0.02) $2 = 0; print fname, $2 }" !OUTFILE! >> !FILELIST!
     )
 )
 )
 
-%SORT% -k2,2gr %CURDIR%\user_filelist.txt -o %CURDIR%\user_filelist.txt 
-%SORT% -k2,2gr %CURDIR%\veri_filelist.txt -o %CURDIR%\veri_filelist.txt
+:skip
+cd %CURDIR%
 
-set WIDTH=300
+%SORT% -k2,2gr user_filelist.txt -o user_filelist.txt 
+%SORT% -k2,2gr veri_filelist.txt -o veri_filelist.txt
+
+%GAWK% -f zero.awk     user_filelist.txt > user_zerolist.txt
+%GAWK% -f zero.awk     veri_filelist.txt > veri_zerolist.txt
+%GAWK% -f nonzero.awk  user_filelist.txt > user_nonzerolist.txt
+%GAWK% -f nonzero.awk  veri_filelist.txt > veri_nonzerolist.txt
+
+set WIDTH=250
 
 echo creating %HTMLFILE%
 (
@@ -80,17 +89,21 @@ echo ^<BODY BGCOLOR="#FFFFFF" ^>
 echo ^<h2^>  %date% %time% ^<br^>%SMVREPO% ^</h2^>
 
 for %%d in (SMV_User_Guide SMV_Verification_Guide) do (
-echo ^<a name="%%d"^>
-if %%d == SMV_User_Guide         echo ^<h2^>User Guide Cases^</h2^>
-if %%d == SMV_User_Guide         echo [SMV_User_Guide]
-if %%d == SMV_User_Guide         echo [^<a href="#SMV_Verification_Guide"^>SMV_Verification_Guide^</a^>]
+if %%d == SMV_User_Guide echo ^<a name="changeduser"^>
+if %%d == SMV_Verification_Guide echo ^<a name="changedveri"^>
 
-if %%d == SMV_Verification_Guide echo ^<h2^>Verification Guide Cases^</h2^>
-if %%d == SMV_Verification_Guide echo [^<a href="#SMV_User_Guide"^>SMV_User_Guide^</a^>]
+if %%d == SMV_User_Guide         echo ^<h2^>Changed User Images Cases^</h2^>
+
+if %%d == SMV_Verification_Guide echo ^<h2^>Changed Verification Images Cases^</h2^>
 if %%d == SMV_Verification_Guide echo [SMV_Verification_Guide]
 
-if %%d == SMV_User_Guide         set FILELOOP=%CURDIR%\user_filelist.txt 
-if %%d == SMV_Verification_Guide set FILELOOP=%CURDIR%\veri_filelist.txt 
+if %%d == SMV_User_Guide         set FILELOOP=%CURDIR%\user_nonzerolist.txt 
+if %%d == SMV_Verification_Guide set FILELOOP=%CURDIR%\veri_nonzerolist.txt 
+
+echo [^<a href="#changeduser"  ^>Changed User Images          ^</a^>]
+echo [^<a href="#Unchangeduser"^>Unchanged User Images        ^</a^>]
+echo [^<a href="#changedveri"  ^>Changed Verification Images  ^</a^>]
+echo [^<a href="#Unchangedveri"^>Unchanged Verification Images^</a^>]
 
 echo ^<table border=on^>
 echo ^<tr^>^<th^>Reference^</th^>^<th^>Current^</th^>^<th^>Difference^</th^>^</tr^>
@@ -101,7 +114,6 @@ for /f "tokens=1,2" %%A in (!FILELOOP!) do (
     set "DIFFFILE=%DIFFDIR%\%%A"
     set "OUTFILE=%DIFFDIR%\%%A.txt"
     if exist "!FROMFILE!" if exist "!TOFILE!" (
-      set /p FIRSTLINE=<!OUTFILE!
       copy !FROMFILE! %WEBFROMDIR%\%%A >NUL 2>&1
       copy !TOFILE!   %WEBTODIR%\%%A   >NUL 2>&1
       copy !DIFFFILE! %WEBDIFFDIR%\%%A >NUL 2>&1
@@ -114,6 +126,43 @@ for /f "tokens=1,2" %%A in (!FILELOOP!) do (
     )
 )
 echo ^</table^>
+
+if %%d == SMV_User_Guide echo ^<a name="Unchangeduser"^>
+if %%d == SMV_Verification_Guide echo ^<a name="UnchangedVeri"^>
+
+if %%d == SMV_User_Guide         echo ^<h2^>Unchanged User Images Cases^</h2^>
+if %%d == SMV_Verification_Guide echo ^<h2^>Unchanged Verification Images Cases^</h2^>
+
+echo [^<a href="#changeduser"  ^>Changed User Images          ^</a^>]
+echo [^<a href="#Unchangeduser"^>Unchanged User Images        ^</a^>]
+echo [^<a href="#changedveri"  ^>Changed Verification Images  ^</a^>]
+echo [^<a href="#Unchangedveri"^>Unchanged Verification Images^</a^>]
+
+if %%d == SMV_User_Guide         set FILELOOP=%CURDIR%\user_zerolist.txt 
+if %%d == SMV_Verification_Guide set FILELOOP=%CURDIR%\veri_zerolist.txt 
+
+echo ^<table border=on^>
+echo ^<tr^>
+set count=0
+cd %MANDIR%\%%d\SCRIPT_FIGURES
+for /f "tokens=1,2" %%A in (!FILELOOP!) do (
+    set "FROMFILE=%FROMDIR%\%%A"
+    set "TOFILE=%%A"
+    set "DIFFFILE=%DIFFDIR%\%%A"
+    set "OUTFILE=%DIFFDIR%\%%A.txt"
+    if exist "!FROMFILE!" if exist "!TOFILE!" (
+      copy !FROMFILE! %WEBFROMDIR%\%%A >NUL 2>&1
+      copy !TOFILE!   %WEBTODIR%\%%A   >NUL 2>&1
+      copy !DIFFFILE! %WEBDIFFDIR%\%%A >NUL 2>&1
+      set /a count+=1
+      echo ^<td^>^<img src="diffs/base/%%A"   width=%WIDTH% ^>^<br^>%%A ^</td^>
+      if !count! geq 4 echo ^</tr^>^<tr^>
+      if !count! geq 4 set count=0
+    )
+)
+echo ^</tr^>
+echo ^</table^>
+
 )
 echo ^<p^>^<hr^>
 echo ^</BODY^>
