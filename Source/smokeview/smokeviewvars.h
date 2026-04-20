@@ -421,6 +421,7 @@ SVEXTERN int SVDECL(npart5loaded_old, 0), SVDECL(npartloaded_old, 0);
 SVEXTERN int SVDECL(select_part, 0), SVDECL(selected_part_index, -1);
 SVEXTERN int SVDECL(smoke3d_compression_type, COMPRESSED_UNKNOWN);
 SVEXTERN int SVDECL(update_smoke3dmenulabels, 0);
+SVEXTERN int SVDECL(ignore_s3dd_files, 0), SVDECL(s3dd_files_ok, 0);
 
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
