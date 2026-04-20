@@ -170,7 +170,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #endif
 #else
 #undef  BREAK_VIS
-#define BREAK_VIS
+#define BREAK_VIS(check_state) ((void)0)
 #endif
 
 #ifdef pp_GLUT_DEBUG
