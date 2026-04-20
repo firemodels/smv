@@ -1,5 +1,0 @@
-#ifndef IOVOLSMOKE_H_DEFINED
-#define IOVOLSMOKE_H_DEFINED
-
-#endif
-

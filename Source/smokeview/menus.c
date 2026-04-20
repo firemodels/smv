@@ -15,7 +15,6 @@
 #include "smokeviewvars.h"
 #include "glui_bounds.h"
 #include "glui_motion.h"
-#include "IOvolsmoke.h"
 #include "readhvac.h"
 #include "readobject.h"
 #include "readsmvfile.h"
@@ -121,7 +120,6 @@ float     part_load_time;
 #define MENU_BOUNDARY_SETTINGS    -7
 #define MENU_PART_SETTINGS        -4
 #define MENU_PLOT3D_SETTINGS      -4
-#define MENU_VOLSMOKE_SETTINGS    -4
 #define MENU_SLICE_SETTINGS       -6
 #define MENU_PART_PARTFAST        -7
 #define MENU_PART_NUM_FILE_SIZE   -8
@@ -2760,8 +2758,7 @@ void ScriptMenu(int value){
     case SCRIPT_CANCEL:
       script_defer_loading = 0;
       current_script_command=NULL;
-      runscript=0;
-      serial_override = 0;
+      SetRunScriptVal(0);
       first_frame_index=0;
       script_startframe=-1;
       script_skipframe=-1;
@@ -3964,6 +3961,7 @@ void LoadAllPartFilesMT(int partnum){
   ThreadInit(&partload_threads, n_partload_threads, use_partload_threads, serial_override, MtLoadAllPartFiles);
   int partnuminfo[1];
   partnuminfo[0] = partnum;
+  partload_threads->n_threads = 1;
   ThreadRuni(partload_threads, (unsigned char *)partnuminfo, 0);
   ThreadJoin(&partload_threads);
   PRINT_TIMER(part_load_timer, "LoadAllPartFilesMT");

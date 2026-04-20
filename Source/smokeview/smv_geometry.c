@@ -9,7 +9,6 @@
 #include GLUT_H
 
 #include "smokeviewvars.h"
-#include "IOvolsmoke.h"
 #include "interp.h"
 
 /* ------------------ Slerp ------------------------ */

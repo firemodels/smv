@@ -10,7 +10,6 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
-#include "IOvolsmoke.h"
 #include "glui_motion.h"
 #include "readgeom.h"
 #include "paths.h"

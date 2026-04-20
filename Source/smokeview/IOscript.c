@@ -8,7 +8,6 @@
 #include GLUT_H
 
 #include "smokeviewvars.h"
-#include "IOvolsmoke.h"
 #include "smokeviewdefs.h"
 #include "IOscript.h"
 #include "glui_motion.h"
@@ -3953,5 +3952,23 @@ int RunScriptCommand(scriptdata *script_command){
   }
   GLUTPOSTREDISPLAY;
   return returnval;
+}
+
+/* ------------------ SetRunScriptVal ------------------------ */
+
+void SetRunScriptVal(int val){
+#ifdef pp_READ_KEYBOARD
+  ThreadLock(readkeyboard_threads);
+#endif
+  runscript = val;
+  if(val == 0){
+    serial_override = 0;
+  }
+  else{
+    serial_override = 1;
+  };
+#ifdef pp_READ_KEYBOARD
+  ThreadUnlock(readkeyboard_threads);
+#endif
 }
  

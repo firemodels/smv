@@ -7,6 +7,7 @@
 
 #include "dmalloc.h"
 #include "threader.h"
+#include "datadefs.h"
 
 // /* ------------------ Sample ------------------------ */
 
@@ -69,11 +70,10 @@ void ThreadInit(threaderdata **thiptr, int n_threads, int use_threads, int run_s
   assert(*thiptr == NULL);
   NewMemory((void **)&thi, sizeof(threaderdata));
 
-  if(n_threads<1)n_threads = 1;
-  if(n_threads > MAX_THREADS)n_threads = MAX_THREADS;
-  if(run_serial_override != 0)use_threads = 0;
-  if(use_threads != 0)use_threads = 1;
-  if(use_threads == 0)n_threads = 1;
+  n_threads           = CLAMP(n_threads, 1, MAX_THREADS);
+  use_threads         = CLAMP(use_threads, 0, 1);
+  run_serial_override = CLAMP(run_serial_override, 0, 1);
+  if(run_serial_override == 1)use_threads = 0;
 
   thi->n_threads       = n_threads;
   thi->use_threads     = use_threads;
@@ -181,14 +181,9 @@ void ThreadRuni(threaderdata *thi, unsigned char *datainfo, int sizedatai){
 #endif
 }
 
-/* ------------------ THREADrunloop ------------------------ */
+/* ------------------ ThreadRunLoop ------------------------ */
 
 void ThreadRunLoop(threaderdata *thi){
-  int i, thread_ids[MAX_THREADS];
-
-  for(i = 0;i < MAX_THREADS;i++){
-    thread_ids[i] = i;
-  }
   ThreadRuni(thi, (unsigned char *)thread_ids, sizeof(int));
 }
 
@@ -205,4 +200,7 @@ void ThreadSetup(void){
   threadfirst.next = &threadlast;
   threadlast.prev  = &threadfirst;
   threadlast.next  = NULL;
+  for(int i = 0; i < MAX_THREADS; i++){
+    thread_ids[i] = i;
+  }
 }

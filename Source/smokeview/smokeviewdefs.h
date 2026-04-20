@@ -162,13 +162,15 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define NO_SMOKE -1
 #define NO_FIRE  -1
 
+#define VIS_RETURN   1
+#define VIS_CONTINUE 0
 #ifdef pp_READ_KEYBOARD
-#ifndef ABORTVIS
-#define ABORTVIS(check_state) if(CheckMouseKeyState(check_state)==1)return
+#ifndef BREAK_VIS
+#define BREAK_VIS(check_state) if(runscript == 0 && check_state == VIS_RETURN && abort_vis==1)return
 #endif
 #else
-#undef  ABORTVIS
-#define ABORTVIS
+#undef  BREAK_VIS
+#define BREAK_VIS
 #endif
 
 #ifdef pp_GLUT_DEBUG
@@ -769,10 +771,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define SMOKE3D_ZEROS_ALL     1
 #define SMOKE3D_ZEROS_UNKNOWN 2
 
-#define SHOW_VOLSMOKE   -2
-#define HIDE_VOLSMOKE   -1
-#define TOGGLE_VOLSMOKE -3
-
 #define MAXPOINTS          50000000
 #define INCFRAMES                20
 #define MAXFRAMES              5001
@@ -887,10 +885,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define DRAW_OPAQUE      0
 #define DRAW_TRANSPARENT 1
-
-#define VOL_READALL  -1
-#define VOL_UNLOAD   -2
-#define VOL_READNONE -3
 
 #define MENU_LABEL_colorbar_vertical    0
 #define MENU_LABEL_colorbar_horizontal  1

@@ -75,30 +75,31 @@ SVEXTERN threaderdata SVDECL(*patchbound_threads, NULL);
 SVEXTERN int SVDECL(n_playmovie_threads, 1), SVDECL(use_playmovie_threads, 1);
 SVEXTERN threaderdata SVDECL(*playmovie_threads,       NULL);
 
-//*** merge smoke
-SVEXTERN int SVDECL(n_mergesmoke3d_threads, 4);
-#ifdef pp_OSX
-SVEXTERN int SVDECL(use_mergesmoke3d_threads, 0);
-#else
-SVEXTERN int SVDECL(use_mergesmoke3d_threads, 1);
-#endif
-SVEXTERN threaderdata SVDECL(*mergesmoke3d_threads, NULL);
-
 //*** read test
 #ifdef pp_READ_KEYBOARD
 SVEXTERN int SVDECL(n_readkeyboard_threads, 1), SVDECL(use_readkeyboard_threads, 1);
 SVEXTERN threaderdata SVDECL(*readkeyboard_threads, NULL);
-SVEXTERN int SVDECL(update_readkeyboard, 0);
 SVEXTERN int SVDECL(abort_vis, 0);
-SVEXTERN unsigned char abort_char;
 #endif
 
+//*** glui variables for setting merge and uncompress parameters
+SVEXTERN int SVDECL(glui_use_smoke3d_threads, 0);
+SVEXTERN int SVDECL(glui_n_smoke3d_threads, 1);
+
+SVEXTERN int SVDECL(n_mergesmoke3d_threads, 1);
+#ifdef pp_OSX
+SVEXTERN int SVDECL(use_mergesmoke3d_threads, 0);
+#else
+SVEXTERN int SVDECL(use_mergesmoke3d_threads, 0);
+#endif
+SVEXTERN threaderdata SVDECL(*mergesmoke3d_threads, NULL);
+
 //*** uncompress smoke
-SVEXTERN int SVDECL(n_uncompresssmoke3d_threads, 4);
+SVEXTERN int SVDECL(n_uncompresssmoke3d_threads, 1);
 #ifdef pp_OSX
 SVEXTERN int SVDECL(use_uncompresssmoke3d_threads, 0);
 #else
-SVEXTERN int SVDECL(use_uncompresssmoke3d_threads, 1);
+SVEXTERN int SVDECL(use_uncompresssmoke3d_threads, 0);
 #endif
 SVEXTERN threaderdata SVDECL(*uncompresssmoke3d_threads, NULL);
 
@@ -420,6 +421,7 @@ SVEXTERN int SVDECL(npart5loaded_old, 0), SVDECL(npartloaded_old, 0);
 SVEXTERN int SVDECL(select_part, 0), SVDECL(selected_part_index, -1);
 SVEXTERN int SVDECL(smoke3d_compression_type, COMPRESSED_UNKNOWN);
 SVEXTERN int SVDECL(update_smoke3dmenulabels, 0);
+SVEXTERN int SVDECL(ignore_s3dd_files, 0), SVDECL(s3dd_files_ok, 0);
 
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);

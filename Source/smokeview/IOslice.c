@@ -6512,9 +6512,7 @@ void DrawSlicePlots(void){
     slicedata *slicei;
     devicedata *devicei;
 
-#ifdef pp_READ_KEYBOARD
-    ABORTVIS(1);
-#endif
+    BREAK_VIS(VIS_RETURN);
     slicei = global_scase.slicecoll.sliceinfo+i;
     devicei = &(slicei->vals2d);
     if(slicei->loaded==0||devicei->valid==0)continue;
@@ -6642,9 +6640,7 @@ void DrawSliceFrame(){
     int jjjj;
 
     i=slice_sorted_loaded_list[ii];
-#ifdef pp_READ_KEYBOARD
-    ABORTVIS(1);
-#endif
+    BREAK_VIS(VIS_RETURN);
     sd = global_scase.slicecoll.sliceinfo + i;
     if(SetupSlice(sd) == 0)continue;
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,sd->blocknumber);
@@ -8063,9 +8059,7 @@ void DrawVSliceFrame(void){
     meshdata *slicemesh;
 
 
-#ifdef pp_READ_KEYBOARD
-    ABORTVIS(1);
-#endif
+    BREAK_VIS(VIS_RETURN);
     vd = global_scase.slicecoll.vsliceinfo + i;
     if(vd->loaded==0||vd->display==0||global_scase.slicecoll.sliceinfo[vd->ival].slicefile_labelindex!=slicefile_labelindex)continue;
 
@@ -8955,9 +8949,7 @@ void DrawSortSlices(void){
     slicedata *sd;
     meshdata *slicemesh;
 
-#ifdef pp_READ_KEYBOARD
-    ABORTVIS(1);
-#endif
+    BREAK_VIS(VIS_RETURN);
     si = splitsliceinfoptr[i];
     sd = si->slice;
     if(SetupSlice(sd) == 0)continue;

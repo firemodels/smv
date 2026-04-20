@@ -576,18 +576,15 @@ EXTERNCPP void MakeTimesMap(float *times, unsigned char **times_map_ptr, int n);
 EXTERNCPP void MergeSmoke3D(smoke3ddata *smoke3dset);
 #ifdef pp_SPEEDUP
 EXTERNCPP void *MergeSmoke3DAll(void *arg);
-#else
-EXTERNCPP void MergeSmoke3DAll(void);
-#endif
-#ifdef pp_SPEEDUP
 EXTERNCPP void *UncompressSmoke3DAll(void *arg);
 #else
 EXTERNCPP void UncompressSmoke3DAll(void);
+EXTERNCPP void MergeSmoke3DAll(void);
 #endif
 EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int first_time, int *errorcode);
 EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
 EXTERNCPP void SmokeWrapup(void);
-EXTERNCPP int   UpdateSmoke3D(smoke3ddata *smoke3di);
+EXTERNCPP int  UpdateSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void UpdateSmoke3dFileParms(void);
 EXTERNCPP void UpdateSmoke3dMenuLabels(void);
 EXTERNCPP void UpdateSmokeAlphas(void);
@@ -733,9 +730,6 @@ EXTERNCPP void ScaleFont3D(void);
 //*** readsmv.c headers
 
 EXTERNCPP void *CheckFiles(void *arg);
-#ifdef pp_READ_KEYBOARD
-EXTERNCPP int CheckMouseKeyState(int check_state);
-#endif
 EXTERNCPP void *Compress(void *arg);
 EXTERNCPP void GetBoxSkyCorners(void);
 EXTERNCPP void GetSliceParmInfo(sliceparmdata *sp);

@@ -25,7 +25,6 @@
 
 #include "glew.h"
 #include "smokeviewvars.h"
-#include "IOvolsmoke.h"
 #include "stdio_buffer.h"
 #include "glui_motion.h"
 #include "glui_bounds.h"
@@ -2211,6 +2210,26 @@ void UpdateEvents(void){
 
 #ifdef pp_READ_KEYBOARD
 
+/* ------------------ IsMouseInWindow ------------------------ */
+
+int IsMouseInWindow(void){
+#ifdef _WIN32
+  int width = glutGet(GLUT_WINDOW_WIDTH);
+  int height = glutGet(GLUT_WINDOW_HEIGHT);
+  int x = glutGet(GLUT_WINDOW_X);
+  int y = glutGet(GLUT_WINDOW_Y);
+  POINT p;
+  GetCursorPos(&p);
+  if(p.x<x || p.x>x + width)return 0;
+  if(p.y<y || p.y>y + height)return 0;
+  return 1;
+#elif defined(__APPLE__)
+return 0;
+#elif defined(__linux__)
+return 0;
+#endif
+}
+
 /* ------------------ ReadCharNonblocking ------------------------ */
 
 int ReadCharNonblocking(char *out) {
@@ -2244,6 +2263,28 @@ int ReadCharNonblocking(char *out) {
 #endif
 }
 
+/* ------------------ IsLeftMousePressed ------------------------ */
+#ifdef _WIN32
+static float mouse_timer = 0.0;
+#endif
+int IsLeftMousePressed(void){
+#ifdef _WIN32
+    if(GetAsyncKeyState(VK_LBUTTON) & 0x8000){
+      int returnval = 0;
+
+      STOP_TIMER(mouse_timer);
+      if(mouse_timer > 0.5)returnval = 1;
+      START_TIMER(mouse_timer);
+      return returnval;
+    }
+    return 0;
+#elif defined(__APPLE__)
+    return 0;
+#elif defined(__linux__)
+    return 0;
+#endif
+}
+
 /* ------------------ ReadKeyboard ------------------------ */
 
 void *ReadKeyboard(void *arg){
@@ -2251,43 +2292,22 @@ void *ReadKeyboard(void *arg){
     char key_char;
 
     ThreadLock(readkeyboard_threads);
-    if(ReadCharNonblocking(&key_char)==1){
-      abort_char = (unsigned char)key_char;
-      abort_vis = 1;
+    if(runscript==0&&abort_vis==0){
+      if(ReadCharNonblocking(&key_char)==1 || 
+        (IsMouseInWindow()==1&&IsLeftMousePressed()==1)
+        ){
+        abort_vis = 1;
+        Keyboard('t', FROM_SMOKEVIEW);
+      }
     }
     ThreadUnlock(readkeyboard_threads);
 #ifdef _WIN32
-      Sleep(1000);
+    Sleep(100);
 #else
-      usleep(1000000);
+    usleep(100000);
 #endif
   }
   THREAD_EXIT(readkeyboard_threads);
-}
-
-/* ------------------ CheckMouseKeyState ------------------------ */
-
-int CheckMouseKeyState(int check_state){
-  ThreadLock(readkeyboard_threads);
-  if(abort_vis == 1){
-    if(check_state == 1)Keyboard(abort_char, FROM_SMOKEVIEW);
-    if(check_state == 0)abort_vis = 0;
-    ThreadUnlock(readkeyboard_threads);
-    return 1;
-  }
-  ThreadUnlock(readkeyboard_threads);
-#ifdef _WIN32
-  if(check_state == 1 && GetAsyncKeyState(VK_LBUTTON) & 0x8000){
-    Keyboard('t', FROM_SMOKEVIEW);
-    abort_vis = 1;
-    return 1;
-  }
-  if(check_state == 0 && abort_vis == 1){
-    abort_vis = 0;
-    return 1;
-  }
-#endif
-  return 0;
 }
 #endif
 
@@ -2853,8 +2873,10 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
 
 #ifdef pp_READ_KEYBOARD
-  ThreadInit(&readkeyboard_threads, n_readkeyboard_threads, use_readkeyboard_threads, serial_override, ReadKeyboard);
-  update_readkeyboard = 1;
+  if(runscript == 0){
+    ThreadInit(&readkeyboard_threads, n_readkeyboard_threads, use_readkeyboard_threads, serial_override, ReadKeyboard);
+    ThreadRun(readkeyboard_threads);
+  }
 #endif
 #ifdef pp_SPEEDUP
   ThreadInit(&makeiblank_threads, n_makeiblank_threads, use_makeiblank_threads, serial_override, MakeIBlank);

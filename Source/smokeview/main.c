@@ -14,7 +14,6 @@
 #include "paths.h"
 #include "readsmvfile.h"
 #include "IOscript.h"
-#include "IOvolsmoke.h"
 
 #ifdef _WIN32
 #include <direct.h>
@@ -482,8 +481,7 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
     if(args->runscript){
       from_commandline = 1;
-      runscript = 1;
-      serial_override = 1;
+      SetRunScriptVal(1);
     }
     if(args->runhtmlscript){
       from_commandline = 1;
@@ -535,8 +533,7 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
       sfd = InsertScriptFile(scriptbuffer);
       if(sfd != NULL)default_script = sfd;
       if(!is_htmlscript){
-        runscript = 1;
-        serial_override = 1;
+      SetRunScriptVal(1);
       }
     }
     if(args->noexit){

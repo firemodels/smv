@@ -6,7 +6,6 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
-#include "IOvolsmoke.h"
 #include "glui_smoke.h"
 #include "glui_tour.h"
 #include "glui_bounds.h"
@@ -37,6 +36,7 @@ GLUI_RadioGroup *RADIO_smokesensors=NULL;
 GLUI_RadioGroup *RADIO_sootdensity = NULL;
 GLUI_RadioGroup *RADIO_use_fire_colormap = NULL;
 
+GLUI_Spinner *SPINNER_set_smoke_threads=NULL;
 GLUI_Spinner *SPINNER_smoke_num=NULL;
 GLUI_Spinner *SPINNER_startframe=NULL;
 GLUI_Spinner *SPINNER_skipframe=NULL;
@@ -416,7 +416,11 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "cull hidden meshes", &cull_meshes);
   CHECKBOX_vis_smokemesh = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "show smoke/fire mesh", &vis_smokemesh,SHOW_SMOKEMESH, GLUISmoke3dCB);
   CHECKBOX_vis_only_smokemesh=glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "show only smoke/fire mesh", &vis_only_smokemesh,SHOW_ONLY_SMOKEMESH, GLUISmoke3dCB);
-
+  glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1,
+                  "use multi-threading", &glui_use_smoke3d_threads, SET_SMOKE_THREADS, GLUISmoke3dCB);
+  SPINNER_set_smoke_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_settings1,
+                 "threads", GLUI_SPINNER_INT, &glui_n_smoke3d_threads, SET_SMOKE_THREADS, GLUISmoke3dCB);
+  SPINNER_set_smoke_threads->set_int_limits(1, MAX_THREADS);
 
   //---------------------------------------------Slice render settings--------------------------------------------------------------
 
@@ -689,6 +693,18 @@ extern "C" void GLUISmoke3dCB(int var){
     if(vis_smokemesh == 1 && vis_only_smokemesh == 1){
       CHECKBOX_vis_only_smokemesh->set_int_val(0);
     }
+    break;
+  case SET_SMOKE_THREADS:
+    ThreadLock(mergesmoke3d_threads);
+    ThreadLock(uncompresssmoke3d_threads);
+    
+    use_mergesmoke3d_threads      = glui_use_smoke3d_threads;
+    n_mergesmoke3d_threads        = glui_n_smoke3d_threads;
+    use_uncompresssmoke3d_threads = glui_use_smoke3d_threads;
+    n_uncompresssmoke3d_threads   = glui_n_smoke3d_threads;
+    
+    ThreadUnlock(uncompresssmoke3d_threads);
+    ThreadUnlock(mergesmoke3d_threads);
     break;
   case SHOW_ONLY_SMOKEMESH:
     if(vis_smokemesh == 1 && vis_only_smokemesh == 1){

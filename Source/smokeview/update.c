@@ -1934,6 +1934,9 @@ void UpdateShowScene(void){
   int updating = 0;
 #endif
 
+#ifdef pp_READ_KEYBOARD
+  abort_vis = 0;
+#endif
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
   if(update_fire_histogram_now == 1){
@@ -1944,12 +1947,6 @@ void UpdateShowScene(void){
     IdleCB();
     update_idle = 0;
   }
-#ifdef pp_READ_KEYBOARD
-  if(update_readkeyboard == 1){
-    update_readkeyboard = 0;
-    ThreadRun(readkeyboard_threads);
-  }
-#endif
   if(update_set_clipplanes == 1){
     int i;
 
