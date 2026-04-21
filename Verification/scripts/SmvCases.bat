@@ -1,14 +1,29 @@
 @echo off
+set exe=%1
+set option=%2
 setlocal
 
-%PROG% thouse5.fds
-%PROG% plume5c.fds
-%PROG% mplume5c8.fds
+set run=call :runit %exe% %option%
 
-%PROG% cell_test.fds
-%PROG% colorbar.fds
-%PROG% part_color.fds
-%PROG% slicemask.fds
-%PROG% sprinkler_many.fds
-%PROG% vcirctest.fds
+%run% thouse5
+%run% plume5c
+%run% mplume5c8
 
+%run% cell_test
+%run% colorbar
+%run% part_color
+%run% slicemask
+%run% sprinkler_many
+%run% vcirctest
+goto eof
+
+:runit
+  set prog=%1
+  set option=%2
+  set input=%3
+
+  if %option% == fds start "%input%" %prog% %input%.fds
+  if %option% == smv %prog% -runscript %input%
+  exit /b
+
+:eof
