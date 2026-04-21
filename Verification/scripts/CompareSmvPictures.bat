@@ -27,9 +27,23 @@ set MANDIR=%CD%
 cd %CURDIR%\..\..\..\smv
 set SMVREPODIR=%CD%
 git describe --dirty --long > %CURDIR%\smvrepo.txt
-set /p SMVREPO=<%CURDIR%\smvrepo.txt
+set /p SMVREPOREVISION=<%CURDIR%\smvrepo.txt
+
+cd %CURDIR%\..\..\..\fig
+set FIGREPODIR=%CD%
+git describe --dirty --long > %CURDIR%\figrepo.txt
+set /p FIGREPOREVISION=<%CURDIR%\figrepo.txt
+
 set GAWK=%SMVREPODIR%\Verification\scripts\bin\gawk.exe
 set SORT=%SMVREPODIR%\Verification\scripts\bin\sort.exe
+set GREP=%SMVREPODIR%\Verification\scripts\bin\grep.exe
+set WC=%SMVREPODIR%\Verification\scripts\bin\wc.exe
+
+set SMVBASE=smokeview_win.exe
+set SMVDIR=%CURDIR%\..\..\Build\smokeview\intel_win
+set SMVEXE=%SMVDIR%\%SMVBASE%
+%SMVEXE% -v 2>nul | %GREP% Revision | %GREP% SMV | %GAWK% "{print $3}" > %CURDIR%\smvrevision.txt
+set /p SMOKEVIEWREVISION=<%CURDIR%\smvrevision.txt
 
 set BLURFROMDIR=%CURDIR%\blurfrom
 if exist %BLURFROMDIR% rmdir /s /q %BLURFROMDIR%
@@ -82,6 +96,15 @@ cd %CURDIR%
 %GAWK% -f zero.awk     veri_filelist.txt > veri_zerolist.txt
 %GAWK% -f nonzero.awk  user_filelist.txt > user_nonzerolist.txt
 %GAWK% -f nonzero.awk  veri_filelist.txt > veri_nonzerolist.txt
+type user_filelist.txt > total_filelist.txt
+type veri_filelist.txt >> total_filelist.txt
+
+%GAWK% -f nonzero.awk  total_filelist.txt | wc -l > differences_totallist.txt
+set /p ndiffs=<differences_totallist.txt
+
+%GAWK% -f errors.awk   total_filelist.txt | wc -l > errors_totallist.txt
+set /p nerrors=<errors_totallist.txt
+
 
 set WIDTH=250
 
@@ -89,25 +112,34 @@ echo creating %HTMLFILE%
 (
 echo ^<html^>
 echo ^<head^>
-echo ^<TITLE^> %SMVREPO% %date% %time% ^</TITLE^>
+echo ^<TITLE^> %SMVREPOREVISION% %date% %time% ^</TITLE^>
 echo ^</HEAD^>
 echo ^<BODY BGCOLOR="#FFFFFF" ^>
-echo ^<h2^>  %date% %time% ^<br^>%SMVREPO% ^</h2^>
+
+echo ^<h2^>  Image Comparison Summary %date% %time% ^</h2^>
+echo ^<br^>^<table^>
+echo ^<tr^>^<th align=left^>Smokeview version:^</th^>^<td^>%SMOKEVIEWREVISION%^</td^>^</tr^>
+echo ^<tr^>^<th align=left^>SMV revision:^</th^>^<td^>%SMVREPOREVISION%^</td^>^</tr^>
+echo ^<tr^>^<th align=left^>FIG revision:^</th^>^<td^>%FIGREPOREVISION%^</td^>^</tr^>
+echo ^<tr^>^<th align=left^>Metric/Tolerance:^</th^>^<td^>0.2^</td^>^</tr^>
+echo ^<tr^>^<th align=left^>Difference/Errors:^</th^>^<td^>%ndiffs%/%nerrors%^</td^>^</tr^>
+echo ^</table^>
 
 for %%d in (SMV_User_Guide SMV_Verification_Guide) do (
 if %%d == SMV_User_Guide echo ^<a name="changeduser"^>
 if %%d == SMV_Verification_Guide echo ^<a name="changedveri"^>
 
 if %%d == SMV_User_Guide         echo ^<h2^>Changed User Images^</h2^>
-
 if %%d == SMV_Verification_Guide echo ^<h2^>Changed Verification Images^</h2^>
 
 if %%d == SMV_User_Guide         set FILELOOP=%CURDIR%\user_nonzerolist.txt 
 if %%d == SMV_Verification_Guide set FILELOOP=%CURDIR%\veri_nonzerolist.txt 
 
-echo [^<a href="#changeduser"  ^>Changed User Images          ^</a^>]
-echo [^<a href="#Unchangeduser"^>Unchanged User Images        ^</a^>]
-echo [^<a href="#changedveri"  ^>Changed Verification Images  ^</a^>]
+if %%d == SMV_User_Guide         echo [Changed User Images]
+if %%d == SMV_Verification_Guide echo [^<a href="#changeduser"^>Changed User Images^</a^>]
+                                 echo [^<a href="#Unchangeduser"^>Unchanged User Images        ^</a^>]
+if %%d == SMV_User_Guide         echo [^<a href="#changedveri"  ^>Changed Verification Images  ^</a^>]
+if %%d == SMV_Verification_Guide echo [Changed Verification Images]
 echo [^<a href="#Unchangedveri"^>Unchanged Verification Images^</a^>]
 
 echo ^<table border=on^>
@@ -139,9 +171,11 @@ if %%d == SMV_User_Guide         echo ^<h2^>Unchanged User Images^</h2^>
 if %%d == SMV_Verification_Guide echo ^<h2^>Unchanged Verification Images^</h2^>
 
 echo [^<a href="#changeduser"  ^>Changed User Images          ^</a^>]
-echo [^<a href="#Unchangeduser"^>Unchanged User Images        ^</a^>]
-echo [^<a href="#changedveri"  ^>Changed Verification Images  ^</a^>]
-echo [^<a href="#Unchangedveri"^>Unchanged Verification Images^</a^>]
+if %%d == SMV_User_Guide         echo [Unchanged User Images]
+if %%d == SMV_Verification_Guide echo [^<a href="#Unchangeduser"^>Unchanged User Images        ^</a^>]
+                                 echo [^<a href="#changedveri"  ^>Changed Verification Images  ^</a^>]
+if %%d == SMV_User_Guide         echo [^<a href="#Unchangedveri"^>Unchanged Verification Images^</a^>]
+if %%d == SMV_Verification_Guide echo [Unchanged Verification Images]
 
 if %%d == SMV_User_Guide         set FILELOOP=%CURDIR%\user_zerolist.txt 
 if %%d == SMV_Verification_Guide set FILELOOP=%CURDIR%\veri_zerolist.txt 

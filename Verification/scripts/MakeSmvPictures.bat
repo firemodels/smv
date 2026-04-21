@@ -29,6 +29,8 @@ call %FDS2FEDEXE% plume5c
 call %FDS2FEDEXE% mplume5c8
 
 cd %VISDIR%
+erase %GITROOT%\smv\Manuals\SMV_User_Guide\SCRIPT_FIGURES\*.png
+erase %GITROOT%\smv\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES\*.png
 call %CURDIR%\SmvCases %SMVEXE% smv
 
 cd %CURDIR%
