@@ -93,7 +93,6 @@ if %%d == SMV_Verification_Guide echo ^<a name="changedveri"^>
 if %%d == SMV_User_Guide         echo ^<h2^>Changed User Images Cases^</h2^>
 
 if %%d == SMV_Verification_Guide echo ^<h2^>Changed Verification Images Cases^</h2^>
-if %%d == SMV_Verification_Guide echo [SMV_Verification_Guide]
 
 if %%d == SMV_User_Guide         set FILELOOP=%CURDIR%\user_nonzerolist.txt 
 if %%d == SMV_Verification_Guide set FILELOOP=%CURDIR%\veri_nonzerolist.txt 
