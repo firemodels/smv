@@ -152,7 +152,7 @@ for /f "tokens=1,2" %%A in (!FILELOOP!) do (
       copy !TOFILE!   %WEBTODIR%\%%A   >NUL 2>&1
       copy !DIFFFILE! %WEBDIFFDIR%\%%A >NUL 2>&1
       set /a count+=1
-      echo ^<td^>^<img src="diffs/base/%%A"   width=%WIDTH% ^>^<br^>%%A ^</td^>
+      echo ^<td align=center^>^<img src="diffs/base/%%A"   width=%WIDTH% ^>^<br^>%%A ^</td^>
       if !count! geq 4 echo ^</tr^>^<tr^>
       if !count! geq 4 set count=0
     )
