@@ -90,9 +90,9 @@ for %%d in (SMV_User_Guide SMV_Verification_Guide) do (
 if %%d == SMV_User_Guide echo ^<a name="changeduser"^>
 if %%d == SMV_Verification_Guide echo ^<a name="changedveri"^>
 
-if %%d == SMV_User_Guide         echo ^<h2^>Changed User Images Cases^</h2^>
+if %%d == SMV_User_Guide         echo ^<h2^>Changed User Images^</h2^>
 
-if %%d == SMV_Verification_Guide echo ^<h2^>Changed Verification Images Cases^</h2^>
+if %%d == SMV_Verification_Guide echo ^<h2^>Changed Verification Images^</h2^>
 
 if %%d == SMV_User_Guide         set FILELOOP=%CURDIR%\user_nonzerolist.txt 
 if %%d == SMV_Verification_Guide set FILELOOP=%CURDIR%\veri_nonzerolist.txt 
@@ -127,8 +127,8 @@ echo ^</table^>
 if %%d == SMV_User_Guide echo ^<a name="Unchangeduser"^>
 if %%d == SMV_Verification_Guide echo ^<a name="UnchangedVeri"^>
 
-if %%d == SMV_User_Guide         echo ^<h2^>Unchanged User Images Cases^</h2^>
-if %%d == SMV_Verification_Guide echo ^<h2^>Unchanged Verification Images Cases^</h2^>
+if %%d == SMV_User_Guide         echo ^<h2^>Unchanged User Images^</h2^>
+if %%d == SMV_Verification_Guide echo ^<h2^>Unchanged Verification Images^</h2^>
 
 echo [^<a href="#changeduser"  ^>Changed User Images          ^</a^>]
 echo [^<a href="#Unchangeduser"^>Unchanged User Images        ^</a^>]
