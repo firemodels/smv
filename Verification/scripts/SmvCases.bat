@@ -11,10 +11,23 @@ set run=call :runit %exe% %option%
 
 %run% cell_test
 %run% colorbar
+%run% color_geom
+%run% objects_dynamic
+%run% objects_static
 %run% part_color
+%run% sillytexture
 %run% slicemask
+%run% smoke_test
+%run% smoke_test2
+%run% smoke_test3
+%run% smoke1
+%run% smoke2
+%run% sphere_propanec
 %run% sprinkler_many
 %run% vcirctest
+%run% vectorskipx
+%run% vectorskipy
+%run% vectorskipz
 goto eof
 
 :runit
