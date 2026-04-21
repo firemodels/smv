@@ -9,11 +9,15 @@ set run=call :runit %exe% %option%
 %run% plume5c
 %run% mplume5c8
 
+%run% cad_test
 %run% cell_test
 %run% colorbar
 %run% color_geom
 %run% objects_dynamic
+%run% obst_remove
 %run% objects_static
+%run% obst_test1
+%run% obst_test4
 %run% part_color
 %run% sillytexture
 %run% slicemask
@@ -24,6 +28,7 @@ set run=call :runit %exe% %option%
 %run% smoke2
 %run% sphere_propanec
 %run% sprinkler_many
+%run% tour
 %run% vcirctest
 %run% vectorskipx
 %run% vectorskipy
