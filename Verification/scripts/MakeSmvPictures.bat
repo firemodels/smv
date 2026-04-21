@@ -7,10 +7,8 @@ set GITROOT=%CD%
 cd %GITROOT%\smv\Verification\Visualization
 set VISDIR=%CD%
 
-
-
 set SMVBASE=smokeview_win.exe
-set SMVEXE=%GITROOT%\smv\Build\smokeview\intel_win\%SMVBASE% -runscript
+set SMVEXE=%GITROOT%\smv\Build\smokeview\intel_win\%SMVBASE%
 set FDS2FEDBASE=fds2fed_win.exe
 set FDS2FEDEXE=%GITROOT%\smv\Build\fds2fed\intel_win\%FDS2FEDBASE%
 
@@ -20,16 +18,6 @@ call %FDS2FEDEXE% plume5c
 call %FDS2FEDEXE% mplume5c8
 
 cd %VISDIR%
-%SMVEXE% thouse5
-%SMVEXE% plume5c
-%SMVEXE% mplume5c8
-
-%SMVEXE%  cell_test
-%SMVEXE%  colorbar
-%SMVEXE%  part_color
-%SMVEXE%  slicemask
-%SMVEXE%  sprinkler_many
-%SMVEXE%  vcirctest
-
+call %CURDIR%\SmvCases %SMVEXE% smv
 
 cd %CURDIR%
