@@ -189,7 +189,6 @@ endif()
 add_subdirectory(Source/shared)
 
 # The programs to build
-add_subdirectory(Source/background)
 add_subdirectory(Source/convert)
 add_subdirectory(Source/env2mod)
 add_subdirectory(Source/fds2fed)
