@@ -1,6 +1,14 @@
 @echo off
 setlocal enabledelayedexpansion
 
+call :is_file_installed magick
+if %nothave% == 0 goto skip1
+  echo to find a windows installer for imagemagick
+  echo do a web search for imagemagick download 
+  echo script exiting
+  exit /b
+:skip1
+
 set CURDIR=%CD%
 
 cd ..\..\..\fig\smv\Reference_Figures\Default
@@ -166,3 +174,21 @@ echo ^</BODY^>
 echo ^</HTML^>
 ) > %HTMLFILE%
 start explorer %HTMLFILE%
+
+goto eof
+
+:: -------------------------------------------------------------
+:is_file_installed
+:: -------------------------------------------------------------
+
+  set program=%1
+  %program% --help 1> %temp%\file_exist.txt 2>&1
+  type %temp%\file_exist.txt | find /i /c "not recognized" > %temp%\file_exist_count.txt
+  set /p nothave=<%temp%\file_exist_count.txt
+  if %nothave% == 1 (
+    echo ***error: %program% not installed or not in path
+    exit /b 1
+  )
+  exit /b 0
+
+:eof
