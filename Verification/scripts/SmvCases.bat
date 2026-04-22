@@ -9,6 +9,9 @@ set run=call :runit %exe% %option%
 %run% cell_test
 %run% colorbar
 %run% color_geom
+%run% geom1
+%run% geom2
+%run% hvac_comp
 %run% mplume5c8
 %run% objects_dynamic
 %run% obst_remove
@@ -25,6 +28,8 @@ set run=call :runit %exe% %option%
 %run% smoke1
 %run% smoke2
 %run% sprinkler_many
+%run% test1
+%run% test2
 %run% thouse5
 %run% tour
 %run% vcirctest
