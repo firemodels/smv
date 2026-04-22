@@ -16,7 +16,6 @@ jobs:
           - clang
         program:
           - convert
-          - env2mod
           - flush
           - pnginfo
           - smokediff
@@ -29,7 +28,6 @@ jobs:
           - compiler: clang
             program: convert
           - compiler: clang
-            program: env2mod
           - compiler: clang
             program: flush
           - compiler: clang
@@ -56,7 +54,6 @@ jobs:
           - clang
         program:
           - convert
-          - env2mod
           - flush
           - pnginfo
           - smokediff
