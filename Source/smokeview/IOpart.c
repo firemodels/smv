@@ -362,9 +362,6 @@ void DrawPart(const partdata *parti, int mode){
                 glPushMatrix();
                 glTranslatef(xpos[j], ypos[j], zpos[j]);
 
-                glRotatef(-datacopy->partclassbase->elevation, 0.0, 1.0, 0.0);
-                glRotatef(datacopy->partclassbase->azimuth, 0.0, 0.0, 1.0);
-
                 //  0->2   color
                 //  3      diameter
                 //  4      length

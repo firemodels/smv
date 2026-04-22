@@ -6286,9 +6286,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         strcpy(labelj->shortlabel,shortdefaultlabel);
         labelj->unit=NULL;
 
-        partclassi->col_azimuth=-1;
         partclassi->col_diameter=-1;
-        partclassi->col_elevation=-1;
         partclassi->col_length=-1;
         partclassi->col_u_vel=-1;
         partclassi->col_v_vel=-1;
@@ -6307,12 +6305,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
           if(strcmp(labelj->shortlabel,"LENGTH")==0){
             partclassi->col_length=j-2;
           }
-          if(strcmp(labelj->shortlabel,"AZIMUTH")==0){
-            partclassi->col_azimuth=j-2;
-          }
-          if(strcmp(labelj->shortlabel,"ELEVATION")==0){
-            partclassi->col_elevation=j-2;
-          }
           if(STRCMP(labelj->shortlabel,"U-VEL")==0){
             partclassi->col_u_vel=j-2;
           }
@@ -6326,20 +6318,16 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       }
       partclassi->diameter=1.0;
       partclassi->length=1.0;
-      partclassi->azimuth=0.0;
-      partclassi->elevation=0.0;
       partclassi->dx=0.0;
       partclassi->dy=0.0;
       partclassi->dz=0.0;
       if(device_ptr!=NULL){
-        float diameter, length, azimuth, elevation;
+        float diameter, length;
 
         FGETS(buffer,255,stream);
-        sscanf(buffer,"%f %f %f %f",&diameter,&length,&azimuth,&elevation);
+        sscanf(buffer,"%f %f",&diameter,&length);
         partclassi->diameter=diameter;
         partclassi->length=length;
-        partclassi->azimuth=azimuth;
-        partclassi->elevation=elevation;
       }
       scase->npartclassinfo++;
       continue;

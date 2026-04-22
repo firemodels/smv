@@ -393,10 +393,10 @@ typedef struct _partpropdata {
 
 typedef struct _partclassdata {
   char *name;
-  int col_diameter, col_length, col_azimuth, col_elevation;
+  int col_diameter, col_length;
   int col_u_vel, col_v_vel, col_w_vel;
   float dx, dy, dz;
-  float diameter, length, azimuth, elevation;
+  float diameter, length;
   char *device_name;
   propdata *prop;
   sv_object *sphere, *smv_device;

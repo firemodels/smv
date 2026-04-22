@@ -2770,13 +2770,11 @@ int ReadSMV_Configure(){
     partclassi = global_scase.partclassinfo + i;
 
     if(partclassi->device_name!=NULL){
-        float length, azimuth, elevation;
+        float length, azimuth=0.0, elevation=0.0;
 
         partclassi->diameter=SCALE2SMV(partclassi->diameter);
         partclassi->length=SCALE2SMV(partclassi->length);
         length=partclassi->length;
-        azimuth = partclassi->azimuth*DEG2RAD;
-        elevation = partclassi->elevation*DEG2RAD;
         partclassi->dx = cos(azimuth)*cos(elevation)*length/2.0;
         partclassi->dy = sin(azimuth)*cos(elevation)*length/2.0;
         partclassi->dz =              sin(elevation)*length/2.0;

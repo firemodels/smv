@@ -293,8 +293,6 @@ void UpdatePart5Extremes(void){
 void GetPartColors(partdata *parti, int nlevel, int flag){
   int i;
   part5data *datacopy;
-  // float *diameter_data;
-  float *length_data, *azimuth_data, *elevation_data;
   float *u_vel_data, *v_vel_data, *w_vel_data;
 
   if(parti->stream==NULL){
@@ -364,27 +362,11 @@ void GetPartColors(partdata *parti, int nlevel, int flag){
         }
       }
       //** do some data conversion if the right data columns are present
-      azimuth_data=NULL;
-//      diameter_data=NULL;
-      elevation_data=NULL;
-      length_data=NULL;
       u_vel_data=NULL;
       v_vel_data=NULL;
       w_vel_data=NULL;
 
       if(partfast==NO){
-        if(partclassi->col_azimuth>=0){
-          azimuth_data = datacopy->rvals+partclassi->col_azimuth*datacopy->npoints_file;
-        }
-        if(partclassi->col_diameter>=0){
-          // diameter_data=datacopy->rvals+partclassi->col_diameter*datacopy->npoints_file;
-        }
-        if(partclassi->col_elevation>=0){
-          elevation_data = datacopy->rvals+partclassi->col_elevation*datacopy->npoints_file;
-        }
-        if(partclassi->col_length>=0){
-          length_data = datacopy->rvals+partclassi->col_length*datacopy->npoints_file;
-        }
         if(partclassi->col_u_vel>=0){
           u_vel_data = datacopy->rvals+partclassi->col_u_vel*datacopy->npoints_file;
         }
@@ -395,24 +377,6 @@ void GetPartColors(partdata *parti, int nlevel, int flag){
           w_vel_data = datacopy->rvals+partclassi->col_w_vel*datacopy->npoints_file;
         }
         local_flag = 0;
-        if(azimuth_data!=NULL&&elevation_data!=NULL&&length_data!=NULL){
-          int m;
-
-          local_flag = 1;
-          dsx = datacopy->dsx;
-          dsy = datacopy->dsy;
-          dsz = datacopy->dsz;
-          for(m = 0; m<datacopy->npoints_file; m++){
-            float az, elev, length;
-
-            az = azimuth_data[m]*DEG2RAD;
-            elev = elevation_data[m]*DEG2RAD;
-            length = SCALE2SMV(length_data[m]);
-            dsx[m] = cos(az)*cos(elev)*length/2.0;
-            dsy[m] = sin(az)*cos(elev)*length/2.0;
-            dsz[m] = sin(elev)*length/2.0;
-          }
-        }
         if(u_vel_data!=NULL&&v_vel_data!=NULL&&w_vel_data!=NULL){
           float denom;
           int m;
