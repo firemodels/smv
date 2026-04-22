@@ -293,8 +293,6 @@ void UpdatePart5Extremes(void){
 void GetPartColors(partdata *parti, int nlevel, int flag){
   int i;
   part5data *datacopy;
-  // float *diameter_data;
-  float *length_data;
   float *u_vel_data, *v_vel_data, *w_vel_data;
 
   if(parti->stream==NULL){
@@ -364,18 +362,11 @@ void GetPartColors(partdata *parti, int nlevel, int flag){
         }
       }
       //** do some data conversion if the right data columns are present
-      length_data=NULL;
       u_vel_data=NULL;
       v_vel_data=NULL;
       w_vel_data=NULL;
 
       if(partfast==NO){
-        if(partclassi->col_diameter>=0){
-          // diameter_data=datacopy->rvals+partclassi->col_diameter*datacopy->npoints_file;
-        }
-        if(partclassi->col_length>=0){
-          length_data = datacopy->rvals+partclassi->col_length*datacopy->npoints_file;
-        }
         if(partclassi->col_u_vel>=0){
           u_vel_data = datacopy->rvals+partclassi->col_u_vel*datacopy->npoints_file;
         }
