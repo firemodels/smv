@@ -5,7 +5,7 @@ REM ==== CONFIG ====
 REM %1 = max CPU load threshold (e.g. 30)
 REM %2... = command + args to run
 
-set "THRESHOLD=80"
+set "THRESHOLD=70"
 
 if "%~1"=="" (
     echo Error: No command specified
