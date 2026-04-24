@@ -54,9 +54,6 @@ if %option% == fds timeout /t 120 /nobreak
 %run%  Visualization vectorskipy
 %run%  Visualization vectorskipz
 
-%run%  WUI           levelset2
-%run%  WUI           pine_tree
-
 goto eof
 
 :runit
