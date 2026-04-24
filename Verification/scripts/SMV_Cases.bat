@@ -51,6 +51,10 @@ set run=call :runit %exe% %option%
 %run%  Visualization vectorskipx
 %run%  Visualization vectorskipy
 %run%  Visualization vectorskipz
+
+%run%  WUI           levelset2
+%run%  WUI           pine_tree
+
 goto eof
 
 :runit
