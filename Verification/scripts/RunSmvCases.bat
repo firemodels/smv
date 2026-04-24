@@ -17,5 +17,5 @@ if exist %FDSEXE% goto skip1
 
 cd %VISDIR%
 call fdsinit
-call %CURDIR%\SmvCases %FDSEXE% fds
+call %CURDIR%\SMV_Cases %FDSEXE% fds
 cd %CURDIR%
