@@ -4,8 +4,6 @@ setlocal
 set CURDIR=%CD%
 cd ..\..\..
 set GITROOT=%CD%
-cd %GITROOT%\smv\Verification\Visualization
-set VISDIR=%CD%
 
 set FDSBASE=fds_impi_intel_win.exe
 set FDSDIR=%GITROOT%\fds\Build\impi_intel_win
@@ -15,7 +13,7 @@ if exist %FDSEXE% goto skip1
   call make_fds
 :skip1
 
-cd %VISDIR%
 call fdsinit
-call %CURDIR%\SMV_Cases %FDSEXE% fds
+cd %CURDIR%
+call SMV_Cases %FDSEXE% fds
 cd %CURDIR%
