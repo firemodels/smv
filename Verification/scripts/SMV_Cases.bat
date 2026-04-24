@@ -12,7 +12,6 @@ set run=call :runit %exe% %option%
 %run%  Visualization cell_test
 %run%  Visualization colorbar
 %run%  Visualization colorbar2
-
 %run%  Visualization color_geom
 %run%  Visualization geom1
 %run%  Visualization geom2
@@ -30,6 +29,9 @@ set run=call :runit %exe% %option%
 %run%  Visualization sillytexture
 %run%  Visualization slicemask
 %run%  Visualization smoke_sensor
+
+if %option% == fds timeout /t 120 /nobreak
+
 %run%  Visualization smoke_test
 %run%  Visualization smoke_test2
 %run%  Visualization smoke_test3
