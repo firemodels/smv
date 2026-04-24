@@ -41,7 +41,6 @@ set run=call :runit %exe% %option%
 %run%  Visualization smokex160
 %run%  Visualization smoke_test2
 %run%  Visualization sprinkler_many
-%run%  Visualization test1
 %run%  Visualization test2
 %run%  Visualization testsort
 %run%  Visualization thouse5
