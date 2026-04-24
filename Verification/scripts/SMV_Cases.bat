@@ -8,40 +8,42 @@ set verdir=%CD%
 
 set run=call :runit %exe% %option%
 
-%run%  Visualization cad_test
+REM quick running cases
 %run%  Visualization cell_test
 %run%  Visualization colorbar
-%run%  Visualization colorbar2
-%run%  Visualization color_geom
-%run%  Visualization geom1
-%run%  Visualization geom2
 %run%  Visualization hvac_comp
-%run%  Visualization mplume5c8
-%run%  Visualization objects_dynamic
-%run%  Visualization objects_elem
-%run%  Visualization obst_remove
-%run%  Visualization objects_static
-%run%  Visualization obst_test1
-%run%  Visualization obst_test4
 %run%  Visualization part_color
-%run%  Visualization plume5c
-%run%  Visualization script_test
-%run%  Visualization sillytexture
-%run%  Visualization slicemask
-%run%  Visualization smoke_sensor
-
-if %option% == fds timeout /t 120 /nobreak
-
-%run%  Visualization smoke_test
-%run%  Visualization smoke_test2
 %run%  Visualization smoke_test3
-%run%  Visualization smoke1
-%run%  Visualization smoke2
 %run%  Visualization smokex010
 %run%  Visualization smokex020
 %run%  Visualization smokex040
 %run%  Visualization smokex080
 %run%  Visualization smokex160
+%run%  Visualization smoke_test2
+%run%  Visualization obst_test1
+%run%  Visualization slicemask
+
+%run%  Visualization cad_test
+%run%  Visualization colorbar2
+%run%  Visualization color_geom
+%run%  Visualization geom1
+%run%  Visualization geom2
+%run%  Visualization mplume5c8
+%run%  Visualization objects_dynamic
+%run%  Visualization objects_elem
+%run%  Visualization obst_remove
+%run%  Visualization objects_static
+%run%  Visualization obst_test4
+%run%  Visualization plume5c
+%run%  Visualization script_test
+%run%  Visualization sillytexture
+%run%  Visualization smoke_sensor
+
+if %option% == fds timeout /t 120 /nobreak
+
+%run%  Visualization smoke_test
+%run%  Visualization smoke1
+%run%  Visualization smoke2
 %run%  Visualization smoke_test_geom
 %run%  Visualization sprinkler_many
 %run%  Visualization test1
