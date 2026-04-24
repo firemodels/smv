@@ -50,6 +50,8 @@ set run=call :runit %exe% %option%
 %run%  Visualization vectorskipx
 %run%  Visualization vectorskipy
 %run%  Visualization vectorskipz
+%run%  Visualization version
+%run%  Visualization version2
 
 goto eof
 
