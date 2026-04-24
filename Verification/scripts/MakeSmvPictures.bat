@@ -4,8 +4,6 @@ setlocal
 set CURDIR=%CD%
 cd ..\..\..
 set GITROOT=%CD%
-cd %GITROOT%\smv\Verification\Visualization
-set VISDIR=%CD%
 
 set SMVBASE=smokeview_win.exe
 set SMVDIR=%GITROOT%\smv\Build\smokeview\intel_win
@@ -23,14 +21,15 @@ if exist %FDS2FEDEXE% goto skip2
   call make_fds2fed
 :skip2
 
-cd %VISDIR%
+cd %GITROOT%\smv\Verification\Visualization
 call %FDS2FEDEXE% thouse5
 call %FDS2FEDEXE% plume5c
 call %FDS2FEDEXE% mplume5c8
 
-cd %VISDIR%
 erase %GITROOT%\smv\Manuals\SMV_User_Guide\SCRIPT_FIGURES\*.png
 erase %GITROOT%\smv\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES\*.png
-call %CURDIR%\SmvCases %SMVEXE% smv
 
+cd %CURDIR%
+call SMV_Cases %SMVEXE% smv
+copy %GITROOT%\smv\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES\fds_smv_version.png %GITROOT%\smv\Manuals\SMV_Summary\images
 cd %CURDIR%

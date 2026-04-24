@@ -108,6 +108,11 @@ set /p nerrors=<errors_totallist.txt
 
 set WIDTH=250
 
+set FDSVERSION=unknown
+set FDSREVISION=unknown
+if exist %CURDIR%\fds_version.txt  set /p FDSVERSION=<%CURDIR%\fds_version.txt
+if exist %CURDIR%\fds_revision.txt set /p FDSREVISION=<%CURDIR%\fds_revision.txt
+
 echo creating %HTMLFILE%
 (
 echo ^<html^>
@@ -117,7 +122,10 @@ echo ^</HEAD^>
 echo ^<BODY BGCOLOR="#FFFFFF" ^>
 
 echo ^<h2^>  Image Comparison Summary %date% %time% ^</h2^>
+echo ^<img src="images\fds_smv_version.png"^>
 echo ^<br^>^<table^>
+echo ^<tr^>^<th align=left^>FDS version:^</th^>^<td^>%FDSVERSION%^</td^>^</tr^>
+echo ^<tr^>^<th align=left^>FDS revision:^</th^>^<td^>%FDSREVISION%^</td^>^</tr^>
 echo ^<tr^>^<th align=left^>Smokeview version:^</th^>^<td^>%SMOKEVIEWREVISION%^</td^>^</tr^>
 echo ^<tr^>^<th align=left^>SMV revision:^</th^>^<td^>%SMVREPOREVISION%^</td^>^</tr^>
 echo ^<tr^>^<th align=left^>FIG revision:^</th^>^<td^>%FIGREPOREVISION%^</td^>^</tr^>
