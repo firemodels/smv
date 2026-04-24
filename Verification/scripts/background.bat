@@ -5,13 +5,7 @@ REM ==== CONFIG ====
 REM %1 = max CPU load threshold (e.g. 30)
 REM %2... = command + args to run
 
-if "%~1"=="" (
-    echo Usage: %~nx0 max_cpu_percent command [args...]
-    exit /b 1
-)
-
-set "THRESHOLD=%~1"
-shift
+set "THRESHOLD=80"
 
 if "%~1"=="" (
     echo Error: No command specified
@@ -52,4 +46,4 @@ if %LOAD% LSS %THRESHOLD% (
 
 REM Wait 5 seconds and try again
 timeout /t 5 /nobreak >nul
-goto :CHECK
+goto :CHECK 
