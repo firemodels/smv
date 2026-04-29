@@ -564,7 +564,6 @@ EXTERNCPP void UpdateVSliceBoundIndexes(void);
 EXTERNCPP void *InitNabors(void *arg);
 EXTERNCPP void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg);
 EXTERNCPP void DrawSmokeFrame(void);
-EXTERNCPP void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *ntimes_found, int *ntimes_full);
 EXTERNCPP int GetSmokeNFrames(int type, float *tmin, float *tmax);
 EXTERNCPP void InitAlphas(unsigned char *smokealphanew,  unsigned char *firealphanew,
                           float base_extinct, int use_smoke_density, float maxval, float new_extinct,
