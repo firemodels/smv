@@ -1482,46 +1482,6 @@ FILE *FopenSmokeSizefile(char *smokefile, int fortran_skip){
   return NULL;
 }
 
-/* ------------------ GetSmoke3DTimeSteps ------------------------ */
-
-void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *ntimes_found, int *ntimes_full){
-  char buffer[255];
-  FILE *SMOKE_SIZE_FILE = NULL;
-  int nframes_found;
-  float time_local, time_max;
-  int iframe_local;
-  int iii;
-
-  *ntimes_found = 0;
-  *ntimes_full = 0;
-
-  SMOKE_SIZE_FILE = FopenSmokeSizefile(smokefile,fortran_skip);
-  if(SMOKE_SIZE_FILE == NULL)return;
-
-  nframes_found = 0;
-  iframe_local = -1;
-  time_max = -1000000.0;
-  fgets(buffer, 255, SMOKE_SIZE_FILE);
-  iii = 0;
-  while(!feof(SMOKE_SIZE_FILE)){
-    if(fgets(buffer, 255, SMOKE_SIZE_FILE) == NULL)break;
-    sscanf(buffer, "%f", &time_local);
-    iframe_local++;
-    if(time_local <= time_max)continue;
-    if(use_tload_end == 1 && time_local > global_scase.tload_end)break;
-    if(iii%tload_step == 0 && (use_tload_begin == 0 || time_local >= global_scase.tload_begin)){
-      nframes_found++;
-      time_max = time_local;
-    }
-    iii++;
-  }
-  if(nframes_found > 0){
-    *ntimes_found = nframes_found;
-    *ntimes_full = iframe_local + 1;
-  }
-  fclose(SMOKE_SIZE_FILE);
-}
-
 /* ------------------ GetSmokeNFrames ------------------------ */
 
 int GetSmokeNFrames(int type, float *tmin, float *tmax){
@@ -2218,7 +2178,7 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   smoke3di->js2=nxyz_local[5];
   smoke3di->ks1=nxyz_local[6];
   smoke3di->ks2=nxyz_local[7];
-  smoke3di->compression_type=nxyz_local[1];
+  smoke3di->compression_type=COMPRESSED_RLE;
 
   // read smoke data
   START_TIMER(read_time_local);
