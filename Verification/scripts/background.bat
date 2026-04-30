@@ -1,11 +1,8 @@
 @echo off
 setlocal ENABLEDELAYEDEXPANSION
 
-REM ==== CONFIG ====
-REM %1 = max CPU load threshold (e.g. 30)
-REM %2... = command + args to run
-
-set "THRESHOLD=70"
+set "MAX_INSTANCES=5"
+set "PROCESS_NAME=fds_impi_intel_win.exe"
 
 if "%~1"=="" (
     echo Error: No command specified
@@ -15,30 +12,25 @@ if "%~1"=="" (
 REM Build command string
 set "CMD=%*"
 
-echo Waiting for CPU load to drop below %THRESHOLD%%%...
+echo Waiting until %MAX_INSTANCES% or fewer instances of %PROCESS_NAME% are running...
 echo Command to run: %CMD%
 echo.
 
 :CHECK
-REM Query CPU load
-for /f "skip=1 tokens=*" %%A in ('wmic cpu get loadpercentage') do (
-    if not "%%A"=="" (
-        set "LOAD=%%A"
-        goto :GOTLOAD
+set COUNT=0
+
+REM Count running instances
+for /f "skip=3 tokens=1" %%A in ('tasklist /FI "IMAGENAME eq %PROCESS_NAME%"') do (
+    if /I "%%A"=="%PROCESS_NAME%" (
+        set /a COUNT+=1
     )
 )
 
-:GOTLOAD
-REM Trim spaces
-set "LOAD=%LOAD: =%"
+echo Current %PROCESS_NAME% instances: !COUNT!
 
-if "%LOAD%"=="" goto :CHECK
-
-echo Current CPU Load: %LOAD%%%
-
-if %LOAD% LSS %THRESHOLD% (
+if !COUNT! LEQ %MAX_INSTANCES% (
     echo.
-    echo CPU load is below threshold. Running command...
+    echo Instance count is within limit. Running command...
     echo.
     call %CMD%
     exit /b %ERRORLEVEL%
@@ -46,4 +38,4 @@ if %LOAD% LSS %THRESHOLD% (
 
 REM Wait 5 seconds and try again
 timeout /t 5 /nobreak >nul
-goto :CHECK 
+goto :CHECK
