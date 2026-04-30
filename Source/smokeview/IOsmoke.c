@@ -1921,6 +1921,7 @@ void SmokeWrapup(void){
   smoke_render_option = RENDER_SLICE;
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
+  update_smoke_opacity = 1;
   ForceIdle();
 }
 

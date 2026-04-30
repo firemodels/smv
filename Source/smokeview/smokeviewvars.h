@@ -216,6 +216,7 @@ SVEXTERN int SVDECL(agl_offset_actual, 1);
 SVEXTERN int SVDECL(texture_showall, 0);
 SVEXTERN int SVDECL(texture_hideall, 0);
 SVEXTERN int SVDECL(force_gray_smoke, 1);
+SVEXTERN int SVDECL(update_smoke_opacity, 0);
 SVEXTERN int SVDECL(verbose_output, 0);
 SVEXTERN float SVDECL(glui_mass_extinct,8700.0), SVDECL(glui_mass_extinct_save,8700.0);
 SVEXTERN float glui_mass_extinct_default;
