@@ -2,7 +2,7 @@
 
 :: ---- log entry date ----
 
-set smvlogdate="30-Mar-2026"
+set smvlogdate="29-Apr-2026"
 
 :: ---- hostnames ----
 

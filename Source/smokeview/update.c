@@ -2043,6 +2043,10 @@ void UpdateShowScene(void){
     GLUIDeviceCB(DEVICE_TIMEAVERAGE);
     END_SHOW_UPDATE(update_device_timeaverage);
   }
+  if(update_smoke_opacity == 1){
+    update_smoke_opacity = 0;
+    GLUISmoke3dCB(FIRE_HALFDEPTH);
+  }
   if(global_scase.update_smoke_alphas==1){
     SHOW_UPDATE(update_smoke_alphas);
     global_scase.update_smoke_alphas = 0;
