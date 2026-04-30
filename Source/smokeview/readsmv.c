@@ -6122,12 +6122,13 @@ int ReadIni2(const char *inifile, int localfile){
         global_scase.smoke_albedo = CLAMP(global_scase.smoke_albedo, 0.0, 1.0);
         continue;
       }
-      if(MatchINI(buffer, "SMOKEFIREPROP") == 1){
+      if(MatchINI(buffer, "FIREPROP") == 1){
         int dummy;
 
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i %i", &dummy, &use_soot_multiplier);
+        sscanf(buffer, "%i %f", &use_soot_multiplier, &soot_multiplier);
         use_soot_multiplier = CLAMP(use_soot_multiplier, 0, 1);
+        soot_multiplier = CLAMP(soot_multiplier, MIN_SOOT_MULTIPLIER, MAX_SOOT_MULTIPLIER);
         update_use_soot_multiplier = 1;
         continue;
       }
@@ -8342,14 +8343,16 @@ void WriteIni(int flag,char *filename){
       mmin[0], mmin[1], mmin[2],
       mmax[0], mmax[1], mmax[2]);
   }
+  fprintf(fileout, "FDEPTH2\n");
+  fprintf(fileout, " %f %f %f %i %i\n", fire_halfdepth, co2_halfdepth, soot_multiplier, use_fire_alpha, force_alpha_opaque);
   fprintf(fileout, "FIRECOLOR\n");
   fprintf(fileout, " %i %i %i\n", fire_color_int255[0], fire_color_int255[1], fire_color_int255[2]);
   if(colorbars.fire_colorbar_index >= 0 && colorbars.fire_colorbar_index < colorbars.ncolorbars){
     fprintf(fileout, "FIRECOLORMAP\n");
     fprintf(fileout, " FIRE %i %s\n", fire_colormap_type, colorbars.colorbarinfo[colorbars.fire_colorbar_index].menu_label);
   }
-  fprintf(fileout, "FDEPTH2\n");
-  fprintf(fileout, " %f %f %f %i %i\n", fire_halfdepth, co2_halfdepth, soot_multiplier, use_fire_alpha, force_alpha_opaque);
+  fprintf(fileout, "FIREPROP\n");
+  fprintf(fileout, " %i %f\n", use_soot_multiplier, soot_multiplier);
   if(colorbars.ncolorbars > colorbars.ndefaultcolorbars){
     colorbardata *cbi;
     unsigned char *rrgb;
@@ -8384,11 +8387,6 @@ void WriteIni(int flag,char *filename){
   if(ABS(global_scase.smoke_albedo - global_scase.smoke_albedo_base) > 0.001){
     fprintf(fileout, "SMOKEALBEDO\n");
     fprintf(fileout, " %f\n", global_scase.smoke_albedo);
-  }
-
-  if((have_fire == NO_FIRE && have_smoke == NO_SMOKE)||(have_fire != NO_FIRE && have_smoke != NO_SMOKE)){
-    fprintf(fileout, "SMOKEFIREPROP\n");
-    fprintf(fileout, " %i %i\n", 1 - use_soot_multiplier, use_soot_multiplier);
   }
   fprintf(fileout, "SMOKEPROP\n");
   fprintf(fileout, " %f\n", glui_mass_extinct);
