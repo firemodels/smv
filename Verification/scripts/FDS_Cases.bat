@@ -6,7 +6,7 @@ setlocal
 cd ..\..\..\fds\Verification
 set verdir=%CD%
 
-cd ..\smv\Verification
+cd ..\..\smv\Verification
 set smvverdir=%CD%
 
 cd %verdir%
