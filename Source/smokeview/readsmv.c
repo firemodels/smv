@@ -6123,8 +6123,6 @@ int ReadIni2(const char *inifile, int localfile){
         continue;
       }
       if(MatchINI(buffer, "FIREPROP") == 1){
-        int dummy;
-
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%i %f", &use_soot_multiplier, &soot_multiplier);
         use_soot_multiplier = CLAMP(use_soot_multiplier, 0, 1);

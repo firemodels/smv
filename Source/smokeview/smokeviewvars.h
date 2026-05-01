@@ -2101,7 +2101,7 @@ SVEXTERN int co2_color_int255[3];
 #endif
 
 SVEXTERN int SVDECL(update_smokefire_colors, 0);
-SVEXTERN float SVDECL(fire_halfdepth,0.3);
+SVEXTERN float SVDECL(fire_halfdepth,0.1);
 SVEXTERN float SVDECL(co2_halfdepth, 10.0);
 
 SVEXTERN int SVDECL(co2_colormap_type, CO2_COLORBAR);
