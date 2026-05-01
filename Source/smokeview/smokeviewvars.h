@@ -434,6 +434,11 @@ SVEXTERN int SVDECL(glui_mesh_intersection_option, 0);
 SVEXTERN int SVDECL(partfast, 1);
 SVEXTERN int SVDECL(use_fire_alpha, 0);
 SVEXTERN float SVDECL(soot_multiplier, 3.0);
+SVEXTERN int SVDECL(update_use_soot_multiplier,0);
+SVEXTERN int SVDECL(use_soot_multiplier, 1);
+#define MIN_SOOT_MULTIPLIER 0.0
+#define MAX_SOOT_MULTIPLIER 100.0
+
 #ifdef pp_OSX
 SVEXTERN int SVDECL(monitor_screen_height, -1);
 #endif
@@ -2095,11 +2100,8 @@ SVEXTERN int smoke_color_int255[4];
 SVEXTERN int co2_color_int255[3];
 #endif
 
-SVEXTERN int SVDECL(update_use_soot_multiplier,0);
-SVEXTERN int SVDECL(use_soot_multiplier, 0);
-
 SVEXTERN int SVDECL(update_smokefire_colors, 0);
-SVEXTERN float SVDECL(fire_halfdepth,0.3);
+SVEXTERN float SVDECL(fire_halfdepth,0.1);
 SVEXTERN float SVDECL(co2_halfdepth, 10.0);
 
 SVEXTERN int SVDECL(co2_colormap_type, CO2_COLORBAR);

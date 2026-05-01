@@ -711,12 +711,6 @@ void InitAlphas(unsigned char *smokealphanew, unsigned char *firealphanew, float
   if(smoke3d_frame_inc != 1)new_dx *= (float)smoke3d_frame_inc;
   have_fire = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
-  if(have_smoke != NO_SMOKE && have_fire != NO_FIRE && use_soot_multiplier == 1){
-    use_soot_multiplier = 1;
-  }
-  else{
-    use_soot_multiplier = 0;
-  }
   for(i = 1; i < 255; i++){
     float soot_density, soot_opacity;
     int soot_alpha;
@@ -1921,7 +1915,6 @@ void SmokeWrapup(void){
   smoke_render_option = RENDER_SLICE;
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
-  update_smoke_opacity = 1;
   ForceIdle();
 }
 

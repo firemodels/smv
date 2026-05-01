@@ -531,6 +531,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
                 "use opacity multiplier when smoke also loaded", &use_soot_multiplier, USE_SOOT_MULTIPLIER, GLUISmoke3dCB);
   SPINNER_soot_multiplier = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity,
                 "opacity multiplier:", GLUI_SPINNER_FLOAT, &soot_multiplier, SOOT_MULTIPLIER, GLUISmoke3dCB);
+  SPINNER_soot_multiplier->set_float_limits(MIN_SOOT_MULTIPLIER, MAX_SOOT_MULTIPLIER);
   if(active_smokesensors == 1){
     PANEL_smokesensor = glui_3dsmoke->add_panel_to_panel(ROLLOUT_opacity, "Visibility");
     RADIO_smokesensors = glui_3dsmoke->add_radiogroup_to_panel(PANEL_smokesensor, &show_smokesensors);
