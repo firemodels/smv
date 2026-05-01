@@ -1354,8 +1354,8 @@ void UpdateMeshCoords(void){
   float dz_scene   = global_scase.zbar - global_scase.zbar0;
   xyzmaxdiff = MAX(MAX(dx_scene,dy_scene),dz_scene);
   // set fire_half depth to max of 1/40 domain size (rounded to 0.1 m) and 0.3
-  fire_halfdepth = (float)((int)(10.0*xyzmaxdiff/40.0+0.5))/10.0;
-  fire_halfdepth = MAX(fire_halfdepth, 0.3);
+  fire_halfdepth = (float)((int)(100.0*xyzmaxdiff/40.0+0.5))/100.0;
+  fire_halfdepth = MAX(fire_halfdepth, 0.05);
   vector_scalelength = MIN(dx_scene, dz_scene);
   if(global_scase.meshescoll.meshinfo[0].jbar > 1) {
     vector_scalelength = MIN(vector_scalelength, dy_scene);
