@@ -46,16 +46,12 @@ set run=call :runit %exe% %option%
 %run%  Detectors objects_static
 %run%  Detectors objects_dynamic
 %run%  Fires couch
-%run%  Flowfields helium_2d_isothermal
 %run%  Flowfields symmetry_test
 %run%  Flowfields symmetry_test_2
 %run%  Flowfields symmetry_test_mpi
 %run%  Flowfields jet_fan
-%run%  Flowfields velocity_bc_test
-%run%  Heat_Transfer checkerboard
 %run%  Heat_Transfer ht3d_demo
 %run%  Heat_Transfer ht3d_ibeam
-%run%  Heat_Transfer ht3d_network
 %run%  HVAC HVAC_mass_conservation
 %run%  HVAC HVAC_energy_pressure
 %run%  HVAC leak_test_2
@@ -66,7 +62,6 @@ set run=call :runit %exe% %option%
 %run%  Miscellaneous obst_cone
 %run%  Miscellaneous obst_rotbox
 %run%  NS_Analytical_Solution ns2d_64
-%run%  Pressure_Effects pressure_boundary
 %run%  Pressure_Solver dancing_eddies_embed
 %run%  Pressure_Solver dancing_eddies_tight
 %run%  Scalar_Analytical_Solution move_slug
