@@ -1,3 +1,4 @@
+
 @echo off
 set exe=%1
 set option=%2
@@ -8,27 +9,35 @@ set verdir=%CD%
 
 set run=call :runit %exe% %option%
 
+%run%  Visualization geom1
+%run%  Visualization geom2
+%run%  Visualization obst_test4
+%run%  Visualization thouse5
+%run%  Visualization plume5c
+%run%  Visualization test2
+%run%  Visualization script_test
+%run%  Visualization obst_remove
+%run%  Visualization vectorskipx
+%run%  Visualization vectorskipy
+%run%  Visualization vectorskipz
+%run%  Visualization smoke_sensor
+%run%  Visualization testsort
+%run%  Visualization sprinkler_many
+
 %run%  Visualization cad_test
 %run%  Visualization cell_test
 %run%  Visualization colorbar
 %run%  Visualization colorbar2
 %run%  Visualization color_geom
-%run%  Visualization geom1
-%run%  Visualization geom2
 %run%  Visualization hvac_comp
 %run%  Visualization mplume5c8
 %run%  Visualization objects_dynamic
 %run%  Visualization objects_elem
-%run%  Visualization obst_remove
 %run%  Visualization objects_static
 %run%  Visualization obst_test1
-%run%  Visualization obst_test4
 %run%  Visualization part_color
-%run%  Visualization plume5c
-%run%  Visualization script_test
 %run%  Visualization sillytexture
 %run%  Visualization slicemask
-%run%  Visualization smoke_sensor
 %run%  Visualization smoke_test
 %run%  Visualization smoke_test3
 %run%  Visualization smoke1
@@ -40,15 +49,8 @@ set run=call :runit %exe% %option%
 %run%  Visualization smokex080
 %run%  Visualization smokex160
 %run%  Visualization smoke_test2
-%run%  Visualization sprinkler_many
-%run%  Visualization test2
-%run%  Visualization testsort
-%run%  Visualization thouse5
 %run%  Visualization tour
 %run%  Visualization vcirctest
-%run%  Visualization vectorskipx
-%run%  Visualization vectorskipy
-%run%  Visualization vectorskipz
 %run%  Visualization version
 %run%  Visualization version2
 

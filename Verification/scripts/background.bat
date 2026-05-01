@@ -1,7 +1,7 @@
 @echo off
 setlocal ENABLEDELAYEDEXPANSION
 
-set "MAX_INSTANCES=5"
+set "MAX_INSTANCES=10"
 set "PROCESS_NAME=fds_impi_intel_win.exe"
 
 if "%~1"=="" (
