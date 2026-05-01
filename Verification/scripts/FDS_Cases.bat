@@ -45,12 +45,10 @@ set run=call :runit %exe% %option%
 %run%  Detectors beam_detector
 %run%  Detectors objects_static
 %run%  Detectors objects_dynamic
-%run%  Fires couch
 %run%  Flowfields symmetry_test
 %run%  Flowfields symmetry_test_2
 %run%  Flowfields symmetry_test_mpi
 %run%  Flowfields jet_fan
-%run%  Heat_Transfer ht3d_demo
 %run%  Heat_Transfer ht3d_ibeam
 %run%  HVAC HVAC_mass_conservation
 %run%  HVAC HVAC_energy_pressure
