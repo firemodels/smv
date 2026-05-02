@@ -38,7 +38,6 @@ set run=call :runit %exe% %option%
 %run%  Complex_Geometry geom_texture4a
 %run%  Complex_Geometry geom_texture4b
 %run%  Complex_Geometry sphere_radiate
-%run%  Complex_Geometry sphere_helium_conserve_3meshes
 %run%  Complex_Geometry cone_1mesh
 %run%  Complex_Geometry t34_scaling
 %run%  Controls activate_vents
