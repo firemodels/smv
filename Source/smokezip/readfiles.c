@@ -812,21 +812,21 @@ void ReadINI2(char *inifile){
       continue;
     }
     if(GLOBframeskip<1&&Match(buffer,"SLICEZIPSTEP")==1){
-	    fgets(buffer,BUFFERSIZE,stream);
-	    sscanf(buffer,"%i",&GLOBslicezipstep);
-	    if(GLOBslicezipstep<1)GLOBslicezipstep=1;
+      fgets(buffer,BUFFERSIZE,stream);
+      sscanf(buffer,"%i",&GLOBslicezipstep);
+      if(GLOBslicezipstep<1)GLOBslicezipstep=1;
       continue;
     }
     if(GLOBframeskip<1&&Match(buffer,"SMOKE3DZIPSTEP")==1){
-	    fgets(buffer,BUFFERSIZE,stream);
-	    sscanf(buffer,"%i",&GLOBsmoke3dzipstep);
-	    if(GLOBsmoke3dzipstep<1)GLOBsmoke3dzipstep=1;
+      fgets(buffer,BUFFERSIZE,stream);
+      sscanf(buffer,"%i",&GLOBsmoke3dzipstep);
+      if(GLOBsmoke3dzipstep<1)GLOBsmoke3dzipstep=1;
       continue;
     }
     if(GLOBframeskip<1&&Match(buffer,"BOUNDZIPSTEP")==1){
-	    fgets(buffer,BUFFERSIZE,stream);
-	    sscanf(buffer,"%i",&GLOBboundzipstep);
-	    if(GLOBboundzipstep<1)GLOBboundzipstep=1;
+      fgets(buffer,BUFFERSIZE,stream);
+      sscanf(buffer,"%i",&GLOBboundzipstep);
+      if(GLOBboundzipstep<1)GLOBboundzipstep=1;
       continue;
     }
 

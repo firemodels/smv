@@ -77,7 +77,7 @@ SV_EXTERN void IsoOut(FILE *isostream,float t, int timeindex, isosurface *surfac
 SV_EXTERN void CCIsoSurface2File(char *isofile, float *t, float *data, char *iblank, float *level, int *nlevels,
      float *xplt, int *nx, float *yplt, int *ny, float *zplt, int *nz,int *reduce_triangles, int *error);
 SV_EXTERN void CCIsoSurfaceT2File(char *isofile, float *t, float *data, int *data2flag, float *data2, int *iblank,
-						float *level, int *nlevels,
+                   float *level, int *nlevels,
                    float *xplt, int *nx,
                    float *yplt, int *ny,
                    float *zplt, int *nz,

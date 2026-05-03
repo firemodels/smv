@@ -3499,9 +3499,9 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
           surfi=global_scase.surfcoll.surfinfo;
           triangles[ii].insolid = 0;
           break;
-	      default:
-	      assert(FFALSE);
-	      break;
+        default:
+          assert(FFALSE);
+          break;
         }
         switch(type){
         case GEOM_CGEOM:
@@ -3520,8 +3520,8 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
           triangles[ii].outside_domain = OutSideDomain(triangles[ii].verts);
           break;
         default:
-	      assert(FFALSE);
-	      break;
+          assert(FFALSE);
+          break;
         }
       }
       FREEMEMORY(ijk);

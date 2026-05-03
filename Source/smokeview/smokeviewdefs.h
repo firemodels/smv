@@ -53,9 +53,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define DEVICE_TIMEAVERAGE            32
 
 #ifdef pp_OSX
-#define GLUT_BITMAP_HELVETICA_20	(&glutBitmapHelvetica20)
-#define GLUT_BITMAP_HELVETICA_24	(&glutBitmapHelvetica24)
-#define GLUT_BITMAP_HELVETICA_36	(&glutBitmapHelvetica36)
+#define GLUT_BITMAP_HELVETICA_20  (&glutBitmapHelvetica20)
+#define GLUT_BITMAP_HELVETICA_24  (&glutBitmapHelvetica24)
+#define GLUT_BITMAP_HELVETICA_36  (&glutBitmapHelvetica36)
 #endif
 
 #define MENU_VIEW_XMIN            -109
