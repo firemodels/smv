@@ -3854,9 +3854,9 @@ extern "C" void GLUIImmersedBoundCB(int var){
         case GEOM_OUTLINE_HIDDEN:
           show_slice_outlines[i]=0;
           break;
-	      default:
-	        assert(FFALSE);
-	        break;
+        default:
+          assert(FFALSE);
+          break;
       }
     }
     if(RADIO_slice_edgetype!=NULL)RADIO_slice_edgetype->set_int_val(glui_slice_edgetype);
@@ -6217,8 +6217,8 @@ extern "C" void GLUIIsoBoundCB(int var){
         iso_opacity_change=1;
         break;
       default:
-	assert(FFALSE);
-	break;
+        assert(FFALSE);
+        break;
     }
     GLUISliceBoundCB(DATA_transparent);
     break;

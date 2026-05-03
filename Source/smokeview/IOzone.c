@@ -1409,10 +1409,10 @@ void DrawZoneRoomGeom(void){
         glPushMatrix();
         if(zvi->wall==TOP_WALL){
           glTranslatef(FDS2SMV_X(zvi->xcen), FDS2SMV_Y(zvi->ycen), z2);
-	    }
-	    else{
+        }
+        else{
           glTranslatef(FDS2SMV_X(zvi->xcen), FDS2SMV_Y(zvi->ycen), z1);
-	    }
+        }
         uc_color[0] = zvi->color[0]*255;
         uc_color[1] = zvi->color[1]*255;
         uc_color[2] = zvi->color[2]*255;
@@ -1546,8 +1546,8 @@ void DrawZoneVentDataProfile(void){
         ywall = zvi->y1;
         break;
       default:
-	    assert(FFALSE);
-	    break;
+        assert(FFALSE);
+        break;
       }
       dvent1 = factor*zvi->area_fraction*zvi->vdata[j];
       dvent2 = factor*zvi->area_fraction*zvi->vdata[j+1];

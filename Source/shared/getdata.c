@@ -796,7 +796,7 @@ void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
       for(j = 0; j < nysp; j++){
         float jj = 2.0 * ((nysp - 1) / 2.0 - j) / (nysp - 1.0);
 
-	size_t i;
+        size_t i;
         for(i = 0; i < nxsp; i++){
           float ii = 2.0 * ((nxsp - 1) / 2.0 - i) / (nxsp - 1.0);
           float val =
