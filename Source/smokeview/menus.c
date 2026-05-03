@@ -6429,8 +6429,8 @@ void RotateTypeMenu(int value){
     return;
   }
   else if(value == MENU_MOTION_SHOW_VECTORS){
-	showgravity_vector = 1-showgravity_vector;
-	GLUIUpdateShowGravityVector();
+    showgravity_vector = 1-showgravity_vector;
+    GLUIUpdateShowGravityVector();
   }
   else if(value == MENU_MOTION_GRAVITY_VECTOR){
     gvec_down = 1;

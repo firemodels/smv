@@ -2759,8 +2759,8 @@ void RenderCB(int var){
         RenderCB(RENDER_START_360);
         break;
       default:
-	assert(FFALSE);
-	break;
+        assert(FFALSE);
+        break;
       }
     break;
     case RENDER_START_HIGHRES:
