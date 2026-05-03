@@ -3331,3 +3331,356 @@ void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
     memcpy(fire_rgbs + 3*i, fire_emission, 3*sizeof(float));
   }
 }
+
+#ifdef pp_VOLRENDER
+/* ------------------ IntegrateFireColors ------------------------ */
+
+void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlength, meshdata *meshi, int iwall){
+  float t_intersect_min, *boxmin, *boxmax;
+  int i;
+  int nsteps;
+  float dxyz[3];
+  float distseg, dxseg, dyseg, dzseg;
+  float xyz[3];
+  float *vert_beg=NULL, *vert_end=NULL;
+  int iwall_min=0;
+  float xyzvals[3];
+  char *blank_local;
+  float taun, alphan;
+  meshdata *xyz_mesh=NULL;
+
+  if(combine_meshes==1){
+    boxmin = meshi->super->boxmin_smv;
+    boxmax = meshi->super->boxmax_smv;
+  }
+  else{
+    boxmin = meshi->boxmin_smv;
+    boxmax = meshi->boxmax_smv;
+  }
+
+  if(meshi->inside==1){
+    vert_beg=eye_position_smv;
+    vert_end=xyzvert;
+  }
+  else{
+    int first;
+
+    vert_beg=xyzvert;
+    vert_end=xyzvals;
+
+    first = 1;
+    dxyz[0] = xyzvert[0] - eye_position_smv[0];
+    dxyz[1] = xyzvert[1] - eye_position_smv[1];
+    dxyz[2] = xyzvert[2] - eye_position_smv[2];
+    for(i=1;i<4;i++){
+      int ii;
+
+      // xyz(t) = xyzvert + t*(xyzvert - eye_position_smv )
+      // xyzvert_ii + t*(xyzvert_ii - eye_position_smv_ii) = boxmin_ii
+      // t = (xyzvert_ii - boxmin_ii)/(xyzvert_ii-eye_position_smv_ii)
+      //
+      // integrate from t=0 to t=t_intersect_min  (if outside mesh)
+      //     ie from vertex to nearest wall along a line from the eye position
+      //        intersecting the vertex position
+      // integrate from t=-1 to t=0 (if inside mesh)
+      //     ie from the eye position to the vertex position
+      ii=i-1;
+      float t_intersect;
+
+      if(iwall!=-i&&dxyz[ii]<0.0){
+        t_intersect = (boxmin[ii]-xyzvert[ii])/dxyz[ii];
+        if(first==1||t_intersect<t_intersect_min){
+          first = 0;
+          t_intersect_min=t_intersect;
+          iwall_min=-i;
+        }
+      }
+      if(iwall!=i&&dxyz[ii]>0.0){
+        t_intersect = (boxmax[ii]-xyzvert[ii])/dxyz[ii];
+        if(first==1||t_intersect<t_intersect_min){
+          first = 0;
+          t_intersect_min=t_intersect;
+          iwall_min=i;
+        }
+      }
+    }
+    vert_end[0] = 0.0;
+    vert_end[1] = 0.0;
+    vert_end[2] = 0.0;
+    switch(iwall_min){
+      case XWALLMIN:
+        vert_end[0] = boxmin[0];
+        vert_end[1] = CLAMP(xyzvert[1] + t_intersect_min*dxyz[1], boxmin[1], boxmax[1]);
+        vert_end[2] = CLAMP(xyzvert[2] + t_intersect_min*dxyz[2], boxmin[2], boxmax[2]);
+        break;
+      case XWALLMAX:
+        vert_end[0] = boxmax[0];
+        vert_end[1] = CLAMP(xyzvert[1] + t_intersect_min* dxyz[1],boxmin[1],boxmax[1]);
+        vert_end[2] = CLAMP(xyzvert[2] + t_intersect_min* dxyz[2],boxmin[2],boxmax[2]);
+        break;
+      case YWALLMIN:
+        vert_end[0] = CLAMP(xyzvert[0] + t_intersect_min* dxyz[0],boxmin[0],boxmax[0]);
+        vert_end[1] = boxmin[1];
+        vert_end[2] = CLAMP(xyzvert[2] + t_intersect_min* dxyz[2],boxmin[2],boxmax[2]);
+        break;
+      case YWALLMAX:
+        vert_end[0] = CLAMP(xyzvert[0] + t_intersect_min* dxyz[0],boxmin[0],boxmax[0]);
+        vert_end[1] = boxmax[1];
+        vert_end[2] = CLAMP(xyzvert[2] + t_intersect_min* dxyz[2],boxmin[2],boxmax[2]);
+        break;
+      case ZWALLMIN:
+        vert_end[0] = CLAMP(xyzvert[0] + t_intersect_min* dxyz[0],boxmin[0],boxmax[0]);
+        vert_end[1] = CLAMP(xyzvert[1] + t_intersect_min* dxyz[1],boxmin[1],boxmax[1]);
+        vert_end[2] = boxmin[2];
+        break;
+      case ZWALLMAX:
+        vert_end[0] = CLAMP(xyzvert[0] + t_intersect_min* dxyz[0],boxmin[0],boxmax[0]);
+        vert_end[1] = CLAMP(xyzvert[1] + t_intersect_min* dxyz[1],boxmin[1],boxmax[1]);
+        vert_end[2] = boxmax[2];
+        break;
+      default:
+        assert(FFALSE);
+        break;
+    }
+  }
+
+  dxseg = vert_end[0] - vert_beg[0];
+  dyseg = vert_end[1] - vert_beg[1];
+  dzseg = vert_end[2] - vert_beg[2];
+  distseg = sqrt(dxseg*dxseg+dyseg*dyseg+dzseg*dzseg);
+  integrated_firecolor[0] = 0.0;
+  integrated_firecolor[1] = 0.0;
+  integrated_firecolor[2] = 0.0;
+  integrated_firecolor[3] = 0.0;
+
+  if(distseg<0.001)return;
+
+  nsteps = 2*distseg/dlength;
+  if(nsteps<1)nsteps=1;
+  dlength=SCALE2FDS(distseg/(float)nsteps);
+  taun=1.0;
+  alphan=0.0;
+  for(i=0;i<nsteps;i++){
+    int inobst;
+    float factor;
+    float fire_emission[3];
+    float alphai, taui, xi;
+
+    xi = 0.5 + (float)i;
+    factor = xi/(float)nsteps;
+    xyz[0] = factor*vert_end[0] + (1.0 - factor)*vert_beg[0];
+    xyz[1] = factor*vert_end[1] + (1.0 - factor)*vert_beg[1];
+    xyz[2] = factor*vert_end[2] + (1.0 - factor)*vert_beg[2];
+
+    if(combine_meshes==1){
+      xyz_mesh = GetMeshInSmesh(xyz_mesh,meshi->super,xyz);
+      if(xyz_mesh==NULL)break;
+      blank_local = NULL;
+      if(block_volsmoke==1)blank_local=xyz_mesh->c_iblank_cell;
+      GetFireEmission(&taui, fire_emission, dlength, xyz, xyz_mesh, &inobst, blank_local);
+    }
+    else{
+      blank_local = NULL;
+      if(block_volsmoke==1)blank_local=meshi->c_iblank_cell;
+      GetFireEmission(&taui, fire_emission, dlength, xyz, meshi, &inobst, blank_local);
+    }
+    if(blank_local!=NULL&&inobst==1)break; // terminate ray when a blockage is encountered
+
+//         taui = exp(-mass_extinct*soot_val*dstep);
+//         new_color = taui*current_color + old_color
+
+    taun *= taui;
+    alphai = 1.0 - taui;
+    alphan = 1.0 - taun;
+
+    if(hrrpuv_max_blending==1){
+      integrated_firecolor[0] = MAX(integrated_firecolor[0], fire_emission[0]);
+      integrated_firecolor[1] = MAX(integrated_firecolor[1], fire_emission[1]);
+      integrated_firecolor[2] = MAX(integrated_firecolor[2], fire_emission[2]);
+    }
+    // https://developer.nvidia.com/sites/all/modules/custom/gpugems/books/GPUGems/gpugems_ch39.html
+    // equation 6 - integrate forward
+    else{
+      integrated_firecolor[0] += taun*alphai*fire_emission[0];
+      integrated_firecolor[1] += taun*alphai*fire_emission[1];
+      integrated_firecolor[2] += taun*alphai*fire_emission[2];
+    }
+  }
+
+  if(alphan>0.0){
+    alphan = CLAMP(alphan, 0.0, 1.0);
+    float max_rgb;
+
+    max_rgb = MAX(integrated_firecolor[0], MAX(integrated_firecolor[1], integrated_firecolor[2]));
+    if(max_rgb>1.0){
+      integrated_firecolor[0] /= max_rgb;
+      integrated_firecolor[1] /= max_rgb;
+      integrated_firecolor[2] /= max_rgb;
+    }
+
+ //   float fire_rgb_from[3], fire_rgb_to[3];
+ //   memcpy(fire_rgb_from, integrated_firecolor, 3*sizeof(float));
+ //   Xyz2Rgb(&HDTVsystem, fire_rgb_from, fire_rgb_to);
+ //   ConstrainRgb(fire_rgb_to);
+
+ //    memcpy(integrated_firecolor, fire_rgb_to, 3*sizeof(float));
+    integrated_firecolor[3] = alphan;
+    if(volbw==1){
+      float gray;
+
+      gray = TOBW(integrated_firecolor);
+      integrated_firecolor[0] = gray;
+      integrated_firecolor[1] = gray;
+      integrated_firecolor[2] = gray;
+    }
+  }
+  else{
+    VEC4EQCONS(integrated_firecolor,0.0);
+  }
+}
+
+/* ------------------ ComputeAllSmokecolors ------------------------ */
+
+void ComputeAllSmokecolors(void){
+  int ii;
+
+  if(freeze_volsmoke==1)return;
+  for(ii=0;ii<global_scase.meshescoll.nmeshes;ii++){
+    meshdata *meshi;
+    volrenderdata *vr;
+    int iwall;
+    float dlength;
+    float dx, dy, dz;
+    float *x, *y, *z;
+    int ibar, jbar, kbar;
+    float *smokecolor;
+
+    meshi = global_scase.meshescoll.meshinfo + ii;
+    vr = meshi->volrenderinfo;
+    if(vr->loaded==0||vr->display==0)continue;
+
+    x = meshi->xvolplt_smv;
+    y = meshi->yvolplt_smv;
+    z = meshi->zvolplt_smv;
+    ibar = meshi->ivolbar;
+    jbar = meshi->jvolbar;
+    kbar = meshi->kvolbar;
+    dx = x[1] - x[0];
+    dy = y[1] - y[0];
+    dz = z[1] - z[0];
+    dlength = sqrt(dx*dx+dy*dy+dz*dz)/2.0;
+
+    if(vr->smokeslice==NULL)continue;
+    for(iwall=-3;iwall<=3;iwall++){
+      float *xyz,xyzarray[3];
+      int i, j;
+
+      xyz = xyzarray;
+      if(iwall==0||meshi->drawsides[iwall+3]==0)continue;
+      switch(iwall){
+        case XWALLMIN:
+        case XWALLMAX:
+          if(iwall<0){
+            smokecolor=vr->smokecolor_yz0;
+            xyz[0] = meshi->boxmin_fds[0];
+          }
+          else{
+            smokecolor=vr->smokecolor_yz1;
+            xyz[0] = meshi->boxmax_fds[0];
+          }
+          if(vr->firedataptr==NULL||vr->smokedataptr==NULL){
+            for(i=0;i<=jbar;i++){
+              for(j=0;j<=kbar;j++){
+                smokecolor[0]=0.0;
+                smokecolor[1]=0.0;
+                smokecolor[2]=0.0;
+                smokecolor[3]=0.0;
+                smokecolor+=4;
+              }
+            }
+          }
+          else{
+            for(i=0;i<=jbar;i++){
+              xyz[1] = y[i];
+              for(j=0;j<=kbar;j++){
+                xyz[2] = z[j];
+                IntegrateFireColors(smokecolor,xyz,dlength,meshi,iwall);
+                smokecolor+=4;
+              }
+            }
+          }
+          break;
+        case YWALLMIN:
+        case YWALLMAX:
+          if(iwall<0){
+            smokecolor=vr->smokecolor_xz0;
+            xyz[1] = meshi->boxmin_fds[1];
+          }
+          else{
+            smokecolor=vr->smokecolor_xz1;
+            xyz[1] = meshi->boxmax_fds[1];
+          }
+          if(vr->firedataptr==NULL||vr->smokedataptr==NULL){
+            for(i=0;i<=ibar;i++){
+              for(j=0;j<=kbar;j++){
+                smokecolor[0]=0.0;
+                smokecolor[1]=0.0;
+                smokecolor[2]=0.0;
+                smokecolor[3]=0.0;
+                smokecolor+=4;
+              }
+            }
+          }
+          else{
+            for(i=0;i<=ibar;i++){
+              xyz[0] = x[i];
+              for(j=0;j<=kbar;j++){
+                xyz[2] = z[j];
+                IntegrateFireColors(smokecolor,xyz,dlength,meshi,iwall);
+                smokecolor+=4;
+              }
+            }
+          }
+          break;
+        case ZWALLMIN:
+        case ZWALLMAX:
+          if(iwall<0){
+            smokecolor=vr->smokecolor_xy0;
+            xyz[2]=meshi->boxmin_fds[2];
+          }
+          else{
+            smokecolor=vr->smokecolor_xy1;
+            xyz[2]=meshi->boxmax_fds[2];
+          }
+          if(vr->firedataptr==NULL||vr->smokedataptr==NULL){
+            for(i=0;i<=ibar;i++){
+              for(j=0;j<=jbar;j++){
+                smokecolor[0]=0.0;
+                smokecolor[1]=0.0;
+                smokecolor[2]=0.0;
+                smokecolor[3]=0.0;
+                smokecolor+=4;
+              }
+            }
+          }
+          else{
+            for(i=0;i<=ibar;i++){
+              xyz[0] = x[i];
+              for(j=0;j<=jbar;j++){
+                xyz[1] = y[j];
+                IntegrateFireColors(smokecolor,xyz,dlength,meshi,iwall);
+                smokecolor+=4;
+              }
+            }
+          }
+          break;
+        default:
+          assert(FFALSE);
+          break;
+      }
+    }
+  }
+}
+#endif
+
+
