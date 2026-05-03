@@ -1719,9 +1719,9 @@ void Keyboard(unsigned char key, int flag){
           vis_device_plot = 0;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
           break;
-	default:
-	  assert(FFALSE);
-	  break;
+        default:
+          assert(FFALSE);
+          break;
       }
 // hrr plot
       switch(plot_option){
@@ -1735,9 +1735,9 @@ void Keyboard(unsigned char key, int flag){
           vis_hrr_plot = 0;
           ShowObjectsMenu(PLOT_HRRPUV);
           break;
-	default:
-	  assert(FFALSE);
-	  break;
+        default:
+          assert(FFALSE);
+          break;
       }
       break;
     case 'a':
@@ -2711,9 +2711,9 @@ void Keyboard(unsigned char key, int flag){
         case CLIP_DATA:
           printf("Clip data\n");
           break;
-	    default:
-	      assert(FFALSE);
-	      break;
+        default:
+          assert(FFALSE);
+          break;
       }
       GLUIUpdateClipAll();
       break;
@@ -3228,8 +3228,8 @@ float SetClipVal(int flag){
         if(plotz>=0)return zplt[plotz];
         break;
       default:
-	assert(FFALSE);
-	break;
+        assert(FFALSE);
+        break;
     }
   }
   return 0.0;

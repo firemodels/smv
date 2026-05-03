@@ -3417,7 +3417,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       }
       for(ii = 0; ii<nslice_loaded; ii++){
         slicedata *sdi;
-      	int i;
+        int i;
 
         i = slice_loaded_list[ii];
         sdi = global_scase.slicecoll.sliceinfo + i;

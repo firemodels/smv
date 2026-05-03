@@ -2325,7 +2325,7 @@ void *CheckFiles(void *arg){
 
     patchi = global_scase.patchinfo + i;
     have_file = FileExistsCaseDir(&global_scase, patchi->comp_file);
-	ThreadLock(checkfiles_threads);
+    ThreadLock(checkfiles_threads);
     if(have_file == YES){
       patchi->compression_type_temp = COMPRESSED_ZLIB;
       global_scase.have_compressed_files = 1;

@@ -682,8 +682,8 @@ int ParseSLCFTokens(char *buffer, char **keywords, int *type, int nkeywords, int
         }
         break;
       default:
-	assert(FFALSE);
-	break;
+        assert(FFALSE);
+        break;
     }
   }
   return i;
@@ -1330,9 +1330,9 @@ case SCRIPT_LOADSMV:
               case KW_CELL_CENTERED:
                 scripti->cell_centered = itokens[i];
                 break;
-	      default:
-		       assert(FFALSE);
-		break;
+              default:
+                assert(FFALSE);
+                break;
             }
           }
           if(scripti->id==NULL){
@@ -1491,8 +1491,8 @@ case SCRIPT_LOADSMV:
         sscanf(param_buffer,"%f %f",&scripti->fval,&scripti->fval2);
         break;
       default:
-	assert(FFALSE);
-	break;
+        assert(FFALSE);
+        break;
     }
     if(scriptEOF==1)break;
     if(kw!=keywordinfo&&fatal_error==0)nscriptinfo++;

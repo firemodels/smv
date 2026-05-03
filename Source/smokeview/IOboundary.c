@@ -917,8 +917,8 @@ void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *global_
         continue;
         break;
       default:
-	assert(FFALSE);
-	break;
+    assert(FFALSE);
+      break;
     }
   }
 }
