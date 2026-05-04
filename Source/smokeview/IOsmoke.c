@@ -2140,17 +2140,7 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
 
   IF_NOT_USEMESH_RETURN0(smoke3di->loaded, smoke3di->blocknumber);
   if(smoke3di->type == SOOT_index){
-    // only use s3dd files if they are newer than the smv file
-    if(ignore_s3dd_files == 0){
-      if(s3dd_files_ok == 1 || IsFileNewer(smoke3di->smoke_density_file, smv_filename) == 1){
-        SMOKE3DFILE = FOPEN(smoke3di->smoke_density_file, "rb");
-        s3dd_files_ok = 1;
-      }
-      else{
-        // s3dd files are older or they do not exist
-        ignore_s3dd_files = 1;
-      }
-    }
+    SMOKE3DFILE = FOPEN(smoke3di->smoke_density_file, "rb");
     if(SMOKE3DFILE == NULL)SMOKE3DFILE = FOPEN(smoke3di->file, "rb");
   }
   else{
