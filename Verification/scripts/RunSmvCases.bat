@@ -15,7 +15,7 @@ if exist %FDSEXE% goto skip1
 
 call fdsinit > Nul 2>&1
 cd %CURDIR%
-call SMV_Cases %FDSEXE% fds
+call SMVCases %FDSEXE% fds
 
 cd %GITROOT%\fds
 git describe > %CURDIR%\fds_revision.txt

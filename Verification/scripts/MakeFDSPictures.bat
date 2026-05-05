@@ -17,5 +17,5 @@ if exist %SMVEXE% goto skip1
 ::erase %GITROOT%\smv\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES\*.png
 
 cd %CURDIR%
-call FDS_Cases %SMVEXE% smv
+call FDSCases %SMVEXE% smv
 cd %CURDIR%
