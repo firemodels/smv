@@ -8,6 +8,9 @@ set verdir=%CD%
 
 cd ..\..\smv\Verification
 set smvverdir=%CD%
+cd scripts\bin
+set GREP=%CD%\grep.exe
+set WC=%CD%\wc.exe
 
 cd %verdir%
 
@@ -82,8 +85,16 @@ goto eof
   set input=%4
 
   cd %verdir%\%casedir%
+  if %prog% == check goto skip1
+
   if %option% == fds timeout /t 2 /nobreak & start "%input%" cmd /c "%smvverdir%\scripts\background.bat %prog% %input%.fds"
   if %option% == smv %prog% -runscript %input%
+  exit /b
+
+:skip1
+  %GREP% Elapsed %input%.out | %WC% -l > %input%.wc
+  set /p finished=<%input%.wc
+  if %finished% == 0 echo %input% did not finish
   exit /b
 
 :eof 
