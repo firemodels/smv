@@ -39,7 +39,6 @@
 
 #ifdef _DEBUG
 #define pp_BNDF_DEBUG        // add 3 checkboxes for controlling different types of boundary file output
-#define pp_BOUND_DEBUG       // output debug message in some bound routines and if bounds are recomputed
 #endif
 
 #endif
