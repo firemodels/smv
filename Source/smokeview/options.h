@@ -15,7 +15,6 @@
 //#define pp_TERRAIN_HIDE     // hide terrain when hiding internal blockages
 //#define pp_OPACITY_DEBUG    // output hrrpuv opacity in center of each mesh
 //#define pp_GLUT_DEBUG       // add debug print for glut debugging
-//#define pp_OSX_CWD          // turn on initial getcwd call for OSX smokeview's
 #define pp_BNDF_DEBUG         // add 3 checkboxes for controlling different types of boundary file output
 #define pp_SPEEDUP            // speed up smokeview
 //#define pp_READ_KEYBOARD      // read keyboard in the command shell so the visualization can be paused 
