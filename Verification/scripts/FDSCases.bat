@@ -3,11 +3,16 @@ set exe=%1
 set option=%2
 setlocal
 
+set allfinished=1
+
 cd ..\..\..\fds\Verification
 set verdir=%CD%
 
 cd ..\..\smv\Verification
 set smvverdir=%CD%
+cd scripts\bin
+set GREP=%CD%\grep.exe
+set WC=%CD%\wc.exe
 
 cd %verdir%
 
@@ -72,7 +77,7 @@ set run=call :runit %exe% %option%
 %run%  WUI Bova_1b
 %run%  WUI Bova_4a
 %run%  WUI level_set_fuel_model_1
-
+if %exe% == check if %allfinished% == 1 echo all cases finished
 goto eof
 
 :runit
@@ -82,8 +87,21 @@ goto eof
   set input=%4
 
   cd %verdir%\%casedir%
+
+  set finished=0
+  if exist %input%.out %GREP% -E only^|success %input%.out | %WC% -l > %input%.wc
+  set /p finished=<%input%.wc
+  if %finished% == 1 if x%runallcases% == x0 if %option% == fds exit /b 
+  
+  if %prog% == check goto skip1
+
   if %option% == fds timeout /t 2 /nobreak & start "%input%" cmd /c "%smvverdir%\scripts\background.bat %prog% %input%.fds"
   if %option% == smv %prog% -runscript %input%
   exit /b
 
-:eof 
+:skip1
+  if %finished% == 0 echo %input% did not finish
+  if %finished% == 0 set allfinished=0
+  exit /b
+
+:eof

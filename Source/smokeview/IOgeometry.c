@@ -2483,7 +2483,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   }
 
   if(FileExistsOrig(patchi->bound_file)==0){
-    float *vals, valmin, valmax;
+    float *vals, valmin=0.0, valmax=1.0;
 
     vals = patchi->geom_vals;
     if(strcmp(patchi->label.shortlabel, "t_a") == 0){
@@ -2503,11 +2503,13 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       }
     }
     else{
-      valmin = vals[0];
-      valmax = valmin;
-      for(i = 1;i < nvals;i++){
-        valmin = MIN(vals[i], valmin);
-        valmax = MAX(vals[i], valmax);
+      if(nvals > 0){
+        valmin = vals[0];
+        valmax = valmin;
+        for(i = 1; i < nvals; i++){
+          valmin = MIN(vals[i], valmin);
+          valmax = MAX(vals[i], valmax);
+        }
       }
     }
     WriteFileBounds(patchi->bound_file, valmin, valmax);

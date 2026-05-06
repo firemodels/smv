@@ -30,6 +30,6 @@ erase %GITROOT%\smv\Manuals\SMV_User_Guide\SCRIPT_FIGURES\*.png
 erase %GITROOT%\smv\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES\*.png
 
 cd %CURDIR%
-call SMV_Cases %SMVEXE% smv
+call SMVCases %SMVEXE% smv
 copy %GITROOT%\smv\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES\fds_smv_version.png %GITROOT%\smv\Manuals\SMV_Summary\images
 cd %CURDIR%
