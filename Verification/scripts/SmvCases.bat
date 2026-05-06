@@ -59,9 +59,7 @@ set run=call :runit %exe% %option%
 %run%  Visualization vcirctest
 %run%  Visualization version
 %run%  Visualization version2
-
 if %exe% == check if %allfinished% == 1 echo all cases finished
-
 goto eof
 
 :runit
