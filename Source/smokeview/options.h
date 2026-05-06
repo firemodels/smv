@@ -15,7 +15,6 @@
 //#define pp_TERRAIN_HIDE     // hide terrain when hiding internal blockages
 //#define pp_OPACITY_DEBUG    // output hrrpuv opacity in center of each mesh
 //#define pp_GLUT_DEBUG       // add debug print for glut debugging
-#define pp_BNDF_DEBUG         // add 3 checkboxes for controlling different types of boundary file output
 #define pp_SPEEDUP            // speed up smokeview
 //#define pp_READ_KEYBOARD      // read keyboard in the command shell so the visualization can be paused 
 //#define pp_GETMESH_TEST
@@ -39,6 +38,7 @@
 //*** options: for debugging
 
 #ifdef _DEBUG
+#define pp_BNDF_DEBUG        // add 3 checkboxes for controlling different types of boundary file output
 #define pp_BOUND_DEBUG       // output debug message in some bound routines and if bounds are recomputed
 #endif
 
