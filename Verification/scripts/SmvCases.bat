@@ -4,6 +4,7 @@ set exe=%1
 set option=%2
 setlocal
 
+set allfinished=1
 cd ..
 set verdir=%CD%
 cd scripts\bin
@@ -58,6 +59,8 @@ set run=call :runit %exe% %option%
 %run%  Visualization version
 %run%  Visualization version2
 
+if %exe% == check if %allfinished% == 1 echo all cases finished
+
 goto eof
 
 :runit
@@ -74,9 +77,11 @@ goto eof
   exit /b
 
 :skip1
-  %GREP% Elapsed %input%.out | %WC% -l > %input%.wc
+  set finished=0
+  if exist %input%.out %GREP% -E only^|success %input%.out | %WC% -l > %input%.wc
   set /p finished=<%input%.wc
   if %finished% == 0 echo %input% did not finish
+  if %finished% == 0 set allfinished=0
   exit /b
 
 :eof

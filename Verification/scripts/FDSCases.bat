@@ -3,6 +3,8 @@ set exe=%1
 set option=%2
 setlocal
 
+set allfinished=1
+
 cd ..\..\..\fds\Verification
 set verdir=%CD%
 
@@ -75,7 +77,7 @@ set run=call :runit %exe% %option%
 %run%  WUI Bova_1b
 %run%  WUI Bova_4a
 %run%  WUI level_set_fuel_model_1
-
+if %exe% == check if %allfinished% == 1 echo all cases finished
 goto eof
 
 :runit
@@ -92,9 +94,11 @@ goto eof
   exit /b
 
 :skip1
-  %GREP% Elapsed %input%.out | %WC% -l > %input%.wc
+  set finished=0
+  if exist %input%.out %GREP% -E only^|success %input%.out | %WC% -l > %input%.wc
   set /p finished=<%input%.wc
   if %finished% == 0 echo %input% did not finish
+  if %finished% == 0 set allfinished=0
   exit /b
 
 :eof 
