@@ -2635,9 +2635,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   else{
     slicefile_labelindex = GetSliceBoundsIndexFromLabel(patchi->label.shortlabel);
   }
-#ifdef pp_BOUND_DEBUG
-  int recompute = 0;
-#endif
   if(current_script_command!=NULL||(slicei==NULL&&patchi->finalize==1)||(slicei!=NULL&&slicei->finalize==1)){
     plotstate = GetPlotState(DYNAMIC_PLOTS);
     if(patchi->boundary==1)UpdateBoundaryType();
@@ -2663,18 +2660,12 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
         GetGlobalPatchBounds(1,DONOT_SET_MINMAX_FLAG,patchi->label.shortlabel);
         SetLoadedPatchBounds(NULL, 0);
         GLUIPatchBoundsCPP_CB(BOUND_DONTUPDATE_COLORS);
-#ifdef pp_BOUND_DEBUG
-        recompute = 1;
-#endif
       }
     }
     else{
       if(bound_update==1||slice_bounds_defined==0|| BuildGbndFile(BOUND_SLICE) ==1){
         GetGlobalSliceBounds(1, DONOT_SET_MINMAX_FLAG,patchi->label.shortlabel);
         SetLoadedSliceBounds(NULL, 0);
-#ifdef pp_BOUND_DEBUG
-        recompute = 1;
-#endif
       }
     }
     if(bounds->set_valmin==BOUND_SET_MIN||bounds->set_valmax==BOUND_SET_MAX){
@@ -2712,9 +2703,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     PRINTF("Loaded %.1f MB/%.1f s\n", (float)return_filesize/1000000., total_time);
   }
   PrintMemoryInfo;
-#ifdef pp_BOUND_DEBUG
-  if(recompute == 1)printf("***recomputing bounds\n");
-#endif
   return return_filesize;
 }
 

@@ -1958,9 +1958,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   patchi->display = 1;
   patchi->hist_update = 1;
 
-#ifdef pp_BOUND_DEBUG
-  int recompute = 0;
-#endif
   if(patchi->finalize==1){
     int i;
 
@@ -2007,9 +2004,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       GetGlobalPatchBounds(1,DONOT_SET_MINMAX_FLAG,patchi->label.shortlabel);
       SetLoadedPatchBounds(NULL, 0);
       GLUIPatchBoundsCPP_CB(BOUND_DONTUPDATE_COLORS);
-#ifdef pp_BOUND_DEBUG
-      recompute = 1;
-#endif
     }
     else{
       cpp_boundsdata *bounds;
@@ -2175,10 +2169,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
  else{
    PRINTF("Loaded %.0f kB in %.1f s\n", (float)return_filesize / 1000., total_time);
   }
-#ifdef pp_BOUND_DEBUG
-  if(recompute == 1)printf("***recomputing bounds\n");
-#endif
-
   update_patch_bounds = ifile;
 
   GLUTPOSTREDISPLAY;

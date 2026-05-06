@@ -465,17 +465,7 @@ int GLUTGetScreenHeight(void){
 
 void SetupGlut(int argc, char **argv){
   int i;
-#ifdef pp_OSX_CWD
-#ifdef pp_OSX
-  char workingdir[1000];
-#endif
-#endif
 
-#ifdef pp_OSX_CWD
-#ifdef pp_OSX
-  getcwd(workingdir, 1000);
-#endif
-#endif
   if(use_graphics==1){
     PRINTF("\n");
     if(verbose_output==1)PRINTF("%s","initializing Glut");
@@ -486,12 +476,6 @@ void SetupGlut(int argc, char **argv){
     if(verbose_output==1)PRINTF("\n%s\n","complete");
 
   }
-#ifdef pp_OSX_CWD
-#ifdef pp_OSX
-  chdir(workingdir);
-#endif
-#endif
-
   if(use_graphics==1){
 #ifdef _DEBUG
     if(verbose_output==1)PRINTF("%s","initializing Smokeview graphics window - ");

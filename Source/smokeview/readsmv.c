@@ -2995,13 +2995,6 @@ int ReadSMV_Configure(){
   //*** hide_scene when moving objects if there are are lot of OBSTs or geometry triangles
   if(global_scase.ntotal_blockages > 250000 || GetNCGeomTriangles() > 250000)hide_scene = 1;
 
-#ifdef pp_GEOM_EXACT
-  if(global_scase.meshescoll.nmeshes > 100){
-    blocklocation   = BLOCKlocation_exact;
-    glui_use_cfaces = 0;
-  }
-#endif
-
   PRINT_TIMER(timer_readsmv, "update trianglesfaces");
 
   if(global_scase.ngeominfo>0&&global_scase.auto_terrain==1){
