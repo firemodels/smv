@@ -5649,6 +5649,17 @@ void LoadIsoMenu(int value){
 /* ------------------ InPatchList ------------------------ */
 
 int InPatchList(patchdata *patchj, patchdata *patchi){
+#ifdef pp_BNDF_MENU
+// include boundary file if it is geometry and has the same quantity
+  if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
+    char label[256], *ext;
+
+    strcpy(label, patchj->label.longlabel);
+    ext = strchr(label, '(');
+    if(ext != NULL)ext[0] = 0;
+    if(strcmp(label, patchi->label.longlabel) == 0)return 1;
+  }
+#endif
   if(strcmp(patchj->label.longlabel, patchi->label.longlabel)!=0)return 0;
 #ifndef pp_BNDF_MENU
   if(patchj->patch_filetype!=patchi->patch_filetype)return 0;
