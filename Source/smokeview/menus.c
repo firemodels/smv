@@ -8655,13 +8655,20 @@ static int loadsmoke3dmenu = 0;
 static int unloadsmoke3dmenu = 0;
 static int loadslicemenu=0, loadmultislicemenu = 0, loadhvacmenu = 0;
 static int *loadsubvslicemenu=NULL, nloadsubvslicemenu=0;
-static int *loadsubpatchmenu_b = NULL, *nsubpatchmenus_b=NULL, iloadsubpatchmenu_b=0, nloadsubpatchmenu_b = 0;
+static int *loadsubpatchmenu_b = NULL, *nsubpatchmenus_b = NULL;
+#ifndef pp_BNDF_MENU
+static int iloadsubpatchmenu_b = 0;
+#endif
+static int nloadsubpatchmenu_b = 0;
 static int *loadsubpatchmenu_s = NULL, *nsubpatchmenus_s=NULL, nloadsubpatchmenu_s = 0;
 static int *loadsubmslicemenu=NULL, nloadsubmslicemenu=0;
 static int *loadsubmvslicemenu=NULL, nloadsubmvslicemenu=0;
 static int *loadsubplot3dmenu=NULL, nloadsubplot3dmenu=0;
 static int loadmultivslicemenu=0, unloadmultivslicemenu=0;
-static int duplicatevectorslicemenu=0, duplicateslicemenu=0, duplicateboundaryslicemenu=0;
+static int duplicatevectorslicemenu=0, duplicateslicemenu=0;
+#ifndef pp_BNDF_MENU
+static int duplicateboundaryslicemenu=0;
+#endif
 static int unloadmultislicemenu=0, vsliceloadmenu=0, staticslicemenu=0;
 static int particlemenu=0, showpatchmenu=0, zonemenu=0, isoshowmenu=0, isolevelmenu=0, smoke3dshowmenu=0;
 static int particlepropshowmenu=0;
