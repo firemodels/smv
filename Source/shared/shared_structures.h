@@ -683,7 +683,7 @@ typedef struct _circdata {
 
 /* --------------------------  meshescollection ------------------------------------- */
 
-typedef struct {
+typedef struct _meshescollection {
   meshdata *meshinfo;
   int nmeshes;
 } meshescollection;
@@ -926,7 +926,7 @@ typedef struct _fueldata {
 
 /* --------------------------  hrr_collection ------------------------------------ */
 
-typedef struct {
+typedef struct _hrr_collection {
   int nhrrinfo;
   int nhrrhcinfo;
   hrrdata *hrrinfo;
@@ -934,42 +934,42 @@ typedef struct {
 
 /* --------------------------  fuel_collection ------------------------------------ */
 
-typedef struct {
+typedef struct _fuel_collection {
   int nfuelinfo;
   fueldata *fuelinfo;
 } fuel_collection;
 
 /* --------------------------  prop_collection ------------------------------------ */
 
-typedef struct {
+typedef struct _prop_collection {
   int npropinfo;
   propdata *propinfo;
 } prop_collection;
 
 /* --------------------------  obst_collection ------------------------------------ */
 
-typedef struct {
+typedef struct _obst_collection {
   int nobstinfo;
   xbdata *obstinfo;
 } obst_collection;
 
 /* --------------------------  texture_collection ------------------------------------ */
 
-typedef struct {
+typedef struct _texture_collection {
   int ntextureinfo;
   texturedata *textureinfo;
 } texture_collection;
 
 /* --------------------------  terrain_texture_collection ------------------------------------ */
 
-typedef struct {
+typedef struct _terrain_texture_collection {
   int nterrain_textures;
   texturedata *terrain_textures;
 } terrain_texture_collection;
 
 /* --------------------------  device_collection ------------------------------------ */
 
-typedef struct {
+typedef struct _device_collection {
   int ndeviceinfo;
   int nvdeviceinfo;
   int ndeviceinfo_exp;
@@ -980,7 +980,7 @@ typedef struct {
 
 /* --------------------------  device_texture_list_collection ------------------------------------ */
 
-typedef struct {
+typedef struct _device_texture_list_collection {
   int ndevice_texture_list;
   char **device_texture_list;
   int *device_texture_list_index;
@@ -989,7 +989,7 @@ typedef struct {
 
 /* --------------------------  slice_collection ------------------------------------ */
 
-typedef struct {
+typedef struct _slice_collection {
   int nsliceinfo;
   slicedata *sliceinfo;
 
@@ -1014,7 +1014,7 @@ typedef struct _sliceparmdata {
 
 /* --------------------------  surf_collection ------------------------------------ */
 
-typedef struct {
+typedef struct _surf_collection {
   int nsurfinfo;
   surfdata *surfinfo;
 
@@ -1053,7 +1053,7 @@ typedef struct _csvfiledata {
 
 /* --------------------------  csv_collection ------------------------------------ */
 
-typedef struct {
+typedef struct _csv_collection {
   int ncsvfileinfo;
   csvfiledata *csvfileinfo;
 } csv_collection;
@@ -1073,7 +1073,7 @@ typedef struct _meshplanedata {
 
 /* --------------------------  filelist_collection -------------------------- */
 
-typedef struct {
+typedef struct _filelist_collection {
   int nini_filelist;
   filelistdata *ini_filelist;
 
@@ -1313,7 +1313,7 @@ typedef struct _patchdata {
  * @brief A number of standard objects to be used.
  *
  */
-typedef struct {
+typedef struct _std_objects {
   sv_object *thcp_object_backup;
   sv_object *target_object_backup;
   sv_object *heat_detector_object_backup;
@@ -1330,7 +1330,7 @@ typedef struct {
  * contains a linked list, but also an array of pointers into that linked list.
  *
  */
-typedef struct {
+typedef struct _object_collection {
   /** @brief The number object definitions in object_defs. */
   int nobject_defs;
   /** @brief An array of pointers object definitions. */
@@ -1359,7 +1359,7 @@ typedef struct _smokedata {
 
 /* --------------------------  smokestatedata ------------------------------- */
 
-typedef struct {
+typedef struct _smokestatedata {
   int loaded, index;
   unsigned char *color;
 } smokestatedata;
@@ -1432,7 +1432,7 @@ typedef struct _smoke3dtypedata {
 
 /* --------------------------  smoke3d_collection ------------------------------------ */
 
-typedef struct {
+typedef struct _smoke3d_collection {
   int nsmoke3dinfo;
   smoke3ddata *smoke3dinfo;
   smoke3ddata **smoke3dinfo_sorted;
@@ -1443,7 +1443,7 @@ typedef struct {
 
 /* --------------------------  tour_collection ------------------------------------ */
 
-typedef struct {
+typedef struct _tour_collection {
   /// @brief Number of tours. This is the length of the array tourinfo
   int ntourinfo;
   /// @brief An array of tours.
@@ -1501,7 +1501,7 @@ typedef struct _cadgeomdata {
  * fixed capacity.
  *
  */
-typedef struct {
+typedef struct _cadgeom_collection {
   /** @brief The capacity of the array. This cannot be changed after creation.
    */
   int capacity;
@@ -1585,7 +1585,7 @@ typedef struct _hvacvalsdata {
 
 /* --------------------------  hvacdatacollection ------------------------------------ */
 
-typedef struct {
+typedef struct _hvacdatacollection {
   hvacnodedata *hvacnodeinfo;
   int nhvacnodeinfo;
   hvacductdata *hvacductinfo;
@@ -1629,25 +1629,27 @@ typedef struct _labeldata {
 
 /* --------------------------  labels_collection ------------------------------------ */
 
-typedef struct {
+typedef struct _labels_collection {
   labeldata label_first;
   labeldata label_last;
   labeldata *label_first_ptr;
   labeldata *label_last_ptr;
 } labels_collection;
 
-struct color_defaults {
+/* --------------------------  labels_collection ------------------------------------ */
+
+struct _color_defaults {
   float *block_ambient2;
   float *ventcolor;
   float *mat_specular2;
   float *mat_ambient2;
   float *block_specular2;
   GLfloat block_shininess;
-};
+} color_defaults;
 
 /* --------------------------  smv_case ------------------------------------ */
 
-typedef struct {
+typedef struct _smv_cases {
   /// @brief This is the filename passed to smokeview without the extension.
   char *fdsprefix;
   /// @brief This can be one of the two things, the &HEAD CHID={CHID} value
@@ -1893,7 +1895,9 @@ typedef struct {
   float processing_time;
 } smv_case;
 
-typedef struct {
+/* --------------------------  parse_options ------------------------------------ */
+
+typedef struct _parse_options {
   int smoke3d_only;
   int setup_only;
   int fast_startup;
