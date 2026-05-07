@@ -2596,6 +2596,7 @@ void InitPatchMenuInfo(void){
     pi = global_scase.patchinfo + i;
     strcpy(pmi->quantity, pi->label.longlabel);
     pmi->index = i;
+    pmi->loaded = 0;
     paren = strchr(pmi->quantity, '(');
     if(paren != NULL && strcmp(paren, "(geometry)") == 0)paren[0] = 0;
   }

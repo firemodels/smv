@@ -3882,7 +3882,11 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   // draw surfaces
 
   if(
-    (patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_shaded == 1)||
+    (
+#ifdef pp_BNDF_MENU
+    vis_boundary_type[INTERIORwall] == 1 &&
+#endif
+    patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_shaded == 1)||
     (patchi->patch_filetype == PATCH_GEOMETRY_SLICE &&(
      show_slice_shaded[IN_CUTCELL_GLUI]==1||
      show_slice_shaded[IN_SOLID_GLUI]==1||
@@ -4023,7 +4027,11 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
             if(insolid == IN_GAS     && show_slice_shaded[IN_GAS_GLUI] == 0)continue;
           }
           else if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
-            if(show_boundary_shaded == 0)continue;
+            if(show_boundary_shaded == 0
+#ifdef pp_BNDF_MENU
+            || vis_boundary_type[INTERIORwall] == 0
+#endif
+            )continue;
           }
 
           if(sd==NULL||sd->cell_center==1){
@@ -4088,7 +4096,12 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   // draw lines
 
   if(
-    (patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_outline == 1)||
+    (
+#ifdef pp_BNDF_MENU
+      vis_boundary_type[INTERIORwall] == 1 &&
+#endif
+      patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY &&
+      show_boundary_outline == 1)||
     (patchi->patch_filetype == PATCH_GEOMETRY_SLICE &&(
      show_slice_outlines[IN_CUTCELL_GLUI]==1||
      show_slice_outlines[IN_SOLID_GLUI]==1||
@@ -4165,7 +4178,12 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
               draw_foreground=0;
             }
           }
-          if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_outline == 1){
+          if(
+#ifdef pp_BNDF_MENU
+             vis_boundary_type[INTERIORwall] == 1 &&
+#endif
+             patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY &&
+             show_boundary_outline == 1){
             int insolid, insolid_glui = -1;
 
             insolid = trianglei->insolid & 3;
@@ -4237,7 +4255,12 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   // draw points
 
   if(
-    (patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_points == 1)||
+    (
+#ifdef pp_BNDF_MENU
+      vis_boundary_type[INTERIORwall] == 1 &&
+#endif
+      patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY &&
+      show_boundary_points == 1)||
     (patchi->patch_filetype == PATCH_GEOMETRY_SLICE &&(
      show_slice_points[IN_CUTCELL_GLUI]==1||
      show_slice_points[IN_SOLID_GLUI]==1||
@@ -4299,7 +4322,11 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
             draw_foreground=0;
           }
         }
-        if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_points == 1){
+        if(
+#ifdef pp_BNDF_MENU
+           vis_boundary_type[INTERIORwall] == 1 &&
+#endif
+           patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_points == 1){
             if(show_boundary_shaded==1){
               draw_foreground=1;
             }

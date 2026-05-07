@@ -35,6 +35,13 @@ float     part_load_time;
 #include <direct.h>
 #endif
 
+#ifdef pp_BNDF_MENU
+#define MENU_PATCH_DUMMY  -1
+#define MENU_PATCH_UNLOAD -2
+#define MENU_PATCH_UNLOAD2 -3
+void LoadBoundaryMenu2(int var);
+#endif
+
 #define ABOUT_DATA_TRANSFER_TEST      2
 
 #define GEOM_Vents                   15
@@ -47,6 +54,24 @@ float     part_load_time;
 #define GEOM_HideAll                 13
 #define GEOM_BOUNDING_BOX_MOUSE_DOWN  9
 #define SKY_OUTLINE                   4
+
+#define GEOMETRY_SOLID                   0
+#define GEOMETRY_OUTLINE                 1
+#define GEOMETRY_SOLIDOUTLINE            2
+#define GEOMETRY_INTERIOR_SOLID         23
+#define GEOMETRY_INTERIOR_OUTLINE       24
+#define GEOMETRY_HIDE                    7
+#define GEOMETRY_SHOWNORMAL              3
+#define GEOMETRY_SORTFACES               6
+#define GEOMETRY_SMOOTHNORMAL            4
+#define GEOMETRY_HILIGHTSKINNY           5
+#define GEOMETRY_HIDEALL                 8
+#define GEOMETRY_INSIDE_DOMAIN          25
+#define GEOMETRY_OUTSIDE_DOMAIN         15
+#define GEOMETRY_VOLUMES_INTERIOR       18
+#define GEOMETRY_VOLUMES_EXTERIOR       19
+#define GEOMETRY_DUMMY                -999
+#define GEOMETRY_TERRAIN_SHOW_TOP       22
 
 #define MENU_TERRAIN_SHOW_SURFACE      -1
 #define MENU_TERRAIN_SHOW_LINES        -2
@@ -3260,9 +3285,13 @@ void LoadUnloadMenu(int value){
     for(i = 0; i<global_scase.nplot3dinfo; i++){
       ReadPlot3D("",i,UNLOAD,&errorcode);
     }
+#ifdef pp_BNDF_MENU
+    LoadBoundaryMenu2(MENU_PATCH_UNLOAD);
+#else
     for(i=0;i<global_scase.npatchinfo;i++){
       ReadBoundary(i,UNLOAD,&errorcode);
     }
+#endif
     for(i=0;i<global_scase.npartinfo;i++){
       ReadPart("",i,UNLOAD,&errorcode);
     }
@@ -5846,13 +5875,32 @@ void LoadBoundaryMenu(int value){
 
 #ifdef pp_BNDF_MENU
 /* ------------------ LoadBoundaryMenu2 ------------------------ */
-
 void LoadBoundaryMenu2(int value){
-  patchmenudata *pmi;
+  if(value==MENU_PATCH_DUMMY)return;
+  if(value == MENU_PATCH_UNLOAD|| value == MENU_PATCH_UNLOAD2){
+    for(int i=0;i<global_scase.npatchinfo;i++){
+      patchdata *patchi;
+      int errorcode;
 
-  pmi = patchmenuinfo + value;
-  int index = -(10 + pmi->index);
-  LoadBoundaryMenu(index);
+      patchi = global_scase.patchinfo + i;
+      ReadBoundary(i, UNLOAD, &errorcode);
+    }
+    for(int i=0;i<npatchmenuinfo;i++){
+      patchmenudata *pmi;
+
+      pmi = patchmenuinfo + i;
+      pmi->loaded=0;
+    }
+  }
+  else{
+    patchmenudata *pmi;
+
+    LoadBoundaryMenu2(MENU_PATCH_UNLOAD2);
+    pmi = patchmenuinfo + value;
+    int index = -(10 + pmi->index);
+    pmi->loaded = 1;
+    LoadBoundaryMenu(index);
+  }
 }
 #endif
 
@@ -5885,6 +5933,104 @@ int GetInternalFaceShow(void){
   return show;
 }
 
+/* ------------------ ImmersedMenu ------------------------ */
+
+void ImmersedMenu(int value){
+  if(value == GEOMETRY_DUMMY)return;
+  updatemenu = 1;
+  switch(value){
+  case GEOM_TriangleCount:
+    show_triangle_count = 1 - show_triangle_count;
+    break;
+  case GEOMETRY_TERRAIN_SHOW_TOP:
+    terrain_showonly_top = 1 - terrain_showonly_top;
+    GLUIUpdateShowOnlyTop();
+    break;
+  case GEOMETRY_SOLIDOUTLINE:
+    if(show_faces_shaded == 1 && show_faces_outline == 1){
+      show_faces_shaded = 1;
+      show_faces_outline = 0;
+    }
+    else{
+      show_faces_shaded = 1;
+      show_faces_outline = 1;
+    }
+    break;
+  case GEOMETRY_SOLID:
+    if(show_faces_shaded == 1 && show_faces_outline == 1){
+      show_faces_shaded = 1;
+      show_faces_outline = 0;
+    }
+    else if(show_faces_shaded == 1 && show_faces_outline == 0){
+      show_faces_shaded = 0;
+      show_faces_outline = 1;
+    }
+    else if(show_faces_shaded == 0 && show_faces_outline == 1){
+      show_faces_shaded = 1;
+      show_faces_outline = 0;
+    }
+    else{
+      show_faces_shaded = 1;
+      show_faces_outline = 0;
+    }
+    break;
+  case GEOMETRY_OUTLINE:
+    if(show_faces_shaded == 1 && show_faces_outline == 1){
+      show_faces_shaded = 0;
+      show_faces_outline = 1;
+    }
+    else if(show_faces_shaded == 1 && show_faces_outline == 0){
+      show_faces_shaded = 0;
+      show_faces_outline = 1;
+    }
+    else if(show_faces_shaded == 0 && show_faces_outline == 1){
+      show_faces_shaded = 1;
+      show_faces_outline = 0;
+    }
+    else{
+      show_faces_shaded = 0;
+      show_faces_outline = 1;
+    }
+    break;
+  case GEOMETRY_SHOWNORMAL:
+    show_geom_normal = 1 - show_geom_normal;
+    break;
+  case GEOMETRY_SMOOTHNORMAL:
+    smooth_geom_normal = 1 - smooth_geom_normal;
+    break;
+  case GEOMETRY_HILIGHTSKINNY:
+    hilight_skinny = 1 - hilight_skinny;
+    break;
+  case GEOMETRY_SORTFACES:
+    sort_geometry = 1 - sort_geometry;
+    break;
+  case GEOMETRY_HIDE:
+    show_faces_shaded = 0;
+    show_faces_outline = 0;
+    break;
+  case GEOMETRY_HIDEALL:
+    ImmersedMenu(GEOMETRY_HIDE);
+    show_geom_normal = 0;
+    break;
+  case MENU_DUMMY:
+    break;
+  case GEOMETRY_INSIDE_DOMAIN:
+    showgeom_inside_domain = 1 - showgeom_inside_domain;
+    GLUIUpdateWhereFaceVolumes();
+    break;
+  case GEOMETRY_OUTSIDE_DOMAIN:
+    showgeom_outside_domain = 1 - showgeom_outside_domain;
+    GLUIUpdateWhereFaceVolumes();
+    break;
+  default:
+    assert(FFALSE);
+    break;
+  }
+  GLUIUpdateGeometryControls();
+
+  GLUTPOSTREDISPLAY;
+}
+
 /* ------------------ ShowInternalBlockages ------------------------ */
 
 void ShowInternalBlockages(void){
@@ -5895,8 +6041,13 @@ void ShowInternalBlockages(void){
   if(show == 0){
     outline_state=OUTLINE_NONE;
     solid_state=visBLOCKHide;
+#ifdef pp_BNDF_MENU
+    show_faces_shaded = 1;
+    ImmersedMenu(GEOMETRY_HIDE);
+#endif
   }
   else{
+    show_faces_shaded = 0;
     if(update_showblock_ini == 1){
       update_showblock_ini = 0;
       visBlocks     = visBlocks_ini;
@@ -5910,6 +6061,12 @@ void ShowInternalBlockages(void){
     }
 #ifdef pp_TERRAIN_HIDE
     GeometryMenu(17 + TERRAIN_HIDDEN);
+#endif
+#ifdef pp_BNDF_MENU
+    ImmersedMenu(GEOMETRY_HIDE);
+    ImmersedMenu(GEOMETRY_SOLID);
+    show_geom_bndf = 1;
+    GetGeomInfoPtrs(0);
 #endif
   }
   updatemenu = 1;
@@ -6125,121 +6282,6 @@ void VentMenu(int value){
   }
   updatefacelists=1;
   updatemenu=1;
-  GLUTPOSTREDISPLAY;
-}
-#define GEOMETRY_SOLID                   0
-#define GEOMETRY_OUTLINE                 1
-#define GEOMETRY_SOLIDOUTLINE            2
-#define GEOMETRY_INTERIOR_SOLID         23
-#define GEOMETRY_INTERIOR_OUTLINE       24
-#define GEOMETRY_HIDE                    7
-#define GEOMETRY_SHOWNORMAL              3
-#define GEOMETRY_SORTFACES               6
-#define GEOMETRY_SMOOTHNORMAL            4
-#define GEOMETRY_HILIGHTSKINNY           5
-#define GEOMETRY_HIDEALL                 8
-#define GEOMETRY_INSIDE_DOMAIN          25
-#define GEOMETRY_OUTSIDE_DOMAIN         15
-#define GEOMETRY_VOLUMES_INTERIOR       18
-#define GEOMETRY_VOLUMES_EXTERIOR       19
-#define GEOMETRY_DUMMY                -999
-#define GEOMETRY_TERRAIN_SHOW_TOP       22
-
-/* ------------------ ImmersedMenu ------------------------ */
-
-void ImmersedMenu(int value){
-  if(value==GEOMETRY_DUMMY)return;
-  updatemenu=1;
-  switch(value){
-    case GEOM_TriangleCount:
-      show_triangle_count=1-show_triangle_count;
-      break;
-    case GEOMETRY_TERRAIN_SHOW_TOP:
-      terrain_showonly_top = 1 - terrain_showonly_top;
-      GLUIUpdateShowOnlyTop();
-      break;
-    case GEOMETRY_SOLIDOUTLINE:
-      if(show_faces_shaded==1&&show_faces_outline==1){
-        show_faces_shaded=1;
-        show_faces_outline=0;
-      }
-      else{
-        show_faces_shaded=1;
-        show_faces_outline=1;
-      }
-      break;
-    case GEOMETRY_SOLID:
-      if(show_faces_shaded==1&&show_faces_outline==1){
-        show_faces_shaded=1;
-        show_faces_outline=0;
-      }
-      else if(show_faces_shaded==1&&show_faces_outline==0){
-        show_faces_shaded=0;
-        show_faces_outline=1;
-      }
-      else if(show_faces_shaded==0&&show_faces_outline==1){
-        show_faces_shaded=1;
-        show_faces_outline=0;
-      }
-      else{
-        show_faces_shaded=1;
-        show_faces_outline=0;
-      }
-      break;
-    case GEOMETRY_OUTLINE:
-      if(show_faces_shaded==1&&show_faces_outline==1){
-        show_faces_shaded=0;
-        show_faces_outline=1;
-      }
-      else if(show_faces_shaded==1&&show_faces_outline==0){
-        show_faces_shaded=0;
-        show_faces_outline=1;
-      }
-      else if(show_faces_shaded==0&&show_faces_outline==1){
-        show_faces_shaded=1;
-        show_faces_outline=0;
-      }
-      else{
-        show_faces_shaded=0;
-        show_faces_outline=1;
-      }
-      break;
-    case GEOMETRY_SHOWNORMAL:
-      show_geom_normal=1-show_geom_normal;
-      break;
-    case GEOMETRY_SMOOTHNORMAL:
-      smooth_geom_normal=1-smooth_geom_normal;
-      break;
-    case GEOMETRY_HILIGHTSKINNY:
-      hilight_skinny = 1 - hilight_skinny;
-      break;
-    case GEOMETRY_SORTFACES:
-      sort_geometry=1-sort_geometry;
-      break;
-    case GEOMETRY_HIDE:
-      show_faces_shaded=0;
-      show_faces_outline=0;
-      break;
-    case GEOMETRY_HIDEALL:
-      ImmersedMenu(GEOMETRY_HIDE);
-      show_geom_normal = 0;
-      break;
-    case MENU_DUMMY:
-      break;
-    case GEOMETRY_INSIDE_DOMAIN:
-      showgeom_inside_domain = 1 - showgeom_inside_domain;
-      GLUIUpdateWhereFaceVolumes();
-      break;
-    case GEOMETRY_OUTSIDE_DOMAIN:
-      showgeom_outside_domain = 1 - showgeom_outside_domain;
-      GLUIUpdateWhereFaceVolumes();
-      break;
-    default:
-      assert(FFALSE);
-      break;
-  }
-  GLUIUpdateGeometryControls();
-
   GLUTPOSTREDISPLAY;
 }
 
@@ -12134,10 +12176,16 @@ if(opengl_finalized == 0)return;
       CREATEMENU(loadpatchmenu,LoadBoundaryMenu2);
       for(i=0; i<npatchmenuinfo; i++){
         patchmenudata *pmi;
+        char menulabel[256];
 
         pmi = patchmenuinfo + i;
-        glutAddMenuEntry(pmi->quantity, i);
+        strcpy(menulabel, "");
+        if(pmi->loaded==1)strcat(menulabel, "*");
+        strcat(menulabel, pmi->quantity);
+        glutAddMenuEntry(menulabel, i);
       }
+      glutAddMenuEntry("-",      MENU_PATCH_DUMMY);
+      glutAddMenuEntry("Unload", MENU_PATCH_UNLOAD);
     }
 #else
     if(global_scase.npatchinfo>0){
