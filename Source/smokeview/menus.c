@@ -12125,7 +12125,7 @@ if(opengl_finalized == 0)return;
 #ifdef pp_BNDF_MENU
     if(npatchmenuinfo >0){
       CREATEMENU(loadpatchmenu,LoadBoundaryMenu2);
-      for(int i=0; i<npatchmenuinfo; i++){
+      for(i=0; i<npatchmenuinfo; i++){
         patchmenudata *pmi;
 
         pmi = patchmenuinfo + i;
