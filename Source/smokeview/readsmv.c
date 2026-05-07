@@ -2568,6 +2568,52 @@ void GetSkyImageTexture(void){
   NewMemory((void **)&global_scase.sky_texture->file, (strlen(buffer) + 1) * sizeof(char));
   strcpy(global_scase.sky_texture->file, buffer);
 }
+
+#ifdef pp_BNDF_MENU
+
+/* ------------------ InitPatchMenuInfo ------------------------ */
+
+int ComparePatchMenuInfo(const void *arg1, const void *arg2){
+  patchmenudata *x, *y;
+
+  x = (patchmenudata *)arg1;
+  y = (patchmenudata *)arg2;
+  return strcmp(x->quantity, y->quantity);
+
+}
+
+/* ------------------ InitPatchMenuInfo ------------------------ */
+
+void InitPatchMenuInfo(void){
+  if(global_scase.npatchinfo==0)return;
+  NewMemory((void **)&patchmenuinfo, global_scase.npatchinfo * sizeof(patchmenudata));
+  for(int i = 0;i < global_scase.npatchinfo;i++){
+    patchmenudata *pmi;
+    patchdata *pi;
+    char *paren = NULL;
+
+    pmi = patchmenuinfo + i;
+    pi = global_scase.patchinfo + i;
+    strcpy(pmi->quantity, pi->label.longlabel);
+    pmi->index = i;
+    paren = strchr(pmi->quantity, '(');
+    if(paren != NULL && strcmp(paren, "(geometry)") == 0)paren[0] = 0;
+  }
+  qsort(patchmenuinfo, global_scase.npatchinfo, sizeof(patchmenudata), ComparePatchMenuInfo);
+  npatchmenuinfo = 1;
+  for(int i = 1;i < global_scase.npatchinfo;i++){
+    patchmenudata *pmi;
+
+    pmi = patchmenuinfo + i;
+    if(strcmp(pmi->quantity, patchmenuinfo[npatchmenuinfo - 1].quantity) != 0){
+      memcpy(patchmenuinfo + npatchmenuinfo, pmi, sizeof(patchmenudata));
+      npatchmenuinfo++;
+    }
+  }
+  ResizeMemory((void **)&patchmenuinfo, npatchmenuinfo*sizeof(patchmenudata));
+}
+#endif
+
 /* ------------------ ReadSMV_Configure ------------------------ */
 
 /// @brief Finish setting global variables after an SMV file has been parsed.
@@ -2596,6 +2642,11 @@ int ReadSMV_Configure(){
   START_TIMER(timer_readsmv);
 
   PRINTF("  wrapping up\n");
+
+#ifdef pp_BNDF_MENU
+  InitPatchMenuInfo();
+#endif
+
 
  // set results directory
   if(global_scase.npartinfo > 0 && global_scase.results_dir == NULL){

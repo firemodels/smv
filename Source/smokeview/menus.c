@@ -5646,11 +5646,13 @@ void LoadIsoMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }
 
-/* ------------------ LoadBoundaryMenu ------------------------ */
+/* ------------------ InPatchList ------------------------ */
 
 int InPatchList(patchdata *patchj, patchdata *patchi){
   if(strcmp(patchj->label.longlabel, patchi->label.longlabel)!=0)return 0;
+#ifndef pp_BNDF_MENU
   if(patchj->patch_filetype!=patchi->patch_filetype)return 0;
+#endif
   return 1;
 }
 
@@ -5830,6 +5832,18 @@ void LoadBoundaryMenu(int value){
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }
+
+#ifdef pp_BNDF_MENU
+/* ------------------ LoadBoundaryMenu2 ------------------------ */
+
+void LoadBoundaryMenu2(int value){
+  patchmenudata *pmi;
+
+  pmi = patchmenuinfo + value;
+  int index = -(10 + pmi->index);
+  LoadBoundaryMenu(index);
+}
+#endif
 
 /* ------------------ GetInternalFaceShow ------------------------ */
 
@@ -12097,6 +12111,17 @@ if(opengl_finalized == 0)return;
 
 /* --------------------------------load patch menu -------------------------- */
 
+#ifdef pp_BNDF_MENU
+    if(npatchmenuinfo >0){
+      CREATEMENU(loadpatchmenu,LoadBoundaryMenu2);
+      for(int i=0; i<npatchmenuinfo; i++){
+        patchmenudata *pmi;
+
+        pmi = patchmenuinfo + i;
+        glutAddMenuEntry(pmi->quantity, i);
+      }
+    }
+#else
     if(global_scase.npatchinfo>0){
       int ii;
 
@@ -12270,6 +12295,7 @@ if(opengl_finalized == 0)return;
       glutAddMenuEntry("Settings...", MENU_BOUNDARY_SETTINGS);
       glutAddMenuEntry("Unload",UNLOAD_ALL);
     }
+#endif
 
 /* --------------------------------load iso menu -------------------------- */
 

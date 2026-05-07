@@ -2130,7 +2130,12 @@ SVEXTERN int SVDECL(buffertype,DOUBLE_BUFFER);
 SVEXTERN int SVDECL(opengl_finalized,0);
 SVEXTERN int SVDECL(restart_time,0);
 SVEXTERN int SVDECL(*isosubmenus,NULL), nisosubmenus;
+#ifdef pp_BNDF_MENU
+SVEXTERN patchmenudata SVDECL(*patchmenuinfo,NULL);
+SVEXTERN int SVDECL(npatchmenuinfo, 0);
+#else
 SVEXTERN int SVDECL(*loadpatchsubmenus,NULL), nloadpatchsubmenus;
+#endif
 SVEXTERN char SVDECL(**patchlabellist,NULL);
 SVEXTERN char SVDECL(*socket_path,NULL);
 SVEXTERN int SVDECL(*patchlabellist_index,NULL);
