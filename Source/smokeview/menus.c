@@ -5864,10 +5864,8 @@ void LoadBoundaryMenu2(int value){
   if(value==MENU_PATCH_DUMMY)return;
   if(value == MENU_PATCH_UNLOAD|| value == MENU_PATCH_UNLOAD2){
     for(int i=0;i<global_scase.npatchinfo;i++){
-      patchdata *patchi;
       int errorcode;
 
-      patchi = global_scase.patchinfo + i;
       ReadBoundary(i, UNLOAD, &errorcode);
     }
     for(int i=0;i<npatchmenuinfo;i++){
