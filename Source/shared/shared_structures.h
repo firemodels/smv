@@ -1636,6 +1636,15 @@ typedef struct _labels_collection {
   labeldata *label_last_ptr;
 } labels_collection;
 
+struct color_defaults {
+  float *block_ambient2;
+  float *ventcolor;
+  float *mat_specular2;
+  float *mat_ambient2;
+  float *block_specular2;
+  GLfloat block_shininess;
+};
+
 /* --------------------------  smv_case ------------------------------------ */
 
 typedef struct _smv_cases {
@@ -1872,15 +1881,6 @@ typedef struct _smv_cases {
   int visWalls;
   int visCeiling;
 
-  struct color_defaults{
-    float *block_ambient2;
-    float *ventcolor;
-    float *mat_specular2;
-    float *mat_ambient2;
-    float *block_specular2;
-    GLfloat block_shininess;
-  };
-  
   struct color_defaults color_defs;
 
   float getfilelist_time;
