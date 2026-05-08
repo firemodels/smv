@@ -613,49 +613,21 @@ void ShowMultiSliceMenu(int value){
 
 /* ------------------ ShowAllSlices ------------------------ */
 
-void ShowAllSlices(char *type1, char *type2){
+void ShowAllSlices(char *type1){
   int i;
 
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
-  if(trainer_showall_mslice == 1){
-    for(i = 0; i < global_scase.slicecoll.nsliceinfo; i++){
-      slicedata *slicei;
+  for(i = 0; i < global_scase.slicecoll.nsliceinfo; i++){
+    slicedata *slicei;
 
-      slicei = global_scase.slicecoll.sliceinfo + i;
-      slicei->display = 0;
-      if(slicei->loaded == 0)continue;
-      if(
-        (type1 != NULL&&STRCMP(slicei->label.longlabel, type1) == 0) ||
-        (type2 != NULL&&STRCMP(slicei->label.longlabel, type2) == 0)
-       ){
-        global_scase.slicecoll.sliceinfo[i].display = 1;
-        slicefile_labelindex = slicei->slicefile_labelindex;
-      }
-    }
-  }
-  else{
-    int msliceindex;
-
-    if(trainerload == 2){
-      if(trainerload == trainerload_old){
-        trainer_temp_index++;
-        if(trainer_temp_index > trainer_temp_n - 1){
-          trainer_temp_index = 0;
-        }
-      }
-      msliceindex = trainer_temp_indexes[trainer_temp_index];
+    slicei = global_scase.slicecoll.sliceinfo + i;
+    if(slicei->loaded == 0)continue;
+    if(type1 != NULL&&STRCMP(slicei->label.longlabel, type1) == 0){
+      slicei->display = 1;
     }
     else{
-      if(trainerload == trainerload_old){
-        trainer_oxy_index++;
-        if(trainer_oxy_index > trainer_oxy_n - 1){
-          trainer_oxy_index = 0;
-        }
-      }
-      msliceindex = trainer_oxy_indexes[trainer_oxy_index];
+      slicei->display = 0;
     }
-    ShowMultiSliceMenu(HIDE_ALL);
-    ShowMultiSliceMenu(msliceindex);
   }
   updatemenu = 1;
   GLUTPOSTREDISPLAY;
@@ -664,24 +636,32 @@ void ShowAllSlices(char *type1, char *type2){
 
 /* ------------------ TrainerViewMenu ------------------------ */
 
+void LoadAllSlicesLabel(char *label);
 void TrainerViewMenu(int value){
   switch(value){
   case MENU_TRAINER_smoke:   // realistic
     HideAllSlices();
     trainerload=1;
+    void LoadSmoke3DMenu(int var);
+    LoadSmoke3DMenu(0);
+    LoadSmoke3DMenu(1);
     ShowAllSmoke();
     trainerload_old=1;
     break;
   case MENU_TRAINER_temp:  // temperature slices
     HideAllSmoke();
     trainerload=2;
-    ShowAllSlices("TEMPERATURE",NULL);
+    sliceload_dir = 1;
+    LoadAllSlicesLabel("temp");
+    ShowAllSlices("TEMPERATURE");
     trainerload_old=2;
     break;
   case MENU_TRAINER_oxy:  //  oxygen slices
     HideAllSmoke();
     trainerload=3;
-    ShowAllSlices("OXYGEN","OXYGEN VOLUME FRACTION");
+    sliceload_dir = 1;
+    LoadAllSlicesLabel("X_O2");
+    ShowAllSlices("OXYGEN VOLUME FRACTION");
     trainerload_old=3;
     break;
   case MENU_TRAINER_CLEAR: // unload
@@ -1558,7 +1538,6 @@ void DialogMenu(int value){
     break;
   case DIALOG_GEOMETRY_CLOSE:
     GLUIHideGeometry();
-    GLUIUpdateTrainerOutline();
     break;
   case DIALOG_GEOMETRY_OPEN:
     if(global_scase.fds_filein!=NULL&&updategetobstlabels==1){
@@ -1569,7 +1548,6 @@ void DialogMenu(int value){
     }
     GLUIShowGeometry();
     visBlocks=visBLOCKNormal;
-    GLUIUpdateTrainerOutline();
     break;
   case DIALOG_TERRAIN:
     GLUIShowTerrain();
@@ -5178,13 +5156,11 @@ void LoadMultiSliceMenu(int value){
   }
 }
 
-/* ------------------ LoadMultiSliceMenu ------------------------ */
+/* ------------------ LoadAllSlices ------------------------ */
 
-void LoadAllMultiSliceMenu(void){
+void LoadAllSlicesLabel(char *label){
   int i;
-  char *label;
 
-  label = slicebounds_cpp[sliceload_boundtype].label;
   for(i = 0; i < global_scase.slicecoll.nmultisliceinfo; i++){
     multislicedata *mslicei;
     slicedata *slicei;
@@ -5203,6 +5179,15 @@ void LoadAllMultiSliceMenu(void){
     if(strcmp(label, slicei->label.shortlabel) != 0)continue;
     LoadMultiSliceMenu(i);
   }
+}
+
+/* ------------------ LoadAllMultiSliceMenu ------------------------ */
+
+void LoadAllMultiSliceMenu(void){
+  char *label;
+
+  label = slicebounds_cpp[sliceload_boundtype].label;
+  LoadAllSlicesLabel(label);
 }
 
 /* ------------------ LoadAllMultiVSliceMenu ------------------------ */
@@ -6344,7 +6329,6 @@ void BlockageMenu(int value){
    case visBLOCKAsInputOutline:
    case visBLOCKAsInput:
      visBlocks=value;
-     GLUIUpdateTrainerOutline();
      break;
    case visBLOCKNormal:
    case visBLOCKOutline:
@@ -6352,7 +6336,6 @@ void BlockageMenu(int value){
    case visBLOCKSolidOutline:
      visBlocks=value;
      if(value==visBLOCKSolidOutline||visBLOCKold==visBLOCKSolidOutline)global_scase.updatefaces=1;
-     GLUIUpdateTrainerOutline();
      break;
    case BLOCKlocation_grid:
    case BLOCKlocation_exact:
