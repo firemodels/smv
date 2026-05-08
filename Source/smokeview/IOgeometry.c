@@ -3879,7 +3879,10 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   else{
     ivals = patchi->geom_ival_dynamic;
   }
-  // draw surfaces
+
+  //-----------------------------------------------------------------
+  //*** draw surfaces
+  //-----------------------------------------------------------------
 
   if(
     (
@@ -4093,7 +4096,9 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
     }
   }
 
-  // draw lines
+  //-----------------------------------------------------------------
+  //*** draw lines
+  //-----------------------------------------------------------------
 
   if(
     (
@@ -4214,7 +4219,12 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
           }
           else{
             if(sd==NULL||sd->cell_center==1){
-              color0 = rgb_patch+4*ivals[j];
+              int ival;
+              float rval;
+
+              rval = GEOMTEXTURE2(GEOMVAL(j), ttmin, ttmax);
+              ival = CLAMP(rval*255.0, 0, 255);
+              color0 = rgb_patch+4*ival;
               color1 = color0;
               color2 = color0;
             }
@@ -4252,7 +4262,9 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
     }
   }
 
-  // draw points
+  //-----------------------------------------------------------------
+  //*** draw points
+  //-----------------------------------------------------------------
 
   if(
     (
@@ -4338,10 +4350,12 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
           glColor4fv(foregroundcolor);
         }
         else{
-          int color_index;
+          int ival;
+          float rval;
 
-          color_index = ivals[j];
-          color = rgb_patch + 4 * color_index;
+          rval = GEOMTEXTURE2(GEOMVAL(j), ttmin, ttmax);
+          ival = CLAMP(rval*255.0, 0, 255);
+          color = rgb_patch+4*ival;
           glColor3fv(color);
         }
 
