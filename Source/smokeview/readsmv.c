@@ -2608,7 +2608,6 @@ void InitPatchMenuInfo(void){
   for(int i = 0;i < global_scase.npatchinfo;i++){
     patchmenudata *pmi;
     patchdata *pi;
-    char *paren = NULL;
 
     pmi = patchmenuinfo + i;
     pi = global_scase.patchinfo + i;
