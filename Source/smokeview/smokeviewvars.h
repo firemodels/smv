@@ -1258,8 +1258,7 @@ SVEXTERN float p3chopmin[MAXPLOT3DVARS], p3chopmax[MAXPLOT3DVARS];
 SVEXTERN int SVDECL(trainer_pause,0), SVDECL(trainee_location,0), SVDECL(trainer_inside,0);
 SVEXTERN int SVDECL(from_glui_trainer,0);
 SVEXTERN int SVDECL(trainer_path_old,-3);
-SVEXTERN int SVDECL(trainer_outline,1);
-SVEXTERN int SVDECL(trainer_viewpoints,-1), SVDECL(ntrainer_viewpoints,0);
+SVEXTERN int SVDECL(trainer_viewpoints,-2);
 SVEXTERN int SVDECL(trainer_realtime,1);
 SVEXTERN int SVDECL(trainer_path,0);
 #ifdef INMAIN
