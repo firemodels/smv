@@ -2571,15 +2571,33 @@ void GetSkyImageTexture(void){
 
 #ifdef pp_BNDF_MENU
 
-/* ------------------ InitPatchMenuInfo ------------------------ */
+/* ------------------ ComparePatchMenuInfo ------------------------ */
 
 int ComparePatchMenuInfo(const void *arg1, const void *arg2){
   patchmenudata *x, *y;
 
   x = (patchmenudata *)arg1;
   y = (patchmenudata *)arg2;
-  return strcmp(x->quantity, y->quantity);
+  if(x->skip==y->skip)return strcmp(x->quantity, y->quantity);
+  if(x->skip == 1)return 1;
+  if(y->skip == 1)return -1;
+  return 0;
+}
 
+/* ------------------ HaveStructures ------------------------ */
+
+int HaveStructures(char *label){
+  for(int i = 0; i < global_scase.npatchinfo; i++){
+    char label2[255], *ext;
+
+    patchmenudata *pmi = patchmenuinfo + i;
+    if(pmi->isgeom == 1)continue;
+    strcpy(label2, pmi->quantity);
+    ext = strchr(label2, '(');
+    if(ext != NULL)ext[0] = 0;
+    if(strcmp(label, label2) == 0)return 1;
+  }
+  return 0;
 }
 
 /* ------------------ InitPatchMenuInfo ------------------------ */
@@ -2597,8 +2615,14 @@ void InitPatchMenuInfo(void){
     strcpy(pmi->quantity, pi->label.longlabel);
     pmi->index = i;
     pmi->loaded = 0;
-    paren = strchr(pmi->quantity, '(');
-    if(paren != NULL && strcmp(paren, "(geometry)") == 0)paren[0] = 0;
+    pmi->skip = 0;
+    pmi->isgeom = 0;
+    if(pi->patch_filetype == PATCH_GEOMETRY_BOUNDARY)pmi->isgeom = 1;
+  }
+  // reject geometry quanties if there is a structure bf with the same quantity
+  for(int i = 0; i < global_scase.npatchinfo; i++){
+    patchmenudata *pmi = patchmenuinfo + i;
+    if(pmi->isgeom == 1 && HaveStructures(pmi->quantity) == 1)pmi->skip = 1;
   }
   qsort(patchmenuinfo, global_scase.npatchinfo, sizeof(patchmenudata), ComparePatchMenuInfo);
   npatchmenuinfo = 1;
@@ -2606,6 +2630,7 @@ void InitPatchMenuInfo(void){
     patchmenudata *pmi;
 
     pmi = patchmenuinfo + i;
+    if(pmi->skip == 1)break; // rejected quantieis are at end of list so can stop
     if(strcmp(pmi->quantity, patchmenuinfo[npatchmenuinfo - 1].quantity) != 0){
       memcpy(patchmenuinfo + npatchmenuinfo, pmi, sizeof(patchmenudata));
       npatchmenuinfo++;

@@ -190,7 +190,7 @@ typedef struct _curvedata{
 
 typedef struct _patchmenudata{
   char quantity[256];
-  int index, loaded;
+  int index, loaded, isgeom, skip;
 } patchmenudata;
 #endif
 
