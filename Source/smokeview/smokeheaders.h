@@ -147,7 +147,6 @@ EXTERNCPP void AddDeleteKeyframe(int flag);
 
 //*** glui_trainer.cpp headers
 
-EXTERNCPP void GLUIUpdateTrainerOutline(void);
 EXTERNCPP void GLUIUpdateTrainerMoves(void);
 EXTERNCPP void GLUISetViewListManual(void);
 EXTERNCPP void GLUITrainerSetup(int main_window);
@@ -446,6 +445,8 @@ EXTERNCPP void UpdateIsoType(void);
 EXTERNCPP void UpdateIsoTypes(void);
 EXTERNCPP void UpdateIsoShowLevels(smv_case *scase, meshdata *isomesh);
 EXTERNCPP void *UpdateTrianglesAll(void *arg);
+EXTERNCPP void ResetDefaultMenu(int var);
+
 
 //*** IOpart.c headers
 
