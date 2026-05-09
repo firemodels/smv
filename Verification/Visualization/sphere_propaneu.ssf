@@ -7,16 +7,8 @@ LABEL
 RENDERDIR
  ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
 
-//LOADBOUNDARY
-// WALL TEMPERATURE(geometry)
-LOADFILE
- sphere_propaneu_1_1.be
-LOADFILE
- sphere_propaneu_2_1.be
-LOADFILE
- sphere_propaneu_3_1.be
-LOADFILE
- sphere_propaneu_4_1.be
+LOADBOUNDARY
+ WALL TEMPERATURE
 SETTIMEVAL
  2.5
 RENDERONCE

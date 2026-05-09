@@ -23,14 +23,8 @@ RENDERONCE
 // render boundary files
 
 UNLOADALL
-LOADFILE
- geom2_1_1.be
-LOADFILE
- geom2_2_1.be
-LOADFILE
- geom2_3_1.be
-LOADFILE
- geom2_4_1.be
+LOADBOUNDARY
+ WALL TEMPERATURE
 LOADINIFILE
  geom2.ini
 SETTIMEVAL
