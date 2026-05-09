@@ -5874,6 +5874,7 @@ void LoadBoundaryMenu2(int value){
       pmi = patchmenuinfo + i;
       pmi->loaded=0;
     }
+    ShowInternalBlockages();
   }
   else{
     patchmenudata *pmi;
