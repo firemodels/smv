@@ -865,8 +865,8 @@ SVEXTERN int SVDECL(show_iso_shaded,1);
 SVEXTERN int SVDECL(show_iso_outline,0);
 SVEXTERN int SVDECL(show_iso_points,0);
 
-SVEXTERN int SVDECL(show_faces_shaded, 1);
-SVEXTERN int SVDECL(show_faces_outline, 0);
+SVEXTERN int SVDECL(show_faces_shaded, 1), SVDECL(show_faces_outline, 0);
+SVEXTERN int SVDECL(show_faces_shaded_save, 1), SVDECL(show_faces_outline_save, 0);
 SVEXTERN int SVDECL(show_geom_verts, 0);
 SVEXTERN int SVDECL(show_cface_normals, 0);
 

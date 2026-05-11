@@ -3708,6 +3708,8 @@ int ReadIni2(const char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %f %f %i %i %i %i", &geom_vert_exag, &rdummy, &dummy, &dummy2, &hide_scene, &show_geom_bndf );
       if(hide_scene !=1)hide_scene = 0;
+      show_faces_outline_save = show_faces_outline;
+      show_faces_shaded_save = show_faces_shaded;
       continue;
     }
     if(MatchINI(buffer, "SHOWTRIANGLECOUNT") == 1){

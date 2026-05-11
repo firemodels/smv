@@ -5931,50 +5931,16 @@ void ImmersedMenu(int value){
     GLUIUpdateShowOnlyTop();
     break;
   case GEOMETRY_SOLIDOUTLINE:
-    if(show_faces_shaded == 1 && show_faces_outline == 1){
-      show_faces_shaded = 1;
-      show_faces_outline = 0;
-    }
-    else{
-      show_faces_shaded = 1;
-      show_faces_outline = 1;
-    }
+    show_faces_shaded = 1;
+    show_faces_outline = 1;
     break;
   case GEOMETRY_SOLID:
-    if(show_faces_shaded == 1 && show_faces_outline == 1){
-      show_faces_shaded = 1;
-      show_faces_outline = 0;
-    }
-    else if(show_faces_shaded == 1 && show_faces_outline == 0){
-      show_faces_shaded = 0;
-      show_faces_outline = 1;
-    }
-    else if(show_faces_shaded == 0 && show_faces_outline == 1){
-      show_faces_shaded = 1;
-      show_faces_outline = 0;
-    }
-    else{
-      show_faces_shaded = 1;
-      show_faces_outline = 0;
-    }
+    show_faces_shaded = 1;
+    show_faces_outline = 0;
     break;
   case GEOMETRY_OUTLINE:
-    if(show_faces_shaded == 1 && show_faces_outline == 1){
-      show_faces_shaded = 0;
-      show_faces_outline = 1;
-    }
-    else if(show_faces_shaded == 1 && show_faces_outline == 0){
-      show_faces_shaded = 0;
-      show_faces_outline = 1;
-    }
-    else if(show_faces_shaded == 0 && show_faces_outline == 1){
-      show_faces_shaded = 1;
-      show_faces_outline = 0;
-    }
-    else{
-      show_faces_shaded = 0;
-      show_faces_outline = 1;
-    }
+    show_faces_shaded = 0;
+    show_faces_outline = 1;
     break;
   case GEOMETRY_SHOWNORMAL:
     show_geom_normal = 1 - show_geom_normal;
@@ -5989,6 +5955,8 @@ void ImmersedMenu(int value){
     sort_geometry = 1 - sort_geometry;
     break;
   case GEOMETRY_HIDE:
+    show_faces_shaded_save = show_faces_shaded;
+    show_faces_outline_save = show_faces_outline;
     show_faces_shaded = 0;
     show_faces_outline = 0;
     break;
@@ -6011,7 +5979,6 @@ void ImmersedMenu(int value){
     break;
   }
   GLUIUpdateGeometryControls();
-
   GLUTPOSTREDISPLAY;
 }
 
@@ -6031,7 +5998,6 @@ void ShowInternalBlockages(void){
 #endif
   }
   else{
-    show_faces_shaded = 0;
     if(update_showblock_ini == 1){
       update_showblock_ini = 0;
       visBlocks     = visBlocks_ini;
@@ -6047,8 +6013,8 @@ void ShowInternalBlockages(void){
     GeometryMenu(17 + TERRAIN_HIDDEN);
 #endif
 #ifdef pp_BNDF_MENU
-    ImmersedMenu(GEOMETRY_HIDE);
-    ImmersedMenu(GEOMETRY_SOLID);
+    show_faces_shaded  = show_faces_shaded_save;
+    show_faces_outline = show_faces_outline_save;
     show_geom_bndf = 1;
     GetGeomInfoPtrs(0);
 #endif
