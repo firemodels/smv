@@ -3860,7 +3860,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   GLUIGetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
 
   float rvals[3];
-  float valmin, valmax;
+  float valmin=0.0, valmax=1.0;
   if(sd!=NULL){
     valmin = sd->valmin_slice;
     valmax = sd->valmax_slice;
@@ -3871,9 +3871,9 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   }
 
   if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
+  vals = patchi->geom_vals + patchi->geom_vals_static_offset[patchi->geom_itime];
+  cvals = patchi->cbuffer;
   if(geom_type==GEOM_STATIC){
-    vals = patchi->geom_vals + patchi->geom_vals_static_offset[patchi->geom_itime];
-    cvals = patchi->cbuffer;
     ivals = patchi->geom_ival_static;
   }
   else{
