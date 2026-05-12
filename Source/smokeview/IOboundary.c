@@ -1964,9 +1964,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     boundary_loaded = 1;
     from_read_boundary = 1;
 
-    ShowInternalBlockages();
-    update_boundary_loaded = 1;
-
+    void HideInternalBlockages(void);
+    HideInternalBlockages();
 #ifdef pp_BNDF_DEBUG
     if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES && (output_patchdata==1||glui_output_patch==1)){
 #else

@@ -47,7 +47,6 @@
 #define SHOW_ALL_EXTERIOR_PATCH_DATA 24
 #define HIDE_ALL_EXTERIOR_PATCH_DATA 29
 #define SHOW_ALL_INTERIOR_PATCH_DATA 30
-#define HIDE_ALL_INTERIOR_PATCH_DATA 31
 #define SHOW_EXTERIOR_PATCH_DATA     32
 #define HIDEPATCHSURFACE 25
 #define DATA_transparent 26
@@ -265,7 +264,7 @@ EXTERNCPP void PartBoundCB(int var);
 EXTERNCPP void UpdateColorbarSelectionIndex(int val);
 EXTERNCPP void SliceBounds2Glui(int slicefile_labelindex);
 EXTERNCPP void UpdateShowExtPatch(int show_option, int hide_option);
-EXTERNCPP void UpdateShowIntPatch(int show_option, int hide_option);
+EXTERNCPP void UpdateShowIntPatch(int show_option);
 
 
 #endif

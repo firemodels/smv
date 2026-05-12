@@ -801,12 +801,12 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define HTML_CURRENT_TIME         0
 #define HTML_ALL_TIMES            1
 
-#define SHOW_EXTERIOR_WALL_MENU           -1
-#define HIDE_EXTERIOR_WALL_MENU          -19
-#define SHOW_INTERIOR_WALL_MENU          -21
-#define HIDE_INTERIOR_WALL_MENU          -22
+#define SHOW_EXTERIOR_WALL_MENU        -1
+#define HIDE_EXTERIOR_WALL_MENU       -19
+#define SHOW_INTERIOR_WALL_MENU       -21
+#define HIDE_INTERIOR_WALL_MENU       -22
 #define INI_EXTERIORwallmenu          -20
-#define INTERIOR_WALL_MENU               -2
+#define TOGGLE_INTERIOR_WALL_MENU      -2
 #define FRONTwallmenu                  -3
 #define BACKwallmenu                   -4
 #define LEFTwallmenu                   -5

@@ -6024,6 +6024,21 @@ void ShowInternalBlockages(void){
   updatefacelists = 1;
 }
 
+/* ------------------ HideInternalBlockages ------------------------ */
+
+void HideInternalBlockages(void){
+  hide_internal_blockages = 1;
+  outline_state = OUTLINE_NONE;
+  solid_state = visBLOCKHide;
+#ifdef pp_BNDF_MENU
+  show_faces_shaded = 1;
+  ImmersedMenu(GEOMETRY_HIDE);
+#endif
+  updatemenu = 1;
+  global_scase.updatefaces = 1;
+  updatefacelists = 1;
+}
+
 /* ------------------ ShowBoundaryMenu ------------------------ */
 
 void ShowBoundaryMenu(int value){
@@ -6096,11 +6111,10 @@ void ShowBoundaryMenu(int value){
       }
       update_patch_vis = 1;
     }
-    else if(value==INTERIOR_WALL_MENU){
+    else if(value==TOGGLE_INTERIOR_WALL_MENU){
       int i;
 
-      hide_all_interior_patch_data    = show_all_interior_patch_data;
-      show_all_interior_patch_data    = 1 - show_all_interior_patch_data;
+      show_all_interior_patch_data = 1 - show_all_interior_patch_data;
       vis_boundary_type[INTERIORwall] = show_all_interior_patch_data;
       for(i = 0;i < global_scase.npatchinfo;i++){
         patchdata *patchi;
@@ -6108,6 +6122,8 @@ void ShowBoundaryMenu(int value){
 
         patchi = global_scase.patchinfo + i;
         if(patchi->loaded == 0)continue;
+        if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY)continue;
+        if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE)continue;
         for(n = 0;n < patchi->npatches;n++){
           patchfacedata *pfi;
 
@@ -6118,12 +6134,15 @@ void ShowBoundaryMenu(int value){
         }
       }
       ShowInternalBlockages();
-      UpdateShowIntPatch(hide_all_interior_patch_data, show_all_interior_patch_data);
+      UpdateShowIntPatch(1 - show_all_interior_patch_data);
     }
-    else if(value == SHOW_INTERIOR_WALL_MENU || value == HIDE_INTERIOR_WALL_MENU){
-      if(value == SHOW_INTERIOR_WALL_MENU)show_all_interior_patch_data = 1;
-      if(value == HIDE_INTERIOR_WALL_MENU)show_all_interior_patch_data = 0;
-      ShowBoundaryMenu(INTERIOR_WALL_MENU);
+    else if(value == SHOW_INTERIOR_WALL_MENU){
+      show_all_interior_patch_data = 1;
+      ShowBoundaryMenu(TOGGLE_INTERIOR_WALL_MENU);
+    }
+    else if(value == HIDE_INTERIOR_WALL_MENU){
+      show_all_interior_patch_data = 0;
+      ShowBoundaryMenu(TOGGLE_INTERIOR_WALL_MENU);
     }
     if(value==INI_EXTERIORwallmenu){
       int i;
@@ -8919,8 +8938,8 @@ if(opengl_finalized == 0)return;
       }
     }
     GLUTADDSUBMENU("Exterior", showpatchextmenu);
-    if(vis_boundary_type[INTERIORwall]==1)glutAddMenuEntry("*Interior", INTERIOR_WALL_MENU);
-    if(vis_boundary_type[INTERIORwall]==0)glutAddMenuEntry("Interior",  INTERIOR_WALL_MENU);
+    if(vis_boundary_type[INTERIORwall]==1)glutAddMenuEntry("*Interior", TOGGLE_INTERIOR_WALL_MENU);
+    if(vis_boundary_type[INTERIORwall]==0)glutAddMenuEntry("Interior",  TOGGLE_INTERIOR_WALL_MENU);
   }
 
   /* --------------------------------terrain menu -------------------------- */
