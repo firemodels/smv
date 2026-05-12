@@ -3325,9 +3325,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       }
     }
     if(pfi->obst == NULL && pfi->internal_mesh_face==1)drawit = 0;
-#ifdef pp_BNDF_DEBUG
-    if(n < NPATCHES_DEBUG && bndf_vis_patch[n] == 0)drawit = 0;
-#endif
     if(drawit==1){
       nrow = pfi->nrow;
       ncol = pfi->ncol;

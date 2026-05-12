@@ -38,7 +38,6 @@
 //*** options: for debugging
 
 #ifdef _DEBUG
-#define pp_BNDF_DEBUG        // add 3 checkboxes for controlling different types of boundary file output
 #endif
 
 #endif
