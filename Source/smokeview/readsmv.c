@@ -5233,7 +5233,7 @@ int ReadIni2(const char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i %i", &visBlocks_ini, &solid_state_ini, &outline_state_ini);
       update_showblock_ini = 1;
-      continue;
+      ShowInternalBlockages();
     }
     if(MatchINI(buffer, "SHOWSENSORS") == 1){
       fgets(buffer, 255, stream);
