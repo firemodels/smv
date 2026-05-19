@@ -208,6 +208,10 @@ SVEXTERN int SVDECL(update_plot_label, 0);
 
 SVEXTERN int SVDECL(terrain_skip, 1);
 SVEXTERN smoke3dtypedata SVDECL(*smoke3dtypes, NULL);
+#define SMOKE3D_UNKNOWN 0
+#define SMOKE3D_S3D     1
+#define SMOKE3D_S3DD    2
+SVEXTERN int SVDECL(smoke3d_version, SMOKE3D_UNKNOWN);
 
 SVEXTERN int SOOT_index, HRRPUV_index, TEMP_index, CO2_index;
 
