@@ -1703,7 +1703,13 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile,
       if(first == 1){
         sscanf(buffer, "%f %i %i %f %i %f", &time_local, &nch_uncompressed, &nch_smoke_compressed, &maxvali, &nch_smoke_density, &maxval_density);
         first = 0;
-        if(nch_smoke_density < 0)read4 = 1;
+        if(nch_smoke_density < 0){
+          read4 = 1;
+          smoke3d_version = SMOKE3D_S3D;
+        }
+        else{
+          smoke3d_version = SMOKE3D_S3DD;
+        }
       }
       if(read4 == 1){
         sscanf(buffer, "%f %i %i %f", &time_local, &nch_uncompressed, &nch_smoke_density, &maxval_density);
@@ -2109,25 +2115,9 @@ MFILE *OpenSoot3DFile(char *s3dfile, char *s3ddfile){
   if(s3dfile!=NULL)stream1 = FOPEN(s3dfile, "rb");
   if(s3ddfile!=NULL)stream2 = FOPEN(s3ddfile, "rb");
 
-  if(stream1 == NULL && stream2 == NULL){
-    return NULL;
-  }
-  else if(stream1 == NULL && stream2 != NULL){
-    return stream2;
-  }
-  else if(stream1 != NULL && stream2 == NULL){
-    return stream1;
-  }
-  //*** both s3d and s3dd files exist
-  //    open s3d file if it is version 1
-  //    otherwise open s3dd file
-  int nxyz_local[8], version;
-  int fortran_skip = 0;
-    
-  SKIP_SMOKE(stream1);FREAD_SMOKE(nxyz_local,4,8,stream1);SKIP_SMOKE(stream1);
-  version = nxyz_local[1];
-  if(version == 1){
-    rewind(stream1);
+  if(stream1 == NULL)return stream2;
+  if(stream1 != NULL && stream2 == NULL)return stream1;
+  if(smoke3d_version == SMOKE3D_S3D){
     fclose(stream2);
     return stream1;
   }
