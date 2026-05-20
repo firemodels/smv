@@ -24,7 +24,6 @@ fi
 cd $GITROOT/Verification
 if [[ "$MODE" == "smokebot" ]]; then
   scripts/SMV_Cases.sh >> $tmpout
-  scripts/WUI_Cases.sh >> $tmpout
 else
   ./FDS_Cases.sh >> $tmpout
 fi
