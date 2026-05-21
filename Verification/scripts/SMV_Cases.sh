@@ -1,5 +1,5 @@
 #!/bin/bash
-$QFDS -p 9  -d WUI levelset2.fds
+$QFDS -p 25 -d WUI levelset2.fds
 $QFDS -p 2  -d WUI hill_structure.fds
 $QFDS -p 2  -d WUI wind_test2.fds
 $QFDS -d Visualization -p 4 tdemo.fds
