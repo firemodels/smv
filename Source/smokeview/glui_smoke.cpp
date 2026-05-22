@@ -410,6 +410,9 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   TOGGLE_ROLLOUT(smokeprocinfo, nsmokeprocinfo, ROLLOUT_smoke_settings, SMOKE_SETTINGS, glui_3dsmoke);
 
   PANEL_settings1 = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoke_settings, "");
+#ifdef pp_GPU
+  CHECKBOX_smokeGPU = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "use gpu", &usegpu);
+#endif
   glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "max blending", &hrrpuv_max_blending);
   CHECKBOX_smoke_flip    = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "flip background", &background_flip,BACKGROUND_FLIP, GLUISmoke3dCB);
   CHECKBOX_triangle_display_rate = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, "triangle display rate", &show_trirates);
