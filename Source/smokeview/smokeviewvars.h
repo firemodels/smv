@@ -753,10 +753,8 @@ SVEXTERN int SVDECL(show_node_slices_and_vectors,0);
 SVEXTERN int SVDECL(show_cell_slices_and_vectors,1);
 SVEXTERN int SVDECL(update_patch_vis, 0);
 
-SVEXTERN int SVDECL(convert_ini,0), SVDECL(convert_ssf,0);
-SVEXTERN int SVDECL(update_ssf,0);
+SVEXTERN int SVDECL(convert_ini, 0);
 SVEXTERN char SVDECL(*ini_from,NULL), SVDECL(*ini_to,NULL);
-SVEXTERN char SVDECL(*ssf_from, NULL), SVDECL(*ssf_to, NULL);
 
 SVEXTERN int SVDECL(tour_drag,0);
 
