@@ -143,33 +143,8 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
         NewMemory((void **)&args.ini_to, strlen(local_ini_to) + 1);
         strcpy(args.ini_to, local_ini_to);
       }
-    } else if (strcmp(argv[i], "-convert_ssf") == 0) {
-      args.convert_ssf = true;
-      // The next two arguments are the from and to paths for ssf conversion.
-      char *local_ssf_from = NULL, *local_ssf_to = NULL;
-
-      if (++i < argc) {
-        local_ssf_from = argv[i];
-      } else {
-        *error = CLE_NO_SSF_ARGS;
-        return args;
-      }
-      if (++i < argc) {
-        local_ssf_to = argv[i];
-      } else {
-        *error = CLE_NO_SSF_ARGS;
-        return args;
-      };
-      if (local_ssf_from != NULL && local_ssf_to != NULL) {
-        NewMemory((void **)&args.ssf_from, strlen(local_ssf_from) + 1);
-        strcpy(args.ssf_from, local_ssf_from);
-
-        NewMemory((void **)&args.ssf_to, strlen(local_ssf_to) + 1);
-        strcpy(args.ssf_to, local_ssf_to);
-      }
-    } else if (strcmp(argv[i], "-update_ssf") == 0) {
-      args.update_ssf = true;
-    } else if (strcmp(argv[i], "-update_ini") == 0) {
+    } 
+    else if (strcmp(argv[i], "-update_ini") == 0) {
       // As per convert_ini, but in-place
       args.update_ini = true;
       char *local_ini_from = NULL, *local_ini_to = NULL;
@@ -411,6 +386,4 @@ void FreeCommandlineArgs(CommandlineArgs *args) {
   FREEMEMORY(args->lang);
   FREEMEMORY(args->ini_from);
   FREEMEMORY(args->ini_to);
-  FREEMEMORY(args->ssf_from);
-  FREEMEMORY(args->ssf_to);
 }
