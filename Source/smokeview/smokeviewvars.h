@@ -1501,7 +1501,7 @@ SVEXTERN vslicedata SVDECL(*vd_shown,NULL);
 SVEXTERN int SVDECL(showall_slices,1);
 SVEXTERN float zterrain_max, zterrain_min;
 SVEXTERN char smv_githash[256], smv_gitdate[256];
-SVEXTERN int SVDECL(visMeshlabel, 1);
+SVEXTERN int SVDECL(visMeshlabel, 0);
 SVEXTERN int SVDECL(visOpenVents,1),SVDECL(visDummyVents,1),SVDECL(visCircularVents,VENT_CIRCLE);
 SVEXTERN int SVDECL(visOpenVentsAsOutline,0);
 SVEXTERN int SVDECL(visParticles,1), SVDECL(visZone,0);
