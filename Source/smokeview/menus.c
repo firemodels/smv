@@ -6188,6 +6188,7 @@ void ShowBoundaryMenu(int value){
     update_patch_vis = 1;
   }
   plotstate=GetPlotState(DYNAMIC_PLOTS);
+  UpdateTimes();
 }
 
 /* ------------------ VentMenu ------------------------ */
@@ -8887,20 +8888,13 @@ if(opengl_finalized == 0)return;
           strcat(menulabel,"*");
         }
         strcat(menulabel,patchi->label.longlabel);
-        if(patchi->structured == NO){
-          if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label, "INCLUDE_GEOM")!=0){
-            glutAddMenuEntry(menulabel, 1000+i);
-          }
+        if(show_boundaryfiles==1){
+          glutAddMenuEntry("*Show all", GLUI_SHOWALL_BOUNDARY);
+          glutAddMenuEntry("Hide all",  GLUI_HIDEALL_BOUNDARY);
         }
         else{
-          if(show_boundaryfiles==1){
-            glutAddMenuEntry("*Show all", GLUI_SHOWALL_BOUNDARY);
-            glutAddMenuEntry("Hide all",  GLUI_HIDEALL_BOUNDARY);
-          }
-          else{
-            glutAddMenuEntry("Show all",  GLUI_SHOWALL_BOUNDARY);
-            glutAddMenuEntry("*Hide all", GLUI_HIDEALL_BOUNDARY);
-          }
+          glutAddMenuEntry("Show all",  GLUI_SHOWALL_BOUNDARY);
+          glutAddMenuEntry("*Hide all", GLUI_HIDEALL_BOUNDARY);
         }
       }
     }
