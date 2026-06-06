@@ -7427,6 +7427,16 @@ int IsBoundaryType(int type){
   return 0;
 }
 
+/* ------------------ GetBoundaryDisplay ------------------------ */
+
+int GetBoundaryDisplay(void){
+  for(int i = 0;i < 7;i++){
+    if(IsBoundaryType(i) == 1 && vis_boundary_type[i]==1)return 1;
+  }
+  return 0;
+}
+
+
 /* ------------------ IsoLoadState ------------------------ */
 
 void IsoLoadState(isodata *isoi, int  *load_state){

@@ -1565,12 +1565,10 @@ int GetPlotStateSub(int choice){
         if(vslicei->display==0||vslicei->vslicefile_labelindex!=slicefile_labelindex)continue;
         return DYNAMIC_PLOTS;
       }
-      for(i=0;i<global_scase.npatchinfo;i++){
-        patchdata *patchi;
-
-        patchi = global_scase.patchinfo + i;
-        if(patchi->loaded == 0)continue;
-        if(patchi->display == 1){
+      if(GetBoundaryDisplay()==1){
+        for(i=0;i<global_scase.npatchinfo;i++){
+          patchdata *patchi = global_scase.patchinfo + i;
+          if(patchi->loaded == 0)continue;
           if(patchi->boundary == 1 && patchi->shortlabel_index == iboundarytype)return DYNAMIC_PLOTS;
           if(patchi->boundary == 0 && patchi->shortlabel_index == slicefile_labelindex)return DYNAMIC_PLOTS;
         }

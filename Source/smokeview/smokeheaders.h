@@ -645,6 +645,7 @@ EXTERNCPP void DialogMenu(int value);
 EXTERNCPP void FontMenu(int value);
 EXTERNCPP void FrameRateMenu(int var);
 EXTERNCPP void GeometryMenu(int var);
+EXTERNCPP int GetBoundaryDisplay(void);
 EXTERNCPP void GetFileSizes(void);
 EXTERNCPP  int GetInternalFaceShow(void);
 EXTERNCPP  int GetNumActiveDevices(void);
