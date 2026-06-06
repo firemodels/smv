@@ -8814,13 +8814,16 @@ if(opengl_finalized == 0)return;
   if(global_scase.npatchinfo>0){
     int ii;
     char menulabel[1024];
-    int next_total=0;
+    int next_total=0, next_have = 0;
 
     CREATEMENU(showpatchextmenu, ShowBoundaryMenu);
     for(i=1;i<7;i++){
-      next_total+=vis_boundary_type[i];
+      if(IsBoundaryType(i) == 1){
+        next_have++;
+        next_total += vis_boundary_type[i];
+      }
     }
-    if(next_total == 6){
+    if(next_total == next_have){
       show_all_exterior_patch_data = 1;
       hide_all_exterior_patch_data = 0;
       glutAddMenuEntry("*Show all",  SHOW_EXTERIOR_WALL_MENU);
