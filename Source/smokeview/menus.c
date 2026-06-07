@@ -6046,15 +6046,10 @@ void ShowBoundaryMenu(int value){
   updatefacelists=1;
   GLUTPOSTREDISPLAY;
   if(value>=1000){
-    patchdata *patchj;
-    int i;
-
-    patchj = global_scase.patchinfo + value-1000;
+    patchdata *patchj = global_scase.patchinfo + value-1000;
     patchj->display = 1 - patchj->display;
-    for(i=0;i<global_scase.npatchinfo;i++){
-      patchdata *patchi;
-
-      patchi = global_scase.patchinfo + i;
+    for(int i=0;i<global_scase.npatchinfo;i++){
+      patchdata *patchi = global_scase.patchinfo + i;
       if(patchi->loaded == 0)continue;
       if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0)patchi->display=patchj->display;
     }
@@ -6082,7 +6077,7 @@ void ShowBoundaryMenu(int value){
   }
   if(value<0){
     if(value==SHOW_EXTERIOR_WALL_MENU||value==HIDE_EXTERIOR_WALL_MENU){
-      int i,val;
+      int val;
 
       if(value==SHOW_EXTERIOR_WALL_MENU){
         val = 1;
@@ -6092,44 +6087,31 @@ void ShowBoundaryMenu(int value){
         val = 0;
         show_boundaryfiles_exterior = 0;
       }
-      for(i = 0;i < global_scase.npatchinfo;i++){
-        int n;
-
-        patchdata *patchi;
-
-        patchi = global_scase.patchinfo + i;
+      for(int i = 0;i < global_scase.npatchinfo;i++){
+        patchdata *patchi = global_scase.patchinfo + i;
         if(patchi->loaded == 0)continue;
-        for(n = 0;n < patchi->npatches;n++){
-          patchfacedata *pfi;
-
-          pfi = patchi->patchfaceinfo + n;
+        for(int n = 0;n < patchi->npatches;n++){
+          patchfacedata *pfi = patchi->patchfaceinfo + n;
           if(pfi->type != INTERIORwall){
             pfi->vis = val;
           }
         }
       }
-      for(i=1;i<7;i++){
+      for(int i=1;i<7;i++){
         vis_boundary_type[i]=val;
       }
       update_patch_vis = 1;
     }
     else if(value==TOGGLE_INTERIOR_WALL_MENU){
-      int i;
-
       show_all_interior_patch_data = 1 - show_all_interior_patch_data;
       vis_boundary_type[INTERIORwall] = show_all_interior_patch_data;
-      for(i = 0;i < global_scase.npatchinfo;i++){
-        patchdata *patchi;
-        int n;
-
-        patchi = global_scase.patchinfo + i;
+      for(int i = 0;i < global_scase.npatchinfo;i++){
+        patchdata *patchi = global_scase.patchinfo + i;
         if(patchi->loaded == 0)continue;
         if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY)continue;
         if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE)continue;
-        for(n = 0;n < patchi->npatches;n++){
-          patchfacedata *pfi;
-
-          pfi = patchi->patchfaceinfo + n;
+        for(int n = 0;n < patchi->npatches;n++){
+          patchfacedata *pfi = patchi->patchfaceinfo + n;
           if(pfi->type == INTERIORwall){
             pfi->vis = show_all_interior_patch_data;
           }
@@ -6152,19 +6134,11 @@ void ShowBoundaryMenu(int value){
       show_boundaryfiles_interior = 0;
     }
     if(value==INI_EXTERIORwallmenu){
-      int i;
-
-      for(i = 0;i < global_scase.npatchinfo;i++){
-        int n;
-
-        patchdata *patchi;
-
-        patchi = global_scase.patchinfo + i;
+      for(int i = 0;i < global_scase.npatchinfo;i++){
+        patchdata *patchi = global_scase.patchinfo + i;
         if(patchi->loaded == 0)continue;
-        for(n = 0;n < patchi->npatches;n++){
-          patchfacedata *pfi;
-
-          pfi = patchi->patchfaceinfo + n;
+        for(int n = 0;n < patchi->npatches;n++){
+          patchfacedata *pfi = patchi->patchfaceinfo + n;
           if(pfi->type != INTERIORwall){
             pfi->vis = vis_boundary_type[pfi->type];
           }
@@ -6172,19 +6146,12 @@ void ShowBoundaryMenu(int value){
       }
     }
     else if(value != DUMMYwallmenu){
-      int i;
-
       value = -(value + 2); /* map xxxwallmenu to xxxwall */
-      for(i = 0;i < global_scase.npatchinfo;i++){
-        patchdata *patchi;
-        int n;
-
-        patchi = global_scase.patchinfo + i;
+      for(int i = 0;i < global_scase.npatchinfo;i++){
+        patchdata *patchi = global_scase.patchinfo + i;
         if(patchi->loaded == 0)continue;
-        for(n = 0;n < patchi->npatches;n++){
-          patchfacedata *pfi;
-
-          pfi = patchi->patchfaceinfo + n;
+        for(int n = 0;n < patchi->npatches;n++){
+          patchfacedata *pfi = patchi->patchfaceinfo + n;
           if(pfi->type == value){
             pfi->vis = 1 - pfi->vis;
             vis_boundary_type[value] = pfi->vis;
