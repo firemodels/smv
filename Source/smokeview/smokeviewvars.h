@@ -566,6 +566,8 @@ SVEXTERN float SVDECL(*blackbody_colors, NULL);
 SVEXTERN int SVDECL(show_3dsmoke, 1);
 SVEXTERN int SVDECL(show_plot3dfiles, 1), SVDECL(show_isofiles,1);
 SVEXTERN int SVDECL(show_boundaryfiles, 1);
+SVEXTERN int SVDECL(show_boundaryfiles_interior, 1);
+SVEXTERN int SVDECL(show_boundaryfiles_exterior, 1);
 
 SVEXTERN int SVDECL(smoke_framenumber, 0);
 SVEXTERN float SVDECL(time_frameval, 0.0), SVDECL(time_framemax,0.0), SVDECL(time_framemin,1.0);

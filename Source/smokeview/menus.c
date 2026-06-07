@@ -6086,9 +6086,11 @@ void ShowBoundaryMenu(int value){
 
       if(value==SHOW_EXTERIOR_WALL_MENU){
         val = 1;
+        show_boundaryfiles_exterior = 1;
       }
       else{
         val = 0;
+        show_boundaryfiles_exterior = 0;
       }
       for(i = 0;i < global_scase.npatchinfo;i++){
         int n;
@@ -6134,15 +6136,18 @@ void ShowBoundaryMenu(int value){
         }
       }
       ShowInternalBlockages();
+      show_boundaryfiles_interior = 1 - show_all_interior_patch_data;
       UpdateShowIntPatch(1 - show_all_interior_patch_data);
     }
     else if(value == SHOW_INTERIOR_WALL_MENU){
       show_all_interior_patch_data = 1;
       ShowBoundaryMenu(TOGGLE_INTERIOR_WALL_MENU);
+      show_boundaryfiles_interior = 1;
     }
     else if(value == HIDE_INTERIOR_WALL_MENU){
       show_all_interior_patch_data = 0;
       ShowBoundaryMenu(TOGGLE_INTERIOR_WALL_MENU);
+      show_boundaryfiles_interior = 0;
     }
     if(value==INI_EXTERIORwallmenu){
       int i;
@@ -8822,8 +8827,6 @@ if(opengl_finalized == 0)return;
 
 /* --------------------------------patch menu -------------------------- */
   if(global_scase.npatchinfo>0){
-    int ii;
-    char menulabel[1024];
     int next_total=0, next_have = 0;
 
     CREATEMENU(showpatchextmenu, ShowBoundaryMenu);
@@ -8836,18 +8839,21 @@ if(opengl_finalized == 0)return;
     if(next_total == next_have){
       show_all_exterior_patch_data = 1;
       hide_all_exterior_patch_data = 0;
+      show_boundaryfiles_exterior = 1;
       glutAddMenuEntry("*Show all",  SHOW_EXTERIOR_WALL_MENU);
       glutAddMenuEntry("Hide all",   HIDE_EXTERIOR_WALL_MENU);
     }
     else if(next_total == 0){
       show_all_exterior_patch_data = 0;
       hide_all_exterior_patch_data = 1;
+      show_boundaryfiles_exterior = 0;
       glutAddMenuEntry("Show all",  SHOW_EXTERIOR_WALL_MENU);
       glutAddMenuEntry("*Hide all", HIDE_EXTERIOR_WALL_MENU);
     }
     else{
       show_all_exterior_patch_data = 0;
       hide_all_exterior_patch_data = 0;
+      show_boundaryfiles_exterior = 0;
       glutAddMenuEntry("#Show all",  SHOW_EXTERIOR_WALL_MENU);
       glutAddMenuEntry("#Hide all",  HIDE_EXTERIOR_WALL_MENU);
     }
@@ -8879,36 +8885,22 @@ if(opengl_finalized == 0)return;
 
     CREATEMENU(showpatchmenu,ShowBoundaryMenu);
     if(npatchloaded>0){
-      patchdata *patchi=NULL, *patchim1=NULL;
-
-      for(ii = 0;ii<global_scase.npatchinfo;ii++){
-
-        i = patchorderindex[ii];
-        patchi = global_scase.patchinfo+i;
+      for(i = 0;i<global_scase.npatchinfo;i++){
+        patchdata *patchi = global_scase.patchinfo+i;
         if(patchi->loaded==0)continue;
-        if(patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0)continue;
-        if(ii>0){
-          if(patchim1!=NULL){
-            if(strcmp(patchi->label.longlabel,patchim1->label.longlabel)==0){
-              patchim1 = patchi;
-              continue;
-            }
-          }
-        }
-        patchim1 = patchi;
-        strcpy(menulabel,"");
-        if(patchi->display==1){
-          strcat(menulabel,"*");
-        }
-        strcat(menulabel,patchi->label.longlabel);
-        if(show_boundaryfiles==1){
+        if(show_boundaryfiles_exterior == 1 && show_boundaryfiles_interior == 1){
           glutAddMenuEntry("*Show all", GLUI_SHOWALL_BOUNDARY);
           glutAddMenuEntry("Hide all",  GLUI_HIDEALL_BOUNDARY);
         }
-        else{
+        else if(show_boundaryfiles_exterior == 0 && show_boundaryfiles_interior == 0){
           glutAddMenuEntry("Show all",  GLUI_SHOWALL_BOUNDARY);
           glutAddMenuEntry("*Hide all", GLUI_HIDEALL_BOUNDARY);
         }
+        else{
+          glutAddMenuEntry("#Show all",  GLUI_SHOWALL_BOUNDARY);
+          glutAddMenuEntry("#Hide all", GLUI_HIDEALL_BOUNDARY);
+        }
+        break;
       }
     }
     npatchloaded=0;
@@ -8923,7 +8915,7 @@ if(opengl_finalized == 0)return;
         if(patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0)continue;
         npatchloaded++;
       }
-      for(ii=0;ii<global_scase.npatchinfo;ii++){
+      for(int ii=0;ii<global_scase.npatchinfo;ii++){
         patchdata *patchi;
 
         i = patchorderindex[ii];
