@@ -2589,7 +2589,6 @@ void UpdateDisplay(void){
   if(update_ini_boundary_type==1){
     update_ini_boundary_type = 0;
     show_all_interior_patch_data = 1 - show_all_interior_patch_data;
-   // ShowBoundaryMenu(TOGGLE_INTERIOR_WALL_MENU);
     ShowBoundaryMenu(INI_EXTERIORwallmenu);
   }
   if(update_use_soot_multiplier == 1){
