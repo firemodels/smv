@@ -3000,6 +3000,12 @@ void ScriptLoadFile(scriptdata *scripti){
     if(scripti->cval != NULL && strcmp(patchi->file,scripti->cval)==0){
       patchi->finalize = 1;
       ReadBoundary(i,LOAD,&errorcode);
+      if(show_boundaryfiles_interior == 1){
+        ShowBoundaryMenu(SHOW_INTERIOR_WALL_MENU);
+      }
+      else{
+        ShowBoundaryMenu(HIDE_INTERIOR_WALL_MENU);
+      }
       return;
     }
   }
