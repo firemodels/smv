@@ -2592,6 +2592,12 @@ void ScriptLoadBoundary(scriptdata *scripti, int meshnum){
     fprintf(stderr, "*** Error: Boundary files of type %s failed to load\n", scripti->cval);
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: Boundary files of type %s failed to load\n", scripti->cval);
   }
+  if(show_boundaryfiles_interior == 1){
+    ShowBoundaryMenu(SHOW_INTERIOR_WALL_MENU);
+  }
+  else{
+    ShowBoundaryMenu(HIDE_INTERIOR_WALL_MENU);
+  }
   force_redisplay=1;
   updatemenu=1;
   UpdateFrameNumber(0);
