@@ -3357,6 +3357,12 @@ void LoadUnloadMenu(int value){
       if(patchi->loaded == 1){
         ReadBoundary(i, LOAD,&errorcode);
       }
+      if(show_boundaryfiles_interior == 1){
+        ShowBoundaryMenu(SHOW_INTERIOR_WALL_MENU);
+      }
+      else{
+        ShowBoundaryMenu(HIDE_INTERIOR_WALL_MENU);
+      }
     }
 
     //*** reload 3d smoke files
@@ -5852,6 +5858,12 @@ void LoadBoundaryMenu(int value){
       }
       break;
     }
+  }
+  if(show_boundaryfiles_interior == 1){
+    ShowBoundaryMenu(SHOW_INTERIOR_WALL_MENU);
+  }
+  else{
+    ShowBoundaryMenu(HIDE_INTERIOR_WALL_MENU);
   }
   updatemenu=1;
   GLUTPOSTREDISPLAY;

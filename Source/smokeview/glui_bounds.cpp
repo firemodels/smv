@@ -4121,7 +4121,6 @@ extern "C" void BoundBoundCB(int var){
     break;
   case FILE_RELOAD:
     if(global_scase.npatchinfo>0){
-//      BoundBoundCB(FILE_UPDATE);
       for(i = 0;i < global_scase.npatchinfo;i++){
         patchdata *patchi;
 
@@ -4132,6 +4131,12 @@ extern "C" void BoundBoundCB(int var){
           ReadBoundary(i,UNLOAD,&errorcode);
           ReadBoundary(i,LOAD,&errorcode);
         }
+      }
+      if(show_boundaryfiles_interior == 1){
+        ShowBoundaryMenu(SHOW_INTERIOR_WALL_MENU);
+      }
+      else{
+        ShowBoundaryMenu(HIDE_INTERIOR_WALL_MENU);
       }
     }
     break;
