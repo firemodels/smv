@@ -293,7 +293,7 @@ gnu_linux_db : $(obj)
 
 # ------------- gnu_linux ----------------
 
-gnu_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas \
+gnu_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-address\
                         -D NDEBUG  $(CFLAGS_COM)
 gnu_linux : CC        = gcc
 gnu_linux : CPP       = g++
