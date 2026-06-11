@@ -10,7 +10,6 @@ LIBSDIR=`pwd`
 
 SMV_MAKE_OPTS=
 TEST=
-SANITIZE=
 if [ "`uname`" == "Darwin" ]; then
   GLUT=
   GLIBDIROPT=
@@ -34,7 +33,7 @@ BUILD_LIBS=
 BUILD_ALL=1
 GLTYPE=COCOA
 TESTOPT=
-while getopts 'CfGhiIl:LprSX' OPTION
+while getopts 'CfGhiIl:LprX' OPTION
 do
 case $OPTION in
   C)
@@ -55,7 +54,6 @@ case $OPTION in
   echo "-i - incremental build"
   echo "-L - rebuild all libraries"
   echo "-p - build a profiling version of smokeview"
-  echo "-S - build smokeview with sanitize debug options"
   exit
   ;;
   i)
@@ -77,9 +75,6 @@ case $OPTION in
   ;;
   r)
   ;;
-  S)
-   SANITIZE=1
-  ;;
   X)
    GLTYPE=XQUARTZ
   ;;
@@ -89,7 +84,6 @@ done
 export SMV_MAKE_OPTS
 export GLUT
 export TEST
-export SANITIZE
 export GLTYPE
 
 # this parameter is only for the mac
