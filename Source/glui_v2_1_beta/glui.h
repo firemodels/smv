@@ -361,8 +361,7 @@ enum GLUI_StdBitmaps_Codes {
   GLUI_STDBITMAP_NUM_ITEMS
 };
 
-static int allow_glui_post_redisplay=1;
-
+extern "C" int GetGluiPostReDisplay(void);
 extern "C" void GluiPostRedisplayOn(void);
 extern "C" void GluiPostRedisplayOff(void);
 
