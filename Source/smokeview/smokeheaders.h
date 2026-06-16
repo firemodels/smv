@@ -95,6 +95,7 @@ EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
 //*** glui_motion.cpp headers
 
 EXTERNCPP void GLUIUpdateFarclip(void);
+EXTERNCPP void GLUIUpdateRenderOverwrite(void);
 
   //*** glui_objects.cpp headers
 

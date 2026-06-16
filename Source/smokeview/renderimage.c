@@ -421,6 +421,17 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
   strcpy(renderfile_full, renderfile_name);
   if(strlen(renderfile_suffix) > 0)strcat(renderfile_full, renderfile_suffix);
   strcat(renderfile_full, renderfile_ext);
+  if(render_overwrite==0){
+    FILE *renderstream=NULL;
+
+    renderstream = fopen(renderfile_full, "wb");
+    if(renderstream != NULL){
+      printf("***error: the render file %s exists. To perform rendering,\n", renderfile_full);
+      printf("          use the render overwrite option or erase the previously rendered files\n");
+      fclose(renderstream);
+      return 1;
+    }
+  }
   return 0;
 }
 
