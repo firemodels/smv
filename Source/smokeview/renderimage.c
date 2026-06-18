@@ -743,9 +743,15 @@ int CheckRenderFile(char *file){
 
     renderstream = fopen(file, "rb");
     if(renderstream != NULL){
-      printf("***error: the file %s exists.\n", file);
-      printf("          To perform rendering, use the render overwrite option or \n");
-      printf("          erase previously rendered files\n");
+      printf("************************************************\n");
+      printf("************************************************\n");
+      printf("************************************************\n");
+      printf("***error: the render file, %s, exists.\n", file);
+      printf("          To render, use the -render_overwrite command line option\n");
+      printf("          or erase previously rendered files\n");
+      printf("************************************************\n");
+      printf("************************************************\n");
+      printf("************************************************\n");
       fclose(renderstream);
       return 1;
     }
