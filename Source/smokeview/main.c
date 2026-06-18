@@ -70,6 +70,7 @@ void Usage(int option){
     PRINTF("%s\n", " -max_mem mem   - specify maximum memory used in GB");
     PRINTF("%s\n", " -outline       - show geometry bound boxes instead of geometry");
     PRINTF("%s\n", " -ng_ini        - non-graphics version of -ini.");
+    PRINTF("%s\n", " -render_overwrite - allow rendered images to be overwritten");
     PRINTF("%s\n", " -scriptrenderdir dir - directory containing script rendered images");
     PRINTF("%s\n", "                  (override directory specified by RENDERDIR script keyword)");
     PRINTF("%s\n", " -setup         - only show geometry");
@@ -458,6 +459,9 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     if(args->fast){
       parse_opts.fast_startup = 1;
       parse_opts.lookfor_compressed_files = 0;
+    }
+    if(args->render_overwrite){
+      render_overwrite_commandline = 1;
     }
     if(args->full){
       parse_opts.fast_startup = 0;

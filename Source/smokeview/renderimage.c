@@ -738,7 +738,7 @@ GLubyte *GetScreenBuffer(void){
 /* ------------------ CheckRenderFile ------------------------ */
 
 int CheckRenderFile(char *file){
-  if(render_overwrite == 0){
+  if(render_overwrite_commandline == 0 && render_overwrite == 0){
     FILE *renderstream = NULL;
 
     renderstream = fopen(file, "rb");
