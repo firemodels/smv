@@ -2569,8 +2569,6 @@ void GetSkyImageTexture(void){
   strcpy(global_scase.sky_texture->file, buffer);
 }
 
-#ifdef pp_BNDF_MENU
-
 /* ------------------ ComparePatchMenuInfo ------------------------ */
 
 int ComparePatchMenuInfo(const void *arg1, const void *arg2){
@@ -2637,7 +2635,6 @@ void InitPatchMenuInfo(void){
   }
   ResizeMemory((void **)&patchmenuinfo, npatchmenuinfo*sizeof(patchmenudata));
 }
-#endif
 
 /* ------------------ ReadSMV_Configure ------------------------ */
 
@@ -2668,10 +2665,7 @@ int ReadSMV_Configure(){
 
   PRINTF("  wrapping up\n");
 
-#ifdef pp_BNDF_MENU
   InitPatchMenuInfo();
-#endif
-
 
  // set results directory
   if(global_scase.npartinfo > 0 && global_scase.results_dir == NULL){

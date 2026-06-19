@@ -3886,9 +3886,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
 
   if(
     (
-#ifdef pp_BNDF_MENU
     vis_boundary_type[INTERIORwall] == 1 &&
-#endif
     patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_shaded == 1)||
     (patchi->patch_filetype == PATCH_GEOMETRY_SLICE &&(
      show_slice_shaded[IN_CUTCELL_GLUI]==1||
@@ -4031,9 +4029,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
           }
           else if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
             if(show_boundary_shaded == 0
-#ifdef pp_BNDF_MENU
             || vis_boundary_type[INTERIORwall] == 0
-#endif
             )continue;
           }
 
@@ -4102,9 +4098,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
 
   if(
     (
-#ifdef pp_BNDF_MENU
       vis_boundary_type[INTERIORwall] == 1 &&
-#endif
       patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY &&
       show_boundary_outline == 1)||
     (patchi->patch_filetype == PATCH_GEOMETRY_SLICE &&(
@@ -4184,9 +4178,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
             }
           }
           if(
-#ifdef pp_BNDF_MENU
              vis_boundary_type[INTERIORwall] == 1 &&
-#endif
              patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY &&
              show_boundary_outline == 1){
             int insolid, insolid_glui = -1;
@@ -4268,9 +4260,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
 
   if(
     (
-#ifdef pp_BNDF_MENU
       vis_boundary_type[INTERIORwall] == 1 &&
-#endif
       patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY &&
       show_boundary_points == 1)||
     (patchi->patch_filetype == PATCH_GEOMETRY_SLICE &&(
@@ -4335,9 +4325,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
           }
         }
         if(
-#ifdef pp_BNDF_MENU
            vis_boundary_type[INTERIORwall] == 1 &&
-#endif
            patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_points == 1){
             if(show_boundary_shaded==1){
               draw_foreground=1;

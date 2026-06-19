@@ -185,14 +185,12 @@ typedef struct _curvedata{
   float linewidth;
 } curvedata;
 
-#ifdef pp_BNDF_MENU
 /* --------------------------  patchmenudata ------------------------------------ */
 
 typedef struct _patchmenudata{
   char quantity[256];
   int index, loaded, isgeom, skip;
 } patchmenudata;
-#endif
 
 /* --------------------------  plot2ddata ----------------------------------- */
 

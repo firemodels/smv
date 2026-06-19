@@ -35,12 +35,10 @@ float     part_load_time;
 #include <direct.h>
 #endif
 
-#ifdef pp_BNDF_MENU
 #define MENU_PATCH_DUMMY  -1
 #define MENU_PATCH_UNLOAD -2
 #define MENU_PATCH_UNLOAD2 -3
 void LoadBoundaryMenu2(int var);
-#endif
 
 #define ABOUT_DATA_TRANSFER_TEST      2
 
@@ -3263,13 +3261,7 @@ void LoadUnloadMenu(int value){
     for(i = 0; i<global_scase.nplot3dinfo; i++){
       ReadPlot3D("",i,UNLOAD,&errorcode);
     }
-#ifdef pp_BNDF_MENU
     LoadBoundaryMenu2(MENU_PATCH_UNLOAD);
-#else
-    for(i=0;i<global_scase.npatchinfo;i++){
-      ReadBoundary(i,UNLOAD,&errorcode);
-    }
-#endif
     for(i=0;i<global_scase.npartinfo;i++){
       ReadPart("",i,UNLOAD,&errorcode);
     }
@@ -5669,7 +5661,6 @@ void LoadIsoMenu(int value){
 /* ------------------ InPatchList ------------------------ */
 
 int InPatchList(patchdata *patchj, patchdata *patchi){
-#ifdef pp_BNDF_MENU
 // include boundary file if it is geometry and has the same quantity
   if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
     char label[256], *ext;
@@ -5679,11 +5670,7 @@ int InPatchList(patchdata *patchj, patchdata *patchi){
     if(ext != NULL)ext[0] = 0;
     if(strcmp(label, patchi->label.longlabel) == 0)return 1;
   }
-#endif
   if(strcmp(patchj->label.longlabel, patchi->label.longlabel)!=0)return 0;
-#ifndef pp_BNDF_MENU
-  if(patchj->patch_filetype!=patchi->patch_filetype)return 0;
-#endif
   return 1;
 }
 
@@ -5870,8 +5857,6 @@ void LoadBoundaryMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }
 
-#ifdef pp_BNDF_MENU
-
 /* ------------------ LoadBoundaryMenu2 ------------------------ */
 
 void LoadBoundaryMenu2(int value){
@@ -5900,7 +5885,6 @@ void LoadBoundaryMenu2(int value){
     LoadBoundaryMenu(index);
   }
 }
-#endif
 
 /* ------------------ GetInternalFaceShow ------------------------ */
 
@@ -6010,19 +5994,15 @@ void ShowInternalBlockages(void){
     }
     outline_state=OUTLINE_NONE;
     solid_state=visBLOCKHide;
-#ifdef pp_BNDF_MENU
     show_faces_shaded = 1;
     ImmersedMenu(GEOMETRY_HIDE);
-#endif
   }
   else{
 #ifdef pp_TERRAIN_HIDE
     GeometryMenu(17 + TERRAIN_HIDDEN);
 #endif
-#ifdef pp_BNDF_MENU
     show_geom_bndf = 1;
     GetGeomInfoPtrs(0);
-#endif
   }
   updatemenu = 1;
   global_scase.updatefaces = 1;
@@ -6035,10 +6015,8 @@ void HideInternalBlockages(void){
   hide_internal_blockages = 1;
   outline_state = OUTLINE_NONE;
   solid_state = visBLOCKHide;
-#ifdef pp_BNDF_MENU
   show_faces_shaded = 1;
   ImmersedMenu(GEOMETRY_HIDE);
-#endif
   updatemenu = 1;
   global_scase.updatefaces = 1;
   updatefacelists = 1;
@@ -8665,9 +8643,6 @@ static int unloadsmoke3dmenu = 0;
 static int loadslicemenu=0, loadmultislicemenu = 0, loadhvacmenu = 0;
 static int *loadsubvslicemenu=NULL, nloadsubvslicemenu=0;
 static int *loadsubpatchmenu_b = NULL, *nsubpatchmenus_b = NULL;
-#ifndef pp_BNDF_MENU
-static int iloadsubpatchmenu_b = 0;
-#endif
 static int nloadsubpatchmenu_b = 0;
 static int *loadsubpatchmenu_s = NULL, *nsubpatchmenus_s=NULL, nloadsubpatchmenu_s = 0;
 static int *loadsubmslicemenu=NULL, nloadsubmslicemenu=0;
@@ -8675,9 +8650,6 @@ static int *loadsubmvslicemenu=NULL, nloadsubmvslicemenu=0;
 static int *loadsubplot3dmenu=NULL, nloadsubplot3dmenu=0;
 static int loadmultivslicemenu=0, unloadmultivslicemenu=0;
 static int duplicatevectorslicemenu=0, duplicateslicemenu=0;
-#ifndef pp_BNDF_MENU
-static int duplicateboundaryslicemenu=0;
-#endif
 static int unloadmultislicemenu=0, vsliceloadmenu=0, staticslicemenu=0;
 static int particlemenu=0, showpatchmenu=0, zonemenu=0, isoshowmenu=0, isolevelmenu=0, smoke3dshowmenu=0;
 static int particlepropshowmenu=0;
@@ -12127,7 +12099,6 @@ if(opengl_finalized == 0)return;
 
 /* --------------------------------load patch menu -------------------------- */
 
-#ifdef pp_BNDF_MENU
     if(npatchmenuinfo >0){
       CREATEMENU(loadpatchmenu,LoadBoundaryMenu2);
       for(i=0; i<npatchmenuinfo; i++){
@@ -12143,181 +12114,6 @@ if(opengl_finalized == 0)return;
       glutAddMenuEntry("-",      MENU_PATCH_DUMMY);
       glutAddMenuEntry("Unload", MENU_PATCH_UNLOAD);
     }
-#else
-    if(global_scase.npatchinfo>0){
-      int ii;
-
-      nloadpatchsubmenus=0;
-
-      if(global_scase.meshescoll.nmeshes>1&&loadpatchsubmenus==NULL){
-        NewMemory((void **)&loadpatchsubmenus,global_scase.npatchinfo*sizeof(int));
-      }
-
-      if(global_scase.meshescoll.nmeshes>1){
-        CREATEMENU(loadpatchsubmenus[nloadpatchsubmenus],LoadBoundaryMenu);
-        nloadpatchsubmenus++;
-      }
-      else{
-        CREATEMENU(loadpatchmenu,LoadBoundaryMenu);
-      }
-
-      for(ii=0;ii<global_scase.npatchinfo;ii++){
-        patchdata *patchim1, *patchi;
-        char menulabel[1024];
-
-        i = patchorderindex[ii];
-        patchi = global_scase.patchinfo + i;
-        if(ii>0){
-          patchim1 = global_scase.patchinfo + patchorderindex[ii-1];
-          if(global_scase.meshescoll.nmeshes>1&&strcmp(patchim1->label.longlabel,patchi->label.longlabel)!=0){
-            CREATEMENU(loadpatchsubmenus[nloadpatchsubmenus],LoadBoundaryMenu);
-            nloadpatchsubmenus++;
-          }
-        }
-        if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label,"INCLUDE_GEOM")!=0){
-          STRCPY(menulabel, "");
-          if(patchi->loaded==1)STRCAT(menulabel,"*");
-          STRCAT(menulabel,patchi->menulabel);
-          glutAddMenuEntry(menulabel,i);
-        }
-      }
-      if(nboundaryslicedups>0){
-        GLUTADDSUBMENU("Duplicate boundary slices",duplicateboundaryslicemenu);
-      }
-      glutAddMenuEntry("-",MENU_DUMMY3);
-      glutAddMenuEntry("Settings...", MENU_BOUNDARY_SETTINGS);
-      glutAddMenuEntry("Unload",UNLOAD_ALL);
-
-      if(nboundaryslicedups>0){
-        CREATEMENU(duplicateboundaryslicemenu,LoadBoundaryMenu);
-        if(boundaryslicedup_option == SLICEDUP_KEEPALL){
-          glutAddMenuEntry("  *keep all", MENU_KEEP_ALL);
-        }
-        else{
-          glutAddMenuEntry("  keep all", MENU_KEEP_ALL);
-        }
-        if(boundaryslicedup_option == SLICEDUP_KEEPFINE){
-          glutAddMenuEntry("  *keep fine", MENU_KEEP_FINE);
-        }
-        else{
-          glutAddMenuEntry("  keep fine", MENU_KEEP_FINE);
-        }
-        if(boundaryslicedup_option == SLICEDUP_KEEPCOARSE){
-          glutAddMenuEntry("  *keep coarse", MENU_KEEP_COARSE);
-        }
-        else{
-          glutAddMenuEntry("  keep coarse", MENU_KEEP_COARSE);
-        }
-      }
-      if(global_scase.meshescoll.nmeshes>1){
-
-// count patch submenus
-
-        nloadsubpatchmenu_b=0;
-        for(ii=0;ii<global_scase.npatchinfo;ii++){
-          int im1;
-          patchdata *patchi, *patchim1;
-
-          i = patchorderindex[ii];
-          if(ii>0){
-            im1 = patchorderindex[ii-1];
-            patchim1=global_scase.patchinfo + im1;
-          }
-          patchi = global_scase.patchinfo + i;
-          if(ii==0||strcmp(patchi->menulabel_base,patchim1->menulabel_base)!=0){
-            nloadsubpatchmenu_b++;
-          }
-        }
-
-// create patch submenus
-
-        if(nloadsubpatchmenu_b > 0){
-          NewMemory((void **)&loadsubpatchmenu_b, nloadsubpatchmenu_b * sizeof(int));
-          NewMemory((void **)&nsubpatchmenus_b, nloadsubpatchmenu_b * sizeof(int));
-        }
-        for(i=0;i<nloadsubpatchmenu_b;i++){
-          loadsubpatchmenu_b[i]=0;
-          nsubpatchmenus_b[i]=0;
-        }
-
-        iloadsubpatchmenu_b=0;
-        for(ii=0;ii<global_scase.npatchinfo;ii++){
-          int im1;
-          patchdata *patchi, *patchim1;
-
-          i = patchorderindex[ii];
-          if(ii>0){
-            im1 = patchorderindex[ii-1];
-            patchim1=global_scase.patchinfo + im1;
-          }
-          patchi = global_scase.patchinfo + i;
-          if(ii==0||strcmp(patchi->menulabel_base,patchim1->menulabel_base)!=0){
-            CREATEMENU(loadsubpatchmenu_b[iloadsubpatchmenu_b],LoadBoundaryMenu);
-            iloadsubpatchmenu_b++;
-          }
-          if(ii==0||strcmp(patchi->menulabel_suffix,patchim1->menulabel_suffix)!=0){
-            if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label,"INCLUDE_GEOM")!=0){
-              char menulabel[256];
-
-              nsubpatchmenus_b[iloadsubpatchmenu_b-1]++;
-              strcpy(menulabel, patchi->menulabel_suffix);
-              if(patchi->compression_type == COMPRESSED_ZLIB){
-                strcat(menulabel, "(ZLIB)");
-              }
-              glutAddMenuEntry(menulabel,-i-10);
-            }
-          }
-        }
-
-// call patch submenus from main patch menu
-
-        CREATEMENU(loadpatchmenu,LoadBoundaryMenu);
-        iloadsubpatchmenu_b=0;
-        for(ii=0;ii<global_scase.npatchinfo;ii++){
-          int im1;
-          patchdata *patchi, *patchim1;
-
-          i = patchorderindex[ii];
-          if(ii>0){
-            im1 = patchorderindex[ii-1];
-            patchim1=global_scase.patchinfo + im1;
-          }
-          patchi = global_scase.patchinfo + i;
-          if(ii==0||strcmp(patchi->menulabel_base,patchim1->menulabel_base)!=0){
-            int nsubmenus;
-
-            nsubmenus = nsubpatchmenus_b[iloadsubpatchmenu_b];
-            if(nsubmenus>1){
-              GLUTADDSUBMENU(patchi->menulabel_base,loadsubpatchmenu_b[iloadsubpatchmenu_b]);
-            }
-            else if(nsubmenus==1){
-              char menulabel[1024];
-              int patch_load_state;
-
-              PatchLoadState(patchi, &patch_load_state);
-              strcpy(menulabel, "");
-              if(patch_load_state==1)strcat(menulabel, "#");
-              if(patch_load_state==2)strcat(menulabel, "*");
-              strcat(menulabel, patchi->label.longlabel);
-              if(patchi->compression_type == COMPRESSED_ZLIB){
-                strcat(menulabel, "(ZLIB)");
-              }
-              glutAddMenuEntry(menulabel,-i-10);
-            }
-            iloadsubpatchmenu_b++;
-          }
-        }
-      }
-//*** these same lines also appear above (except for nmeshes>1 line)
-      glutAddMenuEntry("-",MENU_DUMMY3);
-
-      if(nboundaryslicedups>0){
-        GLUTADDSUBMENU("Duplicate boundary slices",duplicateboundaryslicemenu);
-      }
-      glutAddMenuEntry("Settings...", MENU_BOUNDARY_SETTINGS);
-      glutAddMenuEntry("Unload",UNLOAD_ALL);
-    }
-#endif
 
 /* --------------------------------load iso menu -------------------------- */
 
