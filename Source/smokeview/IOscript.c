@@ -3776,7 +3776,7 @@ int RunScriptCommand(scriptdata *script_command){
       ScriptLoadIniFile(scripti);
       break;
     case SCRIPT_GPUOFF:
-#ifdef pp_GPOU
+#ifdef pp_GPU
       usegpu = 0;
 #endif
       gpuactive = 0;
