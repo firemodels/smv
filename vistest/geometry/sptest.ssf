@@ -1,0 +1,25 @@
+
+// put rendered files in specified directory
+
+LABEL
+  put rendered files in specified directory
+
+RENDERDIR
+ .
+
+UNLOADALL
+LOADBOUNDARY
+ WALL TEMPERATURE
+SETTIMEVAL
+ 1.000000
+RENDERONCE
+ sptest_bound_001
+SETTIMEVAL
+ 3.000000
+RENDERONCE
+ sptest_bound_003
+SETTIMEVAL
+ 5.000000
+RENDERONCE
+ sptest_bound_005
+
