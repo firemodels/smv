@@ -1235,6 +1235,27 @@ SVEXTERN char SVDECL(*camera_label,NULL);
 SVEXTERN char SVDECL(*colorbar_label,NULL);
 SVEXTERN char SVDECL(*colorbar_filename, NULL);
 
+// boundary file
+// #define INTERIORwall 0
+// #define FRONTwall    1
+// #define BACKwall     2
+// #define LEFTwall     3
+// #define RIGHTwall    4
+// #define UPwall       5
+// #define DOWNwall     6
+// vis_boundary_type[INTERIORwall]
+// show_all_exterior_patch_data = 1;
+// hide_all_exterior_patch_data = 0;
+
+// immersed
+// show_faces_shaded
+// show_faces_outline
+
+// structured
+// solid_state
+// outline_state
+// visBlocks
+
 SVEXTERN int vis_boundary_type[7], SVDECL(update_ini_boundary_type,0);
 SVEXTERN int p3_extreme_min[MAXPLOT3DVARS], p3_extreme_max[MAXPLOT3DVARS];
 SVEXTERN int SVDECL(show_mirror_boundary,0), SVDECL(show_open_boundary, 0);
@@ -1513,7 +1534,11 @@ SVEXTERN int SVDECL(hide_internal_blockages, 0);
 
 SVEXTERN int SVDECL(outline_color_flag,0);
 SVEXTERN int visBlocks,                SVDECL(solid_state,-1),      SVDECL(outline_state,-1);
+SVEXTERN int visBlocks_save,           SVDECL(solid_state_save,-1), SVDECL(outline_state_save,-1);
 SVEXTERN int SVDECL(visBlocks_ini,-1), SVDECL(solid_state_ini, -1), SVDECL(outline_state_ini, -1);
+#define OBSTGEOM_SAVE    1
+#define OBSTGEOM_RESTORE 0
+SVEXTERN int SVDECL(obstgeom_state, -1);
 SVEXTERN int SVDECL(update_showblock_ini, 0);
 
 SVEXTERN int SVDECL(visTransparentBlockage,0);

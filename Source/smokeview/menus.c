@@ -5871,7 +5871,9 @@ void LoadBoundaryMenu(int value){
 }
 
 #ifdef pp_BNDF_MENU
+
 /* ------------------ LoadBoundaryMenu2 ------------------------ */
+
 void LoadBoundaryMenu2(int value){
   if(value==MENU_PATCH_DUMMY)return;
   if(value == MENU_PATCH_UNLOAD|| value == MENU_PATCH_UNLOAD2){
@@ -5967,8 +5969,6 @@ void ImmersedMenu(int value){
     sort_geometry = 1 - sort_geometry;
     break;
   case GEOMETRY_HIDE:
-    show_faces_shaded_save = show_faces_shaded;
-    show_faces_outline_save = show_faces_outline;
     show_faces_shaded = 0;
     show_faces_outline = 0;
     break;
@@ -6002,6 +6002,12 @@ void ShowInternalBlockages(void){
   show = GetInternalFaceShow();
   hide_internal_blockages = 1 - show;
   if(show == 0){
+    if(update_showblock_ini == 1){
+      update_showblock_ini = 0;
+      visBlocks_save     = visBlocks;
+      solid_state_save   = solid_state;
+      outline_state_save = outline_state;
+    }
     outline_state=OUTLINE_NONE;
     solid_state=visBLOCKHide;
 #ifdef pp_BNDF_MENU
@@ -6010,23 +6016,10 @@ void ShowInternalBlockages(void){
 #endif
   }
   else{
-    if(update_showblock_ini == 1){
-      update_showblock_ini = 0;
-      visBlocks     = visBlocks_ini;
-      solid_state   = solid_state_ini;
-      outline_state = outline_state_ini;
-    }
-    else{
-      visBlocks = visBLOCKNormal;
-      solid_state = visBLOCKNormal;
-      outline_state = OUTLINE_NONE;
-    }
 #ifdef pp_TERRAIN_HIDE
     GeometryMenu(17 + TERRAIN_HIDDEN);
 #endif
 #ifdef pp_BNDF_MENU
-    show_faces_shaded  = show_faces_shaded_save;
-    show_faces_outline = show_faces_outline_save;
     show_geom_bndf = 1;
     GetGeomInfoPtrs(0);
 #endif
@@ -6049,6 +6042,12 @@ void HideInternalBlockages(void){
   updatemenu = 1;
   global_scase.updatefaces = 1;
   updatefacelists = 1;
+}
+
+/* ------------------ HideImmersedMenu ------------------------ */
+
+void HideImmersedMenu(void){
+  ImmersedMenu(GEOMETRY_HIDE);
 }
 
 /* ------------------ ShowBoundaryMenu ------------------------ */
@@ -6115,6 +6114,8 @@ void ShowBoundaryMenu(int value){
       update_patch_vis = 1;
     }
     else if(value==TOGGLE_INTERIOR_WALL_MENU){
+      show_faces_shaded  = 1 - show_faces_shaded;
+      show_faces_outline = 1 - show_faces_outline;
       show_all_interior_patch_data = 1 - show_all_interior_patch_data;
       vis_boundary_type[INTERIORwall] = show_all_interior_patch_data;
       for(int i = 0;i < global_scase.npatchinfo;i++){
@@ -6141,6 +6142,8 @@ void ShowBoundaryMenu(int value){
       show_boundaryfiles_interior = 1;
     }
     else if(value == HIDE_INTERIOR_WALL_MENU){
+      show_faces_shaded  = 1 - show_faces_shaded_save;
+      show_faces_outline = 1 - show_faces_outline_save;
       show_all_interior_patch_data = 0;
       ShowBoundaryMenu(TOGGLE_INTERIOR_WALL_MENU);
       show_boundaryfiles_interior = 0;
@@ -7416,12 +7419,12 @@ int IsBoundaryType(int type){
 /* ------------------ GetBoundaryDisplay ------------------------ */
 
 int GetBoundaryDisplay(void){
-  for(int i = 0;i < 7;i++){
+  if(IsBoundaryType(0) == 1)return 1;
+  for(int i = 1;i < 7;i++){
     if(IsBoundaryType(i) == 1 && vis_boundary_type[i]==1)return 1;
   }
   return 0;
 }
-
 
 /* ------------------ IsoLoadState ------------------------ */
 

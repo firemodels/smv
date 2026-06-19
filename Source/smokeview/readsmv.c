@@ -3713,8 +3713,6 @@ int ReadIni2(const char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %f %f %i %i %i %i", &geom_vert_exag, &rdummy, &dummy, &dummy2, &hide_scene, &show_geom_bndf );
       if(hide_scene !=1)hide_scene = 0;
-      show_faces_outline_save = show_faces_outline;
-      show_faces_shaded_save = show_faces_shaded;
       continue;
     }
     if(MatchINI(buffer, "SHOWTRIANGLECOUNT") == 1){
@@ -5237,7 +5235,7 @@ int ReadIni2(const char *inifile, int localfile){
     }
     if(MatchINI(buffer, "SHOWBLOCKS") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i", &visBlocks_ini, &solid_state_ini, &outline_state_ini);
+      sscanf(buffer, "%i %i %i", &visBlocks, &solid_state, &outline_state);
       update_showblock_ini = 1;
       ShowInternalBlockages();
     }
@@ -8114,9 +8112,18 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "GEOMDOMAIN\n");
   fprintf(fileout, " %i %i\n", showgeom_inside_domain, showgeom_outside_domain);
   fprintf(fileout, "GEOMSHOW\n");
-  fprintf(fileout, " %i %i %i %i %i %i %f %f %i %i %f %f %f\n",
-     0, 1, show_faces_shaded, show_faces_outline, smooth_geom_normal,
-     geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors, show_cface_normals, geom_pointsize, geom_dz_offset, geom_norm_offset);
+  if(boundary_loaded == 1){
+    fprintf(fileout, " %i %i %i %i %i %i %f %f %i %i %f %f %f\n",
+       0, 1, show_faces_shaded_save, show_faces_outline_save, smooth_geom_normal,
+       geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors,
+       show_cface_normals, geom_pointsize, geom_dz_offset, geom_norm_offset);
+  }
+  else{
+    fprintf(fileout, " %i %i %i %i %i %i %f %f %i %i %f %f %f\n",
+       0, 1, show_faces_shaded, show_faces_outline, smooth_geom_normal,
+       geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors,
+       show_cface_normals, geom_pointsize, geom_dz_offset, geom_norm_offset);
+  }
   fprintf(fileout, " %i %i %i %i\n", 0, 0, 0, 0);
 
   int hide_scene_old;
@@ -8176,7 +8183,12 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWBLOCKLABEL\n");
   fprintf(fileout, " %i\n", visMeshlabel);
   fprintf(fileout, "SHOWBLOCKS\n");
-  fprintf(fileout, " %i %i %i\n", visBlocks, solid_state, outline_state);
+  if(boundary_loaded == 1){
+    fprintf(fileout, " %i %i %i\n", visBlocks_save, solid_state_save, outline_state_save);
+  }
+  else{
+    fprintf(fileout, " %i %i %i\n", visBlocks, solid_state, outline_state);
+  }
   fprintf(fileout, "SHOWBOUNDS\n");
   fprintf(fileout, " %i %i\n", bounds_each_mesh, show_bound_diffs);
   fprintf(fileout, "SHOWCADOPAQUE\n");

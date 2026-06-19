@@ -2586,7 +2586,6 @@ void ScriptLoadBoundary(scriptdata *scripti, int meshnum){
       }
     }
   }
-  void HideInternalBlockages(void);
   HideInternalBlockages();
   if(count == 0){
     fprintf(stderr, "*** Error: Boundary files of type %s failed to load\n", scripti->cval);

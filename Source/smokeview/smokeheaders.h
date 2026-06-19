@@ -286,6 +286,12 @@ EXTERNCPP void UpdateIndexColors(void);
 EXTERNCPP void UpdateSelectBlocks(void);
 EXTERNCPP void UpdateSelectFaces(void);
 
+//*** menus.c headers
+
+EXTERNCPP void HideImmersedMenu(void);
+EXTERNCPP void HideInternalBlockages(void);
+EXTERNCPP void ShowInternalBlockages(void);
+
 //*** getdatabounds.c headers
 
 EXTERNCPP void AdjustPart5Chops(void);
@@ -694,7 +700,6 @@ EXTERNCPP void ShowBoundaryMenu(int value);
 EXTERNCPP void ShowDevicesMenu(int value);
 EXTERNCPP void ShowHideMenu(int val);
 EXTERNCPP void ShowHideSliceMenu(int var);
-EXTERNCPP void ShowInternalBlockages(void);
 EXTERNCPP void ShowObjectsMenu(int var);
 EXTERNCPP void ShowVSliceMenu(int value);
 EXTERNCPP void ScriptMenu(int var);

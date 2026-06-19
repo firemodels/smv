@@ -1931,7 +1931,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     boundary_loaded = 1;
     from_read_boundary = 1;
 
-    void HideInternalBlockages(void);
     HideInternalBlockages();
     if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES && output_patchdata==1){
       int j;
@@ -2207,13 +2206,48 @@ void SetTimeState(void){
   }
 }
 
+/* ------------------ SaveObstGeomShowSettings ------------------------ */
+
+void SaveObstGeomShowSettings(void){
+  if(obstgeom_state == OBSTGEOM_SAVE)return;
+  obstgeom_state          = OBSTGEOM_SAVE;
+  show_faces_shaded_save  = show_faces_shaded;
+  show_faces_outline_save = show_faces_outline;
+
+  solid_state_save        = solid_state;
+  outline_state_save      = outline_state;
+  visBlocks_save          = visBlocks;
+}
+
+/* ------------------ RestoreObstGeomShowSettings ------------------------ */
+
+void RestoreObstGeomShowSettings(void){
+  if(obstgeom_state == OBSTGEOM_SAVE){
+    obstgeom_state = OBSTGEOM_RESTORE;
+    show_faces_shaded = show_faces_shaded_save;
+    show_faces_outline = show_faces_outline_save;
+
+    solid_state = solid_state_save;
+    outline_state = outline_state_save;
+    visBlocks = visBlocks_save;
+  }
+}
+
 /* ------------------ ReadBoundary ------------------------ */
 
 FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
   patchdata *patchi;
   FILE_SIZE return_filesize = 0;
 
-
+  if(load_flag==UNLOAD){
+    RestoreObstGeomShowSettings();
+  }
+  else if(load_flag ==LOAD){
+    SaveObstGeomShowSettings();
+  }
+  else{
+    assert(FFALSE);
+  }
   SetTimeState();
   patchi = global_scase.patchinfo + ifile;
   if(patchi->structured == NO){
