@@ -7397,7 +7397,7 @@ int IsBoundaryType(int type){
 /* ------------------ GetBoundaryDisplay ------------------------ */
 
 int GetBoundaryDisplay(void){
-  if(IsBoundaryType(0) == 1)return 1;
+  if(show_boundaryfiles_interior == 1)return 1;
   for(int i = 1;i < 7;i++){
     if(IsBoundaryType(i) == 1 && vis_boundary_type[i]==1)return 1;
   }
