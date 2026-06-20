@@ -8894,12 +8894,12 @@ if(opengl_finalized == 0)return;
     }
     GLUTADDSUBMENU("Exterior", showpatchextmenu);
     if(vis_boundary_type[INTERIORwall] == 1){
-      glutAddMenuEntry("*Show Interior", SHOW_INTERIOR_WALL_MENU);
-      glutAddMenuEntry("Hide Interior", HIDE_INTERIOR_WALL_MENU);
+      glutAddMenuEntry("*Show interior", SHOW_INTERIOR_WALL_MENU);
+      glutAddMenuEntry("Hide interior",  HIDE_INTERIOR_WALL_MENU);
     }
     if(vis_boundary_type[INTERIORwall] == 0){
-      glutAddMenuEntry("Show Interior", SHOW_INTERIOR_WALL_MENU);
-      glutAddMenuEntry("*Hide Interior", HIDE_INTERIOR_WALL_MENU);
+      glutAddMenuEntry("Show interior",  SHOW_INTERIOR_WALL_MENU);
+      glutAddMenuEntry("*Hide interior", HIDE_INTERIOR_WALL_MENU);
     }
   }
 
