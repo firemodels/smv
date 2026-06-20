@@ -7374,19 +7374,6 @@ int GetNTotalVents(void){
   return ntotal_vents;
 }
 
-/* ------------------ HaveInternalPatchFaces ------------------------ */
-
-int HaveInternalPatchFaces(void){
-  for(int i = 0; i < global_scase.npatchinfo; i++){
-    patchdata *patchi = global_scase.patchinfo + i;
-    for(int n = 0; n < patchi->npatches; n++){
-      patchfacedata *pfi = patchi->patchfaceinfo + n;
-      if(pfi->internal_mesh_face == 1)return 1;
-    }
-  }
-  return 0;
-}
-
 /* ------------------ IsBoundaryType ------------------------ */
 
 int IsBoundaryType(int type){
@@ -7410,7 +7397,7 @@ int IsBoundaryType(int type){
 /* ------------------ GetBoundaryDisplay ------------------------ */
 
 int GetBoundaryDisplay(void){
-  if(HaveInternalPatchFaces() == 1 && show_boundaryfiles_interior == 1)return 1;
+  if(show_boundaryfiles_interior == 1)return 1;
   for(int i = 1;i < 7;i++){
     if(IsBoundaryType(i) == 1 && vis_boundary_type[i]==1)return 1;
   }
