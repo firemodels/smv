@@ -2399,6 +2399,7 @@ void UpdateFacesWorker(void){
 
     meshi = global_scase.meshescoll.meshinfo + i;
     faceptr = meshi->faceinfo;
+    if(faceptr == NULL)continue;
     for(j=0;j<meshi->nbptrs;j++){
       blockagedata *bc;
 
