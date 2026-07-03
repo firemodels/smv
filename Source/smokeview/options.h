@@ -19,6 +19,7 @@
 //#define pp_READ_KEYBOARD      // read keyboard in the command shell so the visualization can be paused 
 //#define pp_GETMESH_TEST
 //#define pp_COMPRESS         // new compression code
+//#define pp_ZONEVENT         // shouldn't need code surrounded by this directive
 
 //*** options: windows
 
