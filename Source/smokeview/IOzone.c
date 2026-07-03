@@ -396,13 +396,15 @@ void GetZoneDataCSV(int nzone_times_local, int nrooms_local, int nfires_local, i
       vent_index=i+1-global_scase.nzhvents-global_scase.nzvvents;
     }
     sprintf(label, "%s_%i", vent_type,vent_index);
-    zonevents_devs[i] = GetDeviceFromLabel(label, -1);
-    if(zonevents_devs[i] == NULL || zonevents_devs[i]->nvals != nzone_times_local){
-      *error=1;
-      FREEZONEMEM;
-      return;
+    if(zonevents_devs!=NULL){
+      zonevents_devs[i] = GetDeviceFromLabel(label, -1);
+      if(zonevents_devs[i] == NULL || zonevents_devs[i]->nvals != nzone_times_local){
+        *error=1;
+        FREEZONEMEM;
+        return;
+      }
+      zonevents_devs[i]->in_zone_csv = 1;
     }
-    zonevents_devs[i]->in_zone_csv = 1;
   }
 
 //  setup devices that describe VENTS
@@ -427,30 +429,46 @@ void GetZoneDataCSV(int nzone_times_local, int nrooms_local, int nfires_local, i
       max_slabs = MAX_MSLABS;
     }
     sprintf(label, "%s_%i", vent_type, vent_index);
-    zoneslab_n_devs[i] = GetDeviceFromLabel(label, -1);
-    if(zoneslab_n_devs[i] != NULL){
-      have_ventslab_flow = 1;
-      break;
+    if(zoneslab_n_devs != NULL){
+      zoneslab_n_devs[i] = GetDeviceFromLabel(label, -1);
+      if(zoneslab_n_devs[i] != NULL){
+        have_ventslab_flow = 1;
+        break;
+      }
     }
     for(islab = 0; islab < max_slabs; islab++){
       int idev;
 
       idev = MAX_HSLABS * i + islab;
       sprintf(label, "%s_%i_%i", vent_type, vent_index, islab+1);
-      zoneslab_T_devs[idev] = GetDeviceFromLabel(label, -1);
-      if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
+      if(zoneslab_T_devs != NULL){
+        zoneslab_T_devs[idev] = GetDeviceFromLabel(label, -1);
+        if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
+      }
 
       sprintf(label, "%sF_%i_%i", vent_type, vent_index, islab+1);
-      zoneslab_F_devs[idev] = GetDeviceFromLabel(label, -1);
-      if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
+      if(zoneslab_F_devs != NULL){
+        zoneslab_F_devs[idev] = GetDeviceFromLabel(label, -1);
+      }
+      if(zoneslab_T_devs != NULL){
+        if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
+      }
 
       sprintf(label, "%sYB_%i_%i", vent_type, vent_index, islab+1);
-      zoneslab_YB_devs[idev] = GetDeviceFromLabel(label, -1);
-      if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
+      if(zoneslab_YB_devs != NULL){
+        zoneslab_YB_devs[idev] = GetDeviceFromLabel(label, -1);
+      }
+      if(zoneslab_T_devs != NULL){
+        if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
+      }
 
       sprintf(label, "%sYT_%i_%i", vent_type, vent_index, islab+1);
-      zoneslab_YT_devs[idev] = GetDeviceFromLabel(label, -1);
-      if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
+      if(zoneslab_YT_devs != NULL){
+        zoneslab_YT_devs[idev] = GetDeviceFromLabel(label, -1);
+      }
+      if(zoneslab_T_devs != NULL){
+        if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
+      }
     }
     if(have_ventslab_flow == 1)break;
   }
