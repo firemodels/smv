@@ -374,9 +374,11 @@ void GetZoneDataCSV(int nzone_times_local, int nrooms_local, int nfires_local, i
     }
     zonefarea_devs[i]->in_zone_csv=1;
   }
+#ifdef pp_ZONEVENT
   if(zonevents_devs == NULL)return;
   if(zoneslab_n_devs == NULL)return;
   if(zoneslab_T_devs == NULL || zoneslab_F_devs == NULL || zoneslab_YB_devs == NULL||zoneslab_YT_devs == NULL)return;
+#endif
   for(i = 0; i < global_scase.nzhvents+global_scase.nzvvents+global_scase.nzmvents; i++){
     char label[100],vent_type[10];
     int vent_index;
