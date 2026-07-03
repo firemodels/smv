@@ -374,125 +374,6 @@ void GetZoneDataCSV(int nzone_times_local, int nrooms_local, int nfires_local, i
     }
     zonefarea_devs[i]->in_zone_csv=1;
   }
-  if(zonevents_devs == NULL)return;
-  if(zoneslab_n_devs == NULL)return;
-  if(zoneslab_T_devs == NULL || zoneslab_F_devs == NULL || zoneslab_YB_devs == NULL||zoneslab_YT_devs == NULL)return;
-  for(i = 0; i < global_scase.nzhvents+global_scase.nzvvents+global_scase.nzmvents; i++){
-    char label[100],vent_type[10];
-    int vent_index;
-
-    if(i<global_scase.nzhvents){
-      strcpy(vent_type,"HVENT");
-      vent_index=i+1;
-    }
-    else if(i>=global_scase.nzhvents&&i<global_scase.nzhvents+global_scase.nzvvents){
-      strcpy(vent_type,"VVENT");
-      vent_index=i+1-global_scase.nzhvents;
-    }
-    else{
-      strcpy(vent_type,"MVENT");
-      vent_index=i+1-global_scase.nzhvents-global_scase.nzvvents;
-    }
-    sprintf(label, "%s_%i", vent_type,vent_index);
-    zonevents_devs[i] = GetDeviceFromLabel(label, -1);
-    if(zonevents_devs[i] == NULL || zonevents_devs[i]->nvals != nzone_times_local){
-      *error=1;
-      FREEZONEMEM;
-      return;
-    }
-    zonevents_devs[i]->in_zone_csv = 1;
-  }
-
-//  setup devices that describe VENTS
-  have_ventslab_flow = 0;
-  for(i = 0; i < global_scase.nzhvents+global_scase.nzvvents+global_scase.nzmvents; i++){
-    char label[100], vent_type[10];
-    int islab, vent_index, max_slabs;
-
-    if(i<global_scase.nzhvents){
-      vent_index = 1+i;
-      strcpy(vent_type, "HSLAB");
-      max_slabs = MAX_HSLABS;
-    }
-    else if(i>=global_scase.nzhvents&&i<global_scase.nzhvents+global_scase.nzvvents){
-      vent_index = 1+i-global_scase.nzhvents;
-      strcpy(vent_type, "VSLAB");
-      max_slabs = MAX_VSLABS;
-    }
-    else{
-      vent_index = 1+i-global_scase.nzhvents-global_scase.nzvvents;
-      strcpy(vent_type, "MSLAB");
-      max_slabs = MAX_MSLABS;
-    }
-    sprintf(label, "%s_%i", vent_type, vent_index);
-    zoneslab_n_devs[i] = GetDeviceFromLabel(label, -1);
-    if(zoneslab_n_devs[i] != NULL){
-      have_ventslab_flow = 1;
-      break;
-    }
-    for(islab = 0; islab < max_slabs; islab++){
-      int idev;
-
-      idev = MAX_HSLABS * i + islab;
-      sprintf(label, "%s_%i_%i", vent_type, vent_index, islab+1);
-      zoneslab_T_devs[idev] = GetDeviceFromLabel(label, -1);
-      if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
-
-      sprintf(label, "%sF_%i_%i", vent_type, vent_index, islab+1);
-      zoneslab_F_devs[idev] = GetDeviceFromLabel(label, -1);
-      if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
-
-      sprintf(label, "%sYB_%i_%i", vent_type, vent_index, islab+1);
-      zoneslab_YB_devs[idev] = GetDeviceFromLabel(label, -1);
-      if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
-
-      sprintf(label, "%sYT_%i_%i", vent_type, vent_index, islab+1);
-      zoneslab_YT_devs[idev] = GetDeviceFromLabel(label, -1);
-      if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
-    }
-    if(have_ventslab_flow == 1)break;
-  }
-  if(have_ventslab_flow == 1){
-    for(i = 0; i < global_scase.nzhvents+global_scase.nzvvents+global_scase.nzmvents; i++){
-      char label[100], vent_type[10];
-      int islab, vent_index, max_slabs;
-
-      if(i<global_scase.nzhvents){
-        vent_index = 1+i;
-        strcpy(vent_type, "HSLAB");
-        max_slabs = MAX_HSLABS;
-      }
-      else if(i>=global_scase.nzhvents&&i<global_scase.nzhvents+global_scase.nzvvents){
-        vent_index = 1+i-global_scase.nzhvents;
-        strcpy(vent_type, "VSLAB");
-        max_slabs = MAX_VSLABS;
-      }
-      else{
-        vent_index = 1+i-global_scase.nzhvents-global_scase.nzvvents;
-        strcpy(vent_type, "MSLAB");
-        max_slabs = MAX_MSLABS;
-      }
-
-      sprintf(label, "%s_%i", vent_type, vent_index);
-      GETZONEDEV(zoneslab_n_devs[i]);
-      for(islab = 0; islab < max_slabs; islab++){
-        int idev;
-
-        idev = MAX_HSLABS * i + islab;
-        sprintf(label, "%sT_%i_%i", vent_type, vent_index, islab + 1);
-        GETZONEDEV(zoneslab_T_devs[idev]);
-
-        sprintf(label, "%sF_%i_%i", vent_type, vent_index, islab + 1);
-        GETZONEDEV(zoneslab_F_devs[idev]);
-
-        sprintf(label, "%sYB_%i_%i", vent_type, vent_index, islab + 1);
-        GETZONEDEV(zoneslab_YB_devs[idev]);
-
-        sprintf(label, "%sYT_%i_%i", vent_type, vent_index, islab + 1);
-        GETZONEDEV(zoneslab_YT_devs[idev]);
-      }
-    }
-  }
 
   iir=0;
   iif=0;
@@ -611,6 +492,126 @@ void GetZoneDataCSV(int nzone_times_local, int nrooms_local, int nfires_local, i
         if(zoneslab_YT_devs[idev]!=NULL)zoneslab_YT_local[ival] = zoneslab_YT_devs[idev]->vals[i];
       }
       iihv++;
+    }
+  }
+
+  if(zonevents_devs == NULL)return;
+  if(zoneslab_n_devs == NULL)return;
+  if(zoneslab_T_devs == NULL || zoneslab_F_devs == NULL || zoneslab_YB_devs == NULL || zoneslab_YT_devs == NULL)return;
+  for(i = 0; i < global_scase.nzhvents + global_scase.nzvvents + global_scase.nzmvents; i++){
+    char label[100], vent_type[10];
+    int vent_index;
+
+    if(i < global_scase.nzhvents){
+      strcpy(vent_type, "HVENT");
+      vent_index = i + 1;
+    }
+    else if(i >= global_scase.nzhvents && i < global_scase.nzhvents + global_scase.nzvvents){
+      strcpy(vent_type, "VVENT");
+      vent_index = i + 1 - global_scase.nzhvents;
+    }
+    else{
+      strcpy(vent_type, "MVENT");
+      vent_index = i + 1 - global_scase.nzhvents - global_scase.nzvvents;
+    }
+    sprintf(label, "%s_%i", vent_type, vent_index);
+    zonevents_devs[i] = GetDeviceFromLabel(label, -1);
+    if(zonevents_devs[i] == NULL || zonevents_devs[i]->nvals != nzone_times_local){
+      *error = 1;
+      FREEZONEMEM;
+      return;
+    }
+    zonevents_devs[i]->in_zone_csv = 1;
+  }
+
+  //  setup devices that describe VENTS
+  have_ventslab_flow = 0;
+  for(i = 0; i < global_scase.nzhvents + global_scase.nzvvents + global_scase.nzmvents; i++){
+    char label[100], vent_type[10];
+    int islab, vent_index, max_slabs;
+
+    if(i < global_scase.nzhvents){
+      vent_index = 1 + i;
+      strcpy(vent_type, "HSLAB");
+      max_slabs = MAX_HSLABS;
+    }
+    else if(i >= global_scase.nzhvents && i < global_scase.nzhvents + global_scase.nzvvents){
+      vent_index = 1 + i - global_scase.nzhvents;
+      strcpy(vent_type, "VSLAB");
+      max_slabs = MAX_VSLABS;
+    }
+    else{
+      vent_index = 1 + i - global_scase.nzhvents - global_scase.nzvvents;
+      strcpy(vent_type, "MSLAB");
+      max_slabs = MAX_MSLABS;
+    }
+    sprintf(label, "%s_%i", vent_type, vent_index);
+    zoneslab_n_devs[i] = GetDeviceFromLabel(label, -1);
+    if(zoneslab_n_devs[i] != NULL){
+      have_ventslab_flow = 1;
+      break;
+    }
+    for(islab = 0; islab < max_slabs; islab++){
+      int idev;
+
+      idev = MAX_HSLABS * i + islab;
+      sprintf(label, "%s_%i_%i", vent_type, vent_index, islab + 1);
+      zoneslab_T_devs[idev] = GetDeviceFromLabel(label, -1);
+      if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
+
+      sprintf(label, "%sF_%i_%i", vent_type, vent_index, islab + 1);
+      zoneslab_F_devs[idev] = GetDeviceFromLabel(label, -1);
+      if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
+
+      sprintf(label, "%sYB_%i_%i", vent_type, vent_index, islab + 1);
+      zoneslab_YB_devs[idev] = GetDeviceFromLabel(label, -1);
+      if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
+
+      sprintf(label, "%sYT_%i_%i", vent_type, vent_index, islab + 1);
+      zoneslab_YT_devs[idev] = GetDeviceFromLabel(label, -1);
+      if(zoneslab_T_devs[idev] != NULL)have_ventslab_flow = 1;
+    }
+    if(have_ventslab_flow == 1)break;
+  }
+  if(have_ventslab_flow == 1){
+    for(i = 0; i < global_scase.nzhvents + global_scase.nzvvents + global_scase.nzmvents; i++){
+      char label[100], vent_type[10];
+      int islab, vent_index, max_slabs;
+
+      if(i < global_scase.nzhvents){
+        vent_index = 1 + i;
+        strcpy(vent_type, "HSLAB");
+        max_slabs = MAX_HSLABS;
+      }
+      else if(i >= global_scase.nzhvents && i < global_scase.nzhvents + global_scase.nzvvents){
+        vent_index = 1 + i - global_scase.nzhvents;
+        strcpy(vent_type, "VSLAB");
+        max_slabs = MAX_VSLABS;
+      }
+      else{
+        vent_index = 1 + i - global_scase.nzhvents - global_scase.nzvvents;
+        strcpy(vent_type, "MSLAB");
+        max_slabs = MAX_MSLABS;
+      }
+
+      sprintf(label, "%s_%i", vent_type, vent_index);
+      GETZONEDEV(zoneslab_n_devs[i]);
+      for(islab = 0; islab < max_slabs; islab++){
+        int idev;
+
+        idev = MAX_HSLABS * i + islab;
+        sprintf(label, "%sT_%i_%i", vent_type, vent_index, islab + 1);
+        GETZONEDEV(zoneslab_T_devs[idev]);
+
+        sprintf(label, "%sF_%i_%i", vent_type, vent_index, islab + 1);
+        GETZONEDEV(zoneslab_F_devs[idev]);
+
+        sprintf(label, "%sYB_%i_%i", vent_type, vent_index, islab + 1);
+        GETZONEDEV(zoneslab_YB_devs[idev]);
+
+        sprintf(label, "%sYT_%i_%i", vent_type, vent_index, islab + 1);
+        GETZONEDEV(zoneslab_YT_devs[idev]);
+      }
     }
   }
 }
