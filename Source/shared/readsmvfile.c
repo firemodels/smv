@@ -897,6 +897,7 @@ void InitMesh(meshdata *meshi){
   meshi->use = 1;
   meshi->isliceinfo    = 0;
   meshi->nsliceinfo    = 0;
+  meshi->nbptrs = 0;
   for(i = 0;i < 6;i++){
     meshi->skip_nabors[i] = NULL;
     meshi->nabors[i]      = NULL;
