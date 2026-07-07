@@ -378,8 +378,9 @@ void DrawPart(const partdata *parti, int mode){
                 }
                 prop = datacopy->partclassbase->prop;
                 CopyDepVals(partclassi, datacopy, colorptr, prop, j);
+#ifdef pp_PART_SCALE
                 glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-
+#endif
                 partfacedir[0] = global_scase.xbar0 + SCALE2SMV(fds_eyepos[0]) - xpos[j];
                 partfacedir[1] = global_scase.ybar0 + SCALE2SMV(fds_eyepos[1]) - ypos[j];
                 partfacedir[2] = global_scase.zbar0 + SCALE2SMV(fds_eyepos[2]) - zpos[j];
