@@ -8,7 +8,7 @@ curdir=`pwd`
 cd ../../Build
 
 BUILDDIR=`pwd`
-CONVERTDIR=$BUILDDIR/convert/intel_${platform}_
+CONVERTDIR=$BUILDDIR/convert/intel_${platform}
 CONVERTPROG=convert_${platform}
 CONVERT=$CONVERTDIR/$CONVERTPROG
 

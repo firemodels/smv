@@ -891,71 +891,6 @@ int GetLoadfileinfo(FILE *stream, char *filename){
   return 0;
 }
 
-  /* ------------------ ConvertSsf ------------------------ */
-
-void ConvertSsf(void){
-  FILE *stream_from, *stream_to;
-  int outeqin = 0;
-#define LENTEMP 20
-  char tempfile[LENTEMP+1];
-  char *template = "tempssf";
-
-  if(ssf_from==NULL||ssf_to==NULL)return;
-  stream_from = FOPEN(ssf_from, "r");
-  if(stream_from==NULL)return;
-
-  if(strcmp(ssf_from, ssf_to)==0){
-    strcpy(tempfile, template);
-    if(RandStr(tempfile+strlen(template), LENTEMP-strlen(template))==NULL||strlen(tempfile)==0){
-      fclose(stream_from);
-      return;
-    }
-    stream_to = FOPEN(tempfile, "w");
-    outeqin = 1;
-  }
-  else{
-    stream_to = FOPEN(ssf_to, "w");
-  }
-  if(stream_to==NULL){
-    fclose(stream_from);
-    return;
-  }
-
-  while(!feof(stream_from)){
-    char buffer[255], filename[255];
-
-    CheckMemory;
-    if(fgets(buffer, 255, stream_from)==NULL)break;
-    TrimBack(buffer);
-    if(strlen(buffer)>=8 && strncmp(buffer, "LOADFILE", 8)==0){
-      if(fgets(filename, 255, stream_from)==NULL)break;
-      if(GetLoadfileinfo(stream_to,filename)==0){
-        fprintf(stream_to, "%s\n", buffer);
-        fprintf(stream_to, "%s\n", filename);
-      }
-    }
-    else if(strlen(buffer)>=9&&strncmp(buffer, "LOADVFILE", 9)==0){
-      if(fgets(filename, 255, stream_from)==NULL)break;
-      if(GetLoadvfileinfo(stream_to, filename)==0){
-        fprintf(stream_to, "%s\n", buffer);
-        fprintf(stream_to, "%s\n", filename);
-      }
-    }
-    else{
-      fprintf(stream_to, "%s\n", buffer);
-    }
-  }
-  fclose(stream_from);
-  fclose(stream_to);
-  if(outeqin == 1){
-    char *tofile;
-
-    tofile = ssf_from;
-    CopyFILE(".",tempfile,tofile,REPLACE_FILE);
-    UNLINK(tempfile);
-  }
-}
-
 /* ------------------ GetTime ------------------------ */
 
 float GetTime(void){
@@ -2275,12 +2210,6 @@ void UpdateShowScene(void){
     WriteIni(SCRIPT_INI, ini_to);
     SMV_EXIT(0);
     END_SHOW_UPDATE(convert_ini);
-  }
-  if(convert_ssf==1||update_ssf==1){
-    SHOW_UPDATE(update_ssf);
-    ConvertSsf();
-    SMV_EXIT(0);
-    END_SHOW_UPDATE(update_ssf);
   }
   INIT_PRINT_TIMER(timer_updateshow);
   UpdateShow();
