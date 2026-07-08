@@ -378,19 +378,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
         convert_ini = 1;
       }
     }
-    if(args->convert_ssf){
-      if(args->ssf_from != NULL&&args->ssf_to != NULL){
-        NewMemory((void **)&ssf_from, strlen(args->ssf_from) + 1);
-        strcpy(ssf_from, args->ssf_from);
-
-        NewMemory((void **)&ssf_to, strlen(args->ssf_to) + 1);
-        strcpy(ssf_to, args->ssf_to);
-        convert_ssf = 1;
-      }
-    }
-    if(args->update_ssf){
-      update_ssf = 1;
-    }
     if(args->update_ini){
       if(args->ini_from != NULL){
         NewMemory((void **)&ini_from, strlen(args->ini_from) + 1);
@@ -552,21 +539,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     if(args->threads_defined){
         n_readallgeom_threads = CLAMP(args->threads, 1, 16);
     }
-  if(update_ssf == 1){
-    int len_prefix = 0;
-
-    len_prefix = strlen(global_scase.fdsprefix);
-
-    FREEMEMORY(ssf_from);
-    NewMemory((void **)&ssf_from, len_prefix + 4 + 1);
-    strcpy(ssf_from, global_scase.fdsprefix);
-    strcat(ssf_from, ".ssf");
-
-    FREEMEMORY(ssf_to);
-    NewMemory((void **)&ssf_to, len_prefix + 4 + 1);
-    strcpy(ssf_to, global_scase.fdsprefix);
-    strcat(ssf_to, ".ssf");
-  }
   return filename_local;
 }
 
