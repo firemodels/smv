@@ -5281,8 +5281,12 @@ int ReadIni2(const char *inifile, int localfile){
       continue;
     }
     if(MatchINI(buffer, "RENDERFILETYPE") == 1){
+      int render_overwrite_local = -1;
+
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i", &render_filetype, &movie_filetype, &render_resolution);
+      sscanf(buffer, "%i %i %i %i", 
+        &render_filetype, &movie_filetype, &render_resolution, &render_overwrite_local);
+      if(render_overwrite_local != -1)render_overwrite  = CLAMP(render_overwrite_local,0,1);
       RenderCB(RENDER_RESOLUTION);
       continue;
     }
@@ -8355,7 +8359,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "RENDERFILELABEL\n");
   fprintf(fileout, " %i\n", render_label_type);
   fprintf(fileout, "RENDERFILETYPE\n");
-  fprintf(fileout," %i %i %i\n",render_filetype, movie_filetype, render_resolution);
+  fprintf(fileout," %i %i %i %i\n",render_filetype, movie_filetype, render_resolution, render_overwrite);
   {
     int quicktime_dummy=1;
 

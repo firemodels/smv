@@ -2622,14 +2622,15 @@ void Keyboard(unsigned char key, int flag){
           }
         }
         if(stept == 1){
-          //if(render_skip!=RENDER_CURRENT_SINGLE)render_skip = 1;
+          render_skip = render_skip_save;
         }
         else{
           if(flag==FROM_CALLBACK){
             last_time_paused = 0;
           }
           itime_save = -1;
-          render_skip = RENDER_CURRENT_SINGLE;
+          render_skip_save = render_skip;
+          render_skip      = RENDER_CURRENT_SINGLE;
         }
         updatemenu = 1;
         UpdateRenderListSkip();

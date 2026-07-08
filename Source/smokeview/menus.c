@@ -2017,6 +2017,10 @@ void RenderMenu(int value){
     }
     Keyboard('R',FROM_SMOKEVIEW);
     break;
+  case RenderOverwrite:
+    render_overwrite = 1 - render_overwrite;
+    GLUIUpdateRenderOverwrite();
+    break;
   case RenderCancel:
     RenderState(RENDER_OFF);
     break;
@@ -11257,6 +11261,8 @@ if(opengl_finalized == 0)return;
     CREATEMENU(rendermenu,RenderMenu);
     GLUTADDSUBMENU("Start rendering",  render_startmenu);
     glutAddMenuEntry("Stop rendering", RenderCancel);
+    if(render_overwrite==1)glutAddMenuEntry("*Overwrite rendered images", RenderOverwrite);
+    if(render_overwrite == 0)glutAddMenuEntry("Overwrite rendered images", RenderOverwrite);
 
     glutAddMenuEntry("-", MENU_DUMMY);
 
