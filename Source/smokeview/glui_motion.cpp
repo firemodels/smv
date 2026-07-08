@@ -124,6 +124,7 @@ GLUI_Spinner *SPINNER_background_red=NULL;
 GLUI_Spinner *SPINNER_background_green=NULL;
 GLUI_Spinner *SPINNER_background_blue=NULL;
 
+GLUI_Checkbox *CHECKBOX_overwrite_image = NULL;
 GLUI_Checkbox *CHECKBOX_fix_window_aspect = NULL;
 GLUI_Checkbox *CHECKBOX_use_geom_factors = NULL;
 GLUI_Checkbox *CHECKBOX_use_customview=NULL;
@@ -310,6 +311,11 @@ extern "C" void GLUICloseRollouts(GLUI *dialog){
   }
 }
 
+/* ------------------ GLUIUpdateRenderOverwrite ------------------------ */
+
+extern "C" void GLUIUpdateRenderOverwrite(void){
+  if(CHECKBOX_overwrite_image!=NULL)CHECKBOX_overwrite_image->set_int_val(render_overwrite);
+}
 /* ------------------ GLUIUpdateFarclip ------------------------ */
 
 extern "C" void GLUIUpdateFarclip(void){
@@ -1444,6 +1450,8 @@ extern "C" void GLUIMotionSetup(int main_window){
 
   BUTTON_render_start = glui_motion->add_button_to_panel(ROLLOUT_render, "Start rendering", RENDER_START_TOP, RenderCB);
   glui_motion->add_button_to_panel(ROLLOUT_render, "Stop rendering", RENDER_STOP, RenderCB);
+
+  CHECKBOX_overwrite_image = glui_motion->add_checkbox_to_panel(ROLLOUT_render, "overwrite rendered images", &render_overwrite, RENDER_OVERWRITE, RenderCB);
 
   ROLLOUT_name = glui_motion->add_rollout_to_panel(ROLLOUT_render, "File name/type", false, RENDER_FILE_ROLLOUT, SubRenderRolloutCB);
   TOGGLE_ROLLOUT(subrenderprocinfo,nsubrenderprocinfo,ROLLOUT_name,RENDER_FILE_ROLLOUT, glui_motion);
@@ -2784,6 +2792,9 @@ void RenderCB(int var){
           RenderMenu(RenderStartHIGHRES);
         }
       }
+      break;
+    case RENDER_OVERWRITE:
+      updatemenu = 1;
       break;
     case RENDER_STOP:
       RenderMenu(RenderCancel);

@@ -735,6 +735,30 @@ GLubyte *GetScreenBuffer(void){
 
 }
 
+/* ------------------ CheckRenderFile ------------------------ */
+
+int CheckRenderFile(char *file){
+  if(render_overwrite_commandline == 0 && render_overwrite == 0){
+    FILE *renderstream = NULL;
+
+    renderstream = fopen(file, "rb");
+    if(renderstream != NULL){
+      printf("************************************************\n");
+      printf("************************************************\n");
+      printf("************************************************\n");
+      printf("***error: the render file, %s, exists.\n", file);
+      printf("          To render, use the -render_overwrite command line option\n");
+      printf("          or erase previously rendered files\n");
+      printf("************************************************\n");
+      printf("************************************************\n");
+      printf("************************************************\n");
+      fclose(renderstream);
+      return 1;
+    }
+  }
+  return 0;
+}
+
 /* ------------------ MergeRenderScreenBuffers ------------------------ */
 
 int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
@@ -766,6 +790,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
     if(len>0&&renderfile_dir[len-1]!=dirseparator[0])strcat(renderfullfile,dirseparator);
   }
   strcat(renderfullfile,renderfile);
+  if(CheckRenderFile(renderfullfile)==1)return 1;
 
   RENDERfile = FOPEN(renderfullfile, "wb");
   if(RENDERfile == NULL){
@@ -1260,6 +1285,7 @@ int MergeRenderScreenBuffers360(void){
     if(len>0&&renderfile_dir[len-1]!=dirseparator[0])strcat(renderfullfile,dirseparator);
   }
   strcat(renderfullfile,renderfile);
+  if(CheckRenderFile(renderfullfile)==1)return 1;
 
   RENDERfile = FOPEN(renderfullfile, "wb");
   if(RENDERfile == NULL){
@@ -1431,6 +1457,7 @@ int SmokeviewImage2File(char *directory, char *RENDERfilename, int rendertype, i
     fprintf(stderr,"*** Error: unable to render screen image to %s", RENDERfilename);
     return 1;
   }
+  if(CheckRenderFile(renderfile)==1)return 1;
   RENDERfile = FOPEN(renderfile, "wb");
   if(RENDERfile == NULL){
     fprintf(stderr,"*** Error: unable to render screen image to %s", renderfile);
