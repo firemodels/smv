@@ -23,8 +23,6 @@
 
 #include <assert.h>
 
-
-
 /* ------------------ Usage ------------------------ */
 
 void Usage(int option){
