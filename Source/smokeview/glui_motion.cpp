@@ -381,7 +381,8 @@ extern "C" void GLUIUpdateRenderRadioButtons(int width_low, int height_low, int 
     if(RADIOBUTTON_render_current != NULL)RADIOBUTTON_render_current->set_name(label);
 
     //sprintf(label, "%ix%i ( %i x current)", width_high, height_high, glui_resolution_multiplier);
-    snprintf(label, sizeof(label), "%ix%i ( %i x current)", width_high, height_high, glui_resolution_multiplier);
+    snprintf(label, sizeof(label), "%ix%i ( %i x current)", width_high, height_high,
+      MAX(MIN_RESOLUTION_MULTIPLIER, glui_resolution_multiplier));
     if(RADIOBUTTON_render_high != NULL)RADIOBUTTON_render_high->set_name(label);
   }
 
@@ -579,8 +580,9 @@ void UpdateZaxisAngles(void){
 /* ------------------ GLUIUpdateResolutionMultiplier ------------------------ */
 
 extern "C" void GLUIUpdateResolutionMultiplier(void){
-  if(SPINNER_resolution_multiplier!=NULL&&resolution_multiplier!=SPINNER_resolution_multiplier->get_int_val()){
-    SPINNER_resolution_multiplier->set_int_val(resolution_multiplier);
+  glui_resolution_multiplier = CLAMP(glui_resolution_multiplier, MIN_RESOLUTION_MULTIPLIER, MAX_RESOLUTION_MULTIPLIER);
+  if(SPINNER_resolution_multiplier!=NULL&&glui_resolution_multiplier!=SPINNER_resolution_multiplier->get_int_val()){
+    SPINNER_resolution_multiplier->set_int_val(glui_resolution_multiplier);
   }
 }
 
@@ -1497,9 +1499,9 @@ extern "C" void GLUIMotionSetup(int main_window){
   render_size_index = RenderWindow;
   RenderCB(RENDER_RESOLUTION);
 
-  glui_resolution_multiplier=CLAMP(resolution_multiplier,1,10);
+  glui_resolution_multiplier=CLAMP(resolution_multiplier, MIN_RESOLUTION_MULTIPLIER, MAX_RESOLUTION_MULTIPLIER);
   SPINNER_resolution_multiplier = glui_motion->add_spinner_to_panel(ROLLOUT_image_size, "multiplier:", GLUI_SPINNER_INT, &glui_resolution_multiplier, RENDER_MULTIPLIER, RenderCB);
-  SPINNER_resolution_multiplier->set_int_limits(1, 10);
+  SPINNER_resolution_multiplier->set_int_limits(MIN_RESOLUTION_MULTIPLIER, MAX_RESOLUTION_MULTIPLIER);
   RenderCB(RENDER_MULTIPLIER);
 
   PANEL_360 = glui_motion->add_panel_to_panel(ROLLOUT_image_size, (char *)deg360, true);
@@ -2659,6 +2661,8 @@ void RenderCB(int var){
       {
         int width_low, height_low, width_high, height_high;
 
+        glui_resolution_multiplier=CLAMP(glui_resolution_multiplier, MIN_RESOLUTION_MULTIPLIER, MAX_RESOLUTION_MULTIPLIER);
+        GLUIUpdateResolutionMultiplier();
         GetRenderResolution(&width_low, &height_low, &width_high, &height_high);
         GLUIUpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
       }
