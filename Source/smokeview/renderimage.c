@@ -185,8 +185,8 @@ void MakeMovie(void){
 void ResetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high){
   *width_low = screenWidth;
   *height_low = screenHeight;
-  *width_high = *width_low*MAX(2, resolution_multiplier);
-  *height_high = *height_low*MAX(2, resolution_multiplier);
+  *width_high = *width_low*MAX(MIN_RESOLUTION_MULTIPLIER, resolution_multiplier);
+  *height_high = *height_low*MAX(MIN_RESOLUTION_MULTIPLIER, resolution_multiplier);
 }
 
 /* ------------------ GetRenderResolution ------------------------ */
@@ -200,8 +200,8 @@ void GetRenderResolution(int *width_low, int *height_low, int *width_high, int *
     *width_low = renderW;
     *height_low = renderH;
   }
-  *width_high = *width_low*MAX(2, glui_resolution_multiplier);
-  *height_high = *height_low*MAX(2, glui_resolution_multiplier);
+  *width_high = *width_low*MAX(MIN_RESOLUTION_MULTIPLIER, glui_resolution_multiplier);
+  *height_high = *height_low*MAX(MIN_RESOLUTION_MULTIPLIER, glui_resolution_multiplier);
 }
 
 /* ------------------ Render ------------------------ */
