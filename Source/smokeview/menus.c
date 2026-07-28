@@ -1946,7 +1946,8 @@ void RenderMenu(int value){
   if(value>=11000)return;
   GLUTPOSTREDISPLAY;
   if(value>=10000&&value<=10005){
-    resolution_multiplier=value-10000;
+    glui_resolution_multiplier=CLAMP(value-10000, MIN_RESOLUTION_MULTIPLIER, MAX_RESOLUTION_MULTIPLIER);
+    resolution_multiplier=glui_resolution_multiplier;
     GLUIUpdateResolutionMultiplier();
     return;
   }
@@ -2039,6 +2040,7 @@ void RenderMenu(int value){
     break;
   case RenderStartHIGHRES:
     render_mode = RENDER_NORMAL;
+    glui_resolution_multiplier=CLAMP(glui_resolution_multiplier, MIN_RESOLUTION_MULTIPLIER, MAX_RESOLUTION_MULTIPLIER);
     resolution_multiplier=glui_resolution_multiplier;
     RenderMenu(RenderStart);
     break;
@@ -11220,6 +11222,7 @@ if(opengl_finalized == 0)return;
         height = renderH;
       }
 
+      glui_resolution_multiplier = CLAMP(glui_resolution_multiplier, MIN_RESOLUTION_MULTIPLIER, MAX_RESOLUTION_MULTIPLIER);
       factor = glui_resolution_multiplier;
       sprintf(sizeORIGRES, "%ix%i", width, height);
       sprintf(sizeHIGHRES, "%ix%i", width*factor, height*factor);
@@ -11265,7 +11268,7 @@ if(opengl_finalized == 0)return;
     if(render_current==1){
       char res_menu[128];
 
-      sprintf(res_menu, "Image size multiplier/%ix", resolution_multiplier);
+      sprintf(res_menu, "Image size multiplier/%ix", glui_resolution_multiplier);
       GLUTADDSUBMENU(res_menu, resolutionmultipliermenu);
     }
     GLUTADDSUBMENU("Image type",        render_filetypemenu);
@@ -11628,7 +11631,8 @@ if(opengl_finalized == 0)return;
     char render_label[1024];
     unsigned char deg360[] = {'3', '6', '0', 0};
 
-    sprintf(render_label, "            R: image has %i times the resolution of of scene", MAX(2, resolution_multiplier));
+    sprintf(render_label, "            R: image has %i times the resolution of of scene",
+      MAX(MIN_RESOLUTION_MULTIPLIER, glui_resolution_multiplier));
     glutAddMenuEntry(render_label, MENU_DUMMY);
     sprintf(render_label, "    ALT R: %s view - all view directions are shown in a 1024x512 image", deg360);
     glutAddMenuEntry(render_label, MENU_DUMMY);
