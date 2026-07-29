@@ -127,7 +127,7 @@ EXTERNCPP void GLUIUpdateCameraLabel(void);
 EXTERNCPP void GLUISceneMotionCB(int var);
 EXTERNCPP void GLUIUpdateWindowSizeList(void);
 EXTERNCPP void GLUIUpdateGsliceParms(void);
-EXTERNCPP void GLUIUpdateResolutionMultiplier(void);
+EXTERNCPP int  GLUIUpdateResolutionMultiplier(int var);
 EXTERNCPP void GLUISetColorControls(void);
 EXTERNCPP void GLUIShowMotion(int menu_id);
 EXTERNCPP void GLUIHideMotion(void);

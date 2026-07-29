@@ -2483,7 +2483,7 @@ void Keyboard(unsigned char key, int flag){
         }
 
         if(strncmp((const char *)&key2, "R", 1)==0&&keystate!=GLUT_ACTIVE_ALT){
-          glui_resolution_multiplier = CLAMP(glui_resolution_multiplier, MIN_RESOLUTION_MULTIPLIER, MAX_RESOLUTION_MULTIPLIER);
+          glui_resolution_multiplier = GLUIUpdateResolutionMultiplier(glui_resolution_multiplier);
           resolution_multiplier = glui_resolution_multiplier;
         }
         else{
