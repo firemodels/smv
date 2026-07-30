@@ -897,7 +897,7 @@ SVEXTERN int SVDECL(trainer_temp_n,0),SVDECL(trainer_oxy_n,0);
 SVEXTERN char SVDECL(*tr_name,NULL);
 SVEXTERN int SVDECL(showdevice_val, 0), SVDECL(showvdevice_val, 0);
 SVEXTERN int SVDECL(show_plot2d_xlabels, 1), SVDECL(show_plot2d_ylabels, 1), SVDECL(show_plot2d_title, 1);
-SVEXTERN int SVDECL(average_plot2d_slice_region, 0), SVDECL(show_plot2d_slice_position, 1);;
+SVEXTERN int SVDECL(average_plot2d_slice_region, 0), SVDECL(show_plot2d_slice_position, 1);
 SVEXTERN int SVDECL(colordevice_val, 0), SVDECL(showdevice_id, 0);
 SVEXTERN int SVDECL(select_device, 0);
 SVEXTERN char plot2d_xaxis_label[301];
@@ -1302,7 +1302,7 @@ SVEXTERN int SVDECL(glui_active,0);
 
 SVEXTERN int SVDECL(old_draw_colorlabel,0);
 SVEXTERN int SVDECL(vis3DSmoke3D,1);
-SVEXTERN int SVDECL(smokeskip,1),SVDECL(smoke3d_frame_inc,1),SVDECL(update_smoke3d_frame_inc,0);;
+SVEXTERN int SVDECL(smokeskip,1),SVDECL(smoke3d_frame_inc,1),SVDECL(update_smoke3d_frame_inc,0);
 SVEXTERN float SVDECL(scene_aspect_ratio,1.0);
 
 SVEXTERN int SVDECL(fix_window_aspect, 0);
@@ -2054,7 +2054,7 @@ SVEXTERN float streak_rvalue[8]={0.25,0.5,1.0,2.0,4.0,8.0,16.0,32.0};
 SVEXTERN float streak_rvalue[8];
 #endif
 SVEXTERN int SVDECL(streak_index,-1), SVDECL(update_streaks,0);
-SVEXTERN float SVDECL(float_streak5value,0.0);;
+SVEXTERN float SVDECL(float_streak5value,0.0);
 SVEXTERN partpropdata SVDECL(*part5propinfo,NULL), SVDECL(*current_property,NULL);
 SVEXTERN int SVDECL(npart5prop,0),ipart5prop,ipart5prop_old;
 SVEXTERN int SVDECL(global_prop_index,-1);

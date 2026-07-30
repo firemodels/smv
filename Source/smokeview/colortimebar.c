@@ -1794,7 +1794,7 @@ void DrawVerticalColorbarRegLabels(void){
       float val;
 
       if(iposition == i)continue;
-      val = tttmin + i*isorange / (global_scase.nrgb - 2);;
+      val = tttmin + i*isorange / (global_scase.nrgb - 2);
       val = ScaleFloat(val, isofactor);
       colorbar_vals[i] = val;
     }
