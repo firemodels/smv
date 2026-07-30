@@ -648,7 +648,7 @@ void CreateColorbarSplit(colorbardata *cbi){
   cbi->node_index[1] = 127;
   cbi->node_index[2] = 128;
   cbi->node_index[3] = 255;
-  for (int i = 0; i < 12; i++){
+  for(int i = 0; i < 12; i++){
     cbi->node_rgb[i] = colorsplit[i];
   }
 

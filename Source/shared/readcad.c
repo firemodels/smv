@@ -131,7 +131,7 @@ void ReadCAD2Geom(cadgeomdata *cd, GLfloat block_shininess) {
   cd->cadlookinfo = NULL;
   NewMemory((void **)&cd->cadlookinfo, cd->ncadlookinfo * sizeof(cadlookdata));
 
-  for(i = 0; i < cd->ncadlookinfo; i++) {
+  for(i = 0; i < cd->ncadlookinfo; i++){
     cadlookdata *cdi;
     texturedata *texti;
     int errorcode;
@@ -164,7 +164,7 @@ void ReadCAD2Geom(cadgeomdata *cd, GLfloat block_shininess) {
     *shininess = block_shininess;
     *onesided = 0;
     lenbuffer = strlen(buffer);
-    for(ii = 0; ii < (int)lenbuffer; ii++) {
+    for(ii = 0; ii < (int)lenbuffer; ii++){
       if(buffer[ii] == ',') buffer[ii] = ' ';
     }
 
@@ -254,7 +254,7 @@ void ReadCAD2Geom(cadgeomdata *cd, GLfloat block_shininess) {
   }
 
   iquad = 0;
-  for(i = 0; i < nquads; i++) {
+  for(i = 0; i < nquads; i++){
     float *normal;
     int look_index;
     cadquad *quadi;
@@ -290,7 +290,7 @@ void ReadCAD2Geom(cadgeomdata *cd, GLfloat block_shininess) {
         cd->nquads, iquad);
     cd->nquads = iquad;
   }
-  for(i = 0; i < cd->nquads; i++) {
+  for(i = 0; i < cd->nquads; i++){
     cd->order[i] = i;
   }
   current_cadgeom = cd;
@@ -465,7 +465,7 @@ void FreeCADGeomCollection(cadgeom_collection *coll) {
 /* ------------------ ClearCADGeomCollection ------------------------ */
 
 void ClearCADGeomCollection(cadgeom_collection *coll) {
-  for(int i = 0; i < coll->ncadgeom; i++) {
+  for(int i = 0; i < coll->ncadgeom; i++){
     FreeCADGeom(&(coll->cadgeominfo[i]));
   }
   if(coll->cadgeominfo != NULL) FreeMemory(coll->cadgeominfo);

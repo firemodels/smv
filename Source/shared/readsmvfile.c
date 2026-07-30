@@ -7946,7 +7946,7 @@ typedef struct {
               }
               memcpy(bc->hidden6, hidden6, 6*sizeof(int));
               if(hidden6[0] >= 0)scase->have_hidden6 = 1;
-              for(ii = 0; ii < 6; ii++) {
+              for(ii = 0; ii < 6; ii++){
                 bc->show_bndf[ii] = CLAMP(show_bndf[ii], 0, 1);
               }
             }
