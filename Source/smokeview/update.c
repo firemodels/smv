@@ -2630,7 +2630,7 @@ void UpdateDisplay(void){
     }
     INIT_PRINT_TIMER(timer_hidden_blockages);
 #ifdef _DEBUG
-    int nhidden_faces = 0, ntotal_obsts = 0;;
+    int nhidden_faces = 0, ntotal_obsts = 0;
 #endif
     for(ig = 0; ig < global_scase.meshescoll.nmeshes; ig++){
       meshdata *meshi;
