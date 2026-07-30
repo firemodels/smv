@@ -4672,7 +4672,7 @@ void ScriptCB(int var){
     else if(id >= 0){
       char *script_filename2;
 
-      if(strlen(ini_filename) == 0) {
+      if(strlen(ini_filename) == 0){
         FREEMEMORY(caseini_filename);
         break;
       }
@@ -6263,7 +6263,7 @@ extern "C" void GLUIIsoBoundCB(int var){
     GLUIIsoBoundCB(ISO_COLORS);
     break;
   case ISO_TRANSPARENCY:
-    if(glui_iso_transparency < 0 || glui_iso_transparency > 255) {
+    if(glui_iso_transparency < 0 || glui_iso_transparency > 255){
       glui_iso_transparency = CLAMP(glui_iso_transparency, 0, 255);
       SPINNER_iso_transparency->set_int_val(glui_iso_transparency);
     }
@@ -7063,7 +7063,7 @@ extern "C" void GLUIShowBounds(int menu_id){
     break;
   case DIALOG_AUTOLOAD:
     if(ROLLOUT_autoload->is_open==0){
-      if(ROLLOUT_filebounds->is_open == 0) {
+      if(ROLLOUT_filebounds->is_open == 0){
         FileDataColRolloutCB(DATA_ROLLOUT);
       }
       if(ROLLOUT_time->is_open == 0){

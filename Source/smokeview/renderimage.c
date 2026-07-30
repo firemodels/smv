@@ -540,7 +540,7 @@ static size_t current_gif_frame = 0;
 /// @brief Clear the animated GIF frame specification if one exists. Does
 /// nothing if there is no current frame specification.
 void GifSpec_Clear() {
-  if(current_gif_spec != NULL) {
+  if(current_gif_spec != NULL){
     if(current_gif_spec->gif_frames != NULL)
       FREEMEMORY(current_gif_spec->gif_frames);
     FREEMEMORY(current_gif_spec);
@@ -556,14 +556,14 @@ void GifSpec_Clear() {
 /// NEWMEMORY. This pointer will be kept and later needs to be freed by calling
 /// GifSpec_Clear.
 void GifSpec_PushFrame(int frame_number, int duration) {
-  if(current_gif_spec == NULL) {
+  if(current_gif_spec == NULL){
     NEWMEMORY(current_gif_spec, sizeof(struct gif_spec));
     current_gif_spec->n_frames = 0;
     current_gif_spec->capacity = 2;
     NEWMEMORY(current_gif_spec->gif_frames,
               current_gif_spec->capacity * sizeof(struct gif_spec_frame));
   }
-  if(current_gif_spec->n_frames >= current_gif_spec->capacity) {
+  if(current_gif_spec->n_frames >= current_gif_spec->capacity){
     current_gif_spec->capacity *= 2;
     RESIZEMEMORY(current_gif_spec->gif_frames,
                  current_gif_spec->capacity * sizeof(struct gif_spec_frame));
@@ -586,13 +586,13 @@ int GifStart(const char *path) {
 
   making_movie = 1;
   gdImagePtr im = gdImageCreate(width, height);
-  if(!im) {
+  if(!im){
     fprintf(stderr, "can't create image");
     return 1;
   }
 
   out = fopen(path, "wb");
-  if(!out) {
+  if(!out){
     fprintf(stderr, "can't create file %s", path);
     return 1;
   }
@@ -659,15 +659,15 @@ int GifAddFrameSpec() {
   bool render = true;
   // How long should this frame be? Set the default based on framerate.
   int delay = 100 / movie_framerate;
-  if(current_gif_spec != NULL) {
+  if(current_gif_spec != NULL){
     // If we've gone beyond the current frame spec, we don't need to render
-    if(current_gif_frame >= current_gif_spec->n_frames) {
+    if(current_gif_frame >= current_gif_spec->n_frames){
       render = false;
     }
     else {
       struct gif_spec_frame this_frame =
           current_gif_spec->gif_frames[current_gif_frame];
-      if(this_frame.frame_number == iglobal_times) {
+      if(this_frame.frame_number == iglobal_times){
         render = true;
         delay = this_frame.duration;
         current_gif_frame++;
@@ -677,7 +677,7 @@ int GifAddFrameSpec() {
       }
     }
   }
-  if(render) {
+  if(render){
     GifAddFrame(delay);
   }
   return 0;

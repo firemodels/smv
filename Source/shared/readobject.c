@@ -1460,7 +1460,7 @@ object_collection *CreateObjectCollection(void) {
   object_collection *coll;
   if(NEWMEMORY(coll, sizeof(object_collection)) == 0) return NULL;
   int ret = InitObjectCollection(coll);
-  if(ret != 0) {
+  if(ret != 0){
     FREEMEMORY(coll);
     return NULL;
   }

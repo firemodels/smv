@@ -861,7 +861,7 @@ void outboundaryheader(const char *boundaryfilename, FILE **file, int npatches,
 
   *error = 0;
   *file = FOPEN(boundaryfilename, "wb");
-  if(*file == NULL) {
+  if(*file == NULL){
     fprintf(stderr, " Could not open %s\n", boundaryfilename);
     *error = 1;
     return;

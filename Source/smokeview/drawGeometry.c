@@ -5174,7 +5174,7 @@ void SnapScene(int delta){
     *elev = 0.0;
   }
   else{
-    if(*az > 0.0) {
+    if(*az > 0.0){
       iaz = (*az+DELTA/2.0)/DELTA;
     }
     else{
@@ -5196,12 +5196,12 @@ void SnapScene(int delta){
   if(rotation_type==ROTATION_3AXIS&&key_state == KEY_NONE){
     float angle;
 
-    if(delta == 0) {
+    if(delta == 0){
       angle = 0.0;
     }
     else {
       angle = 2.0 * RAD2DEG * acos(quat_general[0]);
-      if(angle > 0.0) {
+      if(angle > 0.0){
         iaz = (angle + DELTA / 2.0) / DELTA;
       }
       else {

@@ -2013,7 +2013,7 @@ void RenderMenu(int value){
     UpdateRenderType(render_filetype);
     render_mode = RENDER_GIF;
     resolution_multiplier = 1;
-    if(RenderTime != 0 || touring != 0) {
+    if(RenderTime != 0 || touring != 0){
       char *gif_filename;
       NEWMEMORY(gif_filename, strlen(movie_name) + 4 + 1);
       strcpy(gif_filename, movie_name);
@@ -2021,7 +2021,7 @@ void RenderMenu(int value){
       char *gif_filepath;
       // By default render animated GIF to current directory
       char *gif_dir = ".";
-      if(script_dir_path != NULL && strlen(script_dir_path) > 0) {
+      if(script_dir_path != NULL && strlen(script_dir_path) > 0){
         // If script_dir_path render to that directory instead
         gif_dir = script_dir_path;
       }
@@ -3271,7 +3271,7 @@ void LoadUnloadMenu(int value){
   case RELOAD_INCREMENTAL_ALL:
     load_flag = LOAD;
     char *hrr_csv_filename = CasePathHrrCsv(&global_scase);
-    if(FileExistsCaseDir(&global_scase, hrr_csv_filename) == YES) {
+    if(FileExistsCaseDir(&global_scase, hrr_csv_filename) == YES){
       ReadHRR(&global_scase, LOAD);
     }
     FREEMEMORY(hrr_csv_filename);

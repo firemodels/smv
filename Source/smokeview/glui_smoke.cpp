@@ -762,7 +762,7 @@ extern "C" void GLUISmoke3dCB(int var){
     ScriptCB(SCRIPT_CANCEL_NOW);
     break;
   case MASS_EXTINCTION:
-    if(glui_mass_extinct<1.0) {
+    if(glui_mass_extinct<1.0){
       glui_mass_extinct = 1.0;
       SPINNER_mass_extinct->set_float_val(glui_mass_extinct);
     }

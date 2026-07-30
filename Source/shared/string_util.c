@@ -129,11 +129,11 @@ char *GetCharPtr(char *label) {
   char *labelptr, labelcopy[256], *labelcopyptr;
   int lenlabel;
 
-  if (label == NULL || strlen(label) == 0) return NULL;
+  if(label == NULL || strlen(label) == 0) return NULL;
   strcpy(labelcopy, label);
   labelcopyptr = TrimFrontBack(labelcopy);
   lenlabel = strlen(labelcopyptr);
-  if (lenlabel == 0) return NULL;
+  if(lenlabel == 0) return NULL;
   NewMemory((void **)&labelptr, lenlabel + 1);
   strcpy(labelptr, labelcopyptr);
   return labelptr;

@@ -4371,7 +4371,7 @@ void ReadSMVOrig(smv_case *scase, char *smvfile){
   smv_orig_filename = smvfile;
   if(smv_orig_filename==NULL)smv_orig_filename = CasePathSmvOrig(scase);
   stream = FOPEN(smv_orig_filename, "r");
-  if(stream == NULL) {
+  if(stream == NULL){
     if(smvfile==NULL)FREEMEMORY(smv_orig_filename);
     return;
   }
@@ -5625,11 +5625,11 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
   if(NewMemory((void **)&scase->surfcoll.surfinfo,(n_surf_keywords+MAX_ISO_COLORS+1)*sizeof(surfdata))==0)return 2;
 
   ClearCADGeomCollection(&scase->cadgeomcoll);
-  if (n_cadgeom_keywords > 0) {
+  if(n_cadgeom_keywords > 0){
     // Allocate a fixed-size collection large enough to hold each of the CADGEOM
     // definitions.
     int err = InitCADGeomCollection(&scase->cadgeomcoll, n_cadgeom_keywords);
-    if (err != 0) return 2;
+    if(err != 0) return 2;
   }
 
   if(scase->noutlineinfo>0){
@@ -5704,10 +5704,10 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
     if(MatchSMV(buffer, "HVACVALS") == 1){
       int r =
           ParseHVACValsEntry(&scase->hvaccoll, stream );
-      if (r == 1) {
+      if(r == 1){
         BREAK;
       }
-      else if (r == 2) {
+      else if(r == 2){
         continue;
       }
     }
@@ -5719,10 +5719,10 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
     if(MatchSMV(buffer, "HVAC") == 1){
       int r =
           ParseHVACEntry(&scase->hvaccoll, stream, scase->hvac_node_color, scase->hvac_duct_color);
-      if (r == 1) {
+      if(r == 1){
         BREAK;
       }
-      else if (r == 2) {
+      else if(r == 2){
         continue;
       }
     }
@@ -6535,7 +6535,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         BREAK;
       }
       bufferptr=TrimFrontBack(buffer);
-      if (FileExistsCaseDir(scase, bufferptr) == YES) {
+      if(FileExistsCaseDir(scase, bufferptr) == YES){
         ReadCADGeomToCollection(&scase->cadgeomcoll, bufferptr, scase->color_defs.block_shininess);
       }
       else {
@@ -7849,7 +7849,7 @@ typedef struct {
           bc->texture_origin[0]=t_origin[0];
           bc->texture_origin[1]=t_origin[1];
           bc->texture_origin[2]=t_origin[2];
-          if(bc->blockage_id < 0) {
+          if(bc->blockage_id < 0){
             bc->changed=1;
             bc->blockage_id=-bc->blockage_id;
           }

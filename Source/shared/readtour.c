@@ -23,7 +23,7 @@
 void ReallocTourMemory(tour_collection *tourcoll) {
   tourdata *touri;
 
-  if(tourcoll->tour_ntimes > 0) {
+  if(tourcoll->tour_ntimes > 0){
     for(int i = 0; i < tourcoll->ntourinfo; i++) {
       touri = tourcoll->tourinfo + i;
       FREEMEMORY(touri->path_times);
@@ -70,7 +70,7 @@ void FreeTour(tourdata *touri) {
 void FreeTours(tour_collection *tourcoll) {
   int i;
 
-  if(tourcoll->ntourinfo > 0) {
+  if(tourcoll->ntourinfo > 0){
     for(i = 0; i < tourcoll->ntourinfo; i++) {
       tourdata *touri;
 
@@ -174,11 +174,11 @@ void GetTourXYZView(float time, float *times, float *vals, int n, float *val3) {
   int left;
   float *v1, *v2, factor;
 
-  if(time <= times[0]) {
+  if(time <= times[0]){
     memcpy(val3, vals, 3 * sizeof(float));
     return;
   }
-  if(time >= times[n - 1]) {
+  if(time >= times[n - 1]){
     memcpy(val3, vals + 3 * (n - 1), 3 * sizeof(float));
     return;
   }

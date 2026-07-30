@@ -374,18 +374,18 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   smoke3ddata *sooti = NULL;
   have_smoke_local = 0;
-  if(SOOT_index >= 0 && smoke3di->smokestate[SOOT_index].index>=0) {
+  if(SOOT_index >= 0 && smoke3di->smokestate[SOOT_index].index>=0){
     sooti = global_scase.smoke3dcoll.smoke3dinfo+smoke3di->smokestate[SOOT_index].index;
     if(sooti != NULL && sooti->display == 1)have_smoke_local = 1;
   }
 
   smoke3ddata *firei = NULL;
   have_fire_local = 0;
-  if(HRRPUV_index >= 0 && smoke3di->smokestate[HRRPUV_index].index >= 0) {
+  if(HRRPUV_index >= 0 && smoke3di->smokestate[HRRPUV_index].index >= 0){
     firei = global_scase.smoke3dcoll.smoke3dinfo + smoke3di->smokestate[HRRPUV_index].index;
     if(firei != NULL && firei->display == 1)have_fire_local = 1;
   }
-  if(have_fire_local==0 && TEMP_index >= 0 && smoke3di->smokestate[TEMP_index].index >= 0) {
+  if(have_fire_local==0 && TEMP_index >= 0 && smoke3di->smokestate[TEMP_index].index >= 0){
     firei = global_scase.smoke3dcoll.smoke3dinfo + smoke3di->smokestate[TEMP_index].index;
     if(firei != NULL && firei->display == 1)have_fire_local = 1;
   }
@@ -453,7 +453,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   glUniform1i(GPU_have_fire, have_fire_local);
   glUniform1i(GPU_force_alpha_opaque, force_alpha_opaque);
   glUniform1i(GPU_smokecolormap, 2);
-  if(smoke3di->type == TEMP_index && TEMP_index >= 0) {
+  if(smoke3di->type == TEMP_index && TEMP_index >= 0){
     glUniform1f(GPU_global_hrrpuv_max, global_scase.temp_max);
     glUniform1f(GPU_global_hrrpuv_cb_min, global_temp_cb_min);
   }
@@ -887,7 +887,7 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
     smokealpha_map = smoke3di->alphas_smokedir[ALPHA_X];
     firealpha_map  = smoke3di->alphas_firedir[ALPHA_X];
     for(i = is1;i<=is2;i++){
-      if(demo_mode == 5 && ssmokedir == 1) {
+      if(demo_mode == 5 && ssmokedir == 1){
         i+=2;
         if(i > is2) continue;
       }
@@ -1319,7 +1319,7 @@ void DrawSmokeFrame(void){
 #endif
   triangle_count = 0;
 #ifdef pp_GPU
-  if(usegpu_local == 1) {
+  if(usegpu_local == 1){
     LoadSmokeShaders();
     load_shaders = 1;
   }
@@ -1361,7 +1361,7 @@ void DrawSmokeFrame(void){
     if(vis_only_smokemesh == 0){
 #endif
 #ifdef pp_GPU
-      if(usegpu_local == 1) {
+      if(usegpu_local == 1){
         DrawSmoke3DGPU(smoke3di);
         nsmoke_triangles = -1;
       }
