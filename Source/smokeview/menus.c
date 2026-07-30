@@ -1945,10 +1945,9 @@ void RenderMenu(int value){
   updatemenu=1;
   if(value>=11000)return;
   GLUTPOSTREDISPLAY;
-  if(value>=10000&&value<=10005){
-    glui_resolution_multiplier=CLAMP(value-10000, MIN_RESOLUTION_MULTIPLIER, MAX_RESOLUTION_MULTIPLIER);
+  if(value-10000>=MIN_RESOLUTION_MULTIPLIER&&value-10000<=MAX_RESOLUTION_MULTIPLIER){
+    glui_resolution_multiplier = GLUIUpdateResolutionMultiplier(value - 10000);
     resolution_multiplier=glui_resolution_multiplier;
-    GLUIUpdateResolutionMultiplier();
     return;
   }
   switch(value){
@@ -2040,7 +2039,7 @@ void RenderMenu(int value){
     break;
   case RenderStartHIGHRES:
     render_mode = RENDER_NORMAL;
-    glui_resolution_multiplier=CLAMP(glui_resolution_multiplier, MIN_RESOLUTION_MULTIPLIER, MAX_RESOLUTION_MULTIPLIER);
+    glui_resolution_multiplier = GLUIUpdateResolutionMultiplier(glui_resolution_multiplier);
     resolution_multiplier=glui_resolution_multiplier;
     RenderMenu(RenderStart);
     break;
@@ -2101,7 +2100,7 @@ void RenderMenu(int value){
      assert(FFALSE);
      break;
   }
-  GLUIUpdateResolutionMultiplier();
+  glui_resolution_multiplier = GLUIUpdateResolutionMultiplier(glui_resolution_multiplier);
 }
 
 /* ------------------ ParticleShowMenu ------------------------ */
@@ -11161,16 +11160,16 @@ if(opengl_finalized == 0)return;
     }
 
     CREATEMENU(resolutionmultipliermenu,RenderMenu);
-    for(i = 2;i<=10;i++){
+    for(i = MIN_RESOLUTION_MULTIPLIER;i<=MAX_RESOLUTION_MULTIPLIER;i++){
       char render_label[256];
       int render_index;
 
-      render_index = 10000+MIN(5, i);
+      render_index = 10000+i;
       if(resolution_multiplier==i){
         sprintf(render_label, "  *%ix", i);
         glutAddMenuEntry(render_label, render_index);
       }
-      else if(i<=5){
+      else{
         sprintf(render_label, "  %ix", i);
         glutAddMenuEntry(render_label, render_index);
       }
@@ -11222,7 +11221,7 @@ if(opengl_finalized == 0)return;
         height = renderH;
       }
 
-      glui_resolution_multiplier = CLAMP(glui_resolution_multiplier, MIN_RESOLUTION_MULTIPLIER, MAX_RESOLUTION_MULTIPLIER);
+      glui_resolution_multiplier = GLUIUpdateResolutionMultiplier(glui_resolution_multiplier);
       factor = glui_resolution_multiplier;
       sprintf(sizeORIGRES, "%ix%i", width, height);
       sprintf(sizeHIGHRES, "%ix%i", width*factor, height*factor);

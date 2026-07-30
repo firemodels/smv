@@ -579,11 +579,18 @@ void UpdateZaxisAngles(void){
 
 /* ------------------ GLUIUpdateResolutionMultiplier ------------------------ */
 
-extern "C" void GLUIUpdateResolutionMultiplier(void){
-  glui_resolution_multiplier = CLAMP(glui_resolution_multiplier, MIN_RESOLUTION_MULTIPLIER, MAX_RESOLUTION_MULTIPLIER);
-  if(SPINNER_resolution_multiplier!=NULL&&glui_resolution_multiplier!=SPINNER_resolution_multiplier->get_int_val()){
-    SPINNER_resolution_multiplier->set_int_val(glui_resolution_multiplier);
+extern "C" int GLUIUpdateResolutionMultiplier(int resolution_multiplier_arg){
+  resolution_multiplier_arg = CLAMP(resolution_multiplier_arg, MIN_RESOLUTION_MULTIPLIER, MAX_RESOLUTION_MULTIPLIER);
+  if(SPINNER_resolution_multiplier!=NULL && resolution_multiplier_arg !=SPINNER_resolution_multiplier->get_int_val()){
+    SPINNER_resolution_multiplier->set_int_val(resolution_multiplier_arg);
   }
+
+  int width_low, height_low, width_high, height_high;
+
+  GetRenderResolution(&width_low, &height_low, &width_high, &height_high);
+  GLUIUpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
+
+  return resolution_multiplier_arg;
 }
 
 /* ------------------ GSliceCB ------------------------ */
@@ -2658,14 +2665,7 @@ void RenderCB(int var){
       }
       break;
     case RENDER_MULTIPLIER:
-      {
-        int width_low, height_low, width_high, height_high;
-
-        glui_resolution_multiplier=CLAMP(glui_resolution_multiplier, MIN_RESOLUTION_MULTIPLIER, MAX_RESOLUTION_MULTIPLIER);
-        GLUIUpdateResolutionMultiplier();
-        GetRenderResolution(&width_low, &height_low, &width_high, &height_high);
-        GLUIUpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
-      }
+      glui_resolution_multiplier = GLUIUpdateResolutionMultiplier(glui_resolution_multiplier);
       break;
     case MOVIE_FILETYPE:
       switch(movie_filetype){
