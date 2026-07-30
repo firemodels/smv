@@ -1618,7 +1618,7 @@ public:
   float get_z( void ) {		return float_array_val[0];	}
   float get_x( void ) {		return float_array_val[0];	}
   float get_y( void ) {
-    if ( trans_type == GLUI_TRANSLATION_XY )    return float_array_val[1];
+    if( trans_type == GLUI_TRANSLATION_XY )    return float_array_val[1];
     else					return float_array_val[0];
   }
 

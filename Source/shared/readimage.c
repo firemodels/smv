@@ -35,7 +35,7 @@ unsigned char *ReadJPEG(const char *filename,int *width, int *height, int *is_tr
   dptr=dataptr;
   *is_transparent = 0;
   for(i = 0; i<HEIGHT; i++){
-    for(j=0;j<WIDTH;j++){
+    for(j=0; j<WIDTH; j++){
       unsigned int a;
 
       intrgb=(unsigned int)gdImageGetPixel(image,j,(unsigned int)(HEIGHT-(1+i)));
@@ -77,7 +77,7 @@ unsigned char *ReadPNG(const char *filename,int *width, int *height, int *is_tra
   dptr=dataptr;
   *is_transparent = 0;
   for(i = 0; i<*height; i++){
-    for(j=0;j<*width;j++){
+    for(j=0; j<*width; j++){
       unsigned int a;
 
       intrgb=(unsigned int)gdImageGetPixel(image,j,(unsigned int)(*height-(1+i)));
@@ -236,7 +236,7 @@ void EncodePNGData(unsigned char *buffer, int nbuffer, unsigned char *data, int 
 
   // encode signature
 
-  for(i = 0;i < 32;i++){
+  for(i = 0; i < 32; i++){
     unsigned char *c;
 
     c = buffer + skip * i + channel;

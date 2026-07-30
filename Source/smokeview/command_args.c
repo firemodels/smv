@@ -167,7 +167,7 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
         strcpy(args.ini_to, local_ini_to);
       }
     } 
-    else if(strcmp(argv[i], "-update_ini") == 0) {
+    else if(strcmp(argv[i], "-update_ini") == 0){
       // As per convert_ini, but in-place
       args.update_ini = true;
       char *local_ini_from = NULL, *local_ini_to = NULL;

@@ -587,7 +587,7 @@ int CheckSMVFile(char *file, char *subdir){
 void GetArgs(int argc, char **argv, int *n_args, char ***utf8_args) {
 #if defined(_WIN32) && defined(pp_UNICODE_PATHS)
   LPWSTR *utf16_args = CommandLineToArgvW(GetCommandLineW(), n_args);
-  if(NULL == utf16_args) {
+  if(NULL == utf16_args){
     fprintf(stderr, "CommandLineToArgvW failed\n");
     SMV_EXIT(1);
   }
@@ -668,7 +668,7 @@ int main(int argc, char **argv){
   }
 
   smv_filename = ParseCommandline(n_args, utf8_args, &opts);
-  if(smv_filename == NULL || opts.show_version == 1) {
+  if(smv_filename == NULL || opts.show_version == 1){
     InitStartupDirs();
     DisplayVersionInfo("Smokeview ", &opts);
     SMV_EXIT(0);

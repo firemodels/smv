@@ -718,8 +718,8 @@ void CheckTimeBound(void){
 /* ------------------ GetColorbarIndex ------------------------ */
 
 int GetColorbarIndex(int x, int y){
-  if(visColorbarVertical == 1) {
-    if(vcolorbar_left_pos <= x && x <= vcolorbar_right_pos) {
+  if(visColorbarVertical == 1){
+    if(vcolorbar_left_pos <= x && x <= vcolorbar_right_pos){
       y = screenHeight - y;
       if(vcolorbar_down_pos <= y && y <= vcolorbar_top_pos){
         int index;
@@ -730,10 +730,10 @@ int GetColorbarIndex(int x, int y){
       return CB_SELECT_STOP;
     }
   }
-  else if(visColorbarHorizontal == 1) {
+  else if(visColorbarHorizontal == 1){
     y = screenHeight - y;
-    if(hcolorbar_down_pos <= y && y <= hcolorbar_top_pos) {
-      if(hcolorbar_left_pos <= x && x <= hcolorbar_right_pos) {
+    if(hcolorbar_down_pos <= y && y <= hcolorbar_top_pos){
+      if(hcolorbar_left_pos <= x && x <= hcolorbar_right_pos){
         int index;
         index = CLAMP(255 * (float)(x - hcolorbar_left_pos) /
                           (float)(hcolorbar_right_pos - hcolorbar_left_pos),
@@ -4218,7 +4218,7 @@ void DoNonStereo(void){
         FREEMEMORY(screeni->screenbuffer);
       }
     }
-    if(render_mode == RENDER_GIF) {
+    if(render_mode == RENDER_GIF){
       int i, ibuffer = 0;
       GLubyte **screenbuffers;
 
@@ -4245,7 +4245,7 @@ void DoNonStereo(void){
         FREEMEMORY(screenbuffers[i]);
       }
       FREEMEMORY(screenbuffers);
-      if (render_status == RENDER_OFF) {
+      if(render_status == RENDER_OFF){
         GifEnd();
       }
     }

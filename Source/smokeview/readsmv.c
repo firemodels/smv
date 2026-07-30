@@ -1357,7 +1357,7 @@ void UpdateMeshCoords(void){
   fire_halfdepth = (float)((int)(100.0*xyzmaxdiff/40.0+0.5))/100.0;
   fire_halfdepth = MAX(fire_halfdepth, 0.05);
   vector_scalelength = MIN(dx_scene, dz_scene);
-  if(global_scase.meshescoll.meshinfo[0].jbar > 1) {
+  if(global_scase.meshescoll.meshinfo[0].jbar > 1){
     vector_scalelength = MIN(vector_scalelength, dy_scene);
   }
 
@@ -2236,7 +2236,7 @@ int ReadCharNonblocking(char *out) {
 
 #ifdef _WIN32
 
-    if (_kbhit()) {
+    if(_kbhit()){
         *out = _getch();   // reads immediately (no Enter actually required on Windows)
         return 1;
     }
@@ -2255,7 +2255,7 @@ int ReadCharNonblocking(char *out) {
 
     int rv = select(STDIN_FILENO + 1, &set, NULL, NULL, &timeout);
 
-    if (rv > 0) {
+    if(rv > 0){
         return read(STDIN_FILENO, out, 1) == 1;
     }
     return 0;
@@ -3029,7 +3029,7 @@ int ReadSMV_Configure(){
   if(global_scase.meshescoll.nmeshes > 200){
     hide_scene = 1;
   }
-  if(global_scase.hrrpuvcut_set) {
+  if(global_scase.hrrpuvcut_set){
     global_hrrpuv_cb_min_default = global_scase.hrrpuvcut;
     global_hrrpuv_cb_min = global_hrrpuv_cb_min_default;
   }
@@ -7050,7 +7050,7 @@ int ReadIni(char *inifile){
       returnval = ReadIni2(scratch_ini_filename, 1);
       FREEMEMORY(scratch_ini_filename);
     }
-    if(returnval == 2) {
+    if(returnval == 2){
       FREEMEMORY(caseini_filename);
       return 2;
     }

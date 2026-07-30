@@ -410,7 +410,7 @@ void ShowScene2(int mode){
 
   /* ++++++++++++++++++++++++ draw HVAC networks +++++++++++++++++++++++++ */
 
-  if (global_scase.hvaccoll.nhvacinfo > 0) {
+  if(global_scase.hvaccoll.nhvacinfo > 0){
     DrawHVACS();
   }
 

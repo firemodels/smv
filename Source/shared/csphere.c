@@ -40,7 +40,7 @@ void InitSpherePoints(spherepoints *sphereinfo, int n){
   NewMemory((void **)&sphereinfo->vallist,(n+1)*sizeof(int));
   sphereinfo->vallist[0]=1;
   sphereinfo->nlong[0]=1;
-  for(i=1;i<n;i++){
+  for(i=1; i<n; i++){
     sphereinfo->nlong[i]=(int)(2.0*n*sin(i*sphereinfo->dphi)+0.5);
     sphereinfo->dtheta[i]=2.0*pi/sphereinfo->nlong[i];
     sphereinfo->vallist[i]=sphereinfo->vallist[i-1]+sphereinfo->nlong[i];
@@ -61,12 +61,12 @@ void InitSpherePoints(spherepoints *sphereinfo, int n){
   *snormals++=0;
   *snormals++=0;
   *snormals++=32767;
-  for(i=1;i<n;i++){
+  for(i=1; i<n; i++){
     phik = pi/2.0-i*dphi;
     dtheta=2.0*pi/sphereinfo->nlong[i];
     z=sin(phik);
     cosphik = cos(phik);
-    for(j=0;j<sphereinfo->nlong[i];j++){
+    for(j=0; j<sphereinfo->nlong[i]; j++){
       thetaj=j*dtheta;
       x=cos(thetaj)*cosphik;
       y=sin(thetaj)*cosphik;
@@ -87,7 +87,7 @@ void InitSpherePoints(spherepoints *sphereinfo, int n){
 
   mindist = 100000000.0;
   xyzfrom = sphereinfo->normals;
-  for(i=0;i<n+1;i++){
+  for(i=0; i<n+1; i++){
     int ibeg, iend;
     int ii, jj;
     float xfrom, yfrom, zfrom;
@@ -98,14 +98,14 @@ void InitSpherePoints(spherepoints *sphereinfo, int n){
     if(ibeg<0)ibeg=0;
     iend=i+1;
     if(iend>n)iend=n;
-    for(j=0;j<sphereinfo->nlong[i];j++){
+    for(j=0; j<sphereinfo->nlong[i]; j++){
       xfrom = *xyzfrom++;
       yfrom = *xyzfrom++;
       zfrom = *xyzfrom++;
 
       xyzto = sphereinfo->normals + 3*(sphereinfo->vallist[ibeg]-sphereinfo->nlong[ibeg]);
-      for(ii=ibeg;ii<=iend;ii++){
-        for(jj=0;jj<sphereinfo->nlong[ii];jj++){
+      for(ii=ibeg; ii<=iend; ii++){
+        for(jj=0; jj<sphereinfo->nlong[ii]; jj++){
           if(xyzto==xyzfrom-3){
             xyzto+=3;
             continue;
@@ -223,7 +223,7 @@ unsigned int GetNormalIndex(spherepoints *sphereinfo, float *normal){
 
   returnval=0;
   mindist2 = 100000000.0;
-  for(i=0;i<sphereinfo->npoints;i++){
+  for(i=0; i<sphereinfo->npoints; i++){
     float xx, yy, zz;
 
     xyznorm = sphereinfo->normals + 3*i;

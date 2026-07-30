@@ -1200,7 +1200,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
   if(visFramerate==1&&showtime==1)framerate_width = GetStringWidth("Frame rate: 99.99");
   timebar_right_width = framerate_width;
 #ifdef pp_MEMDEBUG
-  if(vismemusage == 1) {
+  if(vismemusage == 1){
     memusage_width = GetStringWidth("Mem Usage: 9999 MBx");
     timebar_right_width = MAX(timebar_right_width, memusage_width);
   }

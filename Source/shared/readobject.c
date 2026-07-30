@@ -54,7 +54,7 @@ void FreeObject(sv_object *object){
 
   frame_start = &object->first_frame;
   framei = frame_start->next;
-  for(; framei->next != NULL;){
+  for(; framei->next != NULL; ){
     sv_object_frame *next_frame;
 
     next_frame = framei->next;
@@ -126,7 +126,7 @@ sv_object *GetSmvObjectType2(object_collection *objectscoll, char *olabel,
   if(strlen(labelptr) == 0) return default_object;
   object_start = objectscoll->object_def_first.next;
   objecti = object_start;
-  for(; objecti->next != NULL;){
+  for(; objecti->next != NULL; ){
     if(STRCMP(labelptr, objecti->label) == 0){
       objecti->used = 1;
       return objecti;
@@ -145,7 +145,7 @@ void ParseSmvObjectString(object_collection *objectscoll, char *string,
   char *tokens_head[BUFFER_SIZE], *tokens_tail[BUFFER_SIZE];
   int in_head = 1, nhead = 0, ntail = 0;
 
-  for(i=0;i<BUFFER_SIZE;i++){
+  for(i=0; i<BUFFER_SIZE; i++){
     tokens_tail[i] = NULL;
   }
   c = string;
@@ -1284,7 +1284,7 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file){
   object_start = objectscoll->object_def_first.next;
   objecti = object_start;
   objectscoll->nobject_defs = 0;
-  for(; objecti->next != NULL;){
+  for(; objecti->next != NULL; ){
     CheckMemory;
     (objectscoll->nobject_defs)++;
     objecti->obj_frames = NULL;
@@ -1304,7 +1304,7 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file){
     object_start = objectscoll->object_def_first.next;
     objecti = object_start;
     i = 0;
-    for(; objecti->next != NULL;){
+    for(; objecti->next != NULL; ){
       sv_object_frame *frame_start, *framei;
 
       CheckMemory;
@@ -1313,7 +1313,7 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file){
       frame_start = objecti->first_frame.next;
       framei = frame_start;
       j = 0;
-      for(; framei->next != NULL;){
+      for(; framei->next != NULL; ){
         int npushpop = 0, ii;
 
         CheckMemory;
@@ -1460,7 +1460,7 @@ object_collection *CreateObjectCollection(void) {
   object_collection *coll;
   if(NEWMEMORY(coll, sizeof(object_collection)) == 0) return NULL;
   int ret = InitObjectCollection(coll);
-  if(ret != 0) {
+  if(ret != 0){
     FREEMEMORY(coll);
     return NULL;
   }
@@ -1673,7 +1673,7 @@ void UpdatePartClassDepend(partclassdata *partclassi){
     int nvar;
 
     obj_frame=partclassi->prop->smv_object->obj_frames[0];
-    for(i=0;i<partclassi->nvars_dep-3;i++){
+    for(i=0; i<partclassi->nvars_dep-3; i++){
       char *var;
 
       var=partclassi->vars_dep[i];

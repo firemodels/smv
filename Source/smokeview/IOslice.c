@@ -8124,7 +8124,7 @@ void DrawVSliceFrame(void){
     }
     else{
       DrawVVolSlice(vd);
-      if(show_slice_values[IN_SOLID_GLUI] == 1 || show_slice_values[IN_GAS_GLUI] == 1) {
+      if(show_slice_values[IN_SOLID_GLUI] == 1 || show_slice_values[IN_GAS_GLUI] == 1){
         DrawVolSliceValues(val);
         SNIFF_ERRORS("after DrawVolSliceValues SLICE_NODE_CENTER(vector)");
       }

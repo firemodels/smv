@@ -23,8 +23,8 @@
 void ReallocTourMemory(tour_collection *tourcoll) {
   tourdata *touri;
 
-  if(tourcoll->tour_ntimes > 0) {
-    for(int i = 0; i < tourcoll->ntourinfo; i++) {
+  if(tourcoll->tour_ntimes > 0){
+    for(int i = 0; i < tourcoll->ntourinfo; i++){
       touri = tourcoll->tourinfo + i;
       FREEMEMORY(touri->path_times);
       NewMemory((void **)&touri->path_times,
@@ -55,7 +55,7 @@ void FreeTour(tourdata *touri) {
   int i;
   keyframe *framei;
 
-  for(i = 0; i < touri->nkeyframes; i++) {
+  for(i = 0; i < touri->nkeyframes; i++){
     framei = touri->keyframe_list[i];
     FREEMEMORY(framei);
   }
@@ -70,8 +70,8 @@ void FreeTour(tourdata *touri) {
 void FreeTours(tour_collection *tourcoll) {
   int i;
 
-  if(tourcoll->ntourinfo > 0) {
-    for(i = 0; i < tourcoll->ntourinfo; i++) {
+  if(tourcoll->ntourinfo > 0){
+    for(i = 0; i < tourcoll->ntourinfo; i++){
       tourdata *touri;
 
       touri = tourcoll->tourinfo + i;
@@ -138,7 +138,7 @@ keyframe *GetKeyFrame(const tourdata *touri, float time) {
   last_key = touri->last_frame.prev;
   if(time >= last_key->time) return last_key->prev;
 
-  for(this_key = first_key; this_key != last_key; this_key = this_key->next) {
+  for(this_key = first_key; this_key != last_key; this_key = this_key->next){
     keyframe *next_key;
 
     next_key = this_key->next;
@@ -174,11 +174,11 @@ void GetTourXYZView(float time, float *times, float *vals, int n, float *val3) {
   int left;
   float *v1, *v2, factor;
 
-  if(time <= times[0]) {
+  if(time <= times[0]){
     memcpy(val3, vals, 3 * sizeof(float));
     return;
   }
-  if(time >= times[n - 1]) {
+  if(time >= times[n - 1]){
     memcpy(val3, vals + 3 * (n - 1), 3 * sizeof(float));
     return;
   }
@@ -210,7 +210,7 @@ keyframe *CopyFrame(const keyframe *framei) {
 void DeleteTourFrames(tourdata *thistour) {
   keyframe *frame;
 
-  for(frame = thistour->first_frame.next; frame->next != NULL;) {
+  for(frame = thistour->first_frame.next; frame->next != NULL; ){
     keyframe *next;
 
     next = frame->next;
