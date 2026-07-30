@@ -211,7 +211,7 @@ extern "C" void GLUITourSetup(int main_window){
 
     LISTBOX_tour->add_item(TOURINDEX_MANUAL, "Manual");
     LISTBOX_tour->add_item(-999, "-");
-    for(i = 0;i < global_scase.tourcoll.ntourinfo;i++){
+    for(i = 0; i < global_scase.tourcoll.ntourinfo; i++){
       tourdata *touri;
 
       touri = global_scase.tourcoll.tourinfo + i;
@@ -243,7 +243,7 @@ extern "C" void GLUITourSetup(int main_window){
   if(global_scase.objectscoll.navatar_types > 0){
     glui_tour->add_checkbox_to_panel(PANEL_tour7, "Show avatar", &show_avatar);
     LISTBOX_avatar = glui_tour->add_listbox_to_panel(PANEL_tour7, "Avatar:", &glui_avatar_index, TOUR_AVATAR, TourCB);
-    for(i = 0;i < global_scase.objectscoll.navatar_types;i++){
+    for(i = 0; i < global_scase.objectscoll.navatar_types; i++){
       LISTBOX_avatar->add_item(i, global_scase.objectscoll.avatar_types[i]->label);
     }
     if(tourlocus_type == 0){
@@ -497,7 +497,7 @@ void TourCB(int var){
 
       if(selected_tour == NULL)return;
       update_tour_path=0;
-      for(frame=selected_tour->first_frame.next;frame->next!=NULL;frame=frame->next){
+      for(frame=selected_tour->first_frame.next; frame->next!=NULL; frame=frame->next){
         glui_tour_xyz[0] = frame->xyz_fds[0];
         glui_tour_xyz[1] = frame->xyz_fds[1];
         glui_tour_xyz[2] = frame->xyz_fds[2];
@@ -915,7 +915,7 @@ extern "C" void GLUIDeleteTourList(void){
   int i;
 
   if(LISTBOX_tour==NULL)return;
-  for(i=0;i<global_scase.tourcoll.ntourinfo;i++){
+  for(i=0; i<global_scase.tourcoll.ntourinfo; i++){
     LISTBOX_tour->delete_item(i);
   }
 }
@@ -926,7 +926,7 @@ extern "C" void GLUICreateTourList(void){
   int i;
 
   if(LISTBOX_tour==NULL)return;
-  for(i=0;i<global_scase.tourcoll.ntourinfo;i++){
+  for(i=0; i<global_scase.tourcoll.ntourinfo; i++){
     tourdata *touri;
     char label[1000];
 

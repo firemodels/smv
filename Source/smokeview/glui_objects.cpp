@@ -537,7 +537,7 @@ void Plot2D2Glui(int index){
   memcpy(glui_plot2dinfo, plot2dinfo + index, sizeof(plot2ddata));
 
   int i;
-  for(i=0;i<glui_plot2dinfo->ncurves; i++){
+  for(i=0; i<glui_plot2dinfo->ncurves; i++){
     glui_plot2dinfo->curve[i].csv_col_index_ini = glui_plot2dinfo->curve[i].csv_col_index;
   }
   glui_plot2dinfo->ncurves_ini = glui_plot2dinfo->ncurves;
@@ -625,7 +625,7 @@ void RemovePlot(int i){
     plot2di = plot2dinfo + ii;
     LIST_plots->delete_item(plot2di->plot_label);
   }
-  for(ii=i+1;ii<nplot2dinfo;ii++){
+  for(ii=i+1; ii<nplot2dinfo; ii++){
     memcpy(plot2dinfo+ii-1, plot2dinfo+ii, sizeof(plot2ddata));
   }
   nplot2dinfo--;
@@ -1083,7 +1083,7 @@ void GLUIGenPlotCB(int var){
       if(plot2dinfo == NULL)return;
       plot2dii = plot2dinfo + iplot2dinfo;
       GetPlot2DBounds(plot2dii, plot2dii->valmin, plot2dii->valmax);
-      for(i=0;i<2;i++){
+      for(i=0; i<2; i++){
         SPINNER_genplot_valmin[i]->set_float_val(plot2dii->valmin[i]);
         SPINNER_genplot_valmax[i]->set_float_val(plot2dii->valmax[i]);
       }
@@ -1247,7 +1247,7 @@ void GLUIGenPlotCB(int var){
           int j;
 
           plot2di = plot2dinfo+i;
-          for(j=0;j<3;j++){
+          for(j=0; j<3; j++){
 
             dxyz[j] = (plot2d_xyzend[j]-plot2d_xyzstart[j])/(float)(nplot2dinfo-1);
             xyzval[j] = plot2d_xyzstart[j]+(float)i*dxyz[j];
@@ -1348,7 +1348,7 @@ void GLUIGenPlotCB(int var){
       glui_csv_file_index = 0;
       LIST_csvfile->set_int_val(glui_csv_file_index);
       GLUIGenPlotCB(GENPLOT_CSV_FILETYPE);
-      for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+      for(i=0; i<global_scase.devicecoll.ndeviceinfo; i++){
         devicedata *devi;
 
         devi = global_scase.devicecoll.deviceinfo + i;
@@ -1616,7 +1616,7 @@ extern "C" void GLUIDeviceCB(int var){
     GLUIUpdatePlot2DSize2();
     break;
   case DEVICE_devicetypes:
-    for(i = 0;i < ndevicetypes;i++){
+    for(i = 0; i < ndevicetypes; i++){
       devicetypes[i]->type2vis = 0;
     }
     if(ndevicetypes > 0){
@@ -1849,7 +1849,7 @@ extern "C" void GLUIPlot2DSetup(int main_window){
 
     if(global_scase.isZoneFireModel==1){
       LIST_curve_compartments = glui_plot2d->add_listbox_to_panel(PANEL_add_curve1, "compartment:", &icsv_compartments, GENPLOT_CURVE_UNIT, GLUIGenPlotCB);
-      for(i = 0;i < global_scase.nrooms;i++){
+      for(i = 0; i < global_scase.nrooms; i++){
         char label[100];
 
         snprintf(label, sizeof(label), "%i", i + 1);
@@ -2323,7 +2323,7 @@ void OpenCB(int var){
       break;
     case OPEN_UPDATE_LIST:
       LIST_open->delete_item("");
-      for(i=0;i<gluiopen_nfilelist;i++){
+      for(i=0; i<gluiopen_nfilelist; i++){
         char label[1024];
 
         strcpy(label,"");
@@ -2345,7 +2345,7 @@ void OpenCB(int var){
       else{
         BUTTON_open_down->disable();
       }
-      for(i=0;i<gluiopen_nfilelist;i++){
+      for(i=0; i<gluiopen_nfilelist; i++){
         char label[1024];
 
         strcpy(label,"");

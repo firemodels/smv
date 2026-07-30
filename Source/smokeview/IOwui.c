@@ -707,7 +707,7 @@ void DrawTrees(void){
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
   glTranslatef(-global_scase.xbar0,-global_scase.ybar0,-global_scase.zbar0);
-  for(i=0;i<global_scase.ntreeinfo;i++){
+  for(i=0; i<global_scase.ntreeinfo; i++){
     treedata *treei;
     float crown_height;
     int state;
@@ -772,7 +772,7 @@ float GetZCellVal(meshdata *meshi,float xval, float yval, float *zval_offset, in
 
   if(meshi==NULL)meshstart=0;
   if(zval_offset!=NULL)*zval_offset=0.0;
-  for(imesh=meshstart;imesh<global_scase.meshescoll.nmeshes;imesh++){
+  for(imesh=meshstart; imesh<global_scase.meshescoll.nmeshes; imesh++){
     meshdata *meshj;
     float *xplt, *yplt;
     int ibar, jbar;
@@ -827,7 +827,7 @@ float GetZCellValOffset(meshdata *meshi,float xval, float yval, int *loc){
 
   if(meshi==NULL)meshstart=0;
 
-  for(imesh=meshstart;imesh<global_scase.meshescoll.nmeshes;imesh++){
+  for(imesh=meshstart; imesh<global_scase.meshescoll.nmeshes; imesh++){
     meshdata *meshj;
     float *xplt, *yplt;
     int ibar, jbar;
@@ -884,7 +884,7 @@ float GetZCellValOffset(meshdata *meshi,float xval, float yval, int *loc){
 void UpdateTerrainColors(void){
   int i;
 
-  for(i=0;i<MAXRGB;i++){
+  for(i=0; i<MAXRGB; i++){
     float f1;
 
     f1 = (float)i/(float)(MAXRGB-1);
@@ -910,7 +910,7 @@ float GetZTerrain(float x, float y){
 void ComputeTerrainNormalsManual(void){
   int imesh;
 
-  for(imesh=0;imesh<global_scase.meshescoll.nmeshes;imesh++){
+  for(imesh=0; imesh<global_scase.meshescoll.nmeshes; imesh++){
     meshdata *meshi;
     terraindata *terri;
     float *znode;
@@ -923,12 +923,12 @@ void ComputeTerrainNormalsManual(void){
     znode = terri->znode;
     nycell = meshi->jbar;
 
-    for(j=0;j<=terri->jbar;j++){
+    for(j=0; j<=terri->jbar; j++){
       int i;
       float *yplt;
 
       yplt = terri->yplt+j;
-      for(i=0;i<=terri->ibar;i++){
+      for(i=0; i<=terri->ibar; i++){
         float dzdx, dzdy, sum, znormal3[3];
         unsigned char *uc_znormal;
         float *xplt;
@@ -998,7 +998,7 @@ void ComputeTerrainNormalsAuto(void){
   int imesh;
   float zmin, zmax;
 
-  for(imesh=0;imesh<global_scase.meshescoll.nmeshes;imesh++){
+  for(imesh=0; imesh<global_scase.meshescoll.nmeshes; imesh++){
     meshdata *meshi;
     terraindata *terri;
     int j;
@@ -1018,13 +1018,13 @@ void ComputeTerrainNormalsAuto(void){
     znode_offset = terri->znode_offset;
     nycell = terri->jbar;
 
-    for(j=0;j<=terri->jbar;j++){
+    for(j=0; j<=terri->jbar; j++){
       int i;
       float ynode;
 
       ynode = terri->yplt[j];
 
-      for(i=0;i<=terri->ibar;i++){
+      for(i=0; i<=terri->ibar; i++){
         float xnode;
         int count, loc1, loc2, loc3, loc4;
         float val1, val2, val3, val4;
@@ -1159,7 +1159,7 @@ void ComputeTerrainNormalsAuto(void){
 
   zmin = global_scase.meshescoll.meshinfo->terrain->znode[0];
   zmax = zmin;
-  for(imesh=0;imesh<global_scase.meshescoll.nmeshes;imesh++){
+  for(imesh=0; imesh<global_scase.meshescoll.nmeshes; imesh++){
     meshdata *meshi;
     terraindata *terri;
     int i;
@@ -1167,7 +1167,7 @@ void ComputeTerrainNormalsAuto(void){
     meshi = global_scase.meshescoll.meshinfo + imesh;
     terri = meshi->terrain;
 
-    for(i=0;i<(terri->ibar+1)*(terri->jbar+1);i++){
+    for(i=0; i<(terri->ibar+1)*(terri->jbar+1); i++){
       float *znode;
 
       znode = terri->znode+i;
@@ -1281,12 +1281,12 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
   y = terri->yplt;
   dx = (xmax-xmin)/nx;
   dy = (ymax-ymin)/ny;
-  for(i=0;i<nx;i++){
+  for(i=0; i<nx; i++){
     x[i] = xmin + dx*i;
   }
   x[nx] = xmax;
 
-  for(i=0;i<ny;i++){
+  for(i=0; i<ny; i++){
     y[i] = ymin + dy*i;
   }
   y[ny] = ymax;
@@ -1336,12 +1336,12 @@ void DrawTerrainOBST(terraindata *terri, int flag){
   x = terri->xplt;
   y = terri->yplt;
   glColor4fv(terrain_color);
-  for(j=0;j<terri->jbar;j++){
+  for(j=0; j<terri->jbar; j++){
     int jp1;
 
     jp1 = j + 1;
 
-    for(i=0;i<terri->ibar;i++){
+    for(i=0; i<terri->ibar; i++){
       unsigned char *uc_zn1, *uc_zn2, *uc_zn3, *uc_zn4;
       int ip1;
       float zval1, zval2, zval3, zval4;
@@ -1674,7 +1674,7 @@ void DrawTerrainOBSTTexture(terraindata *terri){
   nycell = terri->jbar;
   x = terri->xplt;
   y = terri->yplt;
-  for(j=0;j<terri->jbar;j+=terrain_skip){
+  for(j=0; j<terri->jbar; j+=terrain_skip){
     int jp1;
     float ty,typ1;
     unsigned char *uc_zn1, *uc_zn2, *uc_zn3, *uc_zn4;
@@ -1684,7 +1684,7 @@ void DrawTerrainOBSTTexture(terraindata *terri){
     ty = (y[j]-ybar0ORIG)/(ybarORIG-ybar0ORIG);
     typ1 = (y[jp1]-ybar0ORIG)/(ybarORIG-ybar0ORIG);
 
-    for(i=0;i<terri->ibar;i+=terrain_skip){
+    for(i=0; i<terri->ibar; i+=terrain_skip){
       float *zn1, *zn2, *zn3, *zn4;
       float zval1, zval2, zval3, zval4;
       int ip1;
@@ -1875,7 +1875,7 @@ void UpdateTerrain(int allocate_memory){
       }
     }
 
-    for(i=0;i<global_scase.meshescoll.nmeshes;i++){
+    for(i=0; i<global_scase.meshescoll.nmeshes; i++){
       meshdata *meshi;
       terraindata *terri;
       float xmin, xmax, ymin, ymax;
@@ -1950,7 +1950,7 @@ void UpdateTerrain(int allocate_memory){
   if(global_scase.nterraininfo>0){
     int imesh;
 
-    for(imesh=0;imesh<global_scase.meshescoll.nmeshes;imesh++){
+    for(imesh=0; imesh<global_scase.meshescoll.nmeshes; imesh++){
       meshdata *meshi;
       terraindata *terri;
       float *znode, *znode_scaled;
@@ -1969,8 +1969,8 @@ void UpdateTerrain(int allocate_memory){
       mesh_zmin = meshi->zplt_fds[0];
       mesh_zmax = meshi->zplt_fds[meshi->kbar];
 
-      for(j=0;j<=terri->jbar;j++){
-        for(i=0;i<=terri->ibar;i++){
+      for(j=0; j<=terri->jbar; j++){
+        for(i=0; i<=terri->ibar; i++){
           *znode_scaled = FDS2SMV_Z(*znode);
           if(*znode>=mesh_zmin&&*znode<=mesh_zmax){
             if(t_zmin>t_zmax){
@@ -2001,7 +2001,7 @@ void UpdateTerrain(int allocate_memory){
 int HaveTerrainSlice(void){
   int i;
 
-  for(i=0;i<global_scase.slicecoll.nsliceinfo;i++){
+  for(i=0; i<global_scase.slicecoll.nsliceinfo; i++){
     slicedata *slicei;
 
     slicei = global_scase.slicecoll.sliceinfo + i;

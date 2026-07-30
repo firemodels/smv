@@ -402,7 +402,7 @@ public:
   GLUI_StdBitmaps( void ) {
     int i;
 
-    for( i=0; i<GLUI_STDBITMAP_NUM_ITEMS; i++ ) {
+    for( i=0; i<GLUI_STDBITMAP_NUM_ITEMS; i++ ){
       bitmaps[i].load_from_array( bitmap_arrays[i] );
     }
   }

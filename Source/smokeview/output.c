@@ -398,7 +398,7 @@ void DrawLabels(labels_collection *labelscoll_arg){
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
   glTranslatef(-global_scase.xbar0,-global_scase.ybar0,-global_scase.zbar0);
-  for(thislabel=first_label->next;thislabel->next!=NULL;thislabel=thislabel->next){
+  for(thislabel=first_label->next; thislabel->next!=NULL; thislabel=thislabel->next){
     float *labelcolor,*tstart_stop,*xyz;
     int drawlabel;
 

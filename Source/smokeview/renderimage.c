@@ -633,8 +633,8 @@ int GifAddFrame(int delay) {
   glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, OpenGLimage);
   GLubyte *p = OpenGLimage;
   unsigned int r, g, b;
-  for(int i = height - 1; i >= 0; i--) {
-    for(int j = 0; j < width; j++) {
+  for(int i = height - 1; i >= 0; i--){
+    for(int j = 0; j < width; j++){
       r = *p++;
       g = *p++;
       b = *p++;
@@ -825,13 +825,13 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
   PRINTF("Rendering to: %s .", renderfullfile);
   RENDERimage = gdImageCreateTrueColor(width_hat,height_hat);
 
-  for(irow=0;irow<nfactor;irow++){
+  for(irow=0; irow<nfactor; irow++){
     int icol, imin_height, imax_height;
 
     imin_height = irow*screenHeight;
     imax_height = (irow+1)*screenHeight;
 
-    for(icol=0;icol<nfactor;icol++){
+    for(icol=0; icol<nfactor; icol++){
       GLubyte *p;
       int jmin_width, jmax_width;
 
@@ -1296,13 +1296,13 @@ int MergeRenderScreenBuffers360(void){
   RENDERimage = gdImageCreateTrueColor(nwidth360, nheight360);
   NewMemory((void **)&screenbuffer360,nwidth360*nheight360 * sizeof(int));
 
-  for(i=0;i<nwidth360*nheight360;i++){
+  for(i=0; i<nwidth360*nheight360; i++){
     screenbuffer360[i]=0;
   }
 
   ijk360 = 0;
-  for(j=0;j<nheight360;j++){
-    for(i=0;i<nwidth360;i++){
+  for(j=0; j<nheight360; j++){
+    for(i=0; i<nwidth360; i++){
       GLubyte *p00, *p01, *p10, *p11;
       int ibuff, rgb_local;
       screendata *screeni;
@@ -1351,8 +1351,8 @@ int MergeRenderScreenBuffers360(void){
   }
 
   ijk360 = 0;
-  for(j=nheight360-1;j>=0;j--){
-    for(i=0;i<nwidth360;i++){
+  for(j=nheight360-1; j>=0; j--){
+    for(i=0; i<nwidth360; i++){
       gdImageSetPixel(RENDERimage, i, j, screenbuffer360[ijk360++]);
     }
   }
@@ -1479,7 +1479,7 @@ int SmokeviewImage2File(char *directory, char *RENDERfilename, int rendertype, i
   RENDERimage = gdImageCreateTrueColor(width2,height2);
 
   for(i = height2-1; i>=0; i--){
-    for(j=0;j<width2;j++){
+    for(j=0; j<width2; j++){
       unsigned int r, g, b;
       int rgb_local;
 

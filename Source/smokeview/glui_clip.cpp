@@ -141,7 +141,7 @@ void ClipCB(int var){
     if(clip_mode != CLIP_OFF){
       int i;
 
-      for(i = 0;i < 6;i++){
+      for(i = 0; i < 6; i++){
         ClipCB(i);
       }
       CHECKBOX_clip_xmin->enable();
@@ -267,7 +267,7 @@ void ClipCB(int var){
 void SetClipControls(int val){
   int i;
 
-  for(i = 0;i < 6;i++){
+  for(i = 0; i < 6; i++){
     ClipCB(i);
   }
   if(val == DEFAULT_VALS){

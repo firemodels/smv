@@ -19,7 +19,7 @@ int GetColorTableIndex(int *color){
   int i;
 
   if(colortableinfo==NULL)return -1;
-  for(i=0;i<ncolortableinfo;i++){
+  for(i=0; i<ncolortableinfo; i++){
     colortabledata *cti;
 
     cti = colortableinfo + i;
@@ -34,7 +34,7 @@ colortabledata *GetColorTable(char *label){
   int i;
 
   if(label==NULL||strlen(label)==0)return NULL;
-  for(i=0;i<ncolortableinfo;i++){
+  for(i=0; i<ncolortableinfo; i++){
     colortabledata *cti;
 
     cti = colortableinfo + i;
