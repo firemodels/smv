@@ -293,7 +293,7 @@ void GetGitInfo(char *githash, char *gitdate, int *gittest){
   TrimBack(rev);
   beg = TrimFront(rev);
   if(gittest != NULL){
-    char *testtoken=NULL, revcopy[256];;
+    char *testtoken=NULL, revcopy[256];
     int revision = 1;
 
     *gittest = 1;
