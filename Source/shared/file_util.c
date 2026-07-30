@@ -620,7 +620,7 @@ mtfiledata *SetMtFileInfo(char *file, unsigned char *buffer, FILE_SIZE file_offs
 
   NewMemory((void **)&mtfileinfo,nthreads*sizeof(mtfiledata));
 
-  for(i=0;i<nthreads;i++){
+  for(i=0; i<nthreads; i++){
     mtfiledata *mti;
 
     mti = mtfileinfo + i;
@@ -685,7 +685,7 @@ FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE
     ThreadRuni(read_threads, (unsigned char *)mtfileinfo, sizeof(mtfiledata));
     ThreadJoin(&read_threads);
     chars_read = 0;
-    for(int i = 0;i < nthreads;i++){
+    for(int i = 0; i < nthreads; i++){
       chars_read += mtfileinfo[i].chars_read;
     }
   }
@@ -694,7 +694,7 @@ FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE
     int i;
 
     chars_read = 0;
-    for(i = 0;i < nthreads;i++){
+    for(i = 0; i < nthreads; i++){
       mtfiledata *mti;
 
       mti = mtfileinfo + i;
@@ -863,7 +863,7 @@ int FileExists(char *filename, filelistdata *filelist, int nfilelist, filelistda
 void FreeFileList(filelistdata *filelist, int *nfilelist){
   int i;
 
-  for(i=0;i<*nfilelist;i++){
+  for(i=0; i<*nfilelist; i++){
     FREEMEMORY(filelist[i].file);
   }
   FREEMEMORY(filelist);
@@ -1497,7 +1497,7 @@ char *GetSmvRootDir(){
 
     int i, count=0;
 
-    for(i = strlen(repo_bindir) - 1;i >= 0;i--){
+    for(i = strlen(repo_bindir) - 1; i >= 0; i--){
       if(repo_bindir[i] == dirseparator[0]){
         count++;
         if(count == 3){

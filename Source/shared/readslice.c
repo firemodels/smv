@@ -269,12 +269,12 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
     if(loadframe==0)continue;
     if(koff==1){
 //  qq(1:nxsp, 1:nysp, 2) = qq(1:nxsp, 1:nysp, 1)
-      for(j = 0;j<nysp;j++){
+      for(j = 0; j<nysp; j++){
         float *qqto, *qqfrom;
 
         qqfrom = qq + IJKNODE(0,j,0);
         qqto = qq + IJKNODE(0,j,1);
-        for(i = 0;i<nxsp;i++){
+        for(i = 0; i<nxsp; i++){
 //        qq[IJKNODE(i, j, 1)] = qq[IJKNODE(i, j, 0)];
           skipmin = 0;
           if(sd->slice_filetype == SLICE_CELL_CENTER){
@@ -290,12 +290,12 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
     }
     else if(joff==1){
 //  qq(1:nxsp, 2, 1:nzsp) = qq(1:nxsp, 1, 1:nzsp)
-      for(k = 0;k<nzsp;k++){
+      for(k = 0; k<nzsp; k++){
         float *qqto, *qqfrom;
 
         qqfrom = qq + IJKNODE(0,0,k);
         qqto = qq + IJKNODE(0,1,k);
-        for(i = 0;i<nxsp;i++){
+        for(i = 0; i<nxsp; i++){
 //        qq[IJKNODE(i, 1, k)] = qq[IJKNODE(i, 0, k)];
           skipmin = 0;
           if(sd->slice_filetype == SLICE_CELL_CENTER){
@@ -322,7 +322,7 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
         qqto = qdataptr+ii;
         qqfrom = qq + IJKNODE(i, 0, 0);
 //      qdata(ii+1:ii+nysp) = qq(i, 1:nysp, 1)
-        for(j = 0;j<nysp;j++){
+        for(j = 0; j<nysp; j++){
 //        qdataptr[ii+j] = qq[IJKNODE(i, j, 0)];
           skipmin = 0;
           if(sd->slice_filetype == SLICE_CELL_CENTER){
@@ -347,7 +347,7 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
 //      qdata(kk+1:kk+nzsp+koff) = qq(i, 1, 1:nzsp+koff)
         qqto = qdataptr+kk;
         qqfrom = qq + IJKNODE(i, 0, 0);
-        for(k = 0;k<nzsp+koff;k++){
+        for(k = 0; k<nzsp+koff; k++){
 //        qdataptr[kk+k] = qq[IJKNODE(i, 0, k)];
           skipmin = 0;
           if(sd->slice_filetype == SLICE_CELL_CENTER){
@@ -373,7 +373,7 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
 //        qdata(kk+1:kk+nzsp+koff) = qq(i, j, 1:nzsp+koff)
           qqto = qdataptr+kk;
           qqfrom = qq + IJKNODE(i, j, 0);
-          for(k = 0;k<nzsp+koff;k++){
+          for(k = 0; k<nzsp+koff; k++){
 //          qdataptr[kk+k] = qq[IJKNODE(i, j, k)];
             skipmin = 0;
             if(sd->slice_filetype == SLICE_CELL_CENTER){

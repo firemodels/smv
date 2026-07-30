@@ -21,7 +21,7 @@ float VolTetra(float *a, float *b, float *c, float *d){
 
   // vol = | ((b-a)x(c-a)) . (d-a) |
 
-  for(i=0;i<3;i++){
+  for(i=0; i<3; i++){
     brel[i] = b[i]-a[i];
     crel[i] = c[i]-a[i];
     drel[i] = d[i]-a[i];
@@ -90,7 +90,7 @@ float GetTetraVol(float *verts[4], float vals[4], float level){
     {0},
   };
 
-  for(i=0;i<4;i++){
+  for(i=0; i<4; i++){
     if(vals[i]>level){
       state[i]=1;
       index+=state[i]*p2;
@@ -102,7 +102,7 @@ float GetTetraVol(float *verts[4], float vals[4], float level){
   if(index==0)return 0.0;
   if(index==15)return full_volume;
 
-  for(i=0;i<6;i++){
+  for(i=0; i<6; i++){
     int i1, i2;
     float val1, val2;
     float *vert1, *vert2;
@@ -155,7 +155,7 @@ void GetIsoBox(float x[2], float y[2], float z[2], float *xyz0, float *vals, flo
                  int i;
 
                  GetIsoHexaHedron(x,y,z,xyz0,vals,NULL,nodeindexes,level,xvert,yvert,zvert,NULL,NULL,nvert,triangles,ntriangles,polys,npolys);
-                 for(i=0;i<*nvert;i++){
+                 for(i=0; i<*nvert; i++){
                    xyzverts[3*i]=xvert[i];
                    xyzverts[3*i+1]=yvert[i];
                    xyzverts[3*i+2]=zvert[i];
@@ -514,7 +514,7 @@ for(n = 0; n<4; n++){
 }
 if(xyz0!=NULL){
   vals = vals_dist;
-  for(n=0;n<8;n++){
+  for(n=0; n<8; n++){
     float dx, dy, dz;
     float dist;
     float *xyzn;
@@ -540,11 +540,11 @@ else{
   vmin = vals[0];
   vmax = vals[0];
   if(closestnodes!=NULL){
-    for(n=0;n<12;n++){
+    for(n=0; n<12; n++){
       closestnodes[n]=0;
     }
   }
-  for(n=1;n<8;n++){
+  for(n=1; n<8; n++){
     if(vals[n]<vmin){
       vmin=vals[n];
     }
@@ -563,7 +563,7 @@ else{
 
   casenum = 0; bigger = 0;
   sign = 1;
-  for(n=0;n<8;n++){
+  for(n=0; n<8; n++){
     if(vals[n]>level){
       bigger++;
       casenum |= prods[n];
@@ -575,7 +575,7 @@ else{
 
   if(bigger>4){
     sign=-1; casenum=0;
-    for(n=0;n<8;n++){
+    for(n=0; n<8; n++){
       if(vals[n]<level)casenum |= prods[n];
     }
   }
@@ -622,7 +622,7 @@ else{
 /* calculate where iso-surface level crosses each edge */
 
   outofbounds=0;
-  for(n=0;n<nedges;n++){
+  for(n=0; n<nedges; n++){
     edge = edges[n];
     v1 = case2[edge2vertex[edge][0]];
     v2 = case2[edge2vertex[edge][1]];
@@ -688,7 +688,7 @@ else{
     fprintf(stderr,"*** Warning - computed isosurface vertices are out of bounds for :\n");
     fprintf(stderr,"case number=%i level=%f\n",casenum,level);
     fprintf(stderr,"values=");
-    for(n=0;n<8;n++){
+    for(n=0; n<8; n++){
       fprintf(stderr,"%f ",vals[n]);
     }
     fprintf(stderr,"\n");
@@ -699,12 +699,12 @@ else{
 
   *nvert = nedges;
   *ntriangles = npath;
-  for(n=0;n<npath;n++){
+  for(n=0; n<npath; n++){
     triangles[n] = path[n];
   }
   if(polys != NULL&&npolys != NULL){
     *npolys = npolypath;
-    for(n = 0;n < npolypath;n++){
+    for(n = 0; n < npolypath; n++){
       polys[n] = polypath[n];
     }
   }
@@ -719,7 +719,7 @@ void CalcNormal2f(const float *v1, const float *v2, const float *v3,
   int i;
 
 
-  for(i=0;i<3;i++){
+  for(i=0; i<3; i++){
     u[i]=v2[i]-v1[i];
     v[i]=v3[i]-v1[i];
   }
@@ -743,7 +743,7 @@ void CalcNormal2(const unsigned short *v1,
   int i;
 
 
-  for(i=0;i<3;i++){
+  for(i=0; i<3; i++){
     u[i]=v2[i]-v1[i];
     v[i]=v3[i]-v1[i];
   }
@@ -839,14 +839,14 @@ int GetIsoSurface(isosurface *surface,
     tvalsptr=tvals;
     tvertptr=tvert;
   }
-  for(i=0;i<nx-1;i++){
+  for(i=0; i<nx-1; i++){
     xx[0]=xplt[i];
     xx[1]=xplt[i+1];
-    for(j=0;j<ny-1;j++){
+    for(j=0; j<ny-1; j++){
       yy[0]=yplt[j];
       yy[1]=yplt[j+1];
       ijbase = IJ(i,j);
-      for(k=0;k<nz-1;k++){
+      for(k=0; k<nz-1; k++){
         ijkbase = ijbase + k*nxy;
         ip1jk = ijkbase + 1;
         ijkp1 = ijkbase + nxy;
@@ -1044,7 +1044,7 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
   if(t!=NULL&&surface->dataflag==1){
     tmin=t[0];
     tmax=tmin;
-    for(i=1;i<nvertices;i++){
+    for(i=1; i<nvertices; i++){
       tmin=MIN(t[i],tmin);
       tmax=MAX(t[i],tmax);
     }
@@ -1052,18 +1052,18 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
     surface->tmax=tmax;
     tmaxmin=tmax-tmin;
     if(tmaxmin>0.0){
-      for(i=0;i<nvertices;i++){
+      for(i=0; i<nvertices; i++){
         tvertices[i]=(unsigned short)(65535*(t[i]-tmin)/tmaxmin);
       }
     }
     else{
-      for(i=0;i<nvertices;i++){
+      for(i=0; i<nvertices; i++){
         tvertices[i]=0;
       }
     }
   }
 
-  for(i=0;i<nvertices;i++){
+  for(i=0; i<nvertices; i++){
     vertices[3*i]=(unsigned short)65535*SCALE2SMV(x[i]-xmin);
     vertices[3*i+1]=(unsigned short)65535*SCALE2SMV(y[i]-ymin);
     vertices[3*i+2]=(unsigned short)65535*SCALE2SMV(z[i]-zmin);
@@ -1072,7 +1072,7 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
     rank[i]=i;
   }
 
-  for(i=0;i<nvertices;i++){
+  for(i=0; i<nvertices; i++){
     sortdata *sdi;
 
     sdi = sortinfo + i;
@@ -1083,14 +1083,14 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
   }
   qsort((sortdata *)sortinfo,(size_t)nvertices,sizeof(sortdata), CompareIsoNodes);
 
-  for(i=0;i<nvertices;i++){
+  for(i=0; i<nvertices; i++){
     sortdata *sdi;
 
     sdi = sortinfo + i;
     sortedlist[i]=sdi->index;
   }
 
-  for(i=0;i<nvertices;i++){
+  for(i=0; i<nvertices; i++){
     rankdata *rdi;
 
     rdi = rankinfo + i;
@@ -1098,7 +1098,7 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
     rdi->sortedlist=sortedlist[i];
   }
   qsort((rankdata *)rankinfo,(size_t)nvertices,sizeof(rankdata), ComputeRank);
-  for(i=0;i<nvertices;i++){
+  for(i=0; i<nvertices; i++){
     rankdata *rdi;
 
     rdi = rankinfo + i;
@@ -1109,7 +1109,7 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
   map[0]=0;
   map2[0]=0;
   nmap2=1;
-  for(i=1;i<nvertices;i++){
+  for(i=1; i<nvertices; i++){
     if(CompareIsoNodes(sortinfo+i-1,sortinfo+i)!=0){
       j++;
       map2[j]=i;
@@ -1135,7 +1135,7 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
 
   closestnodes=surface->closestnodes;
 
-  for(i=0;i<nvertices;i++){
+  for(i=0; i<nvertices; i++){
     j=sortedlist[map2[i]];
     newvertices[3*i]=vertices[3*j];
     newvertices[3*i+1]=vertices[3*j+1];
@@ -1143,7 +1143,7 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
     cs[i] = closestnodes[j];
   }
   if(surface->dataflag==1){
-    for(i=0;i<nvertices;i++){
+    for(i=0; i<nvertices; i++){
       j=sortedlist[map2[i]];
       newtvertices[i]=tvertices[j];
     }
@@ -1155,7 +1155,7 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
   if(NewMemory((void **)&newtriangles,ntriangles*sizeof(int))==0){
     return 1;
   }
-  for(i=0;i<ntriangles;i++){newtriangles[i]=map[rank[triangles[i]]];}
+  for(i=0; i<ntriangles; i++){newtriangles[i]=map[rank[triangles[i]]];}
   surface->triangles=newtriangles;
   surface->vertices=newvertices;
   surface->nvertices=nvertices;
@@ -1177,7 +1177,7 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
     return 1;
   }
   nn=0;
-  for(i=0;i<ntriangles/3;i++){
+  for(i=0; i<ntriangles/3; i++){
     v1=newtriangles[3*i];
     v2=newtriangles[3*i+1];
     v3=newtriangles[3*i+2];
@@ -1199,7 +1199,7 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
   if(NewMemory((void **)&ordered_closestnodes,nvertices*sizeof(int))==0){
     return 1;
   }
-  for(i=0;i<nvertices;i++){
+  for(i=0; i<nvertices; i++){
     orderdata *oi;
 
     oi = orderinfo + i;
@@ -1209,7 +1209,7 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
     ordered_closestnodes[i]=i;
   }
   qsort((orderdata *)orderinfo,(size_t)nvertices,sizeof(orderdata), OrderClosestNodes);
-  for(i=0;i<nvertices;i++){
+  for(i=0; i<nvertices; i++){
     orderdata *oi;
 
     oi = orderinfo + i;
@@ -1224,7 +1224,7 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
     return 1;
   }
 
-  for(i=0;i<nvertices;i++){vertexmap[i]=i;}
+  for(i=0; i<nvertices; i++){vertexmap[i]=i;}
   sumx=0; sumy = 0; sumz = 0; sumt=0;
 
   /* average nodes */
@@ -1234,7 +1234,7 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
   ii=ordered_closestnodes[0];
   if(surface->dataflag==1)tvertices = surface->tvertices;
   nnewvertices=0;
-  for(i=1;i<nvertices+1;i++){
+  for(i=1; i<nvertices+1; i++){
     iim1=ordered_closestnodes[i-1];
     if(i!=nvertices)ii=ordered_closestnodes[i];
     inverse_vertexmap[iim1] = nnewvertices;
@@ -1266,7 +1266,7 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
       return 1;
     }
   }
-  for(i=0;i<nnewvertices;i++){
+  for(i=0; i<nnewvertices; i++){
     ii = vertexmap[i];
     newvertices[3*i  ] = vertices[3*ii  ];
     newvertices[3*i+1] = vertices[3*ii+1];
@@ -1281,7 +1281,7 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
     surface->tvertices=newtvertices;
   }
   triangles = surface->triangles;
-  for(i=0;i<ntriangles;i++){
+  for(i=0; i<ntriangles; i++){
     triangles[i] = inverse_vertexmap[triangles[i]];
   }
   FREEMEMORY(ordered_closestnodes);
@@ -1349,7 +1349,7 @@ int UpdateIsosurface(isosurface *surface,
   if(ntriangles>0){
     ns = surface->ntriangles;
     is = surface->triangles + ns;
-    for(n=0;n<ntriangles;n++){
+    for(n=0; n<ntriangles; n++){
       is[n] = triangles[n]+noldvert;
     }
     surface->ntriangles = ns + ntriangles;
@@ -1552,10 +1552,10 @@ void SmoothIsoSurface(isosurface *surfacedata){
   NewMemory((void **)&vertexnorm,3*nvertices_i*sizeof(short));
   surfacedata->norm=norm;
   surfacedata->vertexnorm=vertexnorm;
-  for(n=0;n<3*nvertices_i;n++){
+  for(n=0; n<3*nvertices_i; n++){
     xyznorm[n]=0.0;
   }
-  for(n=0;n<ntriangles_i/3;n++){
+  for(n=0; n<ntriangles_i/3; n++){
     i1=3*triangles_i[3*n];
     i2=3*triangles_i[3*n+1];
     i3=3*triangles_i[3*n+2];
@@ -1576,7 +1576,7 @@ void SmoothIsoSurface(isosurface *surfacedata){
     xyznorm[i3+1] += out[1]*area;
     xyznorm[i3+2] += out[2]*area;
   }
-  for(n=0;n<nvertices_i;n++){
+  for(n=0; n<nvertices_i; n++){
     ReduceToUnit(xyznorm+3*n);
     vertexnorm[3*n  ]=(short)(xyznorm[3*n  ]*32767);
     vertexnorm[3*n+1]=(short)(xyznorm[3*n+1]*32767);
@@ -1620,7 +1620,7 @@ int GetNormalSurface(isosurface *surfacedata){
   znorm = surfacedata->znorm;
 
   nn = 0;
-  for(n=0;n<ntriangles;n++){
+  for(n=0; n<ntriangles; n++){
     index = triangles[nn++];
     vertx[0] = xvert[index];
     verty[0] = yvert[index];
@@ -1737,12 +1737,12 @@ void IsoOut(FILE *isostream,float t, int timeindex, isosurface *surface){
   if(ntrilist==0)return;
   if(nvertices<256){
     if(NewMemory((void **)&trilist1,sizeof(unsigned char)*ntrilist)==0){
-      for(i=0;i<ntrilist;i++){
+      for(i=0; i<ntrilist; i++){
         fwrite(&czero,1,1,isostream);
       }
     }
     else{
-      for(i=0;i<ntrilist;i++){
+      for(i=0; i<ntrilist; i++){
         trilist1[i] = (unsigned char)trilist[i];
       }
       fwrite(trilist1,1,ntrilist,isostream);
@@ -1751,12 +1751,12 @@ void IsoOut(FILE *isostream,float t, int timeindex, isosurface *surface){
   }
   else if(nvertices>=256&&nvertices<65536){
     if(NewMemory((void **)&trilist2,sizeof(unsigned short)*ntrilist)==0){
-      for(i=0;i<ntrilist;i++){
+      for(i=0; i<ntrilist; i++){
         fwrite(&szero,2,1,isostream);
       }
     }
     else{
-      for(i=0;i<ntrilist;i++){
+      for(i=0; i<ntrilist; i++){
         trilist2[i] = (unsigned short)trilist[i];
       }
       fwrite(trilist2,2,ntrilist,isostream);
@@ -1786,7 +1786,7 @@ void CCIsoSurface2File(char *isofile, float *t, float *data, char *iblank,
   *error=-1;
   if(isostream==NULL)return;
   *error = 0;
-  for(i=0;i<*nlevels;i++){
+  for(i=0; i<*nlevels; i++){
     InitIsoSurface(&surface,level[i],NULL,i);
     surface.dataflag=0;
     if(GetIsoSurface(&surface,data,NULL,(const char *)iblank,level[i],xplt,*nx,yplt,*ny,zplt,*nz)!=0){
@@ -1843,7 +1843,7 @@ void CCIsoSurfaceT2File(char *isofile, float *t, float *data, int *data2flag, fl
   *error=-1;
   if(isostream==NULL)return;
   *error = 0;
-  for(i=0;i<*nlevels;i++){
+  for(i=0; i<*nlevels; i++){
     InitIsoSurface(&surface,level[i],NULL,i);
     surface.dataflag=dataflag;
     if(GetIsoSurface(&surface,data,tdata,(const char *)iblank,level[i],xplt,*nx,yplt,*ny,zplt,*nz)!=0){
