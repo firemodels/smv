@@ -160,7 +160,7 @@ void TrainerCB(int var){
         rotation_type = EYE_CENTERED;
         HandleRotationType(ROTATION_2AXIS);
       }
-      for(i = 0;i < global_scase.tourcoll.ntourinfo;i++){
+      for(i = 0; i < global_scase.tourcoll.ntourinfo; i++){
         tourdata *touri;
 
         touri = global_scase.tourcoll.tourinfo + i;
@@ -295,7 +295,7 @@ extern "C" void GLUITrainerSetup(int main_window){
     int i;
     LIST_trainerpath->add_item(-1,"Manual");
     LIST_trainerpath->add_item(-2,"-");
-    for(i=0;i<global_scase.tourcoll.ntourinfo;i++){
+    for(i=0; i<global_scase.tourcoll.ntourinfo; i++){
       tourdata *touri;
 
       touri = global_scase.tourcoll.tourinfo + i;
@@ -308,7 +308,7 @@ extern "C" void GLUITrainerSetup(int main_window){
   {
     cameradata *ca;
 
-    for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
+    for(ca=camera_list_first.next; ca->next!=NULL; ca=ca->next){
       if(strcmp(ca->name,"external")!=0){
         LIST_viewpoint->add_item(ca->view_id, ca->name);
       }

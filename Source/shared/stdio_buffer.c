@@ -11,7 +11,7 @@ void OutputFileBuffer(filedata *fileinfo){
   int i;
 
   if(fileinfo==NULL)return;
-  for(i = 0;i<fileinfo->nlines;i++){
+  for(i = 0; i<fileinfo->nlines; i++){
     char *buffer;
 
     buffer = fileinfo->lines[i];
@@ -46,10 +46,10 @@ bufferstreamdata *AppendFileBuffer(bufferstreamdata *stream, char *file){
     return  stream;
   }
 
-  for(i = 0;i<file1->nlines;i++){
+  for(i = 0; i<file1->nlines; i++){
     lines[i] = buffer + (file1->lines[i] - file1->buffer);
   }
-  for(i = 0;i<file2->nlines;i++){
+  for(i = 0; i<file2->nlines; i++){
     lines[i+file1->nlines] = buffer + file1->filesize + (file2->lines[i] - file2->buffer);
   }
 
@@ -130,7 +130,7 @@ char *fgets_buffer(filedata *fileinfo,char *buffer,int size){
   file_buffer = fileinfo->lines[iline];
   from = file_buffer;
   to = buffer;
-  for(i = 0;i<size;i++){
+  for(i = 0; i<size; i++){
     *to++ = *from++;
     if(from[-1]==0)break;
   }

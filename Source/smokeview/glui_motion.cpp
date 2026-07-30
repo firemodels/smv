@@ -685,7 +685,7 @@ int ViewExist(char *view){
   cameradata *ca;
 
   if(view == NULL)return 0;
-  for(ca = camera_list_first.next;ca->next != NULL;ca = ca->next){
+  for(ca = camera_list_first.next; ca->next != NULL; ca = ca->next){
     if(strcmp(view, ca->name) == 0)return 1;
   }
   return 0;
@@ -870,13 +870,13 @@ extern "C" void GLUIViewpointCB(int var){
     ResetDefaultMenu(2);
     break;
   case SHOWALL_SCREENS:
-    for(i = 0;i < nscreeninfo;i++){
+    for(i = 0; i < nscreeninfo; i++){
       screenvis[i] = 1;
       CHECKBOX_screenvis[i]->set_int_val(screenvis[i]);
     }
     break;
   case HIDEALL_SCREENS:
-    for(i = 0;i < nscreeninfo;i++){
+    for(i = 0; i < nscreeninfo; i++){
       screenvis[i] = 0;
       CHECKBOX_screenvis[i]->set_int_val(screenvis[i]);
     }
@@ -917,7 +917,7 @@ extern "C" void GLUIViewpointCB(int var){
     cex = &camera_list_first;
     cex = cex->next;
     cex = cex->next;
-    for(ca = cex;ca->next != NULL;ca = ca->next){
+    for(ca = cex; ca->next != NULL; ca = ca->next){
       if(ca->view_id == ival)break;
     }
     if(ival != ca->view_id){
@@ -947,7 +947,7 @@ extern "C" void GLUIViewpointCB(int var){
     cex = &camera_list_first;
     cex = cex->next;
     cex = cex->next;
-    for(ca = cex;ca->next != NULL;ca = ca->next){
+    for(ca = cex; ca->next != NULL; ca = ca->next){
       if(ca->view_id == ival)break;
     }
     if(ival == ca->view_id){
@@ -983,7 +983,7 @@ extern "C" void GLUIViewpointCB(int var){
     }
     ival = LIST_viewpoints->get_int_val();
     selected_view = ival;
-    for(ca = camera_list_first.next;ca->next != NULL;ca = ca->next){
+    for(ca = camera_list_first.next; ca->next != NULL; ca = ca->next){
       if(ca->view_id == ival)break;
     }
 
@@ -1104,11 +1104,11 @@ extern "C" void GLUIUpdateViewpointList(void){
   int i;
 
   if(LIST_viewpoints == NULL)return;
-  for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
+  for(ca=camera_list_first.next; ca->next!=NULL; ca=ca->next){
     LIST_viewpoints->delete_item(ca->name);
   }
   SortCamerasID();
-  for(i = 0; i < ncameras_sorted;i++){
+  for(i = 0; i < ncameras_sorted; i++){
     ca = cameras_sorted[i];
     LIST_viewpoints->add_item(ca->view_id, ca->name);
   }
@@ -1930,14 +1930,14 @@ extern "C" void GLUIToggleRollout(procdata *procinfo, int nprocinfo, int motion_
   int i;
 
   if(toggle_dialogs==1){
-    for(i=0;i<nprocinfo;i++){
+    for(i=0; i<nprocinfo; i++){
       procdata *mi;
 
       mi = procinfo + i;
       if(mi->rollout_id!=motion_id)mi->rollout->close();
     }
   }
-  for(i=0;i<nprocinfo;i++){
+  for(i=0; i<nprocinfo; i++){
     procdata *mi;
 
     mi = procinfo + i;
@@ -2286,7 +2286,7 @@ extern "C" void GLUISceneMotionCB(int var){
     case ZOOM:
       updatemenu = 1;
       zoomindex=-1;
-      for(i=0;i<MAX_ZOOMS;i++){
+      for(i=0; i<MAX_ZOOMS; i++){
         if(ABS(zoom-zooms[i])<0.001){
           zoomindex=i;
           zoom=zooms[i];
@@ -2310,7 +2310,7 @@ extern "C" void GLUISceneMotionCB(int var){
         if(SPINNER_aperture!=NULL)SPINNER_aperture->set_float_val(aperture_glui);
       }
       zoomindex=-1;
-      for(i=0;i<MAX_ZOOMS+1;i++){
+      for(i=0; i<MAX_ZOOMS+1; i++){
         if(ABS(zoom-zooms[i])<0.001&&zooms[i]>0.0){
           zoomindex=i;
           zoom=zooms[i];
@@ -2564,7 +2564,7 @@ extern "C" void GLUIAddListView(char *label_in){
   cex=&camera_list_first;
   cex=cex->next;
   cex=cex->next;
-  for(ca=cex;ca->next!=NULL;ca=ca->next){
+  for(ca=cex; ca->next!=NULL; ca=ca->next){
     if(ca->view_id==ival)break;
   }
   if(ival==ca->view_id){

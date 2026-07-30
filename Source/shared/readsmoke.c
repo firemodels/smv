@@ -25,7 +25,7 @@ void FreeSmoke3D(smv_case *scase, smoke3ddata *smoke3di){
 
   label = smoke3di->label.shortlabel;
   ext = smoke3di->extinct;
-  if(ext > 0.0) {
+  if(ext > 0.0){
     meshi->smoke3d_soot = NULL;
   }
   if(strcmp(label, "hrrpuv") == 0){

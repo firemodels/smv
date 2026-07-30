@@ -62,7 +62,7 @@ labeldata *LabelInsert(labels_collection *labelscoll, labeldata *labeltemp) {
   memcpy(newlabel, labeltemp, sizeof(labeldata));
 
   thislabel = LabelGet(labelscoll, newlabel->name);
-  if(thislabel != NULL) {
+  if(thislabel != NULL){
     LabelInsertAfter(thislabel->prev, newlabel);
     return newlabel;
   }
@@ -73,15 +73,15 @@ labeldata *LabelInsert(labels_collection *labelscoll, labeldata *labeltemp) {
   lastuserptr = labelscoll->label_last_ptr->prev;
   if(lastuserptr == labelscoll->label_first_ptr) lastuserptr = NULL;
 
-  if(firstuserptr != NULL && strcmp(newlabel->name, firstuserptr->name) < 0) {
+  if(firstuserptr != NULL && strcmp(newlabel->name, firstuserptr->name) < 0){
     LabelInsertBefore(firstuserptr, newlabel);
     return newlabel;
   }
-  if(lastuserptr != NULL && strcmp(newlabel->name, lastuserptr->name) > 0) {
+  if(lastuserptr != NULL && strcmp(newlabel->name, lastuserptr->name) > 0){
     LabelInsertAfter(lastuserptr, newlabel);
     return newlabel;
   }
-  if(firstuserptr == NULL && lastuserptr == NULL) {
+  if(firstuserptr == NULL && lastuserptr == NULL){
     LabelInsertAfter(labelscoll->label_first_ptr, newlabel);
     return newlabel;
   }
@@ -237,7 +237,7 @@ labels_collection *CreateLabelsCollection() {
 
 void FreeLabelsCollection(labels_collection *labelscoll) {
   labeldata *thislabel = labelscoll->label_first_ptr->next;
-  while(thislabel->next != NULL) {
+  while(thislabel->next != NULL){
     labeldata *nextlabel = thislabel->next;
     LabelDelete(thislabel);
     thislabel = nextlabel;

@@ -134,7 +134,7 @@ void GetHoc(smv_case *scase, float *hoc, char *name){
       float val;
 
       fgets(buffer, 255, stream);
-      for(ii = 0;ii < 255;ii++){
+      for(ii = 0; ii < 255; ii++){
         tokens[ii] = NULL;
       }
       ntokens = GetTokensBlank(buffer, tokens, 255);
@@ -431,7 +431,7 @@ FILE_SIZE ReadCSVFile(smv_case *scase, csvfiledata *csvfi, int flag){
     cchirad->dimensionless = 1;
     cchirad->skip = 0;
     vals2 = cchirad->vals;
-    for(i=0;i<nrows;i++){
+    for(i=0; i<nrows; i++){
       if(hrr_csvcol->vals[i]!=0.0){
         vals2[i] = -qradi_csvcol->vals[i]/hrr_csvcol->vals[i];
       }
@@ -505,7 +505,7 @@ void ReadHRR(smv_case *scase, int flag){
   GetHoc(scase, &scase->fuel_hoc, scase->fuel_name);
   scase->fuel_hoc_default = scase->fuel_hoc;
   if(scase->hrr_coll.nhrrinfo>0){
-    for(i=0;i<scase->hrr_coll.nhrrinfo;i++){
+    for(i=0; i<scase->hrr_coll.nhrrinfo; i++){
       hrrdata *hi;
 
       hi = scase->hrr_coll.hrrinfo + i;
@@ -678,7 +678,7 @@ void ReadHRR(smv_case *scase, int flag){
     hi_hrr = scase->hrr_coll.hrrinfo+scase->hrr_col;
     hi_qradi = scase->hrr_coll.hrrinfo+scase->qradi_col;
     hi_chirad->nvals = MIN(hi_qradi->nvals, hi_hrr->nvals);
-    for(i=0;i<hi_chirad->nvals;i++){
+    for(i=0; i<hi_chirad->nvals; i++){
       if(hi_hrr->vals[i]!=0.0){
         hi_chirad->vals[i] = -hi_qradi->vals[i]/hi_hrr->vals[i];
       }
@@ -800,7 +800,7 @@ PROP
   nsmokeview_ids=4;                                   // from input
 
   InitProp(propi,nsmokeview_ids,proplabel);
-  for(i=0;i<nsmokeview_ids;i++){
+  for(i=0; i<nsmokeview_ids; i++){
     if(i==0)strcpy(buffer,"human_fixed");             // from input
     if(i==1)strcpy(buffer,"human_altered_with_data"); // from input
     if(i==2)strcpy(buffer,"ellipsoid");               // from input
@@ -826,7 +826,7 @@ PROP
     NewMemory((void **)&propi->vars_indep_index,propi->nvars_indep*sizeof(int));
     NewMemory((void **)&propi->texturefiles,propi->nvars_indep*sizeof(char *));
 
-    for(i=0;i<propi->nvars_indep;i++){
+    for(i=0; i<propi->nvars_indep; i++){
       char *equal;
 
       propi->svals[i]=NULL;
@@ -898,7 +898,7 @@ void InitMesh(meshdata *meshi){
   meshi->isliceinfo    = 0;
   meshi->nsliceinfo    = 0;
   meshi->nbptrs = 0;
-  for(i = 0;i < 6;i++){
+  for(i = 0; i < 6; i++){
     meshi->skip_nabors[i] = NULL;
     meshi->nabors[i]      = NULL;
   }
@@ -1124,7 +1124,7 @@ ventdata *GetCloseVent(meshdata *ventmesh, int ivent){
   if(close_vent->dir2==YDIR&&close_vent->jmin>0&&close_vent->jmax<ventmesh->jbar)return close_vent;
   if(close_vent->dir2==ZDIR&&close_vent->kmin>0&&close_vent->kmax<ventmesh->kbar)return close_vent;
   vdummy_start = ventmesh->ventinfo+ventmesh->nvents-ventmesh->ndummyvents;
-  for(i = 0;i<ventmesh->ndummyvents;i++){
+  for(i = 0; i<ventmesh->ndummyvents; i++){
     ventdata *vi;
 
     vi = vdummy_start+i;
@@ -1156,11 +1156,11 @@ void ReadSMVDynamic(smv_case *scase, char *file){
   if(scase->nplot3dinfo>0){
     int n;
 
-    for(i=0;i<scase->nplot3dinfo;i++){
+    for(i=0; i<scase->nplot3dinfo; i++){
       plot3ddata *plot3di;
 
       plot3di = scase->plot3dinfo + i;
-      for(n=0;n<6;n++){
+      for(n=0; n<6; n++){
         FreeLabels(&plot3di->label[n]);
       }
       FREEMEMORY(plot3di->reg_file);
@@ -1169,12 +1169,12 @@ void ReadSMVDynamic(smv_case *scase, char *file){
   }
   scase->nplot3dinfo=0;
 
-  for(i=0;i<scase->meshescoll.nmeshes;i++){
+  for(i=0; i<scase->meshescoll.nmeshes; i++){
     meshdata *meshi;
     int j;
 
     meshi=scase->meshescoll.meshinfo+i;
-    for(j=0;j<meshi->nbptrs;j++){
+    for(j=0; j<meshi->nbptrs; j++){
       blockagedata *bc_local;
 
       bc_local=meshi->blockageinfoptrs[j];
@@ -1182,7 +1182,7 @@ void ReadSMVDynamic(smv_case *scase, char *file){
       FREEMEMORY(bc_local->showtime);
       FREEMEMORY(bc_local->showhide);
     }
-    for(j=0;j<meshi->nvents;j++){
+    for(j=0; j<meshi->nvents; j++){
       ventdata *vi;
 
       vi = meshi->ventinfo + j;
@@ -1199,7 +1199,7 @@ void ReadSMVDynamic(smv_case *scase, char *file){
       FREEMEMORY(cvi->showtime);
     }
   }
-  for(i=scase->devicecoll.ndeviceinfo_exp;i<scase->devicecoll.ndeviceinfo;i++){
+  for(i=scase->devicecoll.ndeviceinfo_exp; i<scase->devicecoll.ndeviceinfo; i++){
     devicedata *devicei;
 
     devicei =scase->devicecoll.deviceinfo + i;
@@ -1435,7 +1435,7 @@ void ReadSMVDynamic(smv_case *scase, char *file){
       ResizeMemory((void **)&scase->plot3dinfo,scase->nplot3dinfo*sizeof(plot3ddata));
     }
   }
-  for(i=0;i<scase->devicecoll.ndeviceinfo;i++){
+  for(i=0; i<scase->devicecoll.ndeviceinfo; i++){
     devicedata *devicei;
 
     devicei = scase->devicecoll.deviceinfo + i;
@@ -1509,7 +1509,7 @@ void ReadSMVDynamic(smv_case *scase, char *file){
       scase->nmemory_ids++;
       plot3di->memory_id = scase->nmemory_ids;
 
-      for(i=0;i<MAXPLOT3DVARS;i++){
+      for(i=0; i<MAXPLOT3DVARS; i++){
         plot3di->histograms[i] = NULL;
       }
 
@@ -1535,7 +1535,7 @@ void ReadSMVDynamic(smv_case *scase, char *file){
         plot3di->u = -1;
         plot3di->v = -1;
         plot3di->w = -1;
-        for(n = 0;n<5;n++){
+        for(n = 0; n<5; n++){
           if(ReadLabels(&plot3di->label[n], stream, NULL)!=LABEL_OK){
             read_ok=NO;
             break;
@@ -1569,7 +1569,7 @@ void ReadSMVDynamic(smv_case *scase, char *file){
         STRCPY(plot3di->label[5].unit, "m/s");
 
         STRCPY(plot3di->longlabel, "");
-        for(n = 0;n<5;n++){
+        for(n = 0; n<5; n++){
           STRCAT(plot3di->longlabel, plot3di->label[n].shortlabel);
           if(n!=4)STRCAT(plot3di->longlabel, ", ");
         }
@@ -1579,7 +1579,7 @@ void ReadSMVDynamic(smv_case *scase, char *file){
       else{
         int n;
 
-        for(n = 0;n<5;n++){
+        for(n = 0; n<5; n++){
           if(ReadLabels(&plot3di->label[n], stream, NULL)==LABEL_ERR)break;
         }
         scase->nplot3dinfo--;
@@ -1792,19 +1792,19 @@ void ReadSMVDynamic(smv_case *scase, char *file){
       TrimBack(file2);
       file_ptr = TrimFront(file2);
 
-      for(i=0;i<5;i++){
+      for(i=0; i<5; i++){
         FGETS(buffer,255,stream);
         sscanf(buffer,"%f %f %f %f",valmin +i,valmax+i, percentile_min+i,percentile_max+i);
       }
 
-      for(i=0;i<scase->nplot3dinfo;i++){
+      for(i=0; i<scase->nplot3dinfo; i++){
         plot3ddata *plot3di;
 
         plot3di = scase->plot3dinfo + i;
         if(strcmp(file_ptr,plot3di->file)==0){
           int j;
 
-          for(j=0;j<5;j++){
+          for(j=0; j<5; j++){
             plot3di->diff_valmin[j]=percentile_min[j];
             plot3di->diff_valmax[j]=percentile_max[j];
           }
@@ -2082,7 +2082,7 @@ void ParseDevicekeyword(smv_case *scase, BFILE *stream, devicedata *devicei){
     nsize = 6*((nparams-1)/6+1);
     NewMemory((void **)&params,(nsize+devicei->ntextures)*sizeof(float));
     pc=params;
-    for(i=0;i<nsize/6;i++){
+    for(i=0; i<nsize/6; i++){
       FGETS(buffer,255,stream);
       TrimCommas(buffer);
 
@@ -2210,7 +2210,7 @@ void ParseDevicekeyword2(smv_case *scase, FILE *stream, devicedata *devicei){
     nsize = 6*((nparams-1)/6+1);
     NewMemory((void **)&params, (nsize+devicei->ntextures)*sizeof(float));
     pc = params;
-    for(i = 0;i<nsize/6;i++){
+    for(i = 0; i<nsize/6; i++){
       fgets(buffer, 255, stream);
       TrimCommas(buffer);
 
@@ -2292,7 +2292,7 @@ int IsDupTexture(smv_case *scase, texturedata *texti) {
 
   i = texti - scase->texture_coll.textureinfo;
   dup_texture=0;
-  for(j=0;j<i;j++){
+  for(j=0; j<i; j++){
     texturedata *textj;
 
     textj = scase->texture_coll.textureinfo + j;
@@ -2317,7 +2317,7 @@ int IsTerrainTexture(smv_case *scase, texturedata *texti){
   int i;
 
   is_terrain_texture=0;
-  for(i=0;i<scase->terrain_texture_coll.nterrain_textures;i++){
+  for(i=0; i<scase->terrain_texture_coll.nterrain_textures; i++){
     texturedata *tt;
 
     tt = scase->terrain_texture_coll.terrain_textures + i;
@@ -2387,7 +2387,7 @@ int CompareSmoketypes(const void *arg1, const void *arg2){
 int IsSliceDup(smv_case *scase, slicedata *sd, int nslice){
   int i;
 
-  for(i=0;i<nslice-1;i++){
+  for(i=0; i<nslice-1; i++){
     slicedata *slicei;
 
     slicei = scase->slicecoll.sliceinfo + i;
@@ -4339,7 +4339,7 @@ blockagedata *GetBlockagePtr(smv_case *scase, float *xyz){
   xyzcenter[0] = (xyz[0]+xyz[1])/2.0;
   xyzcenter[1] = (xyz[2]+xyz[3])/2.0;
   xyzcenter[2] = (xyz[4]+xyz[5])/2.0;
-  for(i=0;i<scase->meshescoll.nmeshes;i++){
+  for(i=0; i<scase->meshescoll.nmeshes; i++){
     meshdata *meshi;
     int j;
 
@@ -4347,7 +4347,7 @@ blockagedata *GetBlockagePtr(smv_case *scase, float *xyz){
     if(xyzcenter[0]<meshi->boxmin_fds[0]||xyzcenter[0]>meshi->boxmax_fds[0])continue;
     if(xyzcenter[1]<meshi->boxmin_fds[1]||xyzcenter[1]>meshi->boxmax_fds[1])continue;
     if(xyzcenter[2]<meshi->boxmin_fds[2]||xyzcenter[2]>meshi->boxmax_fds[2])continue;
-    for(j=0;j<meshi->nbptrs;j++){
+    for(j=0; j<meshi->nbptrs; j++){
       blockagedata *bc;
       float *xyzEXACT;
 
@@ -4371,7 +4371,7 @@ void ReadSMVOrig(smv_case *scase, char *smvfile){
   smv_orig_filename = smvfile;
   if(smv_orig_filename==NULL)smv_orig_filename = CasePathSmvOrig(scase);
   stream = FOPEN(smv_orig_filename, "r");
-  if(stream == NULL) {
+  if(stream == NULL){
     if(smvfile==NULL)FREEMEMORY(smv_orig_filename);
     return;
   }
@@ -4479,11 +4479,11 @@ void ReadSMVOrig(smv_case *scase, char *smvfile){
 
         int j;
 
-        for(j=0;j<6;j++){
+        for(j=0; j<6; j++){
           obi->surfs[0] = NULL;
         }
         if(scase->surfcoll.surfinfo!=NULL){
-          for(j=0;j<6;j++){
+          for(j=0; j<6; j++){
             if(obi->surf_index[j]>=0)obi->surfs[j] = scase->surfcoll.surfinfo + obi->surf_index[j];
           }
         }
@@ -4533,7 +4533,7 @@ void AddCfastCsvfi(smv_case *scase, const char *suffix, const char *type, int fo
   int i;
 
   char *filename = GetCSVFilename(scase, suffix);
-  for(i=0;i<scase->csvcoll.ncsvfileinfo;i++){
+  for(i=0; i<scase->csvcoll.ncsvfileinfo; i++){
     csvfiledata *csvfi;
 
     csvfi = scase->csvcoll.csvfileinfo + i;
@@ -4591,7 +4591,7 @@ int ReadSMV_Init(smv_case *scase){
   scase->ntreeinfo=0;
 
   int i;
-  for(i=0;i<scase->nterraininfo;i++){
+  for(i=0; i<scase->nterraininfo; i++){
     terraindata *terri;
 
     terri = scase->terraininfo + i;
@@ -4617,7 +4617,7 @@ int ReadSMV_Init(smv_case *scase){
   if(scase->csvcoll.ncsvfileinfo>0){
     csvfiledata *csvi;
 
-    for(i=0;i<scase->csvcoll.ncsvfileinfo;i++){
+    for(i=0; i<scase->csvcoll.ncsvfileinfo; i++){
       csvi = scase->csvcoll.csvfileinfo + i;
       FREEMEMORY(csvi->file);
     }
@@ -4626,7 +4626,7 @@ int ReadSMV_Init(smv_case *scase){
   scase->csvcoll.ncsvfileinfo=0;
 
   if(scase->ngeominfo>0){
-    for(i=0;i<scase->ngeominfo;i++){
+    for(i=0; i<scase->ngeominfo; i++){
       geomdata *geomi;
 
       geomi = scase->geominfo + i;
@@ -4681,13 +4681,13 @@ int ReadSMV_Init(smv_case *scase){
   if(scase->partclassinfo!=NULL){
     int j;
 
-    for(i=0;i<scase->npartclassinfo+1;i++){
+    for(i=0; i<scase->npartclassinfo+1; i++){
       partclassdata *partclassi;
 
       partclassi = scase->partclassinfo + i;
       FREEMEMORY(partclassi->name);
       if(partclassi->ntypes>0){
-        for(j=0;j<partclassi->ntypes;j++){
+        for(j=0; j<partclassi->ntypes; j++){
           flowlabels *labelj;
 
           labelj = partclassi->labels+j;
@@ -4702,7 +4702,7 @@ int ReadSMV_Init(smv_case *scase){
   scase->npartclassinfo=0;
 
   if(scase->devicecoll.ndeviceinfo>0){
-    for(i=0;i<scase->devicecoll.ndeviceinfo;i++){
+    for(i=0; i<scase->devicecoll.ndeviceinfo; i++){
     }
     FREEMEMORY(scase->devicecoll.deviceinfo);
     scase->devicecoll.ndeviceinfo=0;
@@ -4715,7 +4715,7 @@ int ReadSMV_Init(smv_case *scase){
   PRINT_TIMER(timer_setup, "InitSurface");
 
   if(scase->noutlineinfo>0){
-    for(i=0;i<scase->noutlineinfo;i++){
+    for(i=0; i<scase->noutlineinfo; i++){
       outlinedata *outlinei;
 
       outlinei = scase->outlineinfo + i;
@@ -4731,12 +4731,12 @@ int ReadSMV_Init(smv_case *scase){
   }
 
   if(scase->nzoneinfo>0){
-    for(i=0;i<scase->nzoneinfo;i++){
+    for(i=0; i<scase->nzoneinfo; i++){
       zonedata *zonei;
       int n;
 
       zonei = scase->zoneinfo + i;
-      for(n=0;n<4;n++){
+      for(n=0; n<4; n++){
         FreeLabels(&zonei->label[n]);
       }
       FREEMEMORY(zonei->file);
@@ -4749,7 +4749,7 @@ int ReadSMV_Init(smv_case *scase){
     {
       smoke3ddata *smoke3di;
 
-      for(i=0;i<scase->smoke3dcoll.nsmoke3dinfo;i++){
+      for(i=0; i<scase->smoke3dcoll.nsmoke3dinfo; i++){
         smoke3di = scase->smoke3dcoll.smoke3dinfo + i;
         FreeSmoke3D(scase, smoke3di);
         FREEMEMORY(smoke3di->comp_file);
@@ -4761,7 +4761,7 @@ int ReadSMV_Init(smv_case *scase){
   }
 
   if(scase->npartinfo>0){
-    for(i=0;i<scase->npartinfo;i++){
+    for(i=0; i<scase->npartinfo; i++){
       FREEMEMORY(scase->partinfo[i].partclassptr);
       FREEMEMORY(scase->partinfo[i].reg_file);
       FREEMEMORY(scase->partinfo[i].size_file);
@@ -4775,7 +4775,7 @@ int ReadSMV_Init(smv_case *scase){
   FreeSliceData(scase);
 
   if(scase->npatchinfo>0){
-    for(i=0;i<scase->npatchinfo;i++){
+    for(i=0; i<scase->npatchinfo; i++){
       patchdata *patchi;
 
       patchi = scase->patchinfo + i;
@@ -4789,7 +4789,7 @@ int ReadSMV_Init(smv_case *scase){
   scase->npatchinfo=0;
 
   if(scase->nisoinfo>0){
-    for(i=0;i<scase->nisoinfo;i++){
+    for(i=0; i<scase->nisoinfo; i++){
       FreeLabels(&scase->isoinfo[i].surface_label);
       FREEMEMORY(scase->isoinfo[i].file);
     }
@@ -5143,7 +5143,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       if(scase->terrain_texture_coll.nterrain_textures>0){
         NewMemory((void **)&scase->terrain_texture_coll.terrain_textures, scase->terrain_texture_coll.nterrain_textures*sizeof(texturedata));
 
-        for(i=0;i<scase->terrain_texture_coll.nterrain_textures;i++){
+        for(i=0; i<scase->terrain_texture_coll.nterrain_textures; i++){
           FGETS(buffer, 255, stream);
           buff2 = TrimFrontBack(buffer);
           len_buffer = strlen(buff2);
@@ -5581,7 +5581,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
   FREEMEMORY(scase->boundarytypes);
   if(scase->npatchinfo!=0){
     if(NewMemory((void **)&scase->patchinfo,scase->npatchinfo*sizeof(patchdata))==0)return 2;
-    for(i=0;i<scase->npatchinfo;i++){
+    for(i=0; i<scase->npatchinfo; i++){
       patchdata *patchi;
 
       patchi = scase->patchinfo + i;
@@ -5625,16 +5625,16 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
   if(NewMemory((void **)&scase->surfcoll.surfinfo,(n_surf_keywords+MAX_ISO_COLORS+1)*sizeof(surfdata))==0)return 2;
 
   ClearCADGeomCollection(&scase->cadgeomcoll);
-  if (n_cadgeom_keywords > 0) {
+  if(n_cadgeom_keywords > 0){
     // Allocate a fixed-size collection large enough to hold each of the CADGEOM
     // definitions.
     int err = InitCADGeomCollection(&scase->cadgeomcoll, n_cadgeom_keywords);
-    if (err != 0) return 2;
+    if(err != 0) return 2;
   }
 
   if(scase->noutlineinfo>0){
     if(NewMemory((void **)&scase->outlineinfo,scase->noutlineinfo*sizeof(outlinedata))==0)return 2;
-    for(i=0;i<scase->noutlineinfo;i++){
+    for(i=0; i<scase->noutlineinfo; i++){
       outlinedata *outlinei;
 
       outlinei = scase->outlineinfo + i;
@@ -5704,10 +5704,10 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
     if(MatchSMV(buffer, "HVACVALS") == 1){
       int r =
           ParseHVACValsEntry(&scase->hvaccoll, stream );
-      if (r == 1) {
+      if(r == 1){
         BREAK;
       }
-      else if (r == 2) {
+      else if(r == 2){
         continue;
       }
     }
@@ -5719,10 +5719,10 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
     if(MatchSMV(buffer, "HVAC") == 1){
       int r =
           ParseHVACEntry(&scase->hvaccoll, stream, scase->hvac_node_color, scase->hvac_duct_color);
-      if (r == 1) {
+      if(r == 1){
         BREAK;
       }
-      else if (r == 2) {
+      else if(r == 2){
         continue;
       }
     }
@@ -5889,7 +5889,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         int ntotal_triangles;
 
         ntotal_triangles = 0;
-        for(i=0;i<ngeomobjinfo;i++){
+        for(i=0; i<ngeomobjinfo; i++){
           geomobjdata *geomobji;
           float *center;
           char *texture_mapping=NULL, *texture_vals=NULL;
@@ -5968,12 +5968,12 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
           NewMemory((void **)&geomi->geomobj_offsets,ntotal_triangles*sizeof(int));
           count = 0;
-          for(i=0;i<ngeomobjinfo;i++){
+          for(i=0; i<ngeomobjinfo; i++){
             geomobjdata *geomobji;
             int j;
 
             geomobji = geomi->geomobjinfo + i;
-            for(j=0;j<geomobji->ntriangles;j++){
+            for(j=0; j<geomobji->ntriangles; j++){
               geomi->geomobj_offsets[count++] = i;
             }
           }
@@ -6007,10 +6007,10 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       NewMemory((void **)&meshi->is_block_terrain,nobsts*sizeof(unsigned char));
       is_block_terrain=meshi->is_block_terrain;
 
-      for(nn=0;nn<nobsts;nn++){
+      for(nn=0; nn<nobsts; nn++){
         FGETS(buffer,255,stream);
       }
-      for(nn=0;nn<nobsts;nn++){
+      for(nn=0; nn<nobsts; nn++){
         int ijk2[6],colorindex_local=0,blocktype_local=-1;
 
         FGETS(buffer,255,stream);
@@ -6054,7 +6054,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       sscanf(buffer,"%i",&nsmokeview_ids);
 
       InitProp(propi,nsmokeview_ids, file_buffer);
-      for(i=0;i<nsmokeview_ids;i++){
+      for(i=0; i<nsmokeview_ids; i++){
         if(FGETS(buffer,255,stream)==NULL){
           BREAK; // smokeview_id
         }
@@ -6084,7 +6084,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         NewMemory((void **)&propi->vars_indep_index,propi->nvars_indep*sizeof(int));
         NewMemory((void **)&propi->texturefiles,propi->nvars_indep*sizeof(char *));
 
-        for(i=0;i<propi->nvars_indep;i++){
+        for(i=0; i<propi->nvars_indep; i++){
           char *equal;
 
           propi->svals[i]=NULL;
@@ -6293,7 +6293,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         partclassi->col_v_vel=-1;
         partclassi->col_w_vel=-1;
         partclassi->vis_type=PART_POINTS;
-        for(j=2;j<partclassi->ntypes;j++){
+        for(j=2; j<partclassi->ntypes; j++){
           labelj = partclassi->labels+j;
           labelj->longlabel=NULL;
           labelj->shortlabel=NULL;
@@ -6445,7 +6445,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
           }
           if(ticki->width<0.0)ticki->width=1.0;
         }
-        for(i=0;i<3;i++){
+        for(i=0; i<3; i++){
           term = endt[i]-begt[i];
           length += term*term;
         }
@@ -6475,7 +6475,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
           break;
         }
         if(ticki->dir<0){
-          for(i=0;i<3;i++){
+          for(i=0; i<3; i++){
             dxyz[i]=-dxyz[i];
           }
         }
@@ -6513,7 +6513,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         NewMemory((void **)&outlinei->x2,outlinei->nlines*sizeof(float));
         NewMemory((void **)&outlinei->y2,outlinei->nlines*sizeof(float));
         NewMemory((void **)&outlinei->z2,outlinei->nlines*sizeof(float));
-        for(i=0;i<outlinei->nlines;i++){
+        for(i=0; i<outlinei->nlines; i++){
           FGETS(buffer,255,stream);
           sscanf(buffer,"%f %f %f %f %f %f",
             outlinei->x1+i,outlinei->y1+i, outlinei->z1+i,
@@ -6535,7 +6535,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         BREAK;
       }
       bufferptr=TrimFrontBack(buffer);
-      if (FileExistsCaseDir(scase, bufferptr) == YES) {
+      if(FileExistsCaseDir(scase, bufferptr) == YES){
         ReadCADGeomToCollection(&scase->cadgeomcoll, bufferptr, scase->color_defs.block_shininess);
       }
       else {
@@ -6818,7 +6818,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       if(filename==NULL){
         int nn;
 
-        for(nn=0;nn<4;nn++){
+        for(nn=0; nn<4; nn++){
           if(ReadLabels(&zonei->label[nn],stream,NULL)==LABEL_ERR){
             return 2;
           }
@@ -6831,7 +6831,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         len=strlen(filename);
         NewMemory((void **)&zonei->file,(unsigned int)(len+1));
         STRCPY(zonei->file,filename);
-        for(n=0;n<4;n++){
+        for(n=0; n<4; n++){
           if(ReadLabels(&zonei->label[n],stream,NULL)==LABEL_ERR){
             return 2;
           }
@@ -6839,17 +6839,17 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         izone_local++;
       }
       if(scase->colorlabelzone!=NULL){
-        for(n=0;n<MAXRGB;n++){
+        for(n=0; n<MAXRGB; n++){
           FREEMEMORY(scase->colorlabelzone[n]);
         }
         FREEMEMORY(scase->colorlabelzone);
       }
       CheckMemory;
       NewMemory((void **)&scase->colorlabelzone,MAXRGB*sizeof(char *));
-      for(n=0;n<MAXRGB;n++){
+      for(n=0; n<MAXRGB; n++){
         scase->colorlabelzone[n]=NULL;
       }
-      for(n=0;n<scase->nrgb;n++){
+      for(n=0; n<scase->nrgb; n++){
         NewMemory((void **)&scase->colorlabelzone[n],11);
       }
       continue;
@@ -6930,13 +6930,13 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
        NewMemory((void **)&yp2,sizeof(float)*(jbartemp+1))==0||
        NewMemory((void **)&zp2,sizeof(float)*(kbartemp+1))==0
        )return 2;
-    for(nn=0;nn<=ibartemp;nn++){
+    for(nn=0; nn<=ibartemp; nn++){
       xp[nn]=scase->xbar0+(float)nn*(scase->xbar-scase->xbar0)/(float)ibartemp;
     }
-    for(nn=0;nn<=jbartemp;nn++){
+    for(nn=0; nn<=jbartemp; nn++){
       yp[nn]=scase->ybar0+(float)nn*(scase->ybar-scase->ybar0)/(float)jbartemp;
     }
-    for(nn=0;nn<=kbartemp;nn++){
+    for(nn=0; nn<=kbartemp; nn++){
       zp[nn]=scase->zbar0+(float)nn*(scase->zbar-scase->zbar0)/(float)kbartemp;
     }
     meshi=scase->meshescoll.meshinfo;
@@ -7041,16 +7041,16 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
       if(ncutcells>0){
         NewMemory((void **)&meshi->cutcells,ncutcells*sizeof(int));
-        for(i=0;i<1+(ncutcells-1)/15;i++){
+        for(i=0; i<1+(ncutcells-1)/15; i++){
           int cc[15],j;
 
           FGETS(buffer,255,stream);
-          for(j=0;j<15;j++){
+          for(j=0; j<15; j++){
             cc[j]=0;
           }
           sscanf(buffer,"%i %i %i %i %i %i %i %i %i %i %i %i %i %i %i",
             cc,cc+1,cc+2,cc+3,cc+4,cc+5,cc+6,cc+7,cc+8,cc+9,cc+10,cc+11,cc+12,cc+13,cc+14);
-          for(j=15*i;j<MIN(15*(i+1),ncutcells);j++){
+          for(j=15*i; j<MIN(15*(i+1),ncutcells); j++){
             meshi->cutcells[j]=cc[j%15];
           }
         }
@@ -7105,7 +7105,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
     int *nexp_devices=NULL;
 
     NewMemory((void **)&nexp_devices,(scase->csvcoll.ncsvfileinfo+1)*sizeof(int));
-    for(i=0;i<scase->csvcoll.ncsvfileinfo;i++){
+    for(i=0; i<scase->csvcoll.ncsvfileinfo; i++){
       csvfiledata *csvi;
 
       csvi = scase->csvcoll.csvfileinfo + i;
@@ -7126,7 +7126,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       devicedata *devicecopy2;
 
       devicecopy2 = scase->devicecoll.deviceinfo+scase->devicecoll.ndeviceinfo;
-      for(i=0;i<scase->csvcoll.ncsvfileinfo;i++){
+      for(i=0; i<scase->csvcoll.ncsvfileinfo; i++){
         csvfiledata *csvi;
 
         csvi = scase->csvcoll.csvfileinfo + i;
@@ -7159,14 +7159,14 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
   */
 
   scase->surfacedefault=&scase->sdefault;
-  for(i=0;i<scase->surfcoll.nsurfinfo;i++){
+  for(i=0; i<scase->surfcoll.nsurfinfo; i++){
     if(strcmp(scase->surfacedefaultlabel,scase->surfcoll.surfinfo[i].surfacelabel)==0){
       scase->surfacedefault=scase->surfcoll.surfinfo+i;
       break;
     }
   }
   scase->vent_surfacedefault=&scase->v_surfacedefault;
-  for(i=0;i<scase->surfcoll.nsurfinfo;i++){
+  for(i=0; i<scase->surfcoll.nsurfinfo; i++){
     if(strcmp(scase->vent_surfacedefault->surfacelabel,scase->surfcoll.surfinfo[i].surfacelabel)==0){
       scase->vent_surfacedefault=scase->surfcoll.surfinfo+i;
       break;
@@ -7174,7 +7174,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
   }
 
   scase->exterior_surfacedefault=&scase->e_surfacedefault;
-  for(i=0;i<scase->surfcoll.nsurfinfo;i++){
+  for(i=0; i<scase->surfcoll.nsurfinfo; i++){
     if(strcmp(scase->exterior_surfacedefault->surfacelabel,scase->surfcoll.surfinfo[i].surfacelabel)==0){
       scase->exterior_surfacedefault=scase->surfcoll.surfinfo+i;
       break;
@@ -7262,7 +7262,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         FGETS(buffer,255,stream);
         sscanf(buffer,"%f",&scase->hrrpuvcut);
         scase->hrrpuvcut_set = 1;
-        for(i=1;i<nhrrpuvcut;i++){
+        for(i=1; i<nhrrpuvcut; i++){
           FGETS(buffer,255,stream);
         }
       }
@@ -7604,10 +7604,10 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       ibartemp=scase->meshescoll.meshinfo[itrnx-1].ibar;
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i ",&idummy);
-      for(nn=0;nn<idummy;nn++){
+      for(nn=0; nn<idummy; nn++){
         FGETS(buffer,255,stream);
       }
-      for(nn=0;nn<=ibartemp;nn++){
+      for(nn=0; nn<=ibartemp; nn++){
         FGETS(buffer,255,stream);
         sscanf(buffer,"%i %lf",&idummy,xpltdcopy+nn);
         xpltcopy[nn] = xpltdcopy[nn];
@@ -7631,10 +7631,10 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       jbartemp=scase->meshescoll.meshinfo[itrny-1].jbar;
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i ",&idummy);
-      for(nn=0;nn<idummy;nn++){
+      for(nn=0; nn<idummy; nn++){
         FGETS(buffer,255,stream);
       }
-      for(nn=0;nn<=jbartemp;nn++){
+      for(nn=0; nn<=jbartemp; nn++){
         FGETS(buffer,255,stream);
         sscanf(buffer,"%i %lf",&idummy,ypltdcopy+nn);
         ypltcopy[nn] = ypltdcopy[nn];
@@ -7658,10 +7658,10 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       kbartemp=scase->meshescoll.meshinfo[itrnz-1].kbar;
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i ",&idummy);
-      for(nn=0;nn<idummy;nn++){
+      for(nn=0; nn<idummy; nn++){
         FGETS(buffer,255,stream);
       }
-      for(nn=0;nn<=kbartemp;nn++){
+      for(nn=0; nn<=kbartemp; nn++){
         FGETS(buffer,255,stream);
         sscanf(buffer,"%i %lf",&idummy,zpltdcopy+nn);
         zpltcopy[nn] = zpltdcopy[nn];
@@ -7687,7 +7687,7 @@ typedef struct {
       sscanf(buffer,"%i",&scase->ntreeinfo);
       if(scase->ntreeinfo>0){
         NewMemory((void **)&scase->treeinfo,sizeof(treedata)*scase->ntreeinfo);
-        for(i=0;i<scase->ntreeinfo;i++){
+        for(i=0; i<scase->ntreeinfo; i++){
           treedata *treei;
           float *xyz;
 
@@ -7758,7 +7758,7 @@ typedef struct {
       if(scase->auto_terrain==1||scase->manual_terrain==1){
         is_block_terrain=meshi->is_block_terrain;
         n_blocks_normal=0;
-        for(iblock=0;iblock<n_blocks;iblock++){
+        for(iblock=0; iblock<n_blocks; iblock++){
           if(is_block_terrain==NULL||is_block_terrain[iblock]==0)n_blocks_normal++;
         }
         meshi->nbptrs=n_blocks_normal;
@@ -7771,7 +7771,7 @@ typedef struct {
 
       scase->ntotal_blockages+=n_blocks_normal;
       nn=-1;
-      for(iblock=0;iblock<n_blocks;iblock++){
+      for(iblock=0; iblock<n_blocks; iblock++){
         int s_num[6];
         blockagedata *bc=NULL;
 
@@ -7805,7 +7805,7 @@ typedef struct {
         bc->id_label = GetCharPtr(id_labelptr);
 
         TrimBack(buffer);
-        for(i=0;i<6;i++){
+        for(i=0; i<6; i++){
           s_num[i]=-1;
         }
         proplabel=strchr(buffer,'%');
@@ -7814,7 +7814,7 @@ typedef struct {
           proplabel++;
           TrimBack(proplabel);
           proplabel = TrimFront(proplabel);
-          for(i=0;i<scase->propcoll.npropinfo;i++){
+          for(i=0; i<scase->propcoll.npropinfo; i++){
             propdata *propi;
 
             propi = scase->propcoll.propinfo + i;
@@ -7849,7 +7849,7 @@ typedef struct {
           bc->texture_origin[0]=t_origin[0];
           bc->texture_origin[1]=t_origin[1];
           bc->texture_origin[2]=t_origin[2];
-          if(bc->blockage_id < 0) {
+          if(bc->blockage_id < 0){
             bc->changed=1;
             bc->blockage_id=-bc->blockage_id;
           }
@@ -7862,21 +7862,21 @@ typedef struct {
         ResizeMemory((void **)&bc->label,(len+1)*sizeof(char));
         strcpy(bc->label,buffer);
 
-        for(i=0;i<6;i++){
+        for(i=0; i<6; i++){
           surfdata *surfi;
 
           if(scase->surfcoll.surfinfo==NULL||s_num[i]<0||s_num[i]>=scase->surfcoll.nsurfinfo)continue;
           surfi=scase->surfcoll.surfinfo+s_num[i];
           bc->surf[i]=surfi;
         }
-        for(i=0;i<6;i++){
+        for(i=0; i<6; i++){
           bc->surf[i]->used_by_obst=1;
         }
         SetSurfaceIndex(scase, bc);
       }
 
       nn=-1;
-      for(iblock=0;iblock<n_blocks;iblock++){
+      for(iblock=0; iblock<n_blocks; iblock++){
         blockagedata *bc=NULL;
         int *ijk;
         int colorindex, blocktype;
@@ -7946,7 +7946,7 @@ typedef struct {
               }
               memcpy(bc->hidden6, hidden6, 6*sizeof(int));
               if(hidden6[0] >= 0)scase->have_hidden6 = 1;
-              for(ii = 0; ii < 6; ii++) {
+              for(ii = 0; ii < 6; ii++){
                 bc->show_bndf[ii] = CLAMP(show_bndf[ii], 0, 1);
               }
             }
@@ -8085,7 +8085,7 @@ typedef struct {
       NewMemory((void **)&cvinfo,ncv*sizeof(cventdata));
       meshi->cventinfo=cvinfo;
 
-      for(j=0;j<ncv;j++){
+      for(j=0; j<ncv; j++){
         cventdata *cvi;
         char *cbuf;
         int s_num[1];
@@ -8147,7 +8147,7 @@ typedef struct {
           }
         }
       }
-      for(j=0;j<ncv;j++){
+      for(j=0; j<ncv; j++){
         cventdata *cvi;
         float *vcolor;
         int venttype,ventindex;
@@ -8270,7 +8270,7 @@ typedef struct {
       if(NewMemory((void **)&vinfo,(nvents+12)*sizeof(ventdata))==0)return 2;
       meshi->ventinfo=vinfo;
 
-      for(nn=0;nn<nvents+12;nn++){
+      for(nn=0; nn<nvents+12; nn++){
         int s_num[6];
         ventdata *vi;
 
@@ -8368,7 +8368,7 @@ typedef struct {
         vi->color_bak=NULL;
         if(scase->surfcoll.surfinfo!=NULL)vi->color_bak=scase->surfcoll.surfinfo[0].color;
       }
-      for(nn=0;nn<nvents+12;nn++){
+      for(nn=0; nn<nvents+12; nn++){
         ventdata *vi;
         int iv1, iv2, jv1, jv2, kv1, kv2;
         float s_color[4];
@@ -8530,12 +8530,12 @@ typedef struct {
         }
         assert(vi->color!=NULL);
       }
-      for(nn=0;nn<nvents-scase->ndummyvents;nn++){
+      for(nn=0; nn<nvents-scase->ndummyvents; nn++){
         int j;
         ventdata *vi;
 
         vi = meshi->ventinfo + nn;
-        for(j=nvents-scase->ndummyvents;j<nvents;j++){ // look for dummy vent that matches real vent
+        for(j=nvents-scase->ndummyvents; j<nvents; j++){ // look for dummy vent that matches real vent
           ventdata *vj;
 
           vj = meshi->ventinfo + j;
@@ -8780,7 +8780,7 @@ typedef struct {
       FGETS(buffer,255,stream);
       sscanf(buffer,"%f %f %f %f",&valmin,&valmax,&percentile_min,&percentile_max);
 
-      for(i=0;i<scase->npatchinfo;i++){
+      for(i=0; i<scase->npatchinfo; i++){
         patchdata *patchi;
 
         patchi = scase->patchinfo + i;
@@ -8810,7 +8810,7 @@ typedef struct {
       FGETS(buffer,255,stream);
       sscanf(buffer,"%f %f %f %f",&valmin,&valmax,&percentile_min,&percentile_max);
 
-      for(i=0;i<scase->slicecoll.nsliceinfo;i++){
+      for(i=0; i<scase->slicecoll.nsliceinfo; i++){
         slicedata *slicei;
 
         slicei = scase->slicecoll.sliceinfo + i;
@@ -8844,11 +8844,11 @@ typedef struct {
 
       meshi=scase->meshescoll.meshinfo+iobst-1;
 
-      for(nn=0;nn<n_blocks;nn++){
+      for(nn=0; nn<n_blocks; nn++){
         FGETS(buffer,255,stream);
       }
       nn=-1;
-      for(iblock=0;iblock<n_blocks;iblock++){
+      for(iblock=0; iblock<n_blocks; iblock++){
         int ijk2[5],kmax;
 
         if(meshi->is_block_terrain!=NULL&&meshi->is_block_terrain[iblock]==0){

@@ -136,7 +136,7 @@ void CompressVolSliceFrame(float *data_in, int n_data_in, float timeval_in, floa
   CheckMemory;
   if(vmin_in==NULL){
     valmin=data_in[0];
-    for(i=1;i<n_data_in;i++){
+    for(i=1; i<n_data_in; i++){
       if(data_in[i]<valmin)valmin=data_in[i];
     }
     CheckMemory;
@@ -148,7 +148,7 @@ void CompressVolSliceFrame(float *data_in, int n_data_in, float timeval_in, floa
 
   if(vmax_in==NULL){
     valmax=data_in[0];
-    for(i=1;i<n_data_in;i++){
+    for(i=1; i<n_data_in; i++){
       if(data_in[i]>valmax)valmax=data_in[i];
     }
     CheckMemory;
@@ -169,7 +169,7 @@ void CompressVolSliceFrame(float *data_in, int n_data_in, float timeval_in, floa
   // scale data
 
   if(valmax>valmin){
-    for(i=0;i<n_data_in;i++){
+    for(i=0; i<n_data_in; i++){
       c_data[i]=255*(data_in[i]-valmin)/(valmax-valmin);
     }
     CheckMemory;
@@ -224,7 +224,7 @@ int UnCompressVolSliceFrame(unsigned char *compressed_data_in,
   uncompress(fullbuffer,&countout,compressed_data_in+32,countin);
 
   if(countout==ndatafile&&n_data_in>=countout){
-    for(i=0;(uLongf)i<countout;i++){
+    for(i=0; (uLongf)i<countout; i++){
       data_out[i]=valmin+fullbuffer[i]*(valmax-valmin)/255.0;
     }
   }
@@ -384,9 +384,9 @@ octtreedata *InitOctTree(unsigned char *vals, int *nijk, unsigned char level, in
   memcpy(oi->ijkmin, ijkmin, 3 * sizeof(int));
   memcpy(oi->ijkmax, ijkmax, 3 * sizeof(int));
 
-  for(k = ijkmin[2];k <= ijkmax[2];k++){
-    for(j = ijkmin[1];1 <= ijkmax[1];j++){
-      for(i = ijkmin[0];i <= ijkmax[0];i++){
+  for(k = ijkmin[2]; k <= ijkmax[2]; k++){
+    for(j = ijkmin[1]; 1 <= ijkmax[1]; j++){
+      for(i = ijkmin[0]; i <= ijkmax[0]; i++){
         val = vals[IJKMAP(i,j,k, nx, nxy)];
         if(val < valmin)valmin = val;
         if(val > valmax)valmax = val;
@@ -405,7 +405,7 @@ octtreedata *InitOctTree(unsigned char *vals, int *nijk, unsigned char level, in
   oi->valmax = valmax;
   oi->nsubtrees = 0;
   oi->val = valsum / nvals;
-  for(i = 0;i < 8;i++){
+  for(i = 0; i < 8; i++){
     oi->subtrees[i] = NULL;
   }
   return oi;
@@ -425,7 +425,7 @@ void MakeSubOctTrees(octtreedata *oi, unsigned char level, unsigned char *vals, 
   if(ijkmin[0] == ijkmax[0] && ijkmin[1] == ijkmax[1] && ijkmin[2] == ijkmax[2])return;
 
   int index = 0;
-  for(k = 0;k < 2;k++){
+  for(k = 0; k < 2; k++){
     if(k == 0){
       ijkmin[2] = oi->ijkmin[2];
       ijkmax[2] = (oi->ijkmin[2] + oi->ijkmax[2]) / 2;
@@ -434,7 +434,7 @@ void MakeSubOctTrees(octtreedata *oi, unsigned char level, unsigned char *vals, 
       ijkmin[2] = (oi->ijkmin[2] + oi->ijkmax[2]) /2 +1;
       ijkmax[2] = oi->ijkmax[2];
     }
-    for(j = 0;j < 2;j++){
+    for(j = 0; j < 2; j++){
       if(j == 0){
         ijkmin[1] = oi->ijkmin[1];
         ijkmax[1] = (oi->ijkmin[1] + oi->ijkmax[1]) / 2;
@@ -443,7 +443,7 @@ void MakeSubOctTrees(octtreedata *oi, unsigned char level, unsigned char *vals, 
         ijkmin[1] = (oi->ijkmin[1] + oi->ijkmax[1]) / 2 +1;
         ijkmax[1] = oi->ijkmax[1];
       }
-      for(i = 0;i < 2;i++){
+      for(i = 0; i < 2; i++){
         if(i == 0){
           ijkmin[0] = oi->ijkmin[0];
           ijkmax[0] = (oi->ijkmin[0] + oi->ijkmax[0]) / 2;

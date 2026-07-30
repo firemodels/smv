@@ -861,7 +861,7 @@ void outboundaryheader(const char *boundaryfilename, FILE **file, int npatches,
 
   *error = 0;
   *file = FOPEN(boundaryfilename, "wb");
-  if(*file == NULL) {
+  if(*file == NULL){
     fprintf(stderr, " Could not open %s\n", boundaryfilename);
     *error = 1;
     return;
@@ -924,7 +924,7 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq, float 
   if(qmin != NULL && qmax != NULL){
     int i;
 
-    for(i = 0;i < 6;i++){
+    for(i = 0; i < 6; i++){
       qmin[i] = 0.0;
       qmax[i] = 1.0;
     }
@@ -991,13 +991,13 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq, float 
   if(qmin != NULL && qmax != NULL){
     int i, j;
 
-    for(i = 0;i < 5;i++){
+    for(i = 0; i < 5; i++){
       float *qqq;
 
       qqq = qq + i*nx*ny*nz;
       qmin[i] = qqq[0];
       qmax[i] = qqq[0];
-      for(j = 1;j < nx * ny * nz;j++){
+      for(j = 1; j < nx * ny * nz; j++){
         if(qqq[j] < qmin[i])qmin[i] = qqq[j];
         if(qqq[j] > qmax[i])qmax[i] = qqq[j];
       }
@@ -1009,7 +1009,7 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq, float 
     w = qq + 3*nx*ny*nz;
     qmin[5] = sqrt(u[0] * u[0] + v[0] * v[0] + w[0] * w[0]);
     qmax[5] = qmin[5];
-    for(j = 1;j < nx*ny*nz;j++){
+    for(j = 1; j < nx*ny*nz; j++){
       float speed;
 
       speed = sqrt(u[j]*u[j] + v[j]*v[j] + w[j]*w[j]);

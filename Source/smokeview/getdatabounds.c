@@ -251,13 +251,13 @@ int GetFileBounds(char *file, int nbounds, float *valmin, float *valmax){
   if(nbounds==1){
     float t;
 
-    for(i = 0;i < nbounds;i++){
+    for(i = 0; i < nbounds; i++){
       if(fgets(buffer, 255, stream) == NULL)break;
       sscanf(buffer, " %f %f %f", &t, vmins+i, vmaxs+i);
     }
   }
   else{
-    for(i = 0;i < nbounds;i++){
+    for(i = 0; i < nbounds; i++){
       if(fgets(buffer, 255, stream) == NULL)break;
       sscanf(buffer, " %f %f", vmins+i, vmaxs+i);
     }
@@ -332,7 +332,7 @@ int BoundsGet(char *file, globalboundsdata *globalboundsinfo, char **sorted_file
   if(defined == 0){
     int i;
 
-    for(i = 0;i < nbounds;i++){
+    for(i = 0; i < nbounds; i++){
       valmins[i] = 0.0;
       valmaxs[i] = 1.0;
     }
@@ -476,17 +476,17 @@ void BoundsUpdateDoit(int file_type){
     slicedata *slicei;
     plot3ddata *plot3di;
 
-    if(file_type == BOUND_SLICE) {
+    if(file_type == BOUND_SLICE){
       if(global_scase.slicecoll.sliceinfo == NULL)continue;
       slicei = global_scase.slicecoll.sliceinfo + i;
       if(slicei->loaded == 0)continue;
     }
-    else if(file_type == BOUND_PATCH) {
+    else if(file_type == BOUND_PATCH){
       if(global_scase.patchinfo == NULL)continue;
       patchi = global_scase.patchinfo + i;
       if(patchi->loaded == 0)continue;
     }
-    else if(file_type == BOUND_PLOT3D) {
+    else if(file_type == BOUND_PLOT3D){
       if(global_scase.plot3dinfo == NULL)continue;
       plot3di = global_scase.plot3dinfo + i;
       if(plot3di->loaded == 0)continue;
@@ -1384,7 +1384,7 @@ void GetGlobalSliceBounds(int flag, int set_flag, char *label){
 
   if(no_bounds == 1 && force_bounds==0)flag = 0;
   if(global_scase.slicecoll.nsliceinfo==0)return;
-  for(i = 0;i<nslicebounds;i++){
+  for(i = 0; i<nslicebounds; i++){
     boundsdata *boundi;
 
     boundi = slicebounds+i;
@@ -1393,7 +1393,7 @@ void GetGlobalSliceBounds(int flag, int set_flag, char *label){
   }
   if(no_bounds==0 || force_bounds==1)BoundsUpdate(BOUND_SLICE);
   INIT_PRINT_TIMER(slicebounds_timer);
-  for(i = 0;i<global_scase.slicecoll.nsliceinfo;i++){
+  for(i = 0; i<global_scase.slicecoll.nsliceinfo; i++){
     slicedata *slicei;
     float valmin, valmax;
     boundsdata *boundi;
@@ -1506,7 +1506,7 @@ void GetHVACDuctBounds(char *shortlabel, float *valminptr, float *valmaxptr){
 
   *valminptr = 1.0;
   *valmaxptr = 0.0;
-  for(i=0;i< global_scase.hvaccoll.hvacductvalsinfo->n_duct_vars;i++){
+  for(i=0; i< global_scase.hvaccoll.hvacductvalsinfo->n_duct_vars; i++){
     hvacvaldata *hi;
 
     hi = global_scase.hvaccoll.hvacductvalsinfo->duct_vars + i;
@@ -1532,7 +1532,7 @@ void GetHVACNodeBounds(char *shortlabel, float *valminptr, float *valmaxptr){
 
   *valminptr = 1.0;
   *valmaxptr = 0.0;
-  for(i = 0;i < global_scase.hvaccoll.hvacnodevalsinfo->n_node_vars;i++){
+  for(i = 0; i < global_scase.hvaccoll.hvacnodevalsinfo->n_node_vars; i++){
     hvacvaldata *hi;
 
     hi = global_scase.hvaccoll.hvacnodevalsinfo->node_vars + i;
@@ -1560,7 +1560,7 @@ void GetGlobalHVACDuctBounds(int flag){
   if(global_scase.hvaccoll.hvacductvalsinfo != NULL)nhvacboundsmax = global_scase.hvaccoll.hvacductvalsinfo->n_duct_vars;
   if(nhvacboundsmax == 0)return;
   if(flag==0)ReadHVACData(BOUNDS_ONLY);
-  for(i = 0;i < nhvacductbounds;i++){
+  for(i = 0; i < nhvacductbounds; i++){
     boundsdata *boundi;
     float valmin, valmax;
 
@@ -1621,7 +1621,7 @@ void GetGlobalHVACNodeBounds(int flag){
   if(global_scase.hvaccoll.hvacnodevalsinfo != NULL)nhvacboundsmax = global_scase.hvaccoll.hvacnodevalsinfo->n_duct_vars + global_scase.hvaccoll.hvacnodevalsinfo->n_node_vars;
   if(nhvacboundsmax == 0)return;
   if(flag == 0)ReadHVACData(BOUNDS_ONLY);
-  for(i = 0;i < nhvacnodebounds;i++){
+  for(i = 0; i < nhvacnodebounds; i++){
     boundsdata *boundi;
     float valmin, valmax;
 
@@ -1677,7 +1677,7 @@ void GetGlobalHVACNodeBounds(int flag){
 void AdjustPart5Chops(void){
   int i;
 
-  for(i=0;i<npart5prop;i++){
+  for(i=0; i<npart5prop; i++){
     partpropdata *propi;
 
     propi = part5propinfo + i;
@@ -1841,7 +1841,7 @@ void MergeAllPartBounds(void){
       global_have_global_bound_file = 1;
       global_part_boundsize = GetFileSizeSMV(global_scase.partinfo->bound_file);
       fprintf(stream,"%i %i\n",npart5prop,(int)global_part_boundsize);
-      for(i=0;i<npart5prop;i++){
+      for(i=0; i<npart5prop; i++){
         partpropdata *propi;
         float valmin, valmax;
 

@@ -38,7 +38,7 @@ void IncrementShooterData(shootpointdata *pold, shootpointdata *pnew, float dtst
   // dx/dt = v
 
   shooter_time+=dtstep;
-  for(i=0;i<shooter_nparts;i++){
+  for(i=0; i<shooter_nparts; i++){
     float dvel[3];
     meshdata *meshpoint;
     float grid_vel,tstep;
@@ -55,7 +55,7 @@ void IncrementShooterData(shootpointdata *pold, shootpointdata *pnew, float dtst
     uvwnew[1] = uvwold[1];
     uvwnew[2] = uvwold[2];
 
-    for(tstep=0.0;tstep<dtstep;tstep+=dt){
+    for(tstep=0.0; tstep<dtstep; tstep+=dt){
       float dvelmin;
 
       GetShooterVel(uvw_air,xyznew);
@@ -105,7 +105,7 @@ void InitShooterData(void){
   ymin = shooter_xyz[1]-shooter_dxyz[1]/2.0;
   zmin = shooter_xyz[2]-shooter_dxyz[2]/2.0;
 
-  for(i=0;i<shooter_nparts;i++){
+  for(i=0; i<shooter_nparts; i++){
     xyz = shootpointinfo[i].xyz;
     uvw = shootpointinfo[i].uvw;
     shootpointinfo[i].visible=1;
@@ -140,7 +140,7 @@ void SolveShooterData(void){
   }
 
   InitShooterData();
-  for(i=1;i<nshooter_frames;i++){
+  for(i=1; i<nshooter_frames; i++){
     shootpointdata *pold, *pnew;
 
     pold = shootpointinfo + (i-1)*shooter_nparts;
@@ -176,7 +176,7 @@ void DrawShooter(void){
 
   //glColor4fv(static_color);
   glBegin(GL_POINTS);
-  for(i=0;i<nframes;i++){
+  for(i=0; i<nframes; i++){
     float *xyz;
     shootpointdata *pbi;
 

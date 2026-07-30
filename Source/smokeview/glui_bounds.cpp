@@ -449,7 +449,7 @@ void PadString(char *label1, const char *label2, int length){
   int i;
 
   TrimBack(label1);
-  for(i=strlen(label1);i<length;i++){
+  for(i=strlen(label1); i<length; i++){
     strcat(label1, " ");
   }
   strcat(label1,label2);
@@ -1909,7 +1909,7 @@ extern "C" void GLUIHVACSliceBoundsCPP_CB(int var){
       hist_update = 0;
       slice_loaded = 0;
       bounds = GLUIGetBoundsData(BOUND_SLICE);
-      for(i = 0;i < global_scase.slicecoll.nsliceinfo;i++){
+      for(i = 0; i < global_scase.slicecoll.nsliceinfo; i++){
         slicedata *slicei;
 
         slicei = global_scase.slicecoll.sliceinfo + i;
@@ -2030,7 +2030,7 @@ extern "C" void GLUIPlot3DBoundsCPP_CB(int var){
       hist_update = 0;
       plot3d_loaded = 0;
       bounds = GLUIGetBoundsData(BOUND_PLOT3D);
-      for(i = 0;i < global_scase.nplot3dinfo;i++){
+      for(i = 0; i < global_scase.nplot3dinfo; i++){
         plot3ddata *plot3di;
 
         plot3di = global_scase.plot3dinfo + i;
@@ -2040,7 +2040,7 @@ extern "C" void GLUIPlot3DBoundsCPP_CB(int var){
         plot3di->hist_update = 0;
       }
       if(hist_update == 1){
-        for(i = 0;i < global_scase.nplot3dinfo;i++){
+        for(i = 0; i < global_scase.nplot3dinfo; i++){
           plot3ddata *plot3di;
 
           plot3di = global_scase.plot3dinfo + i;
@@ -2140,7 +2140,7 @@ extern "C" void GLUIPartBoundsCPP_CB(int var){
       hist_update = 0;
       part_loaded = 0;
       bounds = GLUIGetBoundsData(BOUND_PART);
-      for(i = 0;i < global_scase.npartinfo;i++){
+      for(i = 0; i < global_scase.npartinfo; i++){
         partdata *parti;
 
         parti = global_scase.partinfo + i;
@@ -2268,7 +2268,7 @@ extern "C" void GLUIPatchBoundsCPP_CB(int var){
         patchi = global_scase.patchinfo+i;
         patchi->finalize = 0;
       }
-      for(i = global_scase.npatchinfo-1; i>=0;  i--){
+      for(i = global_scase.npatchinfo-1; i>=0; i--){
         patchdata *patchi;
 
         patchi = global_scase.patchinfo+i;
@@ -2309,7 +2309,7 @@ extern "C" void GLUIPatchBoundsCPP_CB(int var){
       hist_update = 0;
       bound_loaded = 0;
       bounds = GLUIGetBoundsData(BOUND_PATCH);
-      for(i = 0;i < global_scase.npatchinfo;i++){
+      for(i = 0; i < global_scase.npatchinfo; i++){
         patchdata *patchi;
 
         patchi = global_scase.patchinfo + i;
@@ -2540,7 +2540,7 @@ void SetLoadedPlot3DBounds(void){
   }
 
   GLUIGetMinMaxAll(BOUND_PLOT3D, set_valmin, valmin_dlg, set_valmax, valmax_dlg, &nall);
-  for(i=0;i<nall;i++){
+  for(i=0; i<nall; i++){
     if(set_valmin[i]!=BOUND_LOADED_MIN){
       valmin[i] = valmin_dlg[i];
     }
@@ -3845,7 +3845,7 @@ extern "C" void GLUIImmersedBoundCB(int var){
     glui_show_slice_outlines = show_slice_outlines[slice_celltype];
     glui_show_slice_points   = show_slice_points[slice_celltype];
     glui_show_slice_values   = show_slice_values[slice_celltype];
-    for(i=0;i<3;i++){
+    for(i=0; i<3; i++){
       switch(slice_edgetypes[i]){
         case GEOM_OUTLINE_POLYGON:
         case GEOM_OUTLINE_TRIANGLE:
@@ -4012,13 +4012,13 @@ extern "C" void BoundBoundCB(int var){
         BoundBoundCB(HIDE_ALL_EXTERIOR_PATCH_DATA);
       }
       else{
-        for(i = 0;i < global_scase.npatchinfo;i++){
+        for(i = 0; i < global_scase.npatchinfo; i++){
           patchdata *patchi;
           int n;
 
           patchi = global_scase.patchinfo + i;
           if(patchi->loaded == 0)continue;
-          for(n = 0;n < patchi->npatches;n++){
+          for(n = 0; n < patchi->npatches; n++){
             patchfacedata *pfi;
             int wall_index;
 
@@ -4130,7 +4130,7 @@ extern "C" void BoundBoundCB(int var){
   case FILE_RELOAD:
     if(global_scase.npatchinfo>0){
 //      BoundBoundCB(FILE_UPDATE);
-      for(i = 0;i < global_scase.npatchinfo;i++){
+      for(i = 0; i < global_scase.npatchinfo; i++){
         patchdata *patchi;
 
         patchi = global_scase.patchinfo + i;
@@ -4199,7 +4199,7 @@ void CheckBounds(int var){
 void UpdateBoundaryFiles(void){
   int i;
 
-  for(i = 0;i < global_scase.npatchinfo;i++){
+  for(i = 0; i < global_scase.npatchinfo; i++){
     patchdata *patchi;
     meshdata *meshi;
 
@@ -4231,7 +4231,7 @@ void MeshBoundCB(int var){
     meshclip[3] = ybarFDS;
     meshclip[4] = zbar0FDS;
     meshclip[5] = zbarFDS;
-    for(i = 0;i < 6;i++){
+    for(i = 0; i < 6; i++){
       use_meshclip[i] = 1;
       CHECKBOX_use_meshclip[i]->set_int_val(use_meshclip[i]);
       SPINNER_meshclip[i]->set_float_val(meshclip[i]);
@@ -4260,7 +4260,7 @@ void MeshBoundCB(int var){
       meshclip[5] = meshi->boxmax_fds[2];
       meshi->use = 1;
     }
-    for(i = 0;i < 6;i++){
+    for(i = 0; i < 6; i++){
       use_meshclip[i] = 1;
       CHECKBOX_use_meshclip[i]->set_int_val(use_meshclip[i]);
       SPINNER_meshclip[i]->set_float_val(meshclip[i]);
@@ -4284,7 +4284,7 @@ void MeshBoundCB(int var){
     break;
   case USEMESH_XYZ:
     updatemenu = 1;
-    for(i = 0;i < global_scase.meshescoll.nmeshes;i++){
+    for(i = 0; i < global_scase.meshescoll.nmeshes; i++){
       meshdata *meshi;
 
       meshi = global_scase.meshescoll.meshinfo + i;
@@ -4292,7 +4292,7 @@ void MeshBoundCB(int var){
     }
     if(use_meshclip[0] == 0 && use_meshclip[1] == 0 && use_meshclip[2] == 0 &&
        use_meshclip[3] == 0 && use_meshclip[4] == 0 && use_meshclip[5] == 0)break;
-    for(i=0;i<global_scase.meshescoll.nmeshes;i++){
+    for(i=0; i<global_scase.meshescoll.nmeshes; i++){
       meshdata *meshi;
       float meshclip_min[3],  meshclip_max[3];
       int use_meshclip_min[3], use_meshclip_max[3];
@@ -4372,7 +4372,7 @@ void MeshBoundCB(int var){
     UpdateBoundaryFiles();
     break;
   case USEMESH_USE_XYZ_ALL:
-    for(i = 0;i < 6;i++){
+    for(i = 0; i < 6; i++){
       if(use_meshclip[i] == 1){
         SPINNER_meshclip[i]->enable();
       }
@@ -4412,7 +4412,7 @@ void MeshBoundCB(int var){
 extern "C" void GLUIUpdateMeshBounds(void){
   int i;
 
-  for(i = 0;i < 6;i++){
+  for(i = 0; i < 6; i++){
     SPINNER_meshclip[i]->set_float_val(meshclip[i]);
     CHECKBOX_use_meshclip[i]->set_int_val(use_meshclip[i]);
   }
@@ -4573,7 +4573,7 @@ void ScriptCB(int var){
     name = script_renderdir;
     len = strlen(script_renderdir);
     if(len == 0)break;
-    for(i = 0;i < len;i++){
+    for(i = 0; i < len; i++){
 #ifdef _WIN32
       if(name[i] == '/'){
         set_renderlabel = 1;
@@ -4672,7 +4672,7 @@ void ScriptCB(int var){
     else if(id >= 0){
       char *script_filename2;
 
-      if(strlen(ini_filename) == 0) {
+      if(strlen(ini_filename) == 0){
         FREEMEMORY(caseini_filename);
         break;
       }
@@ -4811,7 +4811,7 @@ extern "C" void GLUIUpdateColorbarListBound(int flag){
   }
 
   if(LIST_cb == NULL)return;
-  for(i=-7;i<colorbars.ncolorbars;i++){
+  for(i=-7; i<colorbars.ncolorbars; i++){
    LIST_cb->delete_item(i);
   }
   strcpy(label, "rainbow");      AddColorbarListBound(LIST_cb, -1, label, &max_LISTBOX_cb_bound);
@@ -4836,22 +4836,22 @@ void GLUIShowHideGeomDataCB(int var){
 
   switch (var){
     case SHOW_ALL_MESH_GEOM:
-      for(i=0;i<nn;i++){
+      for(i=0; i<nn; i++){
         CHECKBOX_show_mesh_geom[i]->set_int_val(1);
       }
       break;
     case HIDE_ALL_MESH_GEOM:
-      for(i=0;i<nn;i++){
+      for(i=0; i<nn; i++){
         CHECKBOX_show_mesh_geom[i]->set_int_val(0);
       }
       break;
     case SHOW_ALL_MESH_DATA:
-      for(i=0;i<nn;i++){
+      for(i=0; i<nn; i++){
         CHECKBOX_show_mesh_data[i]->set_int_val(1);
       }
       break;
     case HIDE_ALL_MESH_DATA:
-      for(i=0;i<nn;i++){
+      for(i=0; i<nn; i++){
         CHECKBOX_show_mesh_data[i]->set_int_val(0);
       }
       break;
@@ -4867,7 +4867,7 @@ void AddMeshCheckbox(int icol,int nm, GLUI_Panel *PANEL, GLUI_Checkbox **CHECKBO
   if(icol<=nm){
     int i;
 
-    for(i=icol-1;i<nm;i+=8){
+    for(i=icol-1; i<nm; i+=8){
       meshdata *meshi;
       char label[340];
 
@@ -4897,12 +4897,12 @@ void BoundDebugCB(int var){
   
   switch(var){
     case SHOW_ALL_PATCHES:
-      for(i=0;i<NPATCHES_DEBUG;i++){
+      for(i=0; i<NPATCHES_DEBUG; i++){
         bndf_vis_patch[i] = 1;
       }
       break;
     case HIDE_ALL_PATCHES:
-      for(i=0;i<NPATCHES_DEBUG;i++){
+      for(i=0; i<NPATCHES_DEBUG; i++){
         bndf_vis_patch[i] = 0;
       }
       break;
@@ -4910,7 +4910,7 @@ void BoundDebugCB(int var){
       assert(FFALSE);
       break;
   }
-  for(i=0;i<NPATCHES_DEBUG;i++){
+  for(i=0; i<NPATCHES_DEBUG; i++){
     CHECKBOX_patch_debug[i]->set_int_val(bndf_vis_patch[i]);
   }
 }
@@ -5657,7 +5657,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
     glui_bounds->add_radiobutton_to_group(RADIO_filetype, "face centered");
 #endif
     LISTBOX_sliceload = glui_bounds->add_listbox_to_panel(PANEL_sliceload_option, "quantity:", &sliceload_boundtype);
-    for(i = 0;i < nslicebounds_cpp;i++){
+    for(i = 0; i < nslicebounds_cpp; i++){
       LISTBOX_sliceload->add_item(i, slicebounds_cpp[i].label);
     }
     glui_bounds->add_button_to_panel(PANEL_sliceload_option, "Unload all", SLICE_UNLOADALL, SliceLoadCB);
@@ -5747,7 +5747,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
   strcpy(lbl[3], "ymax");
   strcpy(lbl[4], "zmin");
   strcpy(lbl[5], "zmax");
-  for(i = 0;i < 6;i++){
+  for(i = 0; i < 6; i++){
     SPINNER_meshclip[i] = glui_bounds->add_spinner_to_panel(PANEL_meshxyz[i], lbl[i], GLUI_SPINNER_FLOAT, meshclip + i, USEMESH_XYZ, MeshBoundCB);
     glui_bounds->add_column_to_panel(PANEL_meshxyz[i], false);
     CHECKBOX_use_meshclip[i] = glui_bounds->add_checkbox_to_panel(PANEL_meshxyz[i], "", use_meshclip + i, USEMESH_USE_XYZ + i, MeshBoundCB);
@@ -5784,7 +5784,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
   int nn = MIN(global_scase.meshescoll.nmeshes, 256);
   PANEL_geom_vis2 = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh_blockages, "", GLUI_PANEL_NONE);
-  for(i = 1;i < 9;i++){
+  for(i = 1; i < 9; i++){
     AddMeshCheckbox(i, nn, PANEL_geom_vis2, CHECKBOX_show_mesh_geom, 1);
   }
 
@@ -5796,7 +5796,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
   ROLLOUT_vismesh_data = glui_bounds->add_rollout_to_panel(ROLLOUT_view_options, "View data by mesh", false, MESHDATA_ROLLOUT, ViewRolloutCB);
   TOGGLE_ROLLOUT(viewprocinfo, nviewprocinfo, ROLLOUT_vismesh_data, MESHDATA_ROLLOUT, glui_bounds);
   PANEL_data_vis2 = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh_data, "", GLUI_PANEL_NONE);
-  for(i = 1;i < 9;i++){
+  for(i = 1; i < 9; i++){
     AddMeshCheckbox(i, nn, PANEL_data_vis2, CHECKBOX_show_mesh_data, 2);
   }
   PANEL_data_vis3 = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh_data, "", GLUI_PANEL_NONE);
@@ -6116,7 +6116,7 @@ extern "C" void GLUIPlot3DBoundCB(int var){
     break;
   case FILE_RELOAD:
    GLUIPlot3DBoundCB(FILE_UPDATE);
-   for(i=0;i<global_scase.nplot3dinfo;i++){
+   for(i=0; i<global_scase.nplot3dinfo; i++){
      if(global_scase.plot3dinfo[i].loaded==0)continue;
      LoadPlot3dMenu(i);
    }
@@ -6263,7 +6263,7 @@ extern "C" void GLUIIsoBoundCB(int var){
     GLUIIsoBoundCB(ISO_COLORS);
     break;
   case ISO_TRANSPARENCY:
-    if(glui_iso_transparency < 0 || glui_iso_transparency > 255) {
+    if(glui_iso_transparency < 0 || glui_iso_transparency > 255){
       glui_iso_transparency = CLAMP(glui_iso_transparency, 0, 255);
       SPINNER_iso_transparency->set_int_val(glui_iso_transparency);
     }
@@ -6407,7 +6407,7 @@ extern "C"  void GLUIScriptDisable(void){
 extern "C" void GLUIUpdateBoundaryListIndex(int patchfilenum){
   int i;
   if(RADIO_bf==NULL)return;
-  for(i=0;i<npatch2;i++){
+  for(i=0; i<npatch2; i++){
     patchdata *patchi;
 
     patchi = global_scase.patchinfo + patchfilenum;
@@ -6805,7 +6805,7 @@ extern "C" void GLUISliceBoundCB(int var){
       break;
     case SORT_SURFACES:
       sort_geometry=sort_iso_triangles;
-      for(i=global_scase.surfcoll.nsurfinfo;i<global_scase.surfcoll.nsurfinfo+MAX_ISO_COLORS+1;i++){
+      for(i=global_scase.surfcoll.nsurfinfo; i<global_scase.surfcoll.nsurfinfo+MAX_ISO_COLORS+1; i++){
         surfdata *surfi;
 
         surfi = global_scase.surfcoll.surfinfo + i;
@@ -6878,7 +6878,7 @@ extern "C" void GLUISliceBoundCB(int var){
       updatemenu = 1;
       break;
     case TRANSPARENTLEVEL:
-      for(i=global_scase.surfcoll.nsurfinfo;i<global_scase.surfcoll.nsurfinfo+MAX_ISO_COLORS+1;i++){
+      for(i=global_scase.surfcoll.nsurfinfo; i<global_scase.surfcoll.nsurfinfo+MAX_ISO_COLORS+1; i++){
         surfdata *surfi;
 
         surfi = global_scase.surfcoll.surfinfo + i;
@@ -7063,7 +7063,7 @@ extern "C" void GLUIShowBounds(int menu_id){
     break;
   case DIALOG_AUTOLOAD:
     if(ROLLOUT_autoload->is_open==0){
-      if(ROLLOUT_filebounds->is_open == 0) {
+      if(ROLLOUT_filebounds->is_open == 0){
         FileDataColRolloutCB(DATA_ROLLOUT);
       }
       if(ROLLOUT_time->is_open == 0){

@@ -21,9 +21,9 @@ int GetInterval(float val, float *array, int n) {
 
   low = 0;
   high = n - 1;
-  while(high - low > 1) {
+  while(high - low > 1){
     mid = (low + high) / 2;
-    if(val >= array[mid]) {
+    if(val >= array[mid]){
       low = mid;
     }
     else {
@@ -919,18 +919,18 @@ void Normalize(float *xyz, int n){
 
   norm2 = 0.0;
 
-  for(i=0;i<n;i++){
+  for(i=0; i<n; i++){
     norm2 += xyz[i]*xyz[i];
   }
   norm = sqrt(norm2);
   if(norm<0.00001){
-    for(i=0;i<n-1;i++){
+    for(i=0; i<n-1; i++){
       xyz[i]=0.0;
     }
     xyz[n-1]=1.0;
   }
   else{
-    for(i=0;i<n;i++){
+    for(i=0; i<n; i++){
       xyz[i]/=norm;
     }
   }

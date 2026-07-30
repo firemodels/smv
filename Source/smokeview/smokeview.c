@@ -45,7 +45,7 @@ void UpdateLights(float *pos1, float *pos2){
     float num_lights;
 
     num_lights = use_light0 + use_light1;
-    for(i = 0;i<3;i++){
+    for(i = 0; i<3; i++){
       ambientlight2[i] = ambientlight[i]/(float)num_lights;
       diffuselight2[i] = diffuselight[i]/(float)num_lights;
       specularlight2[i] = specularlight[i]/(float)num_lights;

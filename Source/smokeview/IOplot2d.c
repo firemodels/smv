@@ -95,7 +95,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
     xmax = x[n-1];
     if(use_tload_begin==1||use_tload_end==1){
       if(use_tload_begin==1){
-        for(i=0;i<n;i++){
+        for(i=0; i<n; i++){
           if(global_scase.tload_begin<x[i]){
             itbeg = i;
             break;
@@ -104,7 +104,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
         xmin = global_scase.tload_begin;
       }
       if(use_tload_end==1){
-        for(i=n-1;i>=0;i--){
+        for(i=n-1; i>=0; i--){
           if(x[i]<global_scase.tload_end){
             itend = i;
             break;
@@ -424,7 +424,7 @@ int HavePlot2D(float **times, int *ntimes){
   int i;
 
   if(plot2d_show_plots==0)return 0;
-  for(i = 0; i < nplot2dinfo;i++){
+  for(i = 0; i < nplot2dinfo; i++){
     plot2ddata *plot2di;
     int j;
 
@@ -616,7 +616,7 @@ void DrawGenPlots(void){
   int i;
 
   if(plot2d_show_plots == 0||csv_loaded==0)return;
-  for(i = 0; i < nplot2dinfo;i++){
+  for(i = 0; i < nplot2dinfo; i++){
     plot2ddata *plot2di;
 
     plot2di = plot2dinfo + i;
@@ -954,7 +954,7 @@ void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals
     }
     sum = 0.0;
     count = 0;
-    for(j = ilower; j<=iupper;j++){
+    for(j = ilower; j<=iupper; j++){
       if(times[j]>=tlower&&times[j]<=tupper){
         sum += vals[j];
         count++;
@@ -1013,7 +1013,7 @@ void DrawTreePlot(int first, int n){
   int drawplot = 0;
   float *xyz = NULL;
 
-  for(j=0;j<n;j++){
+  for(j=0; j<n; j++){
     devicedata *devicei;
     int valid, option;
     float highlight_time = 0.0, highlight_val = 0.0;

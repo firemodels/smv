@@ -181,7 +181,7 @@ void ShowScene2(int mode){
       int i;
       float box_black[4] = {0.0, 0.0, 0.0, 1.0};
 
-      for(i = 0;i < global_scase.meshescoll.nmeshes;i++){
+      for(i = 0; i < global_scase.meshescoll.nmeshes; i++){
         meshdata *meshi;
         float *xyz_min, *xyz_max;
 
@@ -237,7 +237,7 @@ void ShowScene2(int mode){
         meshdata *meshi;
 
         UNCLIP;
-        for(igrid = 0;igrid<global_scase.meshescoll.nmeshes;igrid++){
+        for(igrid = 0; igrid<global_scase.meshescoll.nmeshes; igrid++){
           meshi = global_scase.meshescoll.meshinfo + igrid;
           DrawGrid(meshi);
           SNIFF_ERRORS("DrawGrid");
@@ -375,7 +375,7 @@ void ShowScene2(int mode){
       flag = TERRAIN_TOP_SIDE;
     }
     CLIP_GEOMETRY;
-    for(i = 0;i<global_scase.nterraininfo;i++){
+    for(i = 0; i<global_scase.nterraininfo; i++){
       terraindata *terri;
 
       terri = global_scase.terraininfo + i;
@@ -410,7 +410,7 @@ void ShowScene2(int mode){
 
   /* ++++++++++++++++++++++++ draw HVAC networks +++++++++++++++++++++++++ */
 
-  if (global_scase.hvaccoll.nhvacinfo > 0) {
+  if(global_scase.hvaccoll.nhvacinfo > 0){
     DrawHVACS();
   }
 

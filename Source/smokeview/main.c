@@ -587,12 +587,12 @@ int CheckSMVFile(char *file, char *subdir){
 void GetArgs(int argc, char **argv, int *n_args, char ***utf8_args) {
 #if defined(_WIN32) && defined(pp_UNICODE_PATHS)
   LPWSTR *utf16_args = CommandLineToArgvW(GetCommandLineW(), n_args);
-  if(NULL == utf16_args) {
+  if(NULL == utf16_args){
     fprintf(stderr, "CommandLineToArgvW failed\n");
     SMV_EXIT(1);
   }
   NEWMEMORY(*utf8_args, (*n_args) * sizeof(char *));
-  for(int i = 0; i < *n_args; i++) {
+  for(int i = 0; i < *n_args; i++){
     LPWSTR arg = utf16_args[i];
     char *conv = convert_utf16_to_utf8(arg);
     (*utf8_args)[i] = conv;
@@ -612,7 +612,7 @@ void FreeArgs(int n_args, char **args) {
   // We only need to free argument memory on windows as that's the only time we
   // allocate new memory. On other platforms the array returned by GetArgs is
   // readonly.
-  for(int i = 0; i < n_args; i++) {
+  for(int i = 0; i < n_args; i++){
     FREEMEMORY(args[i]);
   }
   FREEMEMORY(args);
@@ -668,7 +668,7 @@ int main(int argc, char **argv){
   }
 
   smv_filename = ParseCommandline(n_args, utf8_args, &opts);
-  if(smv_filename == NULL || opts.show_version == 1) {
+  if(smv_filename == NULL || opts.show_version == 1){
     InitStartupDirs();
     DisplayVersionInfo("Smokeview ", &opts);
     SMV_EXIT(0);

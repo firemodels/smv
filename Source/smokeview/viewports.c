@@ -101,7 +101,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
     int show_hvacduct_colorbar_local, show_hvacnode_colorbar_local;
 
     strcpy(sample_label, "");
-    for(i=0;i<MAX(5,ncolorlabel_digits+nextra);i++){
+    for(i=0; i<MAX(5,ncolorlabel_digits+nextra); i++){
       strcat(sample_label,"1");
     }
     max_width = GetStringWidth(sample_label);
@@ -1040,7 +1040,7 @@ void OutputSlicePlot(char *file){
   }
   int j;
 
-  for(j = -3;j < ntimes;j++){
+  for(j = -3; j < ntimes; j++){
     first = 1;
     for(i = 0; i < global_scase.slicecoll.nsliceinfo; i++){
       slicedata *slicei;
@@ -1114,7 +1114,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down){
     strcpy(label, cbi->menu_label);
     strcat(label, "/CIELab delta");
 
-    for(i=0;i<255;i++){
+    for(i=0; i<255; i++){
       xvals[i] = (float)i;
     }
 
@@ -1200,7 +1200,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
   if(visFramerate==1&&showtime==1)framerate_width = GetStringWidth("Frame rate: 99.99");
   timebar_right_width = framerate_width;
 #ifdef pp_MEMDEBUG
-  if(vismemusage == 1) {
+  if(vismemusage == 1){
     memusage_width = GetStringWidth("Mem Usage: 9999 MBx");
     timebar_right_width = MAX(timebar_right_width, memusage_width);
   }
@@ -1669,7 +1669,7 @@ void GetZoneSmokeDir(float *mm){
   eye_position_smv[1] = -(mm[4] * mm[12] + mm[5] * mm[13] + mm[6] * mm[14]) / mscale[1];
   eye_position_smv[2] = -(mm[8] * mm[12] + mm[9] * mm[13] + mm[10] * mm[14]) / mscale[2];
 
-  for(j = 0;j<global_scase.nrooms;j++){
+  for(j = 0; j<global_scase.nrooms; j++){
     roomdata *roomj;
 
     roomj = global_scase.roominfo + j;
@@ -1680,7 +1680,7 @@ void GetZoneSmokeDir(float *mm){
       eye_position_smv[1]>roomj->y0&&eye_position_smv[1]<roomj->y1&&
       eye_position_smv[2]>roomj->z0&&eye_position_smv[2]<roomj->z1
       ){
-      for(i = -3;i <= 3;i++){
+      for(i = -3; i <= 3; i++){
         if(i == 0)continue;
         roomj->drawsides[i + 3] = 1;
       }
@@ -1688,7 +1688,7 @@ void GetZoneSmokeDir(float *mm){
       continue;
     }
 
-    for(i = -3;i <= 3;i++){
+    for(i = -3; i <= 3; i++){
       if(i == 0)continue;
       ii = ABS(i);
       norm[0] = 0.0;
@@ -1746,7 +1746,7 @@ void GetZoneSmokeDir(float *mm){
       if(cosdir<0.0)cosdir = -cosdir;
       angles[3 + i] = cosdir;
     }
-    for(i = -3;i <= 3;i++){
+    for(i = -3; i <= 3; i++){
       if(i == 0)continue;
       if(angles[i + 3]<90.0){
         roomj->drawsides[i + 3] = 1;
@@ -1780,7 +1780,7 @@ float DistPointLineSeg(float *point, float *xyz1, float *xyz2){
   // (point - xt) .dot. (xyz2 - xyz1) = 0
   // solve for t and compute distance between xt and point
 
-  for(i=0;i<3;i++){
+  for(i=0; i<3; i++){
     dp[i]   = point[i]  - xyz1[i];
     dxyz[i] = xyz2[i] - xyz1[i];
   }
@@ -1792,7 +1792,7 @@ float DistPointLineSeg(float *point, float *xyz1, float *xyz2){
 
     t = num/denom;
     if(t<0.0||t>1.0)return -1.0;
-    for(i=0;i<3;i++){
+    for(i=0; i<3; i++){
       xyz[i] = xyz1[i]*(1.0-t)+xyz2[i]*t;
       dxyz[i] = point[i] - xyz[i];
     }
@@ -1990,7 +1990,7 @@ void UpdateMeshInFrustum(void) {
   int i;
 
   if(cull_meshes == 1){
-    for(i = 0; i < global_scase.meshescoll.nmeshes; i++) {
+    for(i = 0; i < global_scase.meshescoll.nmeshes; i++){
       meshdata *meshi;
 
       meshi = global_scase.meshescoll.meshinfo + i;
@@ -1998,7 +1998,7 @@ void UpdateMeshInFrustum(void) {
     }
   }
   else {
-    for(i = 0; i < global_scase.meshescoll.nmeshes; i++) {
+    for(i = 0; i < global_scase.meshescoll.nmeshes; i++){
       meshdata *meshi;
 
       meshi = global_scase.meshescoll.meshinfo + i;

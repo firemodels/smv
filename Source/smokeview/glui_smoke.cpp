@@ -469,7 +469,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     glui_3dsmoke->add_radiobutton_to_group(RADIO_use_fire_colormap, "colorbar");
     PANEL_fire_colormap = glui_3dsmoke->add_panel_to_panel(PANEL_specify_firea, "", false);
     LISTBOX_smoke_colorbar = glui_3dsmoke->add_listbox_to_panel(PANEL_fire_colormap, "colorbar:", &colorbars.fire_colorbar_index, SMOKE_COLORBAR_LIST, GLUISmoke3dCB);
-    for(i = 0;i < colorbars.ncolorbars;i++){
+    for(i = 0; i < colorbars.ncolorbars; i++){
       colorbardata *cbi;
 
       cbi = colorbars.colorbarinfo + i;
@@ -762,7 +762,7 @@ extern "C" void GLUISmoke3dCB(int var){
     ScriptCB(SCRIPT_CANCEL_NOW);
     break;
   case MASS_EXTINCTION:
-    if(glui_mass_extinct<1.0) {
+    if(glui_mass_extinct<1.0){
       glui_mass_extinct = 1.0;
       SPINNER_mass_extinct->set_float_val(glui_mass_extinct);
     }
@@ -1045,7 +1045,7 @@ extern "C" void GLUISmoke3dCB(int var){
     IdleCB();
     break;
   case UPDATE_SMOKECOLORS:
-    for(i=0;i<global_scase.meshescoll.nmeshes;i++){
+    for(i=0; i<global_scase.meshescoll.nmeshes; i++){
       meshdata *meshi;
 
       meshi = global_scase.meshescoll.meshinfo + i;

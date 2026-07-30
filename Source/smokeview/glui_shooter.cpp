@@ -334,7 +334,7 @@ extern "C" void GLUIShooterSetup(int main_window){
     PANEL_shooter_frameC=glui_shooter->add_panel_to_panel(ROLLOUT_shooter_velocity,"PLOT3D");
     BUTTON_shooter_loadplot3d=glui_shooter->add_button_to_panel(PANEL_shooter_frameC,"Load",SHOOTER_LOADPLOT3D,ShooterCB);
     LIST_shooter_times = glui_shooter->add_listbox_to_panel(PANEL_shooter_frameC,"Time:",&shooter_itime,SHOOTER_TIME,ShooterCB);
-    for(i=0;i<nplot3dtimelist;i++){
+    for(i=0; i<nplot3dtimelist; i++){
       char label[255];
 
 //      sprintf(label,"%f",plot3dtimelist[i]);

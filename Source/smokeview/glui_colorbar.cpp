@@ -141,7 +141,7 @@ void ColorbarGeneral2Simple(colorbardata *cbi){
   update_colorbar_dialog = 1;
 
   if(cbi->nnodes > 5||cbi->nnodes<2){
-    for(i = 0;i < 15;i++){
+    for(i = 0; i < 15; i++){
       SPINNER_cb_simple_rgb[i]->disable();
     }
     ROLLOUT_cb_general->open();
@@ -158,36 +158,36 @@ void ColorbarGeneral2Simple(colorbardata *cbi){
     assert(FFALSE);
     break;
   case 2:
-    for(i = 0;i < 3;i++){
+    for(i = 0; i < 3; i++){
       cb_simple_rgb[i] = (int)cbi->node_rgb[i];
     }
-    for(i = 0;i < 3;i++){
+    for(i = 0; i < 3; i++){
       cb_simple_rgb[12+i] = (int)cbi->node_rgb[3+i];
     }
     break;
   case 3:
-    for(i = 0;i < 6;i++){
+    for(i = 0; i < 6; i++){
       cb_simple_rgb[i] = (int)cbi->node_rgb[i];
     }
-    for(i = 0;i < 3;i++){
+    for(i = 0; i < 3; i++){
       cb_simple_rgb[12 + i] = (int)cbi->node_rgb[6+i];
     }
     break;
   case 4:
-    for(i = 0;i < 9;i++){
+    for(i = 0; i < 9; i++){
       cb_simple_rgb[i] = (int)cbi->node_rgb[i];
     }
-    for(i = 0;i < 3;i++){
+    for(i = 0; i < 3; i++){
       cb_simple_rgb[12 + i] = (int)cbi->node_rgb[9+i];
     }
     break;
   case 5:
-    for(i = 0;i < 15;i++){
+    for(i = 0; i < 15; i++){
       cb_simple_rgb[i] = (int)cbi->node_rgb[i];
     }
     break;
   }
-  for(i = 0;i < 15;i++){
+  for(i = 0; i < 15; i++){
     SPINNER_cb_simple_rgb[i]->set_int_val(cb_simple_rgb[i]);
   }
   RADIO_cb_simple_type->set_int_val(colorbar_simple_type);
@@ -199,7 +199,7 @@ void ColorbarSimple2General(colorbardata *cbi){
   int node_rgb[1024 * 3];
   int i;
 
-  for(i = 0;i < 1024 * 3;i++){
+  for(i = 0; i < 1024 * 3; i++){
     node_rgb[i] = 0;
   }
   switch(colorbar_simple_type){
@@ -261,7 +261,7 @@ void ColorbarSimple2General(colorbardata *cbi){
     assert(FFALSE);
     break;
   }
-  for(i=0;i<3*cbi->nnodes;i++){
+  for(i=0; i<3*cbi->nnodes; i++){
     cbi->node_rgb[i] = (unsigned char)node_rgb[i];
   }
 }
@@ -341,7 +341,7 @@ void Colorbar2File(colorbardata *cbi, char *file, char *label){
   if(file != NULL && strlen(file) > 0 && label != NULL && strlen(label) > 0)stream = FOPEN(file, "w");
   if(stream == NULL)return;
   fprintf(stream, "name,%s\n", label);
-  for(i = 0;i < 256;i++){
+  for(i = 0; i < 256; i++){
     float *rgbi;
     int rgb255[3];
     float lab[3];
@@ -378,7 +378,7 @@ void GetNewColorbarName(char *base, char *label, int labellen){
     strcpy(label, labelcopy);
 
     int dup = 0;
-    for(j = 0;j < colorbars.ncolorbars;j++){
+    for(j = 0; j < colorbars.ncolorbars; j++){
       colorbardata *cbj;
 
       cbj = colorbars.colorbarinfo + j;
@@ -419,7 +419,7 @@ void FilterCSVFilename(char *file){
     c = file + strlen(file) - 1;
     if(isalnum(*c) == 0)*c=0;
   }
-  for(i = 0;i < lenfile;i++){
+  for(i = 0; i < lenfile; i++){
     char *c;
 
     c = file + i;
@@ -429,7 +429,7 @@ void FilterCSVFilename(char *file){
   newfile = file;
   *newfile++ = file[0];
   lenfile = strlen(file);
-  for(i = 1;i < lenfile;i++){
+  for(i = 1; i < lenfile; i++){
     if(file[i - 1] != '_')*newfile++ = file[i];
     if(file[i - 1] == '_' && file[i]!='_')*newfile++ = file[i];
   }
@@ -537,7 +537,7 @@ extern "C" void GLUIColorbarCB(int var){
     if(cbi->nnodes <= 2)return;
 
     if(cbi->nnodes <= 1)return;
-    for(i = colorbarpoint + 1;i < cbi->nnodes;i++){
+    for(i = colorbarpoint + 1; i < cbi->nnodes; i++){
       unsigned char *rgb1, *rgb2_local;
 
       cbi->node_index[i - 1] = cbi->node_index[i];
@@ -557,7 +557,7 @@ extern "C" void GLUIColorbarCB(int var){
                   show_extreme_maxdata, rgb_above_max);
     UpdateRGBColors(colorbar_select_index);
     nodes_rgb = cbi->node_rgb + 3 * colorbarpoint;
-    for(i = 0;i < 3;i++){
+    for(i = 0; i < 3; i++){
       cb_rgb[i] = nodes_rgb[i];
       SPINNER_cb_rgb[i]->set_int_val(cb_rgb[i]);
     }
@@ -599,8 +599,8 @@ extern "C" void GLUIColorbarCB(int var){
       assert(FFALSE);
       break;
       case 0:
-      for(type=0;type<5;type++){
-        for(i=0;i<3;i++){
+      for(type=0; type<5; type++){
+        for(i=0; i<3; i++){
           int ii;
 
           ii = 3*type + i;
@@ -614,8 +614,8 @@ extern "C" void GLUIColorbarCB(int var){
       }
       break;
       case 1:
-      for(type = 0;type < 5;type++){
-        for(i=0;i<3;i++){
+      for(type = 0; type < 5; type++){
+        for(i=0; i<3; i++){
           int ii;
 
           ii = 3*type + i;
@@ -629,8 +629,8 @@ extern "C" void GLUIColorbarCB(int var){
       }
       break;
       case 2:
-      for(type = 0;type < 5;type++){
-        for(i=0;i<3;i++){
+      for(type = 0; type < 5; type++){
+        for(i=0; i<3; i++){
           int ii;
 
           ii = 3*type + i;
@@ -644,8 +644,8 @@ extern "C" void GLUIColorbarCB(int var){
       }
       break;
       case 3:
-      for(type=0;type<5;type++){
-        for(i=0;i<3;i++){
+      for(type=0; type<5; type++){
+        for(i=0; i<3; i++){
           int ii;
 
           ii = 3*type + i;
@@ -659,8 +659,8 @@ extern "C" void GLUIColorbarCB(int var){
       }
       break;
       case 4:
-      for(type = 0;type < 5;type++){
-        for(i=0;i<3;i++){
+      for(type = 0; type < 5; type++){
+        for(i=0; i<3; i++){
           int ii;
 
           ii = 3*type + i;
@@ -674,8 +674,8 @@ extern "C" void GLUIColorbarCB(int var){
       }
       break;
       case 5:
-      for(type = 0;type < 5;type++){
-        for(i=0;i<3;i++){
+      for(type = 0; type < 5; type++){
+        for(i=0; i<3; i++){
           int ii;
 
           ii = 3*type + i;
@@ -716,7 +716,7 @@ extern "C" void GLUIColorbarCB(int var){
       SPINNER_cb_simple_rgb[3*index + 2]->set_int_val(cb_rgb[2]);
     }
     nodes_rgb = cbi->node_rgb + 3 * colorbarpoint;
-    for(i = 0;i < 3;i++){
+    for(i = 0; i < 3; i++){
       nodes_rgb[i] = cb_rgb[i];
     }
     RemapColorbar(cbi, show_extreme_mindata, rgb_below_min,
@@ -865,16 +865,16 @@ extern "C" void GLUIColorbarCB(int var){
     if(colorbartype >= colorbars.ndefaultcolorbars&&colorbartype < colorbars.ncolorbars){
       colorbardata *cb_from, *cb_to;
 
-      for(i = colorbartype;i < colorbars.ncolorbars - 1;i++){
+      for(i = colorbartype; i < colorbars.ncolorbars - 1; i++){
         cb_to = colorbars.colorbarinfo + i;
         cb_from = cb_to + 1;
         memcpy(cb_to, cb_from, sizeof(colorbardata));
       }
-      for(i = colorbartype;i < colorbars.ncolorbars;i++){
+      for(i = colorbartype; i < colorbars.ncolorbars; i++){
         LISTBOX_cb_edit->delete_item(i);
       }
       colorbars.ncolorbars--;
-      for(i = colorbartype;i < colorbars.ncolorbars;i++){
+      for(i = colorbartype; i < colorbars.ncolorbars; i++){
         cbi = colorbars.colorbarinfo + i;
         LISTBOX_cb_edit->add_item(i, cbi->menu_label);
       }
@@ -1029,7 +1029,7 @@ extern "C" void GLUIColorbarSetup(int main_window){
 
   int i;
 
-  for(i=0;i<15;i++){
+  for(i=0; i<15; i++){
     cb_simple_rgb[i] = 0;
   }
 

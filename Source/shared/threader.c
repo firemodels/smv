@@ -44,7 +44,7 @@ void ThreadInsert(threaderdata *thi){
 /* ------------------ ThreadRemove ------------------------ */
 
 void ThreadRemove(threaderdata *thi){
-  for(threaderdata *t=(&threadfirst)->next;t!=NULL;t=t->next){
+  for(threaderdata *t=(&threadfirst)->next; t!=NULL; t=t->next){
     if(t==thi){
       threaderdata *p=t->prev, *n=t->next;
       if(p!=NULL)p->next = n;
@@ -128,7 +128,7 @@ void ThreadJoin(threaderdata **thiptr){
 
 int ThreadCount(void){
   int nthreads=0;
-  for(threaderdata *t=(&threadfirst)->next;t!=NULL;t=t->next){
+  for(threaderdata *t=(&threadfirst)->next; t!=NULL; t=t->next){
     nthreads++;
   }
   return nthreads;
@@ -143,10 +143,10 @@ void ThreadJoinAll(void){
   if(nthreads==0)return;
   NewMemory((void **)&threadlist, nthreads*sizeof(threaderdata *));
   nthreads = 0;
-  for(threaderdata *t=(&threadfirst)->next;t!=NULL;t=t->next){
+  for(threaderdata *t=(&threadfirst)->next; t!=NULL; t=t->next){
     threadlist[nthreads++] = t;
   }
-  for(int i=0;i<nthreads;i++){
+  for(int i=0; i<nthreads; i++){
     ThreadJoin(threadlist[i]->address);
   }
   FREEMEMORY(threadlist);

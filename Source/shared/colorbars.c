@@ -636,7 +636,7 @@ char *GetColorbarsSubDir(const char *subdir) {
   char *smv_bindir = GetSmvRootDir();
   if(smv_bindir == NULL || subdir == NULL) return return_path;
   char *colorbar_dir = CombinePaths(smv_bindir, "colorbars");
-  if(strlen(subdir) > 0) {
+  if(strlen(subdir) > 0){
     return_path = CombinePaths(colorbar_dir, subdir);
     FREEMEMORY(colorbar_dir);
   }

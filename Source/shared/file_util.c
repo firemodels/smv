@@ -471,7 +471,7 @@ int Writable(char *dir){
     RandStr(tempfile, tempfile_length);
     char *temp_path = CombinePaths(dir, tempfile);
     FILE *stream = fopen(temp_path, "w");
-    if(stream == NULL) {
+    if(stream == NULL){
       UNLINK(temp_path);
       FREEMEMORY(temp_path);
       return NO;
@@ -620,7 +620,7 @@ mtfiledata *SetMtFileInfo(char *file, unsigned char *buffer, FILE_SIZE file_offs
 
   NewMemory((void **)&mtfileinfo,nthreads*sizeof(mtfiledata));
 
-  for(i=0;i<nthreads;i++){
+  for(i=0; i<nthreads; i++){
     mtfiledata *mti;
 
     mti = mtfileinfo + i;
@@ -685,7 +685,7 @@ FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE
     ThreadRuni(read_threads, (unsigned char *)mtfileinfo, sizeof(mtfiledata));
     ThreadJoin(&read_threads);
     chars_read = 0;
-    for(int i = 0;i < nthreads;i++){
+    for(int i = 0; i < nthreads; i++){
       chars_read += mtfileinfo[i].chars_read;
     }
   }
@@ -694,7 +694,7 @@ FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE
     int i;
 
     chars_read = 0;
-    for(i = 0;i < nthreads;i++){
+    for(i = 0; i < nthreads; i++){
       mtfiledata *mti;
 
       mti = mtfileinfo + i;
@@ -863,7 +863,7 @@ int FileExists(char *filename, filelistdata *filelist, int nfilelist, filelistda
 void FreeFileList(filelistdata *filelist, int *nfilelist){
   int i;
 
-  for(i=0;i<*nfilelist;i++){
+  for(i=0; i<*nfilelist; i++){
     FREEMEMORY(filelist[i].file);
   }
   FREEMEMORY(filelist);
@@ -1069,7 +1069,7 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files,
   int nfiles = 0;
   filelistdata *flist;
 
-  if(maxfiles == 0 || path == NULL || filter == NULL) {
+  if(maxfiles == 0 || path == NULL || filter == NULL){
     if(filelist != NULL) *filelist = NULL;
     return 0;
   }
@@ -1081,7 +1081,7 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files,
   size_t length_of_arg;
   HANDLE hFind = INVALID_HANDLE_VALUE;
   StringCchLengthW(pathw, MAX_PATH, &length_of_arg);
-  if(length_of_arg > (MAX_PATH - 3)) {
+  if(length_of_arg > (MAX_PATH - 3)){
     fprintf(stderr, "Directory path is too long.\n");
     return (-1);
   }
@@ -1091,11 +1091,11 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files,
 
   hFind = FindFirstFileW(szDir, &ffd);
 
-  if(INVALID_HANDLE_VALUE == hFind) {
+  if(INVALID_HANDLE_VALUE == hFind){
     fwprintf(stderr, L"Unable to open path %s\n", szDir);
     return (0);
   }
-  if(maxfiles > 0) {
+  if(maxfiles > 0){
     *filelist = NULL;
     // If maxfiles is less than zero we're only in count mode and don't need to
     // allocate an array.
@@ -1110,14 +1110,14 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files,
       continue;
     char *fileNameA = convert_utf16_to_utf8(ffd.cFileName);
     int cRes = MatchWild(fileNameA, filter);
-    if(rel_type && cRes == 1) {
+    if(rel_type && cRes == 1){
       LPWSTR file;
       filelistdata *flisti;
-      if(maxfiles > 0) {
+      if(maxfiles > 0){
         // If maxfiles is less than zero we're only in count mode and don't need
         // to record file names
         flisti = flist + nfiles;
-        if(mode == DIR_MODE) {
+        if(mode == DIR_MODE){
           size_t l1 = wcslen(szDir);
           size_t l2 = wcslen(ffd.cFileName);
 #ifdef pp_UNICODE_PATHS
@@ -1149,15 +1149,15 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files,
   } while(FindNextFileW(hFind, &ffd) != 0);
   DWORD dwError = 0;
   dwError = GetLastError();
-  if(dwError != ERROR_NO_MORE_FILES) {
+  if(dwError != ERROR_NO_MORE_FILES){
     DisplayErrorBox(TEXT("FindFirstFile"));
   }
   FindClose(hFind);
-  if(sort_files == YES && nfiles > 0) {
+  if(sort_files == YES && nfiles > 0){
     qsort((filelistdata *)flist, (size_t)nfiles, sizeof(filelistdata),
           CompareFileList);
   }
-  if(maxfiles > 0) {
+  if(maxfiles > 0){
     // If maxfiles is less than zero we're only in count mode and don't need
     // to record file names
     *filelist = flist;
@@ -1366,7 +1366,7 @@ char *GetBinPath(){
       buffer[ret] = '\0';
       return buffer;
     }
-    else if(ret == buffer_size && buffer_size < max_buffer_size) {
+    else if(ret == buffer_size && buffer_size < max_buffer_size){
       // increase buffer size by a factor of 2
       buffer_size *= 2;
       RESIZEMEMORY(buffer, buffer_size);
@@ -1497,7 +1497,7 @@ char *GetSmvRootDir(){
 
     int i, count=0;
 
-    for(i = strlen(repo_bindir) - 1;i >= 0;i--){
+    for(i = strlen(repo_bindir) - 1; i >= 0; i--){
       if(repo_bindir[i] == dirseparator[0]){
         count++;
         if(count == 3){
@@ -1537,7 +1537,7 @@ char *GetSmvRootDir(){
 
 char *GetSmvRootSubPath(const char *subdir) {
   char *root_dir = GetSmvRootDir();
-  if (root_dir == NULL || subdir == NULL) return NULL;
+  if(root_dir == NULL || subdir == NULL) return NULL;
   return CombinePaths(root_dir,subdir);
 }
 
@@ -1571,7 +1571,7 @@ char *GetUserConfigDir() {
 
 char *GetUserConfigSubPath(const char *subdir) {
   char *config_dir = GetUserConfigDir();
-  if (config_dir == NULL || subdir == NULL) return NULL;
+  if(config_dir == NULL || subdir == NULL) return NULL;
   return CombinePaths(config_dir,subdir);
 }
 
@@ -1669,7 +1669,7 @@ char *LastName(char *argi){
     filename=lastdirsep+1;
     lastdirsep[0]=0;
     GETCWD(cwdpath, 1000);
-    if(strcmp(cwdpath, dir) != 0) {
+    if(strcmp(cwdpath, dir) != 0){
       CHDIR(dir);
     }
   }

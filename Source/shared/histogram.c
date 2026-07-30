@@ -46,7 +46,7 @@ float GetHistogramVal(histogramdata *histogram, float cdf){
   }
   cutoff = cdf*histogram->ntotal;
   count=0;
-  for(i=0;i<histogram->nbuckets;i++){
+  for(i=0; i<histogram->nbuckets; i++){
     count+=histogram->buckets[i];
     if(count>cutoff){
       returnval = histogram->val_min + (float)(i+0.5)*(histogram->val_max-histogram->val_min)/(float)histogram->nbuckets;
@@ -198,13 +198,13 @@ void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histo
     valmax = -valmin;
   }
   histogram->defined=1;
-  for(i=0;i<histogram->nbuckets;i++){
+  for(i=0; i<histogram->nbuckets; i++){
     histogram->buckets[i]=0.0;
   }
 
 // compute min/max, skip over mask'd data
 
-  for(i=0;i<nvals;i++){
+  for(i=0; i<nvals; i++){
     if(mask!=NULL&&mask[i]==0)continue;
     if(weight != NULL){
       nnvals += weight[i];
@@ -218,7 +218,7 @@ void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histo
     valmax = valmax_arg;
   }
   else{
-    for(i = 0;i < nvals;i++){
+    for(i = 0; i < nvals; i++){
       if(mask != NULL && mask[i] == 0)continue;
       if(weight != NULL){
         nnvals += weight[i];
@@ -247,7 +247,7 @@ void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histo
       }
     }
     else{
-      for(i=0;i<nvals;i++){
+      for(i=0; i<nvals; i++){
         int ival;
 
         if(mask!=NULL&&mask[i]==0)continue;
@@ -380,7 +380,7 @@ void MergeHistogram(histogramdata *histogram_to, histogramdata *histogram_from, 
     histogram_to->ntotal=histogram_to->buckets[0];
   }
   else{
-    for(i=0;i<histogram_to->nbuckets;i++){
+    for(i=0; i<histogram_to->nbuckets; i++){
       if(bucket_to_copy[i]!=0){
         float val;
         int ival;
@@ -391,7 +391,7 @@ void MergeHistogram(histogramdata *histogram_to, histogramdata *histogram_from, 
         histogram_to->buckets[ival] += bucket_to_copy[i];
       }
     }
-    for(i=0;i<histogram_from->nbuckets;i++){
+    for(i=0; i<histogram_from->nbuckets; i++){
       if(histogram_from->buckets[i]!=0){
         float val;
         int ival;
@@ -535,9 +535,9 @@ void CopyUV2Histogram(float *times, float *uvals, float *vvals, int nvals, float
 
   maxr = 0.0;
   sum = 0.0;
-  for(itheta = 0;itheta<histogram->ntheta;itheta++){
+  for(itheta = 0; itheta<histogram->ntheta; itheta++){
     sumr = 0.0;
-    for(ir = 0;ir<histogram->nr;ir++){
+    for(ir = 0; ir<histogram->nr; ir++){
       ixy = ir+itheta*histogram->nr;
       sumr += histogram->buckets_polar[ixy];
     }
@@ -548,9 +548,9 @@ void CopyUV2Histogram(float *times, float *uvals, float *vvals, int nvals, float
   histogram->ntotal = sum;
 
   maxtheta = 0.0;
-  for(ir = 0;ir<histogram->nr;ir++){
+  for(ir = 0; ir<histogram->nr; ir++){
     sumtheta = 0.0;
-    for(itheta = 0;itheta<histogram->ntheta;itheta++){
+    for(itheta = 0; itheta<histogram->ntheta; itheta++){
       ixy = ir+itheta*histogram->nr;
       sumtheta += histogram->buckets_polar[ixy];
     }
@@ -591,11 +591,11 @@ void CopyPolar2Histogram(float *rad, float *angle, int nvals, float rmin, float 
 
   maxr = 0.0;
   sum = 0.0;
-  for(itheta = 0;itheta < histogram->ntheta;itheta++){
+  for(itheta = 0; itheta < histogram->ntheta; itheta++){
     int ixy;
 
     sumr = 0.0;
-    for(ir = 0;ir < histogram->nr;ir++){
+    for(ir = 0; ir < histogram->nr; ir++){
       ixy = ir + itheta*histogram->nr;
       sumr += histogram->buckets_polar[ixy];
     }
@@ -606,9 +606,9 @@ void CopyPolar2Histogram(float *rad, float *angle, int nvals, float rmin, float 
   histogram->ntotal = sum;
 
   maxtheta = 0.0;
-  for(ir = 0;ir < histogram->nr;ir++){
+  for(ir = 0; ir < histogram->nr; ir++){
     sumtheta = 0.0;
-    for(itheta = 0;itheta < histogram->ntheta;itheta++){
+    for(itheta = 0; itheta < histogram->ntheta; itheta++){
       int ixy;
 
       ixy = ir + itheta*histogram->nr;
