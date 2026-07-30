@@ -21,7 +21,7 @@ int GetInterval(float val, float *array, int n) {
 
   low = 0;
   high = n - 1;
-  while(high - low > 1) {
+  while(high - low > 1){
     mid = (low + high) / 2;
     if(val >= array[mid]){
       low = mid;

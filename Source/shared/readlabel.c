@@ -237,7 +237,7 @@ labels_collection *CreateLabelsCollection() {
 
 void FreeLabelsCollection(labels_collection *labelscoll) {
   labeldata *thislabel = labelscoll->label_first_ptr->next;
-  while(thislabel->next != NULL) {
+  while(thislabel->next != NULL){
     labeldata *nextlabel = thislabel->next;
     LabelDelete(thislabel);
     thislabel = nextlabel;

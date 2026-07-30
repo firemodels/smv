@@ -336,7 +336,7 @@ int ReadCADGeom(cadgeomdata *cd, const char *file, GLfloat block_shininess) {
   }
   cd->version = 1;
   rewind(stream);
-  while(!feof(stream)) {
+  while(!feof(stream)){
     if(fgets(buffer, 255, stream) == NULL) break;
     if(fgets(buffer, 255, stream) == NULL) break;
     nquads++;
@@ -354,7 +354,7 @@ int ReadCADGeom(cadgeomdata *cd, const char *file, GLfloat block_shininess) {
   lastcolor[0] = -1.0;
   lastcolor[1] = -1.0;
   lastcolor[2] = -1.0;
-  while(!feof(stream)) {
+  while(!feof(stream)){
     char obstlabel[255];
     float *xyzpoints;
     float *normal;

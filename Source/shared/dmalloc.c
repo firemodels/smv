@@ -62,7 +62,7 @@ int MemoryLoad(void){
   long value;
   char unit[32];
 
-  while(fscanf(fp, "%63s %ld %31s\n", label, &value, unit) == 3) {
+  while(fscanf(fp, "%63s %ld %31s\n", label, &value, unit) == 3){
     if(strcmp(label, "MemTotal:") == 0){
       memTotal = value;
     }
