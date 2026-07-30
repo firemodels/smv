@@ -71,7 +71,7 @@ int GetPartColor(float **color_handle, part5data*datacopy, int show_default, int
 partpropdata *GetPartPropS(char *label){
   int i;
 
-  for(i = 0;i < npart5prop;i++){
+  for(i = 0; i < npart5prop; i++){
     partpropdata *propi;
 
     propi = part5propinfo + i;
@@ -230,7 +230,7 @@ void DrawPart(const partdata *parti, int mode){
   glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
   if(part5show == 1){
     if(streak5show == 0 || (streak5show == 1 && showstreakhead == 1)){
-      for(i = 0;i < parti->nclasses;i++){
+      for(i = 0; i < parti->nclasses; i++){
         float *xpos, *ypos, *zpos;
         unsigned char *vis, *color;
         partclassdata *partclassi;
@@ -354,7 +354,7 @@ void DrawPart(const partdata *parti, int mode){
             // *** draw particles using smokeview object
 
             if(datacopy->partclassbase->vis_type == PART_SMV_DEVICE){
-              for(j = 0;j < datacopy->npoints_file;j+=partdrawskip){
+              for(j = 0; j < datacopy->npoints_file; j+=partdrawskip){
                 float *colorptr;
 
                 if(vis[j] != 1)continue;
@@ -413,7 +413,7 @@ void DrawPart(const partdata *parti, int mode){
               glBegin(GL_LINES);
               if(show_default == 1){
                 glColor4fv(datacopy->partclassbase->rgb);
-                for(j = 0;j < datacopy->npoints_file;j+=partdrawskip){
+                for(j = 0; j < datacopy->npoints_file; j+=partdrawskip){
                   if(vis[j] == 1){
                     if(flag == 1){
                       dx = dxv[j];
@@ -427,7 +427,7 @@ void DrawPart(const partdata *parti, int mode){
               }
               else{
                 color = datacopy->irvals + itype*datacopy->npoints_file;
-                for(j = 0;j < datacopy->npoints_file;j+=partdrawskip){
+                for(j = 0; j < datacopy->npoints_file; j+=partdrawskip){
                   if(vis[j] == 1){
                     glColor4fv(rgb_full[color[j]]);
                     if(flag == 1){
@@ -447,7 +447,7 @@ void DrawPart(const partdata *parti, int mode){
             glBegin(GL_POINTS);
             if(show_default == 1){
               glColor4fv(datacopy->partclassbase->rgb);
-              for(j = 0;j < datacopy->npoints_file;j+=partdrawskip){
+              for(j = 0; j < datacopy->npoints_file; j+=partdrawskip){
                 float zoffset;
                 int loc;
 
@@ -457,7 +457,7 @@ void DrawPart(const partdata *parti, int mode){
             }
             else{
               color = datacopy->irvals + itype*datacopy->npoints_file;
-              for(j = 0;j < datacopy->npoints_file;j+=partdrawskip){
+              for(j = 0; j < datacopy->npoints_file; j+=partdrawskip){
                 if(vis[j] == 1){
                   glColor4fv(rgb_full[color[j]]);
                   glVertex3f(xpos[j], ypos[j], zpos[j]);
@@ -477,7 +477,7 @@ void DrawPart(const partdata *parti, int mode){
   datacopy = parti->data5 + nclasses*ipframe;
 
   if(streak5show == 1){
-    for(i = 0;i < parti->nclasses;i++){
+    for(i = 0; i < parti->nclasses; i++){
       float *xpos, *ypos, *zpos;
       unsigned char *vis;
       int k;
@@ -519,14 +519,14 @@ void DrawPart(const partdata *parti, int mode){
         glColor4fv(colorptr);
 
         glLineWidth(streaklinewidth);
-        for(j = 0;j < datacopy->npoints_file;j+=partdrawskip){
+        for(j = 0; j < datacopy->npoints_file; j+=partdrawskip){
           int tagval;
 
           tagval = datacopy->tags[j];
           if(vis[j] == 0)continue;
           glBegin(GL_LINE_STRIP);
           glVertex3f(xpos[j], ypos[j], zpos[j]);
-          for(k = 1;k < streak5step;k++){
+          for(k = 1; k < streak5step; k++){
             int jj;
             float *xxpos, *yypos, *zzpos;
 
@@ -548,7 +548,7 @@ void DrawPart(const partdata *parti, int mode){
 
         // draw the streak line
 
-        for(j = 0;j < datacopy->npoints_file;j+=partdrawskip){
+        for(j = 0; j < datacopy->npoints_file; j+=partdrawskip){
           int tagval;
 
           tagval = datacopy->tags[j];
@@ -559,7 +559,7 @@ void DrawPart(const partdata *parti, int mode){
           glBegin(GL_LINE_STRIP);
           glColor4fv(colorptr);
           glVertex3f(xpos[j], ypos[j], zpos[j]);
-          for(k = 1;k < streak5step;k++){
+          for(k = 1; k < streak5step; k++){
             int jj;
             float *xxpos, *yypos, *zzpos;
 
@@ -592,7 +592,7 @@ void DrawPartFrame(int mode){
 
   if(use_tload_begin==1&&GetTime()<global_scase.tload_begin)return;
   if(  use_tload_end==1&&GetTime()>global_scase.tload_end)return;
-  for(i=0;i<global_scase.npartinfo;i++){
+  for(i=0; i<global_scase.npartinfo; i++){
     partdata *parti;
     meshdata *meshi;
 
@@ -628,7 +628,7 @@ void FreeAllPart5Data(partdata * parti){
 
   if(parti->data5==NULL)return;
   datacopy_local = parti->data5;
-  for(i=0;i<parti->ntimes*parti->nclasses;i++){
+  for(i=0; i<parti->ntimes*parti->nclasses; i++){
     FreePart5Data(datacopy_local);
     datacopy_local++;
   }
@@ -921,7 +921,7 @@ LINT GetPartHeaderOffset(partdata *parti_arg){
   numtypes_temp_local[0]=0;
   numtypes_temp_local[1]=0;
   CheckMemory;
-  for(i=0;i<nclasses_local;i++){
+  for(i=0; i<nclasses_local; i++){
     int returncode;
 
     FORTREAD_m(numtypes_local, 4, 2, stream);
@@ -1130,11 +1130,11 @@ void MergePartHistograms(void){
     NewMemory((void **)&full_part_histogram, npart5prop*sizeof(histogramdata));
   }
   else{
-    for(i=0;i<npart5prop;i++){
+    for(i=0; i<npart5prop; i++){
       FreeHistogram(full_part_histogram+i);
     }
   }
-  for(i=0;i<npart5prop;i++){
+  for(i=0; i<npart5prop; i++){
     InitHistogram(full_part_histogram+i, NHIST_BUCKETS, NULL, NULL);
   }
   for(i = 0; i<global_scase.npartinfo; i++){
@@ -1167,7 +1167,7 @@ void MergePartHistograms(void){
 void GeneratePartHistograms(void){
   int i;
 
-  for(i=0;i<global_scase.npartinfo;i++){
+  for(i=0; i<global_scase.npartinfo; i++){
     partdata *parti;
 
     parti = global_scase.partinfo + i;
@@ -1256,7 +1256,7 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
   numtypes_temp_local[0]=0;
   numtypes_temp_local[1]=0;
   CheckMemory;
-  for(class_index=0;class_index<nclasses_local;class_index++){
+  for(class_index=0; class_index<nclasses_local; class_index++){
     FORTREAD_m(numtypes_temp_local,4,2,stream);
     if(count_read!=2)goto wrapup;
 
@@ -1295,7 +1295,7 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
       parti->times[count2_local]=time_local;
       parti->ntimes = count2_local+1;
     }
-    for(class_index=0;class_index<nclasses_local;class_index++){
+    for(class_index=0; class_index<nclasses_local; class_index++){
       FORTREAD_m(&nparts_local,4,1,stream);
       if(count_read!=1)goto wrapup;
       numpoints_local[class_index] = nparts_local;
@@ -1324,7 +1324,7 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
         if(count_read!=nparts_local)goto wrapup;
         CheckMemory;
         if(nparts_local>0){
-          for(j=0;j<nparts_local;j++){
+          for(j=0; j<nparts_local; j++){
             sort_tags_local[2*j]=datacopy_local->tags[j];
             sort_tags_local[2*j+1]=j;
           }
@@ -1398,7 +1398,7 @@ wrapup:
 void PrintPartProp(void){
   int i;
 
-  for(i=0;i<npart5prop;i++){
+  for(i=0; i<npart5prop; i++){
     partpropdata *propi;
 
     propi = part5propinfo + i;
@@ -1420,7 +1420,7 @@ void PrintPartProp(void){
 int GetPartPropIndexS(char *shortlabel){
   int i;
 
-  for(i=0;i<npart5prop;i++){
+  for(i=0; i<npart5prop; i++){
     partpropdata *propi;
 
     propi = part5propinfo + i;
@@ -1447,7 +1447,7 @@ int GetPartPropIndex(int class_i, int class_i_j){
   labelj = labels+class_i_j;
 
   label = labelj->longlabel;
-  for(i=0;i<npart5prop;i++){
+  for(i=0; i<npart5prop; i++){
     partpropdata *propi;
 
     propi = part5propinfo + i;
@@ -1462,7 +1462,7 @@ partpropdata *GetPartProp(char *label){
   int i;
 
   if(part5propinfo == NULL)return NULL;
-  for(i=0;i<npart5prop;i++){
+  for(i=0; i<npart5prop; i++){
     partpropdata *propi;
 
     propi = part5propinfo + i;
@@ -1493,7 +1493,7 @@ void InitPartProp(void){
 
   // 1.  count max number of distinct variables
 
-  for(i=0;i<global_scase.npartclassinfo;i++){
+  for(i=0; i<global_scase.npartclassinfo; i++){
     partclassdata *partclassi;
 
     partclassi = global_scase.partclassinfo + i;
@@ -1506,17 +1506,17 @@ void InitPartProp(void){
     NewMemory((void **)&part5propinfo,npart5prop*sizeof(partpropdata));
     npart5prop=0;
 
-    for(i=0;i<global_scase.npartclassinfo;i++){
+    for(i=0; i<global_scase.npartclassinfo; i++){
       partclassdata *partclassi;
 
       partclassi = global_scase.partclassinfo + i;
-      for(j=1;j<partclassi->ntypes;j++){ // skip over first type which is hidden
+      for(j=1; j<partclassi->ntypes; j++){ // skip over first type which is hidden
         flowlabels *flowlabel;
         int define_it;
 
         define_it = 1;
         flowlabel = partclassi->labels + j;
-        for(k=0;k<npart5prop;k++){
+        for(k=0; k<npart5prop; k++){
           partpropdata *propi;
           char *proplabel;
 
@@ -1558,7 +1558,7 @@ void InitPartProp(void){
 
     }
   }
-  for(i=0;i<npart5prop;i++){
+  for(i=0; i<npart5prop; i++){
     partpropdata *propi;
     int ii;
 
@@ -1570,17 +1570,17 @@ void InitPartProp(void){
     NewMemory((void **)&propi->class_types,global_scase.npartclassinfo*sizeof(unsigned int));
     NewMemory((void **)&propi->class_present,global_scase.npartclassinfo*sizeof(unsigned char));
     NewMemory((void **)&propi->class_vis,global_scase.npartclassinfo*sizeof(unsigned char));
-    for(ii=0;ii<global_scase.npartclassinfo;ii++){
+    for(ii=0; ii<global_scase.npartclassinfo; ii++){
       propi->class_vis[ii]=1;
       propi->class_present[ii]=0;
       propi->class_types[ii]=0;
     }
   }
-  for(i=0;i<global_scase.npartclassinfo;i++){
+  for(i=0; i<global_scase.npartclassinfo; i++){
     partclassdata *partclassi;
 
     partclassi = global_scase.partclassinfo + i;
-    for(j=1;j<partclassi->ntypes;j++){
+    for(j=1; j<partclassi->ntypes; j++){
       flowlabels *flowlabel;
       partpropdata *classprop;
 
@@ -1643,7 +1643,7 @@ int GetNPartFrames(partdata *parti){
     if(fgets(buffer,255,stream)==NULL)break;
     sscanf(buffer,"%f",&time_local);
     exitloop=0;
-    for(i=0;i<parti->nclasses;i++){
+    for(i=0; i<parti->nclasses; i++){
       if(fgets(buffer,255,stream)==NULL){
         exitloop=1;
         break;
@@ -1663,7 +1663,7 @@ int GetMinPartFrames(int flag){
   int min_frames=-1;
 
   INIT_PRINT_TIMER(timer_nparts);
-  for(i=0;i<global_scase.npartinfo;i++){
+  for(i=0; i<global_scase.npartinfo; i++){
     partdata *parti;
     int nframes;
 
@@ -1722,7 +1722,7 @@ int GetPartHeader(partdata * parti, int *nf_all, int option_arg, int print_optio
     if(fgets(buffer_local,255,stream)==NULL)break;
     sscanf(buffer_local,"%f",&time_local);
     exitloop_local =0;
-    for(i=0;i<parti->nclasses;i++){
+    for(i=0; i<parti->nclasses; i++){
       if(fgets(buffer_local,255,stream)==NULL||(global_scase.npartinfo>1&&npartframes_max!=-1&&nframes_all_local+1>npartframes_max)){
         exitloop_local =1;
         break;
@@ -1752,7 +1752,7 @@ int GetPartHeader(partdata * parti, int *nf_all, int option_arg, int print_optio
 
   // free memory for x, y, z frame data
 
-  for(i=0;i<parti->nclasses;i++){
+  for(i=0; i<parti->nclasses; i++){
     partclassdata *partclassi;
 
     partclassi = parti->partclassptr[i];
@@ -1771,7 +1771,7 @@ int GetPartHeader(partdata * parti, int *nf_all, int option_arg, int print_optio
     fail_local =0;
     count_local =-1;
     datacopy_local =parti->data5;
-    for(i=0;i<nframes_all_local;i++){
+    for(i=0; i<nframes_all_local; i++){
       int j;
       char format[128];
       int skipit;
@@ -1795,7 +1795,7 @@ int GetPartHeader(partdata * parti, int *nf_all, int option_arg, int print_optio
       if(use_tload_begin==1 && time_local<global_scase.tload_begin-TEPS)skipit = 1;
       if(use_tload_end==1   && time_local>global_scase.tload_end+TEPS)break;
       if(skipit == 1){
-        for(j=0;j<parti->nclasses;j++){
+        for(j=0; j<parti->nclasses; j++){
           if(fgets(buffer_local,255,stream)==NULL){
             fail_local =1;
           }
@@ -1803,7 +1803,7 @@ int GetPartHeader(partdata * parti, int *nf_all, int option_arg, int print_optio
         if(fail_local==1)break;
         continue;
       }
-      for(j=0;j<parti->nclasses;j++){
+      for(j=0; j<parti->nclasses; j++){
         int npoints_local;
         partclassdata *partclassj;
 
@@ -1834,10 +1834,10 @@ int GetPartHeader(partdata * parti, int *nf_all, int option_arg, int print_optio
     nall_points_types_local = 0;
     nall_points_local = 0;
     datacopy_local =parti->data5;
-    for(i=0;i<parti->ntimes;i++){
+    for(i=0; i<parti->ntimes; i++){
       int j;
 
-      for(j=0;j<parti->nclasses;j++){
+      for(j=0; j<parti->nclasses; j++){
         int npoints_local, ntypes_local;
 
         npoints_local            = datacopy_local->npoints_file;
@@ -1859,10 +1859,10 @@ int GetPartHeader(partdata * parti, int *nf_all, int option_arg, int print_optio
     datacopy_local =parti->data5;
     nall_points_types_local = 0;
     nall_points_local = 0;
-    for(i=0;i<parti->ntimes;i++){
+    for(i=0; i<parti->ntimes; i++){
       int j;
 
-      for(j=0;j<parti->nclasses;j++){
+      for(j=0; j<parti->nclasses; j++){
         int npoints_local, ntypes_local;
 
         datacopy_local->irvals    = parti->irvals    +     nall_points_types_local;
@@ -2111,12 +2111,12 @@ void UpdatePartMenuLabels(void){
   if(global_scase.npartinfo>0){
     FREEMEMORY(partorderindex);
     NewMemory((void **)&partorderindex,sizeof(int)*global_scase.npartinfo);
-    for(i=0;i<global_scase.npartinfo;i++){
+    for(i=0; i<global_scase.npartinfo; i++){
       partorderindex[i]=i;
     }
     qsort( (int *)partorderindex, (size_t)global_scase.npartinfo, sizeof(int), ComparePart);
 
-    for(i=0;i<global_scase.npartinfo;i++){
+    for(i=0; i<global_scase.npartinfo; i++){
       parti = global_scase.partinfo + i;
       STRCPY(parti->menulabel,"");
       STRCAT(parti->menulabel, "particles");

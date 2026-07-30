@@ -124,7 +124,7 @@ int GetHVACDuctState(hvacductdata *ducti){
   current_time = GetTime();
 
   if(current_time < times[0])return HVAC_STATE_INACTIVE;
-  for(i = 0;i < n - 1;i++){
+  for(i = 0; i < n - 1; i++){
     if(current_time >= times[i] && current_time < times[i + 1])return states[i];
   }
   return states[n - 1];
@@ -246,7 +246,7 @@ void DrawHVACFan(hvacductdata *ducti, float *xyz, float size, float diam, int st
     FREEMEMORY(hvac_circ_y);
     NewMemory((void **)&hvac_circ_x,2*HVAC_NCIRC*sizeof(float));
     NewMemory((void **)&hvac_circ_y,2*HVAC_NCIRC*sizeof(float));
-    for(i=0;i<HVAC_NCIRC;i++){
+    for(i=0; i<HVAC_NCIRC; i++){
       float arg;
       float r, xx, yy;
 
@@ -282,7 +282,7 @@ void DrawHVACFan(hvacductdata *ducti, float *xyz, float size, float diam, int st
   glScalef(size,size,size);
   glColor3fv(foregroundcolor);
   glBegin(GL_LINES);
-  for(i=0;i<2*HVAC_NCIRC-1;i++){
+  for(i=0; i<2*HVAC_NCIRC-1; i++){
     float x, y, xp1, yp1;
 
     if(i == HVAC_NCIRC - 1)continue;
@@ -403,7 +403,7 @@ void DrawHVAC(hvacdata *hvaci){
       nxyzs      = ducti->nxyz_reg_cell-1;
     }
     if(global_times != NULL && global_scase.hvaccoll.hvacductvar_index >= 0){
-      for(j = 0;j < nxyzs;j++){
+      for(j = 0; j < nxyzs; j++){
         float *xyz, *this_color;
         int cell, index;
         unsigned char ival;
@@ -424,7 +424,7 @@ void DrawHVAC(hvacdata *hvaci){
       }
     }
     else{
-      for(j = 0;j < nxyzs;j++){
+      for(j = 0; j < nxyzs; j++){
         float *xyz;
 
         xyz = xyzs + 3 * j;
@@ -456,7 +456,7 @@ void DrawHVAC(hvacdata *hvaci){
         xyzs       = ducti->xyz_reg_cell;
         nxyzs      = ducti->nxyz_reg_cell-1;
       }
-      for(j = 1;j < nxyzs-1;j++){
+      for(j = 1; j < nxyzs-1; j++){
         float *xyz;
 
         xyz = xyzs + 3 * j;

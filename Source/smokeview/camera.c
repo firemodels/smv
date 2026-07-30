@@ -446,7 +446,7 @@ cameradata *InsertCamera(cameradata *cb,cameradata *source, char *name){
   cameradata *cam=NULL,*ca;
   int insert = 1;
 
-  for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
+  for(ca=camera_list_first.next; ca->next!=NULL; ca=ca->next){
     if(strcmp(ca->name, name) == 0){
       cam = ca;
       insert = 0;
@@ -547,7 +547,7 @@ void DeleteCamera(cameradata *cam){
 cameradata *GetCamera(char *name){
   cameradata *ca;
 
-  for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
+  for(ca=camera_list_first.next; ca->next!=NULL; ca=ca->next){
     if(strcmp(ca->name,name)==0){
       return ca;
     }
@@ -560,7 +560,7 @@ cameradata *GetCamera(char *name){
 char *GetCameraLabel(int index){
   cameradata *ca;
 
-  for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
+  for(ca=camera_list_first.next; ca->next!=NULL; ca=ca->next){
     if(ca->view_id==index){
       return ca->name;
     }

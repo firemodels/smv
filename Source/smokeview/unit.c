@@ -14,7 +14,7 @@
 f_units *GetUnitClass(char *unit){
   int i;
 
-  for(i=0;i<nunitclasses;i++){
+  for(i=0; i<nunitclasses; i++){
     f_units *unitclass;
 
     unitclass = unitclasses + i;
@@ -46,13 +46,13 @@ void SetUnitVis(void){
   int i;
   int j;
 
-  for(i=0;i<nunitclasses;i++){
+  for(i=0; i<nunitclasses; i++){
     f_units *uci;
 
     uci = unitclasses + i;
     uci->visible=0;
 
-    for(j=0;j<global_scase.slicecoll.nsliceinfo;j++){
+    for(j=0; j<global_scase.slicecoll.nsliceinfo; j++){
       slicedata *slicej;
 
       slicej = global_scase.slicecoll.sliceinfo + j;
@@ -63,7 +63,7 @@ void SetUnitVis(void){
     }
     if(uci->visible==1)continue;
 
-    for(j=0;j<global_scase.npatchinfo;j++){
+    for(j=0; j<global_scase.npatchinfo; j++){
       patchdata *patchj;
 
       patchj = global_scase.patchinfo + j;
@@ -74,12 +74,12 @@ void SetUnitVis(void){
     }
     if(uci->visible==1)continue;
 
-    for(j=0;j<global_scase.nplot3dinfo;j++){
+    for(j=0; j<global_scase.nplot3dinfo; j++){
       plot3ddata *plot3dj;
       int n;
 
       plot3dj = global_scase.plot3dinfo + j;
-      for(n=0;n<5;n++){
+      for(n=0; n<5; n++){
         if(IsUnitPresent(plot3dj->label[n].unit,uci->units->unit)==1){
           uci->visible=1;
           break;
@@ -110,12 +110,12 @@ void UpdateUnitDefs(void){
   int i, j;
 
   if(global_scase.smokediff==0)return;
-  for(i=0;i<nunitclasses;i++){
+  for(i=0; i<nunitclasses; i++){
     float valmin, valmax, diff_maxmin;
     int firstslice, firstpatch, firstplot3d, diff_index;
 
     firstpatch=1;
-    for(j=0;j<global_scase.npatchinfo;j++){
+    for(j=0; j<global_scase.npatchinfo; j++){
       patchdata *patchj;
 
       patchj = global_scase.patchinfo + j;
@@ -133,7 +133,7 @@ void UpdateUnitDefs(void){
     }
 
     firstslice=1;
-    for(j=0;j<global_scase.slicecoll.nsliceinfo;j++){
+    for(j=0; j<global_scase.slicecoll.nsliceinfo; j++){
       slicedata *slicej;
 
       slicej = global_scase.slicecoll.sliceinfo + j;
@@ -151,13 +151,13 @@ void UpdateUnitDefs(void){
     }
 
     firstplot3d=1;
-    for(j=0;j<global_scase.nplot3dinfo;j++){
+    for(j=0; j<global_scase.nplot3dinfo; j++){
       plot3ddata *plot3dj;
       int n;
 
       plot3dj = global_scase.plot3dinfo + j;
       if(plot3dj->loaded==0||plot3dj->display==0)continue;
-      for(n=0;n<5;n++){
+      for(n=0; n<5; n++){
         if(UnitTypeMatch(plot3dj->label[n].unit,unitclasses+i)!=0)continue;
         if(firstplot3d==1){
           firstplot3d=0;
@@ -199,7 +199,7 @@ float GetUnitVal(const char *unittype, float oldval, int ndecimals){
 #define NDECIMALS 6
   ndecimals = CLAMP(ndecimals, 0, NDECIMALS);
 
-  for(i=0;i<nunitclasses;i++){
+  for(i=0; i<nunitclasses; i++){
     if(STRCMP(unitclasses[i].unitclass,unittype)==0){
       int unit_index;
       float *scale;
@@ -222,7 +222,7 @@ void GetUnitInfo(const char *unitlabel, int *unitclass, int *unittype){
 
   *unitclass=-1;
   *unittype=-1;
-  for(i=0;i<nunitclasses;i++){
+  for(i=0; i<nunitclasses; i++){
     if(strlen(unitclasses[i].units->unit)!=strlen(unitlabel))continue;
     if(STRCMP(unitclasses[i].units->unit,unitlabel)==0){
       *unitclass=i;
@@ -242,7 +242,7 @@ void InitUnits(void){
   nunitclasses_default=6;
   NewMemory((void **)&unitclasses_default,nunitclasses_default*sizeof(f_units));
 
-  for(i=0;i<nunitclasses_default;i++){
+  for(i=0; i<nunitclasses_default; i++){
     unitclasses_default[i].submenuid=0;
   }
   ut=unitclasses_default;

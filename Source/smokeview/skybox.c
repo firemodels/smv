@@ -65,11 +65,11 @@ void FreeSkybox(void){
   int i;
   skyboxdata *skyi;
 
-  for(i=0;i<nskyboxinfo;i++){
+  for(i=0; i<nskyboxinfo; i++){
     int j;
 
     skyi = skyboxinfo + i;
-    for(j=0;j<6;j++){
+    for(j=0; j<6; j++){
       FREEMEMORY(skyi->face[j].file);
     }
   }

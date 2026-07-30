@@ -52,17 +52,17 @@ void DrawSphereArray(void){
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
   glTranslatef(-global_scase.xbar0,-global_scase.ybar0,-global_scase.zbar0);
-  for(i = 0;i < sphere_nxyz[0];i++){
+  for(i = 0; i < sphere_nxyz[0]; i++){
     int j;
     float x;
 
     x = sphere_xyz0[0] + i * sphere_dxyz[0];
-    for(j = 0;j < sphere_nxyz[1];j++){
+    for(j = 0; j < sphere_nxyz[1]; j++){
       int k;
       float y;
 
       y = sphere_xyz0[1] + j * sphere_dxyz[1];
-      for(k = 0;k < sphere_nxyz[2];k++){
+      for(k = 0; k < sphere_nxyz[2]; k++){
         float z;
 
         z = sphere_xyz0[2] + k * sphere_dxyz[2];
@@ -86,7 +86,7 @@ void GetSmokeSensors(void){
   height = screenHeight;
 
   doit=0;
-  for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+  for(i=0; i<global_scase.devicecoll.ndeviceinfo; i++){
     devicedata *devicei;
     char *label;
 
@@ -108,7 +108,7 @@ void GetSmokeSensors(void){
   glPixelStorei(GL_PACK_ALIGNMENT, 1);
   glReadPixels(0,0,width,height, GL_RGB, GL_UNSIGNED_BYTE, rgbimage);
 
-  for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+  for(i=0; i<global_scase.devicecoll.ndeviceinfo; i++){
     devicedata *devicei;
     char *label;
     int row, col;
@@ -358,7 +358,7 @@ void GetDeviceScreenCoords(void){
   int doit;
 
   doit=0;
-  for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+  for(i=0; i<global_scase.devicecoll.ndeviceinfo; i++){
     devicedata *devicei;
     char *label;
 
@@ -374,7 +374,7 @@ void GetDeviceScreenCoords(void){
   glGetDoublev(GL_MODELVIEW_MATRIX,mv_setup);
   glGetDoublev(GL_PROJECTION_MATRIX,projection_setup);
   glGetIntegerv(GL_VIEWPORT, viewport_setup);
-  for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+  for(i=0; i<global_scase.devicecoll.ndeviceinfo; i++){
     float *xyz;
     double d_ijk[3];
     devicedata *devicei;
@@ -414,7 +414,7 @@ void DrawDevicesVal(void){
   if(active_smokesensors==1&&show_smokesensors!=SMOKESENSORS_HIDDEN){
     GetDeviceScreenCoords();
   }
-  for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+  for(i=0; i<global_scase.devicecoll.ndeviceinfo; i++){
     devicei = global_scase.devicecoll.deviceinfo + i;
 
     if(devicei->object->visible==0||devicei->show == 0)continue;
@@ -691,7 +691,7 @@ void DrawWindRose(windrosedata *wr,int orientation){
 
   dtheta = DEG2RAD*360.0/(float)hist->ntheta;
   glBegin(GL_TRIANGLES);
-  for(itheta = 0;itheta<hist->ntheta;itheta++){
+  for(itheta = 0; itheta<hist->ntheta; itheta++){
     int ir;
     float theta, theta2;
     float rval, rval2;
@@ -699,7 +699,7 @@ void DrawWindRose(windrosedata *wr,int orientation){
     theta  = ((float)itheta-0.5)*dtheta;
     theta2 = ((float)itheta+0.5)*dtheta;
     rval = 0.0;
-    for(ir = 0;ir<hist->nr;ir++){
+    for(ir = 0; ir<hist->nr; ir++){
       int color_index;
       float drval;
       int k, nk;
@@ -720,7 +720,7 @@ void DrawWindRose(windrosedata *wr,int orientation){
       angle_offset = 0.0;
       if(windstate_windrose == WINDROSE_HEADING)angle_offset = PI;
 
-      for(k = 0;k<nk;k++){
+      for(k = 0; k<nk; k++){
         float angle1, angle2;
         float x11, x12, x21, x22;
         float y11, y12, y21, y22;
@@ -771,7 +771,7 @@ void DrawWindRose(windrosedata *wr,int orientation){
     if(orientation == WINDROSE_YZ)glRotatef(90.0, 0.0, 1.0, 0.0);
     glTranslatef(0.0,0.0,0.001);
     glLineWidth(2.0);
-    for(icirc = 1;icirc<100;icirc++){
+    for(icirc = 1; icirc<100; icirc++){
       float scalei,scalei_normalized,diameter;
       char scale_percen[256];
 
@@ -787,7 +787,7 @@ void DrawWindRose(windrosedata *wr,int orientation){
       }
     }
     glTranslatef(0.0, 0.0, -0.002);
-    for(icirc = 1;icirc<100;icirc++){
+    for(icirc = 1; icirc<100; icirc++){
       float scalei, scalei_normalized, diameter;
 
       scalei=(float)icirc*(float)scale_increment_windrose/100.0;
@@ -808,7 +808,7 @@ void DrawWindRosesDevices(void){
   int i;
 
   if(windrose_xy_vis==0&&windrose_xz_vis==0&&windrose_yz_vis==0)return;
-  for(i = 0;i<global_scase.devicecoll.nvdeviceinfo;i++){
+  for(i = 0; i<global_scase.devicecoll.nvdeviceinfo; i++){
     vdevicedata *vdevi;
     windrosedata *wr;
     int itime;
@@ -848,7 +848,7 @@ void DrawTargetNorm(void){
     glBegin(GL_LINES);
     glColor4fv(sensornormcolor);
 
-    for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+    for(i=0; i<global_scase.devicecoll.ndeviceinfo; i++){
       float xyz2[3];
 
       devicei = global_scase.devicecoll.deviceinfo + i;
@@ -884,7 +884,7 @@ void DrawArcDisk(float angle, float diameter, float height, unsigned char *rgbco
     glBegin(GL_QUADS);
     if(rgbcolor != NULL)glColor3ubv(rgbcolor);
 
-    for(i = 0;i < iarc;i++){
+    for(i = 0; i < iarc; i++){
       glNormal3f(cos_long[i], sin_long[i], 0.0);
       glVertex3f(diameter*cos_long[i] / 2.0, diameter*sin_long[i] / 2.0, 0.0); // 1
 
@@ -915,13 +915,13 @@ void DrawArcDisk(float angle, float diameter, float height, unsigned char *rgbco
     if(rgbcolor != NULL)glColor3ubv(rgbcolor);
 
     glNormal3f(0.0, 0.0, -1.0);
-    for(i = 0;i < iarc;i++){
+    for(i = 0; i < iarc; i++){
       glVertex3f(diameter*cos_long[i] / 2.0, diameter*sin_long[i] / 2.0, 0.0);
       glVertex3f(0.0, 0.0, 0.0);
       glVertex3f(diameter*cos_long[i + 1] / 2.0, diameter*sin_long[i + 1] / 2.0, 0.0);
     }
     glNormal3f(0.0, 0.0, 1.0);
-    for(i = 0;i < iarc;i++){
+    for(i = 0; i < iarc; i++){
       glVertex3f(diameter*cos_long[i] / 2.0, diameter*sin_long[i] / 2.0, height);
       glVertex3f(diameter*cos_long[i + 1] / 2.0, diameter*sin_long[i + 1] / 2.0, height);
       glVertex3f(0.0, 0.0, height);
@@ -932,7 +932,7 @@ void DrawArcDisk(float angle, float diameter, float height, unsigned char *rgbco
     glBegin(GL_LINES);
     if(rgbcolor != NULL)glColor3ubv(rgbcolor);
 
-    for(i = 0;i < iarc;i++){
+    for(i = 0; i < iarc; i++){
       glVertex3f(diameter*cos_long[i] / 2.0, diameter*sin_long[i] / 2.0, 0.0); // 1
       glVertex3f(diameter*cos_long[i + 1] / 2.0, diameter*sin_long[i + 1] / 2.0, 0.0); // 2
 
@@ -974,7 +974,7 @@ void DrawArcDisk(float angle, float diameter, float height, unsigned char *rgbco
     glBegin(GL_LINES);
     if(rgbcolor != NULL)glColor3ubv(rgbcolor);
 
-    for(i = 0;i < iarc;i++){
+    for(i = 0; i < iarc; i++){
       glVertex3f(diameter*cos_long[i] / 2.0, diameter*sin_long[i] / 2.0, 0.0);
       glVertex3f(0.0, 0.0, 0.0);
 
@@ -984,7 +984,7 @@ void DrawArcDisk(float angle, float diameter, float height, unsigned char *rgbco
       glVertex3f(diameter*cos_long[i + 1] / 2.0, diameter*sin_long[i + 1] / 2.0, 0.0);
       glVertex3f(diameter*cos_long[i] / 2.0, diameter*sin_long[i] / 2.0, 0.0);
     }
-    for(i = 0;i < iarc;i++){
+    for(i = 0; i < iarc; i++){
       glVertex3f(diameter*cos_long[i] / 2.0, diameter*sin_long[i] / 2.0, height);
       glVertex3f(diameter*cos_long[i + 1] / 2.0, diameter*sin_long[i + 1] / 2.0, height);
 
@@ -1014,7 +1014,7 @@ void DrawArc(float angle, float diameter, unsigned char *rgbcolor){
   if(iarc > CIRCLE_SEGS)iarc = CIRCLE_SEGS;
   glBegin(GL_LINE_LOOP);
   if(rgbcolor != NULL)glColor3ubv(rgbcolor);
-  for(i = 0;i < iarc;i++){
+  for(i = 0; i < iarc; i++){
     glVertex3f(diameter*xcirc[i] / 2.0, diameter*ycirc[i] / 2.0, 0.0);
   }
   glEnd();
@@ -1036,7 +1036,7 @@ void DrawCDisk(float diameter, float height, unsigned char *rgbcolor){
     glBegin(GL_QUADS);
     if(rgbcolor != NULL)glColor3ubv(rgbcolor);
 
-    for(i = 0;i < ncirc;i++){
+    for(i = 0; i < ncirc; i++){
       glNormal3f(xcirc[i], ycirc[i], 0.0);
       glVertex3f(diameter*xcirc[i] / 2.0, diameter*ycirc[i] / 2.0, -height / 2.00); // 1
 
@@ -1055,7 +1055,7 @@ void DrawCDisk(float diameter, float height, unsigned char *rgbcolor){
     glBegin(GL_LINES);
     if(rgbcolor != NULL)glColor3ubv(rgbcolor);
 
-    for(i = 0;i < ncirc;i++){
+    for(i = 0; i < ncirc; i++){
       glVertex3f(diameter*xcirc[i] / 2.0, diameter*ycirc[i] / 2.0, -height / 2.00); // 1
       glVertex3f(diameter*xcirc[i + 1] / 2.0, diameter*ycirc[i + 1] / 2.0, -height / 2.0); // 2
 
@@ -1076,13 +1076,13 @@ void DrawCDisk(float diameter, float height, unsigned char *rgbcolor){
     if(rgbcolor != NULL)glColor3ubv(rgbcolor);
 
     glNormal3f(0.0, 0.0, -1.0);
-    for(i = 0;i < ncirc;i++){
+    for(i = 0; i < ncirc; i++){
       glVertex3f(diameter*xcirc[i] / 2.0, diameter*ycirc[i] / 2.0, -height / 2.0);
       glVertex3f(0.0, 0.0, -height / 2.0);
       glVertex3f(diameter*xcirc[i + 1] / 2.0, diameter*ycirc[i + 1] / 2.0, -height / 2.0);
     }
     glNormal3f(0.0, 0.0, 1.0);
-    for(i = 0;i < ncirc;i++){
+    for(i = 0; i < ncirc; i++){
       glVertex3f(diameter*xcirc[i] / 2.0, diameter*ycirc[i] / 2.0, height / 2.0);
       glVertex3f(diameter*xcirc[i + 1] / 2.0, diameter*ycirc[i + 1] / 2.0, height / 2.0);
       glVertex3f(0.0, 0.0, height / 2.0);
@@ -1093,7 +1093,7 @@ void DrawCDisk(float diameter, float height, unsigned char *rgbcolor){
     glBegin(GL_LINES);
     if(rgbcolor != NULL)glColor3ubv(rgbcolor);
 
-    for(i = 0;i < ncirc;i++){
+    for(i = 0; i < ncirc; i++){
       glVertex3f(diameter*xcirc[i] / 2.0, diameter*ycirc[i] / 2.0, -height / 2.0);
       glVertex3f(0.0, 0.0, -height / 2.0);
 
@@ -1103,7 +1103,7 @@ void DrawCDisk(float diameter, float height, unsigned char *rgbcolor){
       glVertex3f(diameter*xcirc[i + 1] / 2.0, diameter*ycirc[i + 1] / 2.0, -height / 2.0);
       glVertex3f(diameter*xcirc[i] / 2.0, diameter*ycirc[i] / 2.0, -height / 2.0);
     }
-    for(i = 0;i < ncirc;i++){
+    for(i = 0; i < ncirc; i++){
       glVertex3f(diameter*xcirc[i] / 2.0, diameter*ycirc[i] / 2.0, height / 2.0);
       glVertex3f(diameter*xcirc[i + 1] / 2.0, diameter*ycirc[i + 1] / 2.0, height / 2.0);
 
@@ -1142,13 +1142,13 @@ void DrawTSphere(int texture_index,float diameter, unsigned char *rgbcolor){
     if(cos_lat==NULL)InitSphere(NLAT,NLONG);
     glBegin(GL_QUADS);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-    for(j=0;j<NLAT;j++){
+    for(j=0; j<NLAT; j++){
       float ti,tip1;
       float tj,tjp1;
 
       tj = 1.0-(float)j/NLAT;
       tjp1 = 1.0-(float)(j+1)/NLAT;
-      for(i=0;i<NLONG;i++){
+      for(i=0; i<NLONG; i++){
         float x, y, z;
 
         ti = 1.0-(float)i/(float)NLONG;
@@ -1219,7 +1219,7 @@ void DrawSphereSeg(float anglemin, float anglemax, float rmin, float rmax){
   ai = anglemin;
   cosi = cos(ai);
   sini = sin(ai);
-  for(j=0;j<NLONG;j++){
+  for(j=0; j<NLONG; j++){
     aj = j*danglej;
     ajp1 = (j+1)*danglej;
     cosj = cos(aj);
@@ -1241,7 +1241,7 @@ void DrawSphereSeg(float anglemin, float anglemax, float rmin, float rmax){
 
   memcpy(colori,colorin,4*sizeof(float));
   memcpy(colorip1,colorin,4*sizeof(float));
-  for(i=0;i<NLAT;i++){
+  for(i=0; i<NLAT; i++){
     ai = anglemin + i*danglei;
     aip1 = anglemin + (i+1)*danglei;
     cosi = cos(ai);
@@ -1251,7 +1251,7 @@ void DrawSphereSeg(float anglemin, float anglemax, float rmin, float rmax){
     colori[1]=0.6*(float)i/(float)NLAT;
     colorip1[1]=0.6*(float)(i+1)/(float)NLAT;
     glColor4fv(colori);
-    for(j=0;j<NLONG;j++){
+    for(j=0; j<NLONG; j++){
       aj = j*danglej;
       ajp1 = (j+1)*danglej;
       cosj = cos(aj);
@@ -1278,7 +1278,7 @@ void DrawSphereSeg(float anglemin, float anglemax, float rmin, float rmax){
 
   memcpy(colori,colorout,4*sizeof(float));
   memcpy(colorip1,colorout,4*sizeof(float));
-  for(i=0;i<NLAT;i++){
+  for(i=0; i<NLAT; i++){
     ai = anglemin + i*danglei;
     aip1 = anglemin + (i+1)*danglei;
     cosi = cos(ai);
@@ -1287,7 +1287,7 @@ void DrawSphereSeg(float anglemin, float anglemax, float rmin, float rmax){
     sinip1 = sin(aip1);
     colori[2]=0.6*(float)i/(float)NLAT;
     colorip1[2]=0.6*(float)(i+1)/(float)NLAT;
-    for(j=0;j<NLONG;j++){
+    for(j=0; j<NLONG; j++){
       aj = j*danglej;
       ajp1 = (j+1)*danglej;
       cosj = cos(aj);
@@ -1318,7 +1318,7 @@ void DrawSphereSeg(float anglemin, float anglemax, float rmin, float rmax){
   glBegin(GL_LINES);
   cosi = cos(ai);
   sini = sin(ai);
-  for(j=0;j<NLONG;j++){
+  for(j=0; j<NLONG; j++){
     aj = j*danglej;
     cosj = cos(aj);
     sinj = sin(aj);
@@ -1329,7 +1329,7 @@ void DrawSphereSeg(float anglemin, float anglemax, float rmin, float rmax){
 
   memcpy(colori,colorin,4*sizeof(float));
   memcpy(colorip1,colorin,4*sizeof(float));
-  for(i=0;i<NLAT;i++){
+  for(i=0; i<NLAT; i++){
     ai = anglemin + i*danglei;
     aip1 = anglemin + (i+1)*danglei;
     cosi = cos(ai);
@@ -1339,7 +1339,7 @@ void DrawSphereSeg(float anglemin, float anglemax, float rmin, float rmax){
     colori[1]=0.6*(float)i/(float)NLAT;
     colorip1[1]=0.6*(float)(i+1)/(float)NLAT;
     glColor4fv(colori);
-    for(j=0;j<NLONG;j++){
+    for(j=0; j<NLONG; j++){
       aj = j*danglej;
       ajp1 = (j+1)*danglej;
       cosj = cos(aj);
@@ -1362,7 +1362,7 @@ void DrawSphereSeg(float anglemin, float anglemax, float rmin, float rmax){
 
   memcpy(colori,colorout,4*sizeof(float));
   memcpy(colorip1,colorout,4*sizeof(float));
-  for(i=0;i<NLAT;i++){
+  for(i=0; i<NLAT; i++){
     ai = anglemin + i*danglei;
     aip1 = anglemin + (i+1)*danglei;
     cosi = cos(ai);
@@ -1371,7 +1371,7 @@ void DrawSphereSeg(float anglemin, float anglemax, float rmin, float rmax){
     sinip1 = sin(aip1);
     colori[2]=0.6*(float)i/(float)NLAT;
     colorip1[2]=0.6*(float)(i+1)/(float)NLAT;
-    for(j=0;j<NLONG;j++){
+    for(j=0; j<NLONG; j++){
       aj = j*danglej;
       ajp1 = (j+1)*danglej;
       cosj = cos(aj);
@@ -1407,8 +1407,8 @@ void DrawSphere(float diameter, unsigned char *rgbcolor){
   if(object_outlines==0){
     glBegin(GL_QUADS);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-    for(j=0;j<NLAT;j++){
-      for(i=0;i<NLONG;i++){
+    for(j=0; j<NLAT; j++){
+      for(i=0; i<NLONG; i++){
         float x, y, z;
 
         x = cos_long[i]*cos_lat[j];
@@ -1443,8 +1443,8 @@ void DrawSphere(float diameter, unsigned char *rgbcolor){
   else{
     glBegin(GL_LINE_LOOP);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-    for(j=0;j<NLAT;j++){
-      for(i=0;i<NLONG;i++){
+    for(j=0; j<NLAT; j++){
+      for(i=0; i<NLONG; i++){
         float x, y, z;
 
         x = cos_long[i]*cos_lat[j];
@@ -1486,8 +1486,8 @@ void DrawHSphere(float diameter, unsigned char *rgbcolor){
   if(object_outlines==0){
     glBegin(GL_QUADS);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-    for(j=NLAT/2;j<NLAT;j++){
-      for(i=0;i<NLONG;i++){
+    for(j=NLAT/2; j<NLAT; j++){
+      for(i=0; i<NLONG; i++){
         float x, y, z;
 
         x = cos_long[i]*cos_lat[j];
@@ -1520,7 +1520,7 @@ void DrawHSphere(float diameter, unsigned char *rgbcolor){
     glEnd();
     glBegin(GL_TRIANGLES);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-    for(i=0;i<NLONG;i++){
+    for(i=0; i<NLONG; i++){
       float x, y, z;
 
       x = cos_long[i+1];
@@ -1545,8 +1545,8 @@ void DrawHSphere(float diameter, unsigned char *rgbcolor){
   else{
     glBegin(GL_LINE_LOOP);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-    for(j=NLAT/2;j<NLAT;j++){
-      for(i=0;i<NLONG;i++){
+    for(j=NLAT/2; j<NLAT; j++){
+      for(i=0; i<NLONG; i++){
         float x, y, z;
 
         x = cos_long[i]*cos_lat[j];
@@ -1573,7 +1573,7 @@ void DrawHSphere(float diameter, unsigned char *rgbcolor){
     glEnd();
     glBegin(GL_LINES);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-    for(i=0;i<NLONG;i++){
+    for(i=0; i<NLONG; i++){
       float x, y, z;
 
       x = cos_long[i];
@@ -1880,7 +1880,7 @@ void DrawFilledCircle(float diameter,unsigned char *rgbcolor, circdata *circinfo
   if(object_outlines==0){
     glBegin(GL_TRIANGLES);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       int i2;
 
       i2 = (i+1)%ncirc;
@@ -1888,7 +1888,7 @@ void DrawFilledCircle(float diameter,unsigned char *rgbcolor, circdata *circinfo
       glVertex3f(0.0,0.0,0.0);
       glVertex3f(diameter*xcirc[  i2]/2.0,diameter*ycirc[  i2]/2.0,0.0);
     }
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       int i2;
 
       i2 = (i+1)%ncirc;
@@ -1901,7 +1901,7 @@ void DrawFilledCircle(float diameter,unsigned char *rgbcolor, circdata *circinfo
   else{
     glBegin(GL_LINES);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       int i2;
 
       i2 = (i+1)%ncirc;
@@ -1926,7 +1926,7 @@ void DrawCircle(float diameter,unsigned char *rgbcolor, circdata *circinfo){
 
   glBegin(GL_LINES);
   if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-  for(i=0;i<circinfo->ncirc;i++){
+  for(i=0; i<circinfo->ncirc; i++){
     glVertex3f(diameter*xcirc[  i]/2.0, diameter*ycirc[  i]/2.0,0.0);
     glVertex3f(diameter*xcirc[i+1]/2.0, diameter*ycirc[i+1]/2.0, 0.0);
   }
@@ -2295,7 +2295,7 @@ void DrawVent(float width, float height, unsigned char *rgbcolor){
     glVertex3f(-wd2+dw,hd2-dh,   0.0);
 
     glNormal3f(0.0,0.0,1.0);
-    for(i=0;i<NSLOTS;i++){
+    for(i=0; i<NSLOTS; i++){
       float yy, yy2;
 
       yy = -hd2+(2*i+FACTOR+1)*dslot;
@@ -2306,7 +2306,7 @@ void DrawVent(float width, float height, unsigned char *rgbcolor){
       glVertex3f(-wd2,yy2,0.0);
     }
     glNormal3f(0.0,0.0,-1.0);
-    for(i=0;i<NSLOTS;i++){
+    for(i=0; i<NSLOTS; i++){
       float yy, yy2;
 
       yy = -hd2+(2*i+FACTOR+1)*dslot;
@@ -2418,7 +2418,7 @@ void DrawVent(float width, float height, unsigned char *rgbcolor){
     glVertex3f(-wd2+dw,hd2-dh,   0.0);
     glVertex3f(-wd2+dw,hd2   ,0.0);
 
-    for(i=0;i<NSLOTS-1;i++){
+    for(i=0; i<NSLOTS-1; i++){
       float yy, yy2;
 
       yy = -hd2+(2*i+FACTOR+1)*dslot;
@@ -2500,7 +2500,7 @@ void DrawRing(float diam_inner, float diam_outer, float height, unsigned char *r
     glBegin(GL_QUADS);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glNormal3f(xcirc[i],ycirc[i],0.0);
       glVertex3f(diam_outer*xcirc[  i]/2.0,diam_outer*ycirc[  i]/2.0,0.0); // 1
 
@@ -2526,14 +2526,14 @@ void DrawRing(float diam_inner, float diam_outer, float height, unsigned char *r
       glVertex3f(diam_inner*xcirc[i+1]/2.0,diam_inner*ycirc[i+1]/2.0,0.0); // 2
     }
     glNormal3f(0.0,0.0,1.0);
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(diam_outer*xcirc[  i]/2.0,diam_outer*ycirc[  i]/2.0,height);
       glVertex3f(diam_outer*xcirc[i+1]/2.0,diam_outer*ycirc[i+1]/2.0,height);
       glVertex3f(diam_inner*xcirc[i+1]/2.0,diam_inner*ycirc[i+1]/2.0,height);
       glVertex3f(diam_inner*xcirc[  i]/2.0,diam_inner*ycirc[  i]/2.0,height);
     }
     glNormal3f(0.0,0.0,-1.0);
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(diam_outer*xcirc[  i]/2.0,diam_outer*ycirc[  i]/2.0,0.0);
       glVertex3f(diam_inner*xcirc[  i]/2.0,diam_inner*ycirc[  i]/2.0,0.0);
       glVertex3f(diam_inner*xcirc[i+1]/2.0,diam_inner*ycirc[i+1]/2.0,0.0);
@@ -2545,7 +2545,7 @@ void DrawRing(float diam_inner, float diam_outer, float height, unsigned char *r
     glBegin(GL_LINES);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(diam_outer*xcirc[  i]/2.0,diam_outer*ycirc[  i]/2.0,0.0); // 1
       glVertex3f(diam_outer*xcirc[i+1]/2.0,diam_outer*ycirc[i+1]/2.0,0.0); // 2
 
@@ -2570,7 +2570,7 @@ void DrawRing(float diam_inner, float diam_outer, float height, unsigned char *r
       glVertex3f(diam_inner*xcirc[i+1]/2.0,diam_inner*ycirc[i+1]/2.0,0.0); // 2
       glVertex3f(diam_inner*xcirc[  i]/2.0,diam_inner*ycirc[  i]/2.0,0.0); // 1
     }
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(diam_outer*xcirc[  i]/2.0,diam_outer*ycirc[  i]/2.0,height);
       glVertex3f(diam_outer*xcirc[i+1]/2.0,diam_outer*ycirc[i+1]/2.0,height);
 
@@ -2583,7 +2583,7 @@ void DrawRing(float diam_inner, float diam_outer, float height, unsigned char *r
       glVertex3f(diam_inner*xcirc[  i]/2.0,diam_inner*ycirc[  i]/2.0,height);
       glVertex3f(diam_outer*xcirc[  i]/2.0,diam_outer*ycirc[  i]/2.0,height);
     }
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(diam_outer*xcirc[  i]/2.0,diam_outer*ycirc[  i]/2.0,0.0);
       glVertex3f(diam_inner*xcirc[  i]/2.0,diam_inner*ycirc[  i]/2.0,0.0);
 
@@ -2654,7 +2654,7 @@ void DrawDisk(float diameter, float height, unsigned char *rgbcolor){
     glBegin(GL_QUADS);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glNormal3f(xcirc[i],ycirc[i],0.0);
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,0.0); // 1
 
@@ -2673,13 +2673,13 @@ void DrawDisk(float diameter, float height, unsigned char *rgbcolor){
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
     glNormal3f(0.0,0.0,-1.0);
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,0.0);
       glVertex3f(                    0.0,                    0.0,0.0);
       glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,0.0);
     }
     glNormal3f(0.0,0.0,1.0);
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height);
       glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height);
       glVertex3f(                    0.0,                    0.0, height);
@@ -2690,7 +2690,7 @@ void DrawDisk(float diameter, float height, unsigned char *rgbcolor){
     glBegin(GL_LINES);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,0.0); // 1
       glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,0.0); // 2
 
@@ -2708,7 +2708,7 @@ void DrawDisk(float diameter, float height, unsigned char *rgbcolor){
     glBegin(GL_LINES);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,0.0);
       glVertex3f(                    0.0,                    0.0,0.0);
 
@@ -2718,7 +2718,7 @@ void DrawDisk(float diameter, float height, unsigned char *rgbcolor){
       glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,0.0);
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,0.0);
     }
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height);
       glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height);
 
@@ -2747,7 +2747,7 @@ void DrawPolyDisk(int nsides, float diameter, float height, unsigned char *rgbco
   factor=2.0*PI/nsides;
   factor2 = factor/2.0;
 
-  for(i=0;i<nsides;i++){
+  for(i=0; i<nsides; i++){
     x[i]=cos(i*factor);
     y[i]=sin(i*factor);
     xnorm[i] = cos(factor2+i*factor);
@@ -2762,7 +2762,7 @@ void DrawPolyDisk(int nsides, float diameter, float height, unsigned char *rgbco
 
     radius = diameter/2.0;
 
-    for(i=0;i<nsides;i++){
+    for(i=0; i<nsides; i++){
       glNormal3f(xnorm[i], ynorm[i], 0.0);
       glVertex3f(radius*x[  i],radius*y[  i],0.0); // 1
 
@@ -2778,13 +2778,13 @@ void DrawPolyDisk(int nsides, float diameter, float height, unsigned char *rgbco
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
     glNormal3f(0.0,0.0,-1.0);
-    for(i=0;i<nsides;i++){
+    for(i=0; i<nsides; i++){
       glVertex3f(radius*x[  i],radius*y[  i],0.0);
       glVertex3f(            0.0,            0.0,0.0);
       glVertex3f(radius*x[i+1],radius*y[i+1],0.0);
     }
     glNormal3f(0.0,0.0,1.0);
-    for(i=0;i<nsides;i++){
+    for(i=0; i<nsides; i++){
       glVertex3f(radius*x[  i],radius*y[  i], height);
       glVertex3f(radius*x[i+1],radius*y[i+1], height);
       glVertex3f(            0.0,            0.0, height);
@@ -2797,7 +2797,7 @@ void DrawPolyDisk(int nsides, float diameter, float height, unsigned char *rgbco
 
     radius = diameter/2.0;
 
-    for(i=0;i<nsides;i++){
+    for(i=0; i<nsides; i++){
       glVertex3f(radius*x[  i],radius*y[  i],0.0); // 1
       glVertex3f(radius*x[i+1],radius*y[i+1],0.0); // 2
 
@@ -2815,7 +2815,7 @@ void DrawPolyDisk(int nsides, float diameter, float height, unsigned char *rgbco
     glBegin(GL_LINES);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
-    for(i=0;i<nsides;i++){
+    for(i=0; i<nsides; i++){
       glVertex3f(radius*x[  i],radius*y[  i],0.0);
       glVertex3f(            0.0,            0.0,0.0);
 
@@ -2825,7 +2825,7 @@ void DrawPolyDisk(int nsides, float diameter, float height, unsigned char *rgbco
       glVertex3f(radius*x[i+1],radius*y[i+1],0.0);
       glVertex3f(radius*x[  i],radius*y[  i],0.0);
     }
-    for(i=0;i<nsides;i++){
+    for(i=0; i<nsides; i++){
       glVertex3f(radius*x[  i],radius*y[  i], height);
       glVertex3f(radius*x[i+1],radius*y[i+1], height);
 
@@ -2856,7 +2856,7 @@ void DrawHexDisk(float diameter, float height, unsigned char *rgbcolor){
 
     radius = diameter/2.0;
 
-    for(i=0;i<6;i++){
+    for(i=0; i<6; i++){
       glNormal3f(xnorm[i], ynorm[i], 0.0);
       glVertex3f(radius*x[  i],radius*y[  i],0.0); // 1
 
@@ -2872,13 +2872,13 @@ void DrawHexDisk(float diameter, float height, unsigned char *rgbcolor){
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
     glNormal3f(0.0,0.0,-1.0);
-    for(i=0;i<6;i++){
+    for(i=0; i<6; i++){
       glVertex3f(radius*x[  i],radius*y[  i],0.0);
       glVertex3f(            0.0,            0.0,0.0);
       glVertex3f(radius*x[i+1],radius*y[i+1],0.0);
     }
     glNormal3f(0.0,0.0,1.0);
-    for(i=0;i<6;i++){
+    for(i=0; i<6; i++){
       glVertex3f(radius*x[  i],radius*y[  i], height);
       glVertex3f(radius*x[i+1],radius*y[i+1], height);
       glVertex3f(            0.0,            0.0, height);
@@ -2891,7 +2891,7 @@ void DrawHexDisk(float diameter, float height, unsigned char *rgbcolor){
 
     radius = diameter/2.0;
 
-    for(i=0;i<6;i++){
+    for(i=0; i<6; i++){
       glVertex3f(radius*x[  i],radius*y[  i],0.0); // 1
       glVertex3f(radius*x[i+1],radius*y[i+1],0.0); // 2
 
@@ -2909,7 +2909,7 @@ void DrawHexDisk(float diameter, float height, unsigned char *rgbcolor){
     glBegin(GL_LINES);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
-    for(i=0;i<6;i++){
+    for(i=0; i<6; i++){
       glVertex3f(radius*x[  i],radius*y[  i],0.0);
       glVertex3f(            0.0,            0.0,0.0);
 
@@ -2919,7 +2919,7 @@ void DrawHexDisk(float diameter, float height, unsigned char *rgbcolor){
       glVertex3f(radius*x[i+1],radius*y[i+1],0.0);
       glVertex3f(radius*x[  i],radius*y[  i],0.0);
     }
-    for(i=0;i<6;i++){
+    for(i=0; i<6; i++){
       glVertex3f(radius*x[  i],radius*y[  i], height);
       glVertex3f(radius*x[i+1],radius*y[i+1], height);
 
@@ -2954,7 +2954,7 @@ void DrawNotchPlate(float diameter, float height, float notchheight, float direc
     glBegin(GL_QUADS);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       float xmid, ymid;
 
       xmid = (xcirc[i]+xcirc[i+1])/2.0;
@@ -3064,13 +3064,13 @@ void DrawNotchPlate(float diameter, float height, float notchheight, float direc
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
     glNormal3f(0.0,0.0,-1.0);
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,0.0);
       glVertex3f(                    0.0,                    0.0,0.0);
       glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,0.0);
     }
     glNormal3f(0.0,0.0,1.0);
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height);
       glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height);
       glVertex3f(                    0.0,                    0.0, height);
@@ -3082,7 +3082,7 @@ void DrawNotchPlate(float diameter, float height, float notchheight, float direc
     glBegin(GL_LINES);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       float xmid, ymid;
 
       xmid = (xcirc[i]+xcirc[i+1])/2.0;
@@ -3191,7 +3191,7 @@ void DrawNotchPlate(float diameter, float height, float notchheight, float direc
     glBegin(GL_LINES);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,0.0);
       glVertex3f(                    0.0,                    0.0,0.0);
 
@@ -3201,7 +3201,7 @@ void DrawNotchPlate(float diameter, float height, float notchheight, float direc
       glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0,0.0);
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0,0.0);
     }
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(diameter*xcirc[  i]/2.0,diameter*ycirc[  i]/2.0, height);
       glVertex3f(diameter*xcirc[i+1]/2.0,diameter*ycirc[i+1]/2.0, height);
 
@@ -3239,7 +3239,7 @@ void DrawCone(float d1, float height, unsigned char *rgbcolor){
     glBegin(GL_TRIANGLES);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glNormal3f(factor*xcirc[i],factor*ycirc[i],denom);
       glVertex3f(rad*xcirc[  i],rad*ycirc[  i],0.0); // 1
 
@@ -3250,7 +3250,7 @@ void DrawCone(float d1, float height, unsigned char *rgbcolor){
       glVertex3f(0.0,0.0, height); // 3
     }
     glNormal3f(0.0,0.0,-1.0);
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(rad*xcirc[  i],rad*ycirc[  i],0.0);
       glVertex3f(                    0.0,                    0.0,0.0);
       glVertex3f(rad*xcirc[i+1],rad*ycirc[i+1],0.0);
@@ -3261,7 +3261,7 @@ void DrawCone(float d1, float height, unsigned char *rgbcolor){
     glBegin(GL_LINES);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(rad*xcirc[  i],rad*ycirc[  i],0.0); // 1
       glVertex3f(rad*xcirc[i+1],rad*ycirc[i+1],0.0); // 2
 
@@ -3271,7 +3271,7 @@ void DrawCone(float d1, float height, unsigned char *rgbcolor){
       glVertex3f(0.0,0.0, height); // 3
       glVertex3f(rad*xcirc[  i],rad*ycirc[  i],0.0); // 1
     }
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(rad*xcirc[  i],rad*ycirc[  i],0.0);
       glVertex3f(                    0.0,                    0.0,0.0);
 
@@ -3304,7 +3304,7 @@ void DrawTruncCone(float d1, float d2, float height, unsigned char *rgbcolor){
     glBegin(GL_QUADS);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glNormal3f(xcirc[i],ycirc[i],dz);
       glVertex3f(d1*xcirc[  i]/2.0,d1*ycirc[  i]/2.0,0.0); // 1
 
@@ -3323,13 +3323,13 @@ void DrawTruncCone(float d1, float d2, float height, unsigned char *rgbcolor){
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
     glNormal3f(0.0,0.0,-1.0);
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(d1*xcirc[  i]/2.0,d1*ycirc[  i]/2.0,0.0);
       glVertex3f(                    0.0,                    0.0,0.0);
       glVertex3f(d1*xcirc[i+1]/2.0,d1*ycirc[i+1]/2.0,0.0);
     }
     glNormal3f(0.0,0.0,1.0);
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(d2*xcirc[  i]/2.0,d2*ycirc[  i]/2.0, height);
       glVertex3f(d2*xcirc[i+1]/2.0,d2*ycirc[i+1]/2.0, height);
       glVertex3f(                    0.0,                    0.0, height);
@@ -3340,7 +3340,7 @@ void DrawTruncCone(float d1, float d2, float height, unsigned char *rgbcolor){
     glBegin(GL_LINES);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(d1*xcirc[  i]/2.0,d1*ycirc[  i]/2.0,0.0); // 1
       glVertex3f(d1*xcirc[i+1]/2.0,d1*ycirc[i+1]/2.0,0.0); // 2
 
@@ -3358,7 +3358,7 @@ void DrawTruncCone(float d1, float d2, float height, unsigned char *rgbcolor){
     glBegin(GL_LINES);
     if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
 
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(d1*xcirc[  i]/2.0,d1*ycirc[  i]/2.0,0.0);
       glVertex3f(                    0.0,                    0.0,0.0);
 
@@ -3369,7 +3369,7 @@ void DrawTruncCone(float d1, float d2, float height, unsigned char *rgbcolor){
       glVertex3f(d1*xcirc[  i]/2.0,d1*ycirc[  i]/2.0,0.0);
 
     }
-    for(i=0;i<ncirc;i++){
+    for(i=0; i<ncirc; i++){
       glVertex3f(d2*xcirc[  i]/2.0,d2*ycirc[  i]/2.0, height);
       glVertex3f(d2*xcirc[i+1]/2.0,d2*ycirc[i+1]/2.0, height);
 
@@ -3400,7 +3400,7 @@ void InitSphere(int nlat, int nlong){
   NewMemory( (void **)&sin_long,(nlong+1)*sizeof(float));
 
   dlat=PI/(float)nlat;
-  for(i=0;i<=nlat;i++){
+  for(i=0; i<=nlat; i++){
     float angle;
 
     angle = -PI/2.0 + i*dlat;
@@ -3409,7 +3409,7 @@ void InitSphere(int nlat, int nlong){
   }
 
   dlong=2.0*PI/(float)nlong;
-  for(i=0;i<nlong;i++){
+  for(i=0; i<nlong; i++){
     float angle;
 
     angle = i*dlong;
@@ -3437,7 +3437,7 @@ float *InitSphere2(int nlat, int nlong){
 
   c_lat[0] =  0.0;
   s_lat[0] = -1.0;
-  for(i=1;i<nlat;i++){
+  for(i=1; i<nlat; i++){
     float angle;
 
     angle = -PI/2.0 + (float)i*PI/(float)nlat;
@@ -3449,7 +3449,7 @@ float *InitSphere2(int nlat, int nlong){
 
   c_long[0] = 1.0;
   s_long[0] = 0.0;
-  for(i=1;i<nlong;i++){
+  for(i=1; i<nlong; i++){
     float angle;
 
     angle = (float)i*2.0*PI/(float)nlong;
@@ -3540,7 +3540,7 @@ void DrawDevices(int mode){
       }
     }
 
-    for(i = 0;i < global_scase.devicecoll.ndeviceinfo;i++){
+    for(i = 0; i < global_scase.devicecoll.ndeviceinfo; i++){
       devicedata *devicei;
 
       devicei = global_scase.devicecoll.deviceinfo + i;
@@ -3549,7 +3549,7 @@ void DrawDevices(int mode){
       if(devicei->plane_surface != NULL){
         int j;
 
-        for(j = 0;j < global_scase.meshescoll.nmeshes;j++){
+        for(j = 0; j < global_scase.meshescoll.nmeshes; j++){
           DrawStaticIso(devicei->plane_surface[j], -1, 0, 2, 0, devicei->line_width);
           DrawStaticIso(devicei->plane_surface[j], 2, 0, 2, 0, devicei->line_width);
         }
@@ -3909,7 +3909,7 @@ void DrawDevices(int mode){
   glPushAttrib(GL_POINT_BIT | GL_LINE_BIT);
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
-  for(ii = 0;ii < global_scase.devicecoll.ndeviceinfo;ii++){
+  for(ii = 0; ii < global_scase.devicecoll.ndeviceinfo; ii++){
     devicedata *devicei;
     int tagval;
     propdata *prop;
@@ -4024,7 +4024,7 @@ void DrawDevices(int mode){
         prop->nvars_indep = devicei->nparams;
         NewMemory((void **)&prop->vars_indep_index, prop->nvars_indep * sizeof(int));
       }
-      for(j = 0;j < devicei->nparams;j++){
+      for(j = 0; j < devicei->nparams; j++){
         prop->fvals[j] = devicei->params[j];
         prop->vars_indep_index[j] = j;
       }
@@ -4127,7 +4127,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
 
   // copy in default values ( :var=value in objects.svo file )
 
-  for(ii = 0;ii < framei->ntokens;ii++){
+  for(ii = 0; ii < framei->ntokens; ii++){
     tokendata *toki;
 
     toki = framei->tokens + ii;
@@ -4146,7 +4146,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
 
     // copy static data from PROP line
 
-    for(i = 0;i < prop->nvars_indep;i++){
+    for(i = 0; i < prop->nvars_indep; i++){
       tokendata *toki;
       int index;
 
@@ -4193,7 +4193,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
     float arg[NARGVAL], *argptr;
     int j;
 
-    for(j=0;j<NARGVAL;j++){
+    for(j=0; j<NARGVAL; j++){
       arg[j] = 0.0;
     }
     if(ii == 0){
@@ -4211,7 +4211,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
     else{
       rgbptr_local = select_device_color_ptr;
     }
-    for(j = 0;j < toki->nvars;j++){
+    for(j = 0; j < toki->nvars; j++){
       tokendata *tokj;
 
       tokj = toki - toki->nvars + j;
@@ -4750,7 +4750,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
 
       texturefile = (toki - 2)->stringptr;
 
-      for(i = 0;i < global_scase.device_texture_list_coll.ndevice_texture_list;i++){
+      for(i = 0; i < global_scase.device_texture_list_coll.ndevice_texture_list; i++){
         if(strcmp(global_scase.device_texture_list_coll.device_texture_list[i], texturefile) == 0){
           textureindex = i;
           break;
@@ -4846,7 +4846,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
 tokendata *GetTokenPtr(char *var,sv_object_frame *frame){
   int i;
 
-  for(i=0;i<frame->nsymbols;i++){
+  for(i=0; i<frame->nsymbols; i++){
     int ii;
     tokendata *toki;
     char *token_var;
@@ -4885,7 +4885,7 @@ devicedata *GetCSVDeviceFromLabel(char *label, int index){
 int GetDeviceIndexFromLabel(char *label){
   int i;
 
-  for(i = 0;i < global_scase.devicecoll.ndeviceinfo;i++){
+  for(i = 0; i < global_scase.devicecoll.ndeviceinfo; i++){
     devicedata *devicei;
 
     devicei = global_scase.devicecoll.deviceinfo + i;
@@ -4902,7 +4902,7 @@ devicedata *GetDeviceFromLabel(char *label,int index){
   if(strlen(label)>=4&&strncmp(label,"null",4)==0&&index>=0&&index<global_scase.devicecoll.ndeviceinfo){
     return global_scase.devicecoll.deviceinfo + index;
   }
-  for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+  for(i=0; i<global_scase.devicecoll.ndeviceinfo; i++){
     devicedata *devicei;
 
     devicei = global_scase.devicecoll.deviceinfo + i;
@@ -5215,7 +5215,7 @@ void SetupZoneDevs(void){
   int i;
 
   show_missing_objects = 0;
-  for(i=0;i<global_scase.nzoneinfo;i++){
+  for(i=0; i<global_scase.nzoneinfo; i++){
     FILE *stream;
     char *file;
     int nrows, ncols, buffer_len,ntokens;
@@ -5244,7 +5244,7 @@ void SetupZoneDevs(void){
     fgets(buffer,buffer_len,stream);
     fgets(buffer,buffer_len,stream);
     ParseCSV(buffer, buffer_temp, devclabels, &ntokens);
-    for(j=0;j<ntokens;j++){
+    for(j=0; j<ntokens; j++){
       devicedata *devi;
 
       TrimBack(devclabels[j]);
@@ -5326,7 +5326,7 @@ FILE_SIZE ReadDeviceData(char *file, int filetype, int loadstatus){
 // unload data
 
   if(loadstatus==UNLOAD){
-    for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+    for(i=0; i<global_scase.devicecoll.ndeviceinfo; i++){
       devicedata *devicei;
 
       devicei = global_scase.devicecoll.deviceinfo + i;
@@ -5335,7 +5335,7 @@ FILE_SIZE ReadDeviceData(char *file, int filetype, int loadstatus){
       FREEMEMORY(devicei->vals_orig);
       FREEMEMORY(devicei->valids);
     }
-    for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+    for(i=0; i<global_scase.devicecoll.ndeviceinfo; i++){
       devicedata *devicei;
       int j;
 
@@ -5343,7 +5343,7 @@ FILE_SIZE ReadDeviceData(char *file, int filetype, int loadstatus){
       if(devicei->filetype!=filetype||devicei->times==NULL)continue;
       times_local = devicei->times;
       FREEMEMORY(devicei->times);
-      for(j=i+1;j<global_scase.devicecoll.ndeviceinfo;j++){
+      for(j=i+1; j<global_scase.devicecoll.ndeviceinfo; j++){
         devicedata *devicej;
 
         devicej = global_scase.devicecoll.deviceinfo + j;
@@ -5387,20 +5387,20 @@ FILE_SIZE ReadDeviceData(char *file, int filetype, int loadstatus){
 
   fgets(buffer, buffer_len, stream);
   ParseCSV(buffer, buffer_temp, devcunits, &ntokens);
-  for(i=0;i<ntokens;i++){
+  for(i=0; i<ntokens; i++){
     TrimBack(devcunits[i]);
     devcunits[i]=TrimFront(devcunits[i]);
   }
 
   fgets(buffer2, buffer_len, stream);
   ParseCSV(buffer2, buffer_temp, devclabels, &ntokens);
-  for(i=0;i<ntokens;i++){
+  for(i=0; i<ntokens; i++){
     TrimBack(devclabels[i]);
     devclabels[i]=TrimFront(devclabels[i]);
   }
 
   NewMemory((void **)&times_local,nrows*sizeof(float));
-  for(i=1;i<ntokens;i++){
+  for(i=1; i<ntokens; i++){
     devicedata *devicei;
 
     devicei = GetCSVDeviceFromLabel(devclabels[i],i-1);
@@ -5422,13 +5422,13 @@ FILE_SIZE ReadDeviceData(char *file, int filetype, int loadstatus){
     devicei->nvals=nrows-2;
   }
 
-  for(irow=2;irow<nrows;irow++){
+  for(irow=2; irow<nrows; irow++){
     int icol=0;
 
     fgets(buffer,buffer_len,stream);
     FParseCSV(buffer,vals,valids,ncols,&ntokens);
     times_local[irow-2]=vals[icol];
-    for(icol=1;icol<ncols;icol++){
+    for(icol=1; icol<ncols; icol++){
       devicedata *devicei;
 
       devicei = devices[icol];
@@ -5456,7 +5456,7 @@ FILE_SIZE ReadDeviceData(char *file, int filetype, int loadstatus){
 vdevicedata *GetVDevice(float *xyzval){
   int j;
 
-  for(j=0;j<global_scase.devicecoll.nvdeviceinfo;j++){
+  for(j=0; j<global_scase.devicecoll.nvdeviceinfo; j++){
     vdevicedata *vdevj;
     float *xyzj;
 
@@ -5476,7 +5476,7 @@ vdevicedata *GetVDevice(float *xyzval){
 devicedata *GetDeviceFromPosition(float *xyzval, char *device_label, int device_type){
   int j;
 
-  for(j=0;j<global_scase.devicecoll.ndeviceinfo;j++){
+  for(j=0; j<global_scase.devicecoll.ndeviceinfo; j++){
     devicedata *devj;
     float *xyz;
 
@@ -5500,13 +5500,13 @@ void UpdateColorDevices(void){
 
   colordev = devicetypes[devicetypes_index];
 
-  for(i=0;i<global_scase.devicecoll.nvdeviceinfo;i++){
+  for(i=0; i<global_scase.devicecoll.nvdeviceinfo; i++){
     vdevicedata *vdevi;
 
     vdevi = global_scase.devicecoll.vdeviceinfo + i;
     vdevi->colordev=NULL;
   }
-  for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+  for(i=0; i<global_scase.devicecoll.ndeviceinfo; i++){
     devicedata *devi;
     vdevicedata *vdevi;
     devi = global_scase.devicecoll.deviceinfo + i;
@@ -5537,7 +5537,7 @@ int IsDupDeviceLabel(int index, int direction){
   dev_index = global_scase.devicecoll.deviceinfo + index;
   if(index<0||index>=global_scase.devicecoll.ndeviceinfo||STRCMP(dev_index->deviceID,"null")==0||dev_index->in_devc_csv==0)return 0;
 
-  for(i=i1;i<i2;i++){
+  for(i=i1; i<i2; i++){
     devicedata *devi;
 
     devi = global_scase.devicecoll.deviceinfo + i;
@@ -5787,7 +5787,7 @@ void SetupDeviceData(void){
   FREEMEMORY(global_scase.devicecoll.vdevices_sorted);
   NewMemory((void **)&global_scase.devicecoll.vdevices_sorted,3*global_scase.devicecoll.ndeviceinfo*sizeof(vdevicesortdata));
   global_scase.devicecoll.nvdeviceinfo=0;
-  for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+  for(i=0; i<global_scase.devicecoll.ndeviceinfo; i++){
     vdevicedata *vdevi;
     devicedata *devi,*devj;
     float *xyzval;
@@ -5860,7 +5860,7 @@ void SetupDeviceData(void){
   // look for duplicate device labels
 
   is_dup=0;
-  for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+  for(i=0; i<global_scase.devicecoll.ndeviceinfo; i++){
     devicedata *devi;
 
     devi = global_scase.devicecoll.deviceinfo + i;
@@ -5874,7 +5874,7 @@ void SetupDeviceData(void){
     int ii;
 
     fprintf(stderr,"*** Warning: Duplicate device labels: ");
-    for(ii=0;ii<global_scase.devicecoll.ndeviceinfo;ii++){
+    for(ii=0; ii<global_scase.devicecoll.ndeviceinfo; ii++){
       devicedata *devi;
 
       devi = global_scase.devicecoll.deviceinfo + ii;
@@ -5885,14 +5885,14 @@ void SetupDeviceData(void){
     }
     fprintf(stderr," found in %s\n",global_scase.fds_filein);
   }
-  for(i=0;i<global_scase.devicecoll.nvdeviceinfo;i++){
+  for(i=0; i<global_scase.devicecoll.nvdeviceinfo; i++){
     vdevicedata *vdevi;
     int j;
     float *xyzi;
 
     vdevi = global_scase.devicecoll.vdeviceinfo + i;
     xyzi = vdevi->valdev->xyz;
-    for(j=i+1;j<global_scase.devicecoll.nvdeviceinfo;j++){
+    for(j=i+1; j<global_scase.devicecoll.nvdeviceinfo; j++){
       vdevicedata *vdevj;
       float *xyzj;
 
@@ -5906,7 +5906,7 @@ void SetupDeviceData(void){
     }
   }
   max_dev_vel=-1.0;
-  for(i=0;i<global_scase.devicecoll.nvdeviceinfo;i++){
+  for(i=0; i<global_scase.devicecoll.nvdeviceinfo; i++){
     vdevicedata *vdevi;
     devicedata *devval;
     int j;
@@ -5923,7 +5923,7 @@ void SetupDeviceData(void){
       udev=vdevi->udev;
       vdev=vdevi->vdev;
       wdev=vdevi->wdev;
-      for(j=0;j<devval->nvals;j++){
+      for(j=0; j<devval->nvals; j++){
         float uvel=0.0, vvel=0.0, wvel=0.0;
         float speed;
 
@@ -5939,7 +5939,7 @@ void SetupDeviceData(void){
 
       veldev=vdevi->veldev;
       if(veldev!=NULL){
-        for(j=0;j<devval->nvals;j++){
+        for(j=0; j<devval->nvals; j++){
           if(veldev->valids[j]==1){
             float speed;
 
@@ -5954,7 +5954,7 @@ void SetupDeviceData(void){
   // find devices linked with each vdevice
 
   if(global_scase.devicecoll.ndeviceinfo>0){
-    for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+    for(i=0; i<global_scase.devicecoll.ndeviceinfo; i++){
       devicedata *devi;
       float *xyzi;
       vdevicedata *vdevj;
@@ -5972,13 +5972,13 @@ void SetupDeviceData(void){
     ndevicetypes=0;
     FREEMEMORY(devicetypes);
     NewMemory((void **)&devicetypes,global_scase.devicecoll.ndeviceinfo*sizeof(devicedata *));
-    for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+    for(i=0; i<global_scase.devicecoll.ndeviceinfo; i++){
       devicedata *devi;
 
       devi = global_scase.devicecoll.deviceinfo + i;
       devi->type2=-1;
     }
-    for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+    for(i=0; i<global_scase.devicecoll.ndeviceinfo; i++){
       int j;
       devicedata *devi;
 
@@ -5987,7 +5987,7 @@ void SetupDeviceData(void){
       devi->type2=ndevicetypes;
       devi->type2vis=0;
       devicetypes[ndevicetypes++]=devi;
-      for(j=i+1;j<global_scase.devicecoll.ndeviceinfo;j++){
+      for(j=i+1; j<global_scase.devicecoll.ndeviceinfo; j++){
         devicedata *devj;
 
         devj = global_scase.devicecoll.deviceinfo + j;
@@ -5998,7 +5998,7 @@ void SetupDeviceData(void){
     }
     if(ndevicetypes>0)devicetypes[0]->type2vis=1;
   }
-  for(i=0;i<global_scase.devicecoll.nvdeviceinfo;i++){
+  for(i=0; i<global_scase.devicecoll.nvdeviceinfo; i++){
     vdevicesortdata *vdevsorti;
 
     vdevsorti = global_scase.devicecoll.vdevices_sorted + i;
@@ -6133,7 +6133,7 @@ float Dist2Plane(float x, float y, float z, float xyzp[3], float xyzpn[3]){
   xyz[1]=y;
   xyz[2]=z;
   return_val=0.0;
-  for(i=0;i<3;i++){
+  for(i=0; i<3; i++){
     return_val+=(xyz[i]-xyzp[i])*xyzpn[i];
   }
   return return_val;
@@ -6172,7 +6172,7 @@ void InitDevicePlane(devicedata *devicei){
     devicei->color=GetColorPtr(&global_scase, rgbcolor);
   }
   colorindex=0;
-  for(i=0;i<global_scase.meshescoll.nmeshes;i++){
+  for(i=0; i<global_scase.meshescoll.nmeshes; i++){
     int j;
     meshdata *meshi;
     float xvert[12], yvert[12], zvert[12];
@@ -6195,7 +6195,7 @@ void InitDevicePlane(devicedata *devicei){
     zz[0]=meshi->xyz_bar0[ZZZ];
     zz[1]=SMV2FDS_Z(meshi->xyz_bar[ZZZ]);
 
-    for(j=0;j<8;j++){
+    for(j=0; j<8; j++){
       nodeindexes[j]=j;
     }
     vals[0]= Dist2Plane(xx[0],yy[0],zz[0],devicei->xyz,devicei->xyznorm);
