@@ -193,7 +193,7 @@ SYSTEM_LIBS_WIN = user32.lib gdi32.lib comdlg32.lib shell32.lib
 # ------------- intel_win_db ----------------
 
 intel_win_db : CFLAGS    = /Od -D pp_INTEL -D _DEBUG $(CFLAG_WIN_COM) \
-                           /Zi /Wall /W4 /Wno-cast-function-type-mismatch \
+                           /Zi /W4 /Wno-cast-function-type-mismatch \
                            /Wno-unused-function /Wno-unused-parameter /debug:full 
 intel_win_db : LFLAGS   =   /traceback /Zi /DEBUG \
                            $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/intel_win
@@ -217,12 +217,7 @@ intel_win : $(objwin)
 
 # ------------- clang_win_db ----------------
 
-clang_win_db : CFLAGS    = /Od /Zi /W4 \
-                           /clang:-Wall /clang:-Wextra /clang:-Wshadow /clang:-Wuninitialized \
-                           /clang:-Wunreachable-code /clang:-Wswitch-default /clang:-Wundef \
-                           /clang:-Wpointer-arith /clang:-Wno-unused-parameter \
-                           /clang:-Wno-address /clang:-Wno-unknown-pragmas \
-                           -D _DEBUG $(CFLAG_WIN_COM)
+clang_win_db : CFLAGS    = -D _DEBUG $(CFLAG_WIN_COM)
 clang_win_db : LFLAGS    = $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/clang_win
 clang_win_db : CC        = clang-cl
 clang_win_db : CPP       = clang-cl
@@ -273,9 +268,8 @@ intel_linux : $(obj)
 # ------------- intel_linux_db ----------------
 
 intel_linux_db : CFLAGS    = -O0 -traceback  -fstack-protector -fno-omit-frame-pointer -debug variable-locations \
-	                         -Wall -Wextra -Wshadow -Wformat=2 -Wundef -Wpointer-arith \
-	                         -Wuninitialized -Wunused-function -Wunused-variable -Wswitch-enum \
-	                         -Wno-sign-compare -Wno-unused-parameter -D _DEBUG $(CFLAGS_COM)
+	                         -Wall -Wextra -Wuninitialized -Wunused-function -Wunused-variable \
+	                         -Wno-sign-compare -Wno-unused-parameter $(CFLAGS_COM)
 intel_linux_db : CC        = icx
 intel_linux_db : CPP       = icpx
 intel_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
@@ -285,14 +279,14 @@ intel_linux_db : $(obj)
 
 # ------------- gnu_linux_db ----------------
 
-gnu_linux_db : CFLAGS    = -O0 -ggdb -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion \
-                             -Wformat=2 -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition \
-                             -Wbad-function-cast -Wcast-qual -Wcast-align -Wundef -Wswitch-enum -Wnull-dereference \
-                             -Winit-self -Wpointer-arith -Wunreachable-code -Wwrite-strings -D _DEBUG \
-                             $(CFLAGS_COM)
+gnu_linux_db = -O0 -ggdb -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion \
+               -Wformat=2 -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition \
+               -Wbad-function-cast -Wcast-qual -Wcast-align -Wundef -Wswitch-enum -Wnull-dereference \
+               -Winit-self -Wpointer-arith -Wunreachable-code -Wwrite-strings -D_DEBUG \
+               $(CFLAGS_COM)
 gnu_linux_db : CC        = gcc
 gnu_linux_db : CPP       = g++
-gnu_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
+gnu_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
 
 gnu_linux_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/gnu_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
@@ -311,7 +305,7 @@ gnu_linux : $(obj)
 # ------------- clang_linux_db ----------------
 
 clang_linux_db : CFLAGS    = -O0 -ggdb -Wall -Wextra -Wunused-variable -Wunreachable-code -Wno-unused-parameter -Wswitch-default \
-                             -Wshadow -Wformat=2 -Winit-self -Wundef -Wpointer-arith -Wuninitialized -Wno-sign-compare\
+                             -Wshadow -Winit-self -Wundef -Wpointer-arith -Wuninitialized -Wno-sign-compare\
                              -Wno-address -Wno-undef -Wno-parentheses -Wno-unknown-pragmas \
                              -D _DEBUG $(CFLAGS_COM)
 clang_linux_db : CC        = clang
@@ -373,9 +367,7 @@ endif
 
 # ------------- gnu_osx_db ----------------
 
-gnu_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wextra -Wpedantic -Wshadow -Wformat=2 \
-                        -Wundef -Wpointer-arith -Wuninitialized -Wswitch-enum -Wno-unused-parameter \
-                        -Wno-deprecated-declarations $(CFLAGS_COM)
+gnu_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-deprecated-declarations$(CFLAGS_COM)
 gnu_osx_db : CC        = ${COMPILER}
 gnu_osx_db : CPP       = ${COMPILER2}
 gnu_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
@@ -395,9 +387,7 @@ gnu_osx : $(obj)
 
 # ------------- clang_osx_db ----------------
 
-clang_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -fsanitize=thread -pthread -Wall -Wextra -Wshadow \
-                          -Wformat=2 -Wundef -Wpointer-arith -Wuninitialized -Wswitch-default \
-                          -Wunreachable-code -Wno-unused-parameter -Wno-deprecated-declarations $(CFLAGS_COM)
+clang_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -fsanitize=thread -pthread -Wall -Wno-deprecated-declarations $(CFLAGS_COM)
 clang_osx_db : CC        = ${COMPILER}
 clang_osx_db : CPP       = ${COMPILER2}
 clang_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
