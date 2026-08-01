@@ -201,58 +201,10 @@ extern "C" void GLUIUpdateBackgroundFlip2(int flip){
   if(CHECKBOX_smoke_flip!=NULL)CHECKBOX_smoke_flip->set_int_val(flip);
 }
 
-/* ------------------ GLUIUpdateFreeze ------------------------ */
-
-extern "C" void GLUIUpdateFreeze(int val){
-  CHECKBOX_freeze->set_int_val(val);
-}
-
 /* ------------------ GLUIForceAlphaOpaque ------------------------ */
 
 extern "C" void GLUIForceAlphaOpaque(void){
   CHECKBOX_force_alpha_opaque->set_int_val(force_alpha_opaque);
-}
-
-/* ------------------ GLUIUpdateLoadFrameVal ------------------------ */
-
-extern "C" void GLUIUpdateLoadFrameVal(int frames){
-  SPINNER_smokeloadframe->set_int_val(frames);
-}
-
-/* ------------------ GLUIUpdateLoadTimeVal ------------------------ */
-
-extern "C" void GLUIUpdateLoadTimeVal(float val){
-  SPINNER_timeloadframe->set_float_val(val);
-}
-
-/* ------------------ GLUIUpdateLoadFrameMax ------------------------ */
-
-extern "C" void GLUIUpdateLoadFrameMax(int max_frames){
-  int val;
-
-  val = SPINNER_smokeloadframe->get_int_val();
-  if(val<0){
-    SPINNER_smokeloadframe->set_int_val(0);
-  }
-  else if(val>max_frames-1){
-    SPINNER_smokeloadframe->set_int_val(max_frames-1);
-  }
-  SPINNER_smokeloadframe->set_int_limits(0, max_frames-1);
-}
-
-/* ------------------ GLUIUpdateTimeFrameBounds ------------------------ */
-
-extern "C" void GLUIUpdateTimeFrameBounds(float time_min, float time_max){
-  float val;
-
-  val = SPINNER_timeloadframe->get_float_val();
-  if(val>time_max){
-    SPINNER_timeloadframe->set_float_val(time_max);
-  }
-  else if(val<time_min){
-    SPINNER_timeloadframe->set_float_val(time_min);
-  }
-  SPINNER_timeloadframe->set_float_limits(time_min,time_max);
 }
 
 /* ------------------ SmokeRolloutCB ------------------------ */
@@ -261,12 +213,6 @@ void SmokeRolloutCB(int var){
   if(var == SLICERENDER_ROLLOUT)smoke_render_option = RENDER_SLICE;
 //  GLUISmoke3dCB(SMOKE_OPTIONS);
   GLUIToggleRollout(smokeprocinfo, nsmokeprocinfo, var);
-}
-
-/* ------------------ UpdateCombineMeshes ------------------------ */
-
-void UpdateCombineMeshes(void){
-  if(CHECKBOX_combine_meshes!=NULL)CHECKBOX_combine_meshes->set_int_val(combine_meshes);
 }
 
 /* ------------------ GLUIUpdateSmoke3dFlags ------------------------ */

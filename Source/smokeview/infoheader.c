@@ -11,41 +11,9 @@
 // holds all of the information that will be printed to screen in the titlebox
 titledata titleinfo;
 
- /* ------------------------ addTitleLine ------------------------- */
 // handles heap allocation and bookkeeping for adding a line to the title box
-int addTitleLine(titledata *titleinfo_ptr, const char *string){
-  char *line;
-  if(titleinfo_ptr->nlines >= MAX_TITLE_LINES){
-    PRINTF("MAX_TITLE_LINES exceeded\n");
-    return 2;
-  }
-  int string_length = strlen(string);
-  if(string_length >= MAX_TITLE_LINE_LENGTH){
-    PRINTF("MAX_TITLE_LINE_LENGTH exceeded\n");
-  }
-  NewMemory((void **)&line, (string_length+1)*sizeof(char));
-  if(line==NULL){
-    PRINTF("addTitleLine: memory allocation failed\n");
-    return 1;
-  }
-  strncpy(line,string,string_length);
-  line[string_length] = '\0';
-  titleinfo_ptr->lines[titleinfo_ptr->nlines] = line;
-  titleinfo_ptr->nlines++;
-  return 0;
-}
 
- /* ------------------------ clearTitleLines ------------------------- */
 // walk through all the title lines and clear them
-int clearTitleLines(titledata *titleinfo_ptr){
-  int i;
-  for(i = 0; i < titleinfo_ptr->nlines; i++){
-    FREEMEMORY(titleinfo_ptr->lines[i]);
-    titleinfo_ptr->lines[i]=NULL;
-  }
-  titleinfo_ptr->nlines=0;
-  return 0;
-}
 
  /* ------------------------ initialiseInfoHeader --------------------------- */
 

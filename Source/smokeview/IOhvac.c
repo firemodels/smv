@@ -130,20 +130,6 @@ int GetHVACDuctState(hvacductdata *ducti){
   return states[n - 1];
 }
 
-/* ------------------ GetDuctDir ------------------------ */
-
-int GetDuctDir(float *xyz){
-  float eyedir[3];
-
-  //cos(angle) = dir1 .dot. dir2 /(norm(dir1)*norm(dir2))
-  eyedir[0] = ABS(xyz[0] - fds_eyepos[0]);
-  eyedir[1] = ABS(xyz[1] - fds_eyepos[1]);
-  eyedir[2] = ABS(xyz[2] - fds_eyepos[2]);
-  if(eyedir[0]>MAX(eyedir[1],eyedir[2]))return 1;
-  if(eyedir[1]>MAX(eyedir[0],eyedir[2]))return 0;
-  return 2;
-}
-
 /* ------------------ DrawHVACDamper ------------------------ */
 
 void DrawHVACDamper(hvacductdata *ducti, float *xyz, float diam, int state){

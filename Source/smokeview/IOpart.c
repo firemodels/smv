@@ -1392,29 +1392,6 @@ wrapup:
   FREEMEMORY(numpoints_local);
 }
 
-/* ------------------ PrintPartProp ------------------------ */
-
-#ifdef _DEBUG
-void PrintPartProp(void){
-  int i;
-
-  for(i=0; i<npart5prop; i++){
-    partpropdata *propi;
-
-    propi = part5propinfo + i;
-    if(STRCMP(propi->label->longlabel, "Uniform color")==0){
-      PRINTF("label=%s\n", propi->label->longlabel);
-    }
-    else{
-      PRINTF("label=%s min=%f max=%f\n", propi->label->longlabel, propi->valmin, propi->valmax);
-      PRINTF("   glbmin=%f glbmax=%f\n", propi->dlg_global_valmin, propi->dlg_global_valmax);
-    }
-    PRINTF("\n");
-  }
-}
-#endif
-
-
 /* ------------------ GetPartPropIndexS ------------------------ */
 
 int GetPartPropIndexS(char *shortlabel){

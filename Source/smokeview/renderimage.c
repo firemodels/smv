@@ -535,20 +535,8 @@ static struct gif_spec *current_gif_spec = NULL;
 /// frames of the GIF frame specification.
 static size_t current_gif_frame = 0;
 
-/* -------------------------- GifSpec_Clear --------------------------------- */
-
 /// @brief Clear the animated GIF frame specification if one exists. Does
 /// nothing if there is no current frame specification.
-void GifSpec_Clear() {
-  if(current_gif_spec != NULL){
-    if(current_gif_spec->gif_frames != NULL)
-      FREEMEMORY(current_gif_spec->gif_frames);
-    FREEMEMORY(current_gif_spec);
-  }
-  current_gif_frame = 0;
-}
-
-/* ------------------ GifSpec_PushFrame ------------------------ */
 
 /// @brief Set the frame specification to be used for animated GIFs. Will clear
 /// the current GIF specification if one already exists.
@@ -556,24 +544,6 @@ void GifSpec_Clear() {
 /// NEWMEMORY. This pointer will be kept and later needs to be freed by calling
 /// GifSpec_Clear.
 
-void GifSpec_PushFrame(int frame_number, int duration) {
-  if(current_gif_spec == NULL){
-    NEWMEMORY(current_gif_spec, sizeof(struct gif_spec));
-    current_gif_spec->n_frames = 0;
-    current_gif_spec->capacity = 2;
-    NEWMEMORY(current_gif_spec->gif_frames,
-              current_gif_spec->capacity * sizeof(struct gif_spec_frame));
-  }
-  if(current_gif_spec->n_frames >= current_gif_spec->capacity){
-    current_gif_spec->capacity *= 2;
-    RESIZEMEMORY(current_gif_spec->gif_frames,
-                 current_gif_spec->capacity * sizeof(struct gif_spec_frame));
-  }
-  current_gif_spec->gif_frames[current_gif_spec->n_frames].frame_number =
-      frame_number;
-  current_gif_spec->gif_frames[current_gif_spec->n_frames].duration = duration;
-  current_gif_spec->n_frames++;
-}
 
 /* ------------------ GifStart ------------------------ */
 

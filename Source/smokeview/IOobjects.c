@@ -4841,23 +4841,6 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
 
 #define BUFFER_SIZE 10000
 
-/* ----------------------- GetTokenPtr ----------------------------- */
-
-tokendata *GetTokenPtr(char *var,sv_object_frame *frame){
-  int i;
-
-  for(i=0; i<frame->nsymbols; i++){
-    int ii;
-    tokendata *toki;
-    char *token_var;
-
-    ii = frame->symbols[i];
-    toki = frame->tokens+ii;
-    token_var = toki->tokenlabel+1;
-    if(STRCMP(var,token_var)==0)return toki;
-  }
-  return NULL;
-}
 /* ----------------------- GetCSVDeviceFromLabel ----------------------------- */
 
 devicedata *GetCSVDeviceFromLabel(char *label, int index){
@@ -5256,25 +5239,6 @@ void SetupZoneDevs(void){
     FREEMEMORY(buffer);
     fclose(stream);
   }
-}
-
-/* ----------------------- GetDeviceLabel ----------------------------- */
-
-char *GetDeviceLabel(char *buffer){
-  char *label_present;
-
-  label_present = strstr(buffer, "#");
-  if(label_present == NULL) return NULL;
-  if(strlen(label_present) <= 1){
-    label_present[0] = 0;
-    return NULL;
-  }
-  label_present[0] = 0;
-  label_present++;
-  label_present = TrimFront(label_present);
-  TrimBack(label_present);
-  if(strlen(label_present) == 0) return NULL;
-  return label_present;
 }
 
 /* ------------------ RewindDeviceFile ------------------------ */

@@ -432,19 +432,3 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
   }
   return args;
 }
-
-/// @brief Free any allocated buffers in @ref CommandlineArgs. Performs
-/// null-checks on all buffers.
-/// @param args The previously parse command line arguments.
-
-/* ------------------ FreeCommandlineArgs ------------------------ */
-
-void FreeCommandlineArgs(CommandlineArgs *args){
-  FREEMEMORY(args->prog);
-  FREEMEMORY(args->input_file);
-  FREEMEMORY(args->bindir);
-  FREEMEMORY(args->casedir);
-  FREEMEMORY(args->lang);
-  FREEMEMORY(args->ini_from);
-  FREEMEMORY(args->ini_to);
-}

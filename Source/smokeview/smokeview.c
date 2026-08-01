@@ -296,12 +296,3 @@ void SMV_EXIT(int code){
 #endif
   exit(code);
 }
-
-/* ------------------ StartTimer ------------------------ */
-
-void StartTimer(float *timerptr){
-  float timer;
-
-  START_TIMER(timer);
-  *timerptr = timer;
-}

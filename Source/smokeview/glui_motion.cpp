@@ -1077,12 +1077,6 @@ extern "C" void GLUIUpdateFileLabel(int var){
   }
 }
 
-/* ------------------ GLUIUpdateWindowAspect ------------------------ */
-
-extern "C" void GLUIUpdateWindowAspect(void){
-  if(CHECKBOX_fix_window_aspect != NULL)CHECKBOX_fix_window_aspect->set_int_val(fix_window_aspect);
-}
-
 /* ------------------ GLUIUpdateZoom ------------------------ */
 
 extern "C" void GLUIUpdateZoom(void){

@@ -23,7 +23,6 @@ EXTERNCPP void DrawWindRosesDevices(void);
 EXTERNCPP devicedata *GetCSVDeviceFromLabel(char *label, int index);
 EXTERNCPP devicedata *GetDeviceFromLabel(char *label, int index);
 EXTERNCPP int GetDeviceIndexFromLabel(char *label);
-EXTERNCPP char *GetDeviceLabel(char *buffer);
 EXTERNCPP float GetDeviceVal(float time_local, devicedata *devicei, int *valid);
 EXTERNCPP void GetGlobalDeviceBounds(int type);
 EXTERNCPP int GetNDevices(char *file);

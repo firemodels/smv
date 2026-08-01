@@ -1078,46 +1078,6 @@ void UpdateAllPlotSlices(void){
   if(visz_all==1)UpdatePlotSlice(ZDIR);
 }
 
-/* ------------------ GetPlot3dIndex ------------------------ */
-
-int GetPlot3dIndex(meshdata *meshi, int dir, float val){
-  float valmin;
-  int i, ivalmin, nvals;
-  float *xyz=NULL;
-
-  switch(dir){
-    case XDIR:
-      xyz = meshi->xplt_fds;
-      nvals = meshi->ibar;
-      break;
-    case YDIR:
-      xyz = meshi->yplt_fds;
-      nvals = meshi->jbar;
-      break;
-    case ZDIR:
-      xyz = meshi->zplt_fds;
-      nvals = meshi->kbar;
-      break;
-    default:
-      xyz = NULL;
-      assert(FFALSE);
-      break;
-  }
-
-  ivalmin=0;
-  assert(xyz != NULL);
-  if(xyz != NULL){
-    valmin = ABS(xyz[0] - val);
-    for(i = 1; i <= nvals; i++){
-      if(ABS(xyz[i] - val) < valmin){
-        valmin = ABS(xyz[i] - val);
-        ivalmin = i;
-      }
-    }
-  }
-  return ivalmin;
-}
-
 /* ------------------ UpdatePlotXYZ ------------------------ */
 
 void UpdatePlotXYZ(meshdata *current_mesh_local){

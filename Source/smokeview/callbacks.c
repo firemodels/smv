@@ -240,22 +240,6 @@ void NextZIndex(int inc,int flag){
   }
 }
 
-/* ------------------ WindowStatus ------------------------ */
-
-void WindowStatus(int state){
-  PRINTF("state=%i\n",state);
-  switch(state){
-  case GLUT_HIDDEN:
-  case GLUT_FULLY_COVERED:
-    break;
-  case GLUT_FULLY_RETAINED:
-  case GLUT_PARTIALLY_RETAINED:
-    break;
-  default:
-    assert(FFALSE);
-    break;
-  }
-}
 
 /* ------------------ MouseEditTour ------------------------ */
 

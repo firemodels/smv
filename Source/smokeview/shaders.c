@@ -367,11 +367,6 @@ void LoadSmokeShaders(void){
   glUseProgram(p_smoke);
 }
 
-/* ------------------ LoadVolsmokeShaders ------------------------ */
-
-void LoadVolsmokeShaders(void){
-  glUseProgram(p_volsmoke);
-}
 
 /* ------------------ UnLoadShaders ------------------------ */
 

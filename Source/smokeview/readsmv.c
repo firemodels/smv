@@ -1958,12 +1958,6 @@ void *SetupAllIsosurfaces(void *arg){
   }
   THREAD_EXIT(isosurface_threads);
 }
-/* ------------------ ReadSMVCHID ------------------------ */
-
-int ReadSMVCHID(bufferstreamdata *stream){
-  ParseCHIDProcess(&global_scase, stream, SCAN);
-  return 0;
-}
 /* ------------------ GetViewPointPtr ------------------------ */
 
 char *GetViewPointPtr(char **viewpoint_list, int nviewpoint_list, char *viewpoint){

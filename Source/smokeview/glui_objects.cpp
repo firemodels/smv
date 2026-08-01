@@ -1693,34 +1693,6 @@ extern "C" void GLUIUpdateDevices(void){
   GLUIDeviceCB(DEVICE_devicetypes);
 }
 
-/* ------------------ GetDeviceTminTmax ------------------------ */
-
-float GetDeviceTminTmax(void){
-  float return_val=1.0;
-  int first = 1, i;
-
-  for(i = 0; i<global_scase.devicecoll.ndeviceinfo; i++){
-    devicedata *devicei;
-    float *times;
-
-    devicei = global_scase.devicecoll.deviceinfo+i;
-    times = devicei->times;
-    if(times!=NULL&&devicei->nvals>0){
-      float tval;
-
-      tval = times[devicei->nvals-1];
-      if(first==1){
-        first = 0;
-        return_val = tval;
-      }
-      else{
-        return_val = MAX(return_val, tval);
-      }
-    }
-  }
-  return return_val;
-}
-
 /* ------------------ HaveExt ------------------------ */
 
 int HaveExt(void){

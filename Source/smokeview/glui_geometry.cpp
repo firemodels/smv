@@ -306,20 +306,6 @@ extern "C" void GLUIGetGeomDialogState(void){
   }
 }
 
-/* ------------------ HaveTexture ------------------------ */
-
-int HaveTexture(void){
-  int i;
-
-  for(i = 0; i < global_scase.texture_coll.ntextureinfo; i++){
-    texturedata *texti;
-
-    texti = global_scase.texture_coll.textureinfo + i;
-    if(texti->loaded == 1 && texti->used == 1)return 1;
-  }
-  return 0;
-}
-
 /* ------------------ BlockeditDlgCB ------------------------ */
 
 void BlockeditDlgCB(int var){
@@ -1327,12 +1313,6 @@ void VolumeCB(int var){
     assert(FFALSE);
     break;
   }
-}
-
-/* ------------------ GLUIHideHVAC ------------------------ */
-
-extern "C" void GLUIHideHVAC(void){
-  GLUICloseRollouts(glui_geometry);
 }
 
 /* ------------------ GLUIShowHVAC ------------------------ */

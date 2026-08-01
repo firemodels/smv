@@ -462,13 +462,6 @@ void DrawQuadVectorSlice(float *v1, float *v2, float *v3, float *v4, float del, 
   }
 }
 
-/* ------------------ OutSlicefile ------------------------ */
-
-void OutSlicefile(slicedata *sd){
-  writeslicedata(sd->file,
-    sd->is1,sd->is2,sd->js1,sd->js2,sd->ks1,sd->ks2,
-    sd->qslicedata,sd->times,sd->ntimes, redirect);
-}
 
 
 //*** header
@@ -3310,27 +3303,6 @@ void HideSlices(char *longlabel){
   }
 }
 
-/* ------------------ GetSliceTimes ------------------------ */
-
-void GetSliceTimes(char *file, float *times, int ntimes){
-  FILE *stream;
-  int i;
-  char buffer[256];
-
-  stream = FOPEN(file, "r");
-  if(stream == NULL){
-    for(i = 0; i<ntimes; i++){
-      times[i] = (float)i;
-    }
-  }
-  else{
-    for(i = 0; i<ntimes; i++){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%f", times+i);
-    }
-    fclose(stream);
-  }
-}
 
 /* ------------------ ReadSlice ------------------------ */
 
@@ -8655,47 +8627,8 @@ void GenerateSliceMenu(int option){
   FREEMEMORY(slicemenu_filename);
 }
 
-/* ------------------ CompareSliceX ------------------------ */
 
-int CompareSliceX(const void *arg1, const void *arg2){
-  slicedata *sf1, *sf2;
 
-  sf1 = *(slicedata **)arg1;
-  sf2 = *(slicedata **)arg2;
-
-  if(sf1->xmin<sf2->xmin)return  -1;
-  if(sf1->xmin>sf2->xmin)return   1;
-
-  return 0;
-}
-
-/* ------------------ CompareSliceZ ------------------------ */
-
-int CompareSliceY(const void *arg1, const void *arg2){
-  slicedata *sf1, *sf2;
-
-  sf1 = *(slicedata **)arg1;
-  sf2 = *(slicedata **)arg2;
-
-  if(sf1->ymin<sf2->ymin)return  -1;
-  if(sf1->ymin>sf2->ymin)return  +1;
-
-  return 0;
-}
-
-/* ------------------ CompareSliceZ ------------------------ */
-
-int CompareSliceZ(const void *arg1, const void *arg2){
-  slicedata *sf1, *sf2;
-
-  sf1 = *(slicedata **)arg1;
-  sf2 = *(slicedata **)arg2;
-
-  if(sf1->zmin<sf2->zmin)return  -1;
-  if(sf1->zmin>sf2->zmin)return   1;
-
-  return 0;
-}
 
 /* ------------------ CompareSortSlices ------------------------ */
 

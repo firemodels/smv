@@ -445,18 +445,6 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
   update_ini = 1;
 }
 
-/* ------------------ PadString ------------------------ */
-
-void PadString(char *label1, const char *label2, int length){
-  int i;
-
-  TrimBack(label1);
-  for(i=strlen(label1); i<length; i++){
-    strcat(label1, " ");
-  }
-  strcat(label1,label2);
-}
-
 /* ------------------ set_valtype ------------------------ */
 
 int bounds_dialog::set_valtype(char *label){
@@ -1217,93 +1205,6 @@ int GetValType(int type){
   return 0;
 }
 
-/* ------------------ GLUIGetGetChopMin ------------------------ */
-
-extern "C" int GLUIGetChopMin(int type, char *label, int *set_chopmin, float *chopmin){
-  switch(type){
-    case BOUND_HVACDUCT:
-      if(nhvacductbounds>0)return hvacductboundsCPP.get_chopmin(label, set_chopmin, chopmin);
-      break;
-    case BOUND_HVACNODE:
-      if(nhvacnodebounds > 0)return hvacnodeboundsCPP.get_chopmin(label, set_chopmin, chopmin);
-      break;
-    case BOUND_PATCH:
-      if(global_scase.npatchinfo>0)return patchboundsCPP.get_chopmin(label, set_chopmin, chopmin);
-      break;
-    case BOUND_PART:
-      if(global_scase.npartinfo>0)return partboundsCPP.get_chopmin(label, set_chopmin, chopmin);
-      break;
-    case BOUND_PLOT3D:
-      if(global_scase.nplot3dinfo>0)return plot3dboundsCPP.get_chopmin(label, set_chopmin, chopmin);
-      break;
-    case BOUND_SLICE:
-      if(global_scase.slicecoll.nsliceinfo>0)return sliceboundsCPP.get_chopmin(label, set_chopmin, chopmin);
-      break;
-    default:
-      assert(FFALSE);
-      break;
-  }
-  return 0;
-}
-
-/* ------------------ GLUIGetGetChopMax ------------------------ */
-
-extern "C" int GLUIGetChopMax(int type, char *label, int *set_chopmax, float *chopmax){
-  switch(type){
-    case BOUND_HVACDUCT:
-      if(nhvacductbounds>0)return hvacductboundsCPP.get_chopmax(label, set_chopmax, chopmax);
-      break;
-    case BOUND_HVACNODE:
-      if(nhvacnodebounds > 0)return hvacnodeboundsCPP.get_chopmax(label, set_chopmax, chopmax);
-      break;
-    case BOUND_PATCH:
-      if(global_scase.npatchinfo>0)return patchboundsCPP.get_chopmax(label, set_chopmax, chopmax);
-      break;
-    case BOUND_PART:
-      if(global_scase.npartinfo>0)return partboundsCPP.get_chopmax(label, set_chopmax, chopmax);
-      break;
-    case BOUND_PLOT3D:
-      if(global_scase.nplot3dinfo>0)return plot3dboundsCPP.get_chopmax(label, set_chopmax, chopmax);
-      break;
-    case BOUND_SLICE:
-      if(global_scase.slicecoll.nsliceinfo>0)return sliceboundsCPP.get_chopmax(label, set_chopmax, chopmax);
-      break;
-    default:
-      assert(FFALSE);
-      break;
-  }
-  return 0;
-}
-
-/* ------------------ GLUISetChopMin ------------------------ */
-
-extern "C" int GLUISetChopMin(int type, char *label, int set_chopmin, float chopmin){
-  switch(type){
-  case BOUND_HVACDUCT:
-    if(nhvacductbounds > 0)return hvacductboundsCPP.set_chopmin(label, set_chopmin, chopmin);
-    break;
-  case BOUND_HVACNODE:
-    if(nhvacnodebounds > 0)return hvacnodeboundsCPP.set_chopmin(label, set_chopmin, chopmin);
-    break;
-  case BOUND_PATCH:
-    if(global_scase.npatchinfo > 0)return patchboundsCPP.set_chopmin(label, set_chopmin, chopmin);
-    break;
-  case BOUND_PART:
-    if(global_scase.npartinfo > 0)return partboundsCPP.set_chopmin(label, set_chopmin, chopmin);
-    break;
-  case BOUND_PLOT3D:
-    if(global_scase.nplot3dinfo > 0)return plot3dboundsCPP.set_chopmin(label, set_chopmin, chopmin);
-    break;
-  case BOUND_SLICE:
-    if(global_scase.slicecoll.nsliceinfo > 0)return sliceboundsCPP.set_chopmin(label, set_chopmin, chopmin);
-    break;
-  default:
-    assert(FFALSE);
-    break;
-  }
-  return 0;
-}
-
 /* ------------------ GLUISetChopMax ------------------------ */
 
 extern "C" int GLUISetChopMax(int type, char *label, int set_chopmax, float chopmax){
@@ -1643,62 +1544,6 @@ extern "C" void GLUISetMinMaxAll(int type, int *set_valmin, float *valmin, int *
     default:
       assert(FFALSE);
       break;
-  }
-}
-
-/* ------------------ GLUIGetGlobalMinMaxAll ------------------------ */
-
-extern "C" void GLUIGetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall){
-  switch(type){
-  case BOUND_HVACDUCT:
-    hvacductboundsCPP.get_global_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_HVACNODE:
-    hvacnodeboundsCPP.get_global_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_PATCH:
-    patchboundsCPP.get_global_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_PART:
-    partboundsCPP.get_global_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_PLOT3D:
-    plot3dboundsCPP.get_global_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_SLICE:
-    sliceboundsCPP.get_global_minmax_all(valmin, valmax, nall);
-    break;
-  default:
-    assert(FFALSE);
-    break;
-  }
-}
-
-/* ------------------ GLUIGetLoadedMinMaxAll ------------------------ */
-
-extern "C" void GLUIGetLoadedMinMaxAll(int type, float *valmin, float *valmax, int nall){
-  switch(type){
-  case BOUND_HVACDUCT:
-    hvacductboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_HVACNODE:
-    hvacnodeboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_PATCH:
-    patchboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_PART:
-    partboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_PLOT3D:
-    plot3dboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_SLICE:
-    sliceboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
-    break;
-  default:
-    assert(FFALSE);
-    break;
   }
 }
 

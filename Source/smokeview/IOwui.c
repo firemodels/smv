@@ -147,38 +147,6 @@ int HaveTerrainTexture(int *draw_surfaceptr){
   return draw_texture;
 }
 
-/* ------------------ GetNTerrainTexturesLoaded ------------------------ */
-
-int GetNTerrainTexturesLoaded(void){
-  int count, i, opaque_texture_index = -1;
-
-  for(i = 0; i < global_scase.terrain_texture_coll.nterrain_textures; i++){
-    texturedata *texti;
-
-    texti = global_scase.terrain_texture_coll.terrain_textures + i;
-    if(texti->loaded == 1 && texti->display == 1 && texti->is_transparent == 0){
-      opaque_texture_index = i;
-      break;
-    }
-  }
-
-  count = 0;
-  for(i = -1; i<global_scase.terrain_texture_coll.nterrain_textures; i++){
-    texturedata *texti;
-
-    if(i==-1){
-      if(opaque_texture_index==-1)continue;
-      texti = global_scase.terrain_texture_coll.terrain_textures+opaque_texture_index;
-    }
-    else{
-      if(i==opaque_texture_index)continue;
-      texti = global_scase.terrain_texture_coll.terrain_textures+i;
-    }
-    if(texti->loaded==0||texti->display==0)continue;
-    count++;
-  }
-  return count;
-}
 
 /* ------------------ DrawTerrainGeom ------------------------ */
 
@@ -895,15 +863,6 @@ void UpdateTerrainColors(void){
   }
 }
 
-/* ------------------ GetZTerrain ------------------------ */
-
-float GetZTerrain(float x, float y){
-  int loc;
-  float zterrain;
-
-  zterrain = GetZCellVal(NULL, x, y, NULL, &loc);
-  return zterrain;
-}
 
 /* ------------------ ComputeTerrainNormalsManual ------------------------ */
 
@@ -1791,56 +1750,6 @@ void DrawTerrainOBSTTexture(terraindata *terri){
   glPopMatrix();
 }
 
-/* ------------------ GetTerrainSize ------------------------ */
-
-int GetTerrainSize(char *file, float *xmin, float *xmax, int *nx, float *ymin, float *ymax, int *ny, int *times_local){
-  FILE *WUIFILE;
-  int one;
-  float xyminmax[4];
-  int nxy[2];
-  size_t returncode;
-  int version;
-  float time_local;
-  int nchanges;
-  int nt = 0;
-
-  WUIFILE = FOPEN(file, "rb");
-  if(WUIFILE == NULL)return 1;
-
-  FSEEK(WUIFILE, 4, SEEK_CUR);fread(&one, 4, 1, WUIFILE);FSEEK(WUIFILE, 4, SEEK_CUR);
-
-  FORTWUIREAD(&version, 1);
-  FORTWUIREAD(xyminmax, 4);
-  *xmin = xyminmax[0];
-  *xmax = xyminmax[1];
-  *ymin = xyminmax[2];
-  *ymax = xyminmax[3];
-
-  FORTWUIREAD(nxy, 2);
-  *nx = nxy[0];
-  *ny = nxy[1];
-
-  FSEEK(WUIFILE, 16 + 5 * (*nx)*(*ny), SEEK_CUR); // skip over zelev and state
-
-  for(;;){
-
-    FORTWUIREAD(&time_local, 1);
-    if(returncode == 0)break;
-
-    FORTWUIREAD(&nchanges, 1);
-    if(returncode == 0)break;
-
-    if(nchanges > 0)FSEEK(WUIFILE, 16 + 5 * nchanges, SEEK_CUR);
-
-    nt++;
-
-  }
-  *times_local = nt;
-
-  fclose(WUIFILE);
-
-  return 0;
-}
 
 /* ------------------ GetTerrainElev ------------------------ */
 

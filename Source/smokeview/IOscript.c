@@ -531,37 +531,6 @@ keyworddata *GetScriptKeyword(FILE *stream){
   return keywordinfo;
 }
 
-/* ------------------ GetXYZ ------------------------ */
-
-void GetXYZ(char *buffer,int *ival){
-  int i;
-
-  for(i=0; i<(int)strlen(buffer); i++){
-    char *c;
-
-    c = buffer+i;
-    if(*c!=' '){
-      if(*c=='x'||*c=='X'||*c=='1'){
-        *ival=1;
-        return;
-      }
-      if(*c=='y'||*c=='Y'||*c=='2'){
-        *ival=2;
-        return;
-      }
-      if(*c=='z'||*c=='Z'||*c=='3'){
-        *ival=3;
-        return;
-      }
-      if(*c == 'a' || *c == 'A' || *c == '0'){
-        *ival = 0;
-        return;
-      }
-      *ival = 1;
-      break;
-    }
-  }
-}
 
 
 #define SETbuffer \

@@ -342,14 +342,7 @@ extern "C" void GLUIUpdateBackgroundFlip(int flip){
   CHECKBOX_labels_flip->set_int_val(flip);
 }
 
-/* ------------------ GLUIUpdateTimebarOverlap ------------------------ */
-
-extern "C" void GLUIUpdateTimebarOverlap(void){
-  RADIO_timebar_overlap->set_int_val(timebar_overlap);
-}
-
-
-/* ------------------ GLUIUpdateTimebarOverlap ------------------------ */
+/* ------------------ GLUIUpdateFastBlockageDraw ------------------------ */
 
 extern "C" void GLUIUpdateFastBlockageDraw(void){
   if(RADIOBUTTON_label_1 != NULL)RADIOBUTTON_label_1->set_int_val(blockage_draw_option);

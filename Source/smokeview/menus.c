@@ -3598,15 +3598,6 @@ void TourCopyMenu(int value){
   }
 }
 
-/* ------------------ SetTour ------------------------ */
-
-void SetTour(tourdata *thetour){
-  int tournumber;
-
-  if(thetour==NULL)return;
-  tournumber = thetour - global_scase.tourcoll.tourinfo;
-  TourMenu(tournumber);
-}
 
 /* ------------------ UpdateStreakValue ------------------------ */
 
@@ -3660,10 +3651,6 @@ void ParticleStreakShowMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-/* ------------------ Particle5ShowMenu ------------------------ */
-
-void Particle5ShowMenu(int value){
-}
 
 /* ------------------ PropMenu ------------------------ */
 
@@ -4202,22 +4189,6 @@ void UnloadBoundaryMenu(int value){
   }
 }
 
-/* ------------------ UnloadPlot3dMenu ------------------------ */
-
-void UnloadPlot3dMenu(int value){
-  int errorcode,i;
-
-  updatemenu=1;
-  GLUTPOSTREDISPLAY;
-  if(value>=0){
-    ReadPlot3D("",value,UNLOAD,&errorcode);
-  }
-  else{
-    for(i=0; i<global_scase.nplot3dinfo; i++){
-      ReadPlot3D("",i,UNLOAD,&errorcode);
-    }
-  }
-}
 
 /* ------------------ LoadVSliceMenu2 ------------------------ */
 
@@ -5316,55 +5287,6 @@ void UpdateMenu(void){
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }
 
-/* ------------------ LoadAllPlot3D ------------------------ */
-
-int LoadAllPlot3D(float time){
-  int i;
-  int errorcode;
-  int count=0;
-
-  for(i = 0; i < global_scase.nplot3dinfo; i++){
-    if(global_scase.plot3dinfo[i].loaded == 1){
-      ReadPlot3D("", i, UNLOAD, &errorcode);
-    }
-  }
-  for(i = 0; i < global_scase.nplot3dinfo; i++){
-    plot3ddata *plot3di;
-
-    plot3di = global_scase.plot3dinfo + i;
-    plot3di->finalize = 0;
-  }
-  for(i = global_scase.nplot3dinfo - 1; i >=0; i--){
-    plot3ddata *plot3di;
-
-    plot3di = global_scase.plot3dinfo + i;
-    if(ABS(plot3di->time - time) < 0.5){
-      plot3di->finalize = 1;
-      break;
-    }
-  }
-  FILE_SIZE total_plot3d_filesize = 0;
-  int file_count=0;
-  float plot3d_timer;
-  START_TIMER(plot3d_timer);
-  for(i = 0; i < global_scase.nplot3dinfo; i++){
-    plot3ddata *plot3di;
-
-    plot3di = global_scase.plot3dinfo + i;
-    if(ABS(plot3di->time - time) > 0.5)continue;
-    total_plot3d_filesize += ReadPlot3D(plot3di->file, plot3di - global_scase.plot3dinfo, LOAD, &errorcode);
-    file_count++;
-    if(errorcode==0)count++;
-  }
-  STOP_TIMER(plot3d_timer);
-  if(file_count>0){
-    char label[256];
-
-    Plot3DSummary(label, file_count, total_plot3d_filesize, plot3d_timer);
-    printf("%s\n",label);
-  }
-  return count;
-}
 
 /* ------------------ LoadPlot3DMenu ------------------------ */
 
@@ -6839,19 +6761,6 @@ void ZoneShowMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-/* ------------------ GetHVACConnectState ------------------------ */
-
-int GetHVACConnectState(int index){
-  int i;
-
-  for(i = 0; i < global_scase.hvaccoll.nhvacconnectinfo; i++){
-    hvacconnectdata *hi;
-
-    hi = global_scase.hvaccoll.hvacconnectinfo + i;
-    if(hi->index == index)return hi->display;
-  }
-  return 1;
-}
 
 /* ------------------ HVACConnectMenu ------------------------ */
 
