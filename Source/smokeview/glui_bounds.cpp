@@ -272,6 +272,8 @@ void bounds_dialog::RestoreBounds(void){
   memcpy(all_bounds, all_bounds_save, nall_bounds*sizeof(cpp_boundsdata));
 }
 
+/* ------------------ setupNoGraphics ------------------------ */
+
 void bounds_dialog::setupNoGraphics(const char *file_type, cpp_boundsdata *bounds_arg, int nbounds_arg){
 
   all_bounds = bounds_arg;
@@ -441,18 +443,6 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
     Callback(BOUND_SETCHOPMAX);
   }
   update_ini = 1;
-}
-
-/* ------------------ PadString ------------------------ */
-
-void PadString(char *label1, const char *label2, int length){
-  int i;
-
-  TrimBack(label1);
-  for(i=strlen(label1); i<length; i++){
-    strcat(label1, " ");
-  }
-  strcat(label1,label2);
 }
 
 /* ------------------ set_valtype ------------------------ */
@@ -1215,93 +1205,6 @@ int GetValType(int type){
   return 0;
 }
 
-/* ------------------ GLUIGetGetChopMin ------------------------ */
-
-extern "C" int GLUIGetChopMin(int type, char *label, int *set_chopmin, float *chopmin){
-  switch(type){
-    case BOUND_HVACDUCT:
-      if(nhvacductbounds>0)return hvacductboundsCPP.get_chopmin(label, set_chopmin, chopmin);
-      break;
-    case BOUND_HVACNODE:
-      if(nhvacnodebounds > 0)return hvacnodeboundsCPP.get_chopmin(label, set_chopmin, chopmin);
-      break;
-    case BOUND_PATCH:
-      if(global_scase.npatchinfo>0)return patchboundsCPP.get_chopmin(label, set_chopmin, chopmin);
-      break;
-    case BOUND_PART:
-      if(global_scase.npartinfo>0)return partboundsCPP.get_chopmin(label, set_chopmin, chopmin);
-      break;
-    case BOUND_PLOT3D:
-      if(global_scase.nplot3dinfo>0)return plot3dboundsCPP.get_chopmin(label, set_chopmin, chopmin);
-      break;
-    case BOUND_SLICE:
-      if(global_scase.slicecoll.nsliceinfo>0)return sliceboundsCPP.get_chopmin(label, set_chopmin, chopmin);
-      break;
-    default:
-      assert(FFALSE);
-      break;
-  }
-  return 0;
-}
-
-/* ------------------ GLUIGetGetChopMax ------------------------ */
-
-extern "C" int GLUIGetChopMax(int type, char *label, int *set_chopmax, float *chopmax){
-  switch(type){
-    case BOUND_HVACDUCT:
-      if(nhvacductbounds>0)return hvacductboundsCPP.get_chopmax(label, set_chopmax, chopmax);
-      break;
-    case BOUND_HVACNODE:
-      if(nhvacnodebounds > 0)return hvacnodeboundsCPP.get_chopmax(label, set_chopmax, chopmax);
-      break;
-    case BOUND_PATCH:
-      if(global_scase.npatchinfo>0)return patchboundsCPP.get_chopmax(label, set_chopmax, chopmax);
-      break;
-    case BOUND_PART:
-      if(global_scase.npartinfo>0)return partboundsCPP.get_chopmax(label, set_chopmax, chopmax);
-      break;
-    case BOUND_PLOT3D:
-      if(global_scase.nplot3dinfo>0)return plot3dboundsCPP.get_chopmax(label, set_chopmax, chopmax);
-      break;
-    case BOUND_SLICE:
-      if(global_scase.slicecoll.nsliceinfo>0)return sliceboundsCPP.get_chopmax(label, set_chopmax, chopmax);
-      break;
-    default:
-      assert(FFALSE);
-      break;
-  }
-  return 0;
-}
-
-/* ------------------ GLUISetChopMin ------------------------ */
-
-extern "C" int GLUISetChopMin(int type, char *label, int set_chopmin, float chopmin){
-  switch(type){
-  case BOUND_HVACDUCT:
-    if(nhvacductbounds > 0)return hvacductboundsCPP.set_chopmin(label, set_chopmin, chopmin);
-    break;
-  case BOUND_HVACNODE:
-    if(nhvacnodebounds > 0)return hvacnodeboundsCPP.set_chopmin(label, set_chopmin, chopmin);
-    break;
-  case BOUND_PATCH:
-    if(global_scase.npatchinfo > 0)return patchboundsCPP.set_chopmin(label, set_chopmin, chopmin);
-    break;
-  case BOUND_PART:
-    if(global_scase.npartinfo > 0)return partboundsCPP.set_chopmin(label, set_chopmin, chopmin);
-    break;
-  case BOUND_PLOT3D:
-    if(global_scase.nplot3dinfo > 0)return plot3dboundsCPP.set_chopmin(label, set_chopmin, chopmin);
-    break;
-  case BOUND_SLICE:
-    if(global_scase.slicecoll.nsliceinfo > 0)return sliceboundsCPP.set_chopmin(label, set_chopmin, chopmin);
-    break;
-  default:
-    assert(FFALSE);
-    break;
-  }
-  return 0;
-}
-
 /* ------------------ GLUISetChopMax ------------------------ */
 
 extern "C" int GLUISetChopMax(int type, char *label, int set_chopmax, float chopmax){
@@ -1644,62 +1547,6 @@ extern "C" void GLUISetMinMaxAll(int type, int *set_valmin, float *valmin, int *
   }
 }
 
-/* ------------------ GLUIGetGlobalMinMaxAll ------------------------ */
-
-extern "C" void GLUIGetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall){
-  switch(type){
-  case BOUND_HVACDUCT:
-    hvacductboundsCPP.get_global_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_HVACNODE:
-    hvacnodeboundsCPP.get_global_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_PATCH:
-    patchboundsCPP.get_global_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_PART:
-    partboundsCPP.get_global_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_PLOT3D:
-    plot3dboundsCPP.get_global_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_SLICE:
-    sliceboundsCPP.get_global_minmax_all(valmin, valmax, nall);
-    break;
-  default:
-    assert(FFALSE);
-    break;
-  }
-}
-
-/* ------------------ GLUIGetLoadedMinMaxAll ------------------------ */
-
-extern "C" void GLUIGetLoadedMinMaxAll(int type, float *valmin, float *valmax, int nall){
-  switch(type){
-  case BOUND_HVACDUCT:
-    hvacductboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_HVACNODE:
-    hvacnodeboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_PATCH:
-    patchboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_PART:
-    partboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_PLOT3D:
-    plot3dboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
-    break;
-  case BOUND_SLICE:
-    sliceboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
-    break;
-  default:
-    assert(FFALSE);
-    break;
-  }
-}
-
 /* ------------------ GLUISetGlobalMinMaxAll ------------------------ */
 
 extern "C" void GLUISetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall){
@@ -1756,7 +1603,7 @@ extern "C" void GLUISetLoadedMinMaxAll(int type, float *valmin, float *valmax, i
   }
 }
 
-/* ------------------ HVAC callback: GLUIHVACDuctBoundsCPP_CB ------------------------ */
+/* ------------------ GLUIHVACDuctBoundsCPP_CB ------------------------ */
 
 extern "C" void GLUIHVACDuctBoundsCPP_CB(int var){
   if(nhvacductbounds == 0)return;
@@ -1788,7 +1635,7 @@ extern "C" void GLUIHVACDuctBoundsCPP_CB(int var){
   }
 }
 
-/* ------------------ HVAC callback: GLUIHVACNodeBoundsCPP_CB ------------------------ */
+/* ------------------ GLUIHVACNodeBoundsCPP_CB ------------------------ */
 
 extern "C" void GLUIHVACNodeBoundsCPP_CB(int var){
   if(nhvacnodebounds == 0)return;
@@ -1826,7 +1673,7 @@ extern "C" void GLUIUpdateHVACDuctType(void){
   GLUIHVACDuctBoundsCPP_CB(BOUND_VAL_TYPE);
 }
 
-/* ------------------ slice callback: GLUIHVACSliceBoundsCPP_CB ------------------------ */
+/* ------------------ GLUIHVACSliceBoundsCPP_CB ------------------------ */
 
 extern "C" void GLUIHVACSliceBoundsCPP_CB(int var){
   int ii, last_slice;
@@ -1962,7 +1809,7 @@ int HavePlot3DData(void){
   return 1;
 }
 
-/* ------------------ plot3d callback: GLUIPlot3DBoundsCPP_CB ------------------------ */
+/* ------------------ GLUIPlot3DBoundsCPP_CB ------------------------ */
 
 extern "C" void GLUIPlot3DBoundsCPP_CB(int var){
   cpp_boundsdata *bounds;
@@ -2068,7 +1915,7 @@ extern "C" void GLUIPlot3DBoundsCPP_CB(int var){
   }
 }
 
-/* ------------------ part callback: GLUIPartBoundsCPP_CB ------------------------ */
+/* ------------------ GLUIPartBoundsCPP_CB ------------------------ */
 
 extern "C" void GLUIPartBoundsCPP_CB(int var){
   cpp_boundsdata *bounds;
@@ -2206,7 +2053,7 @@ int HaveAnyPatchData(void){
   return 0;
 }
 
-/* ------------------ patch callback: GLUIPatchBoundsCPP_CB ------------------------ */
+/* ------------------ GLUIPatchBoundsCPP_CB ------------------------ */
 
 extern "C" void GLUIPatchBoundsCPP_CB(int var){
   int i;
@@ -2564,7 +2411,6 @@ void SetLoadedPartBounds(int *list, int nlist){
   int *set_valmin, *set_valmax, nall;
   int i, j;
   int npart_types;
-
 
   npart_types = GLUIGetNValtypes(BOUND_PART);
 
@@ -3005,7 +2851,6 @@ int      nloadprocinfo = 0;
 procdata  isoprocinfo[3];
 int      nisoprocinfo=0;
 
-
 //*** hvacductprocinfo entries
 procdata  hvacductprocinfo[1];
 int      nhvacductprocinfo = 0;
@@ -3036,8 +2881,6 @@ int      nsliceprocinfo=0;
 
 procdata  plot3dprocinfo[4];
 int      nplot3dprocinfo=0;
-
-
 
 //*** filedatacolprocinfo entries
 #define FILE_ROLLOUT     0
@@ -3339,7 +3182,6 @@ extern "C" void GLUIUpdateListIsoColorobar(void){
   if(LIST_iso_colorbar!=NULL)LIST_iso_colorbar->set_int_val(colorbars.iso_colorbar_index);
 }
 
-
 /* ------------------ GLUIUpdateIsoBounds ------------------------ */
 
 extern "C" void GLUIUpdateIsoBounds(void){
@@ -3384,13 +3226,11 @@ extern "C" void GLUIUpdateIsoBounds(void){
 }
 /* ------------------ GLUIUpdateVectorpointsize ------------------------ */
 
-
 extern "C" void GLUIUpdateVectorpointsize(void){
   if(SPINNER_vectorpointsize!=NULL)SPINNER_vectorpointsize->set_int_val(vectorpointsize);
 }
 
 /* ------------------ GLUIUpdateSliceDupDialog ------------------------ */
-
 
 extern "C" void GLUIUpdateSliceDupDialog(void){
   if(RADIO_boundaryslicedup != NULL)RADIO_boundaryslicedup->set_int_val(boundaryslicedup_option);
@@ -3827,11 +3667,11 @@ void BoundsDlgCB(int var){
   }
 }
 
-/* ------------------ GLUIImmersedBoundCB ------------------------ */
-
 #define SHOW_POLYGON_EDGES 0
 #define SHOW_TRIANGLE_EDGES 1
 #define HIDE_EDGES 2
+
+/* ------------------ GLUIImmersedBoundCB ------------------------ */
 
 extern "C" void GLUIImmersedBoundCB(int var){
   int i;
@@ -4738,7 +4578,6 @@ void AddColorbarListBound(GLUI_Listbox *LIST_cbar, int index, char *label_arg, i
   char cbar_type[256];
   int i, nitems = 0;
 
-
   for(i = 0; i < colorbars.ncolorbars; i++){
     colorbardata *cbi;
 
@@ -4823,12 +4662,12 @@ extern "C" void GLUIUpdateColorbarListBound(int flag){
   strcpy(label, "user defined"); AddColorbarListBound(LIST_cb, -7, label, &max_LISTBOX_cb_bound);
 }
 
-/* ------------------ GLUIShowHideGeomDataCB ------------------------ */
-
 #define SHOW_ALL_MESH_GEOM 0
 #define HIDE_ALL_MESH_GEOM 1
 #define SHOW_ALL_MESH_DATA 2
 #define HIDE_ALL_MESH_DATA 3
+
+/* ------------------ GLUIShowHideGeomDataCB ------------------------ */
 
 void GLUIShowHideGeomDataCB(int var){
   int i;
@@ -4891,10 +4730,9 @@ void AddMeshCheckbox(int icol,int nm, GLUI_Panel *PANEL, GLUI_Checkbox **CHECKBO
 #define HIDE_ALL_PATCHES 1
 /* ------------------ BoundDebugCB ------------------------ */
 
-
 void BoundDebugCB(int var){
   int i;
-  
+
   switch(var){
     case SHOW_ALL_PATCHES:
       for(i=0; i<NPATCHES_DEBUG; i++){
@@ -5073,7 +4911,6 @@ extern "C" void GLUIBoundsSetup(int main_window){
   }
 
   // ----------------------------------- 3D smoke ----------------------------------------
-
 
   if(global_scase.smoke3dcoll.nsmoke3dinfo > 0 
     ){
@@ -5542,7 +5379,6 @@ extern "C" void GLUIBoundsSetup(int main_window){
     RADIO_slice_celltype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_region, &slice_celltype, IMMERSED_SWITCH_CELLTYPE, GLUIImmersedBoundCB);
     glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "gas");
     glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "solid");
-
 
     RADIO_button_cutcell = glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "cut cell");
     if(global_scase.ngeom_data == 0)RADIO_button_cutcell->disable();
@@ -6138,7 +5974,6 @@ extern "C" void GLUIUpdateTracers(void){
   CHECKBOX_showtracer->set_int_val(show_tracers_always);
 }
 
-
 /* ------------------ GLUIUpdateIsotype ------------------------ */
 
 extern "C" void GLUIUpdateIsotype(void){
@@ -6147,9 +5982,7 @@ extern "C" void GLUIUpdateIsotype(void){
   CHECKBOX_show_iso_points->set_int_val((visAIso&4)/4);
 }
 
-
 /* ------------------ GLUIUpdatePlot3Dtype ------------------------ */
-
 
 extern "C" void GLUIUpdatePlot3Dtype(void){
   RADIO_plot3d_isotype->set_int_val(p3dsurfacetype);
@@ -6390,7 +6223,6 @@ extern "C" void GLUIScriptEnable(void){
   }
 
 /* ------------------ GLUIScriptDisable ------------------------ */
-
 
 extern "C"  void GLUIScriptDisable(void){
     BUTTON_script_start->disable();

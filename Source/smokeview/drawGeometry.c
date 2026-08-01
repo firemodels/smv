@@ -390,7 +390,7 @@ void DrawCircVentsExactSolid(int option){
       }
 
       float delta, deltax = 0.0, deltay = 0.0, deltaz = 0.0;
-        
+
       delta = xyzmaxdiff / 400.0;
       switch(cvi->dir){
       case DOWN_X:
@@ -522,7 +522,7 @@ void DrawCircVentsExactOutline(int option){
       }
 
       float delta, deltax = 0.0, deltay = 0.0, deltaz = 0.0;
-        
+
       delta = xyzmaxdiff / 400.0;
       switch(cvi->dir){
       case DOWN_X:
@@ -691,7 +691,6 @@ void UpdateIndexColors(void){
   global_scase.updatefaces=1;
 }
 
-
 /* ------------------ DrawObstOutlines ------------------------ */
 
 void DrawObstOutlines(void){
@@ -769,7 +768,6 @@ void DrawObstOutlines(void){
 void DrawOrigObstOutlines(void){
   int i;
   float *color, *oldcolor=NULL;
-
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
@@ -862,60 +860,6 @@ void DrawOutlines(void){
   AntiAliasLine(OFF);
 }
 
-/* ------------------ DrawCBox ------------------------ */
-
-void DrawCBox(float x, float y, float z, float size){
-  float xx[8], yy[8], zz[8];
-  float xbound[2],ybound[2],zbound[2];
-  int i;
-  int ix[8]={0,1,1,0,0,1,1,0};
-  int iy[8]={0,0,0,0,1,1,1,1};
-  int iz[8]={0,0,1,1,0,0,1,1};
-  float dsize=SCALE2SMV(size);
-
-  xbound[0]=x-dsize/2.0;
-  ybound[0]=y-dsize/2.0;
-  zbound[0]=z-dsize/2.0;
-  xbound[1]=x+dsize/2.0;
-  ybound[1]=y+dsize/2.0;
-  zbound[1]=z+dsize/2.0;
-  for(i=0; i<8; i++){
-    xx[i]=xbound[ix[i]];
-    yy[i]=ybound[iy[i]];
-    zz[i]=zbound[iz[i]];
-  }
-
-  glVertex3f(xx[0],yy[0],zz[0]);
-  glVertex3f(xx[1],yy[1],zz[1]);
-  glVertex3f(xx[5],yy[5],zz[5]);
-  glVertex3f(xx[4],yy[4],zz[4]);
-
-  glVertex3f(xx[1],yy[1],zz[1]);
-  glVertex3f(xx[2],yy[2],zz[2]);
-  glVertex3f(xx[6],yy[6],zz[6]);
-  glVertex3f(xx[5],yy[5],zz[5]);
-
-  glVertex3f(xx[2],yy[2],zz[2]);
-  glVertex3f(xx[3],yy[3],zz[3]);
-  glVertex3f(xx[7],yy[7],zz[7]);
-  glVertex3f(xx[6],yy[6],zz[6]);
-
-  glVertex3f(xx[3],yy[3],zz[3]);
-  glVertex3f(xx[0],yy[0],zz[0]);
-  glVertex3f(xx[4],yy[4],zz[4]);
-  glVertex3f(xx[7],yy[7],zz[7]);
-
-  glVertex3f(xx[0],yy[0],zz[0]);
-  glVertex3f(xx[3],yy[3],zz[3]);
-  glVertex3f(xx[2],yy[2],zz[2]);
-  glVertex3f(xx[1],yy[1],zz[1]);
-
-  glVertex3f(xx[4],yy[4],zz[4]);
-  glVertex3f(xx[5],yy[5],zz[5]);
-  glVertex3f(xx[6],yy[6],zz[6]);
-  glVertex3f(xx[7],yy[7],zz[7]);
-}
-
 /* ------------------ GetBlockVals ------------------------ */
 
 void GetBlockVals(  float *xmin, float *xmax,
@@ -962,22 +906,7 @@ void GetBlockVals(  float *xmin, float *xmax,
 
 }
 
-/* ------------------ HaveCircularVents ------------------------ */
-
-int HaveCircularVents(void){
-  int i;
-
-  for(i = 0; i < global_scase.meshescoll.nmeshes; i++){
-    meshdata* meshi;
-
-    meshi = global_scase.meshescoll.meshinfo + i;
-
-    if(meshi->ncvents > 0)return 1;
-  }
-  return 0;
-}
-
-      /* ------------------ SetCVentDirs ------------------------ */
+/* ------------------ SetCVentDirs ------------------------ */
 
 void SetCVentDirs(void){
   int ii;
@@ -1802,7 +1731,6 @@ void DrawCAD2Geom(const cadgeomdata *cd, int trans_flag){
     }
     if(visCadTextures==1&&texti->loaded==1)continue;
 
-
     thiscolor=quadi->cadlookq->rgb;
     if(thiscolor!=lastcolor){
       if(thiscolor[0]<0.0||thiscolor[1]<0.0||thiscolor[2]<0.0){
@@ -2021,7 +1949,6 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
     zminmax2[1] = vi->zmax;
   }
 
-
   for(n=0; n<8; n++){
     xx[n]=xminmax[ii[n]];
     yy[n]=yminmax[jj[n]];
@@ -2146,7 +2073,6 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
       }
       faceptr->linecolor=faceptr->color;
     }
-
 
     if(bc!=NULL){
       faceptr->textureinfo=bc->surf[j]->textureinfo;
@@ -2292,7 +2218,6 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
       faceptr->approx_center_coord[1]+=yvert;
       faceptr->approx_center_coord[2]+=zvert;
 
-
       faceptr->exact_vertex_coords[3*k]  =xx2[jjj]+offset[XXX];
       faceptr->exact_vertex_coords[3*k+1]=yy2[jjj]+offset[YYY];
       faceptr->exact_vertex_coords[3*k+2]=zz2[jjj]+offset[ZZZ];
@@ -2306,7 +2231,6 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
     faceptr->approx_center_coord[0]/=4.0;
     faceptr->approx_center_coord[1]/=4.0;
     faceptr->approx_center_coord[2]/=4.0;
-
 
     {
       float xa_texture[4], ya_texture[4];
@@ -3426,7 +3350,6 @@ void DrawFacesOLD(int option){
 
         if(facei->type2 == BLOCK_face && cullfaces == 0)glDisable(GL_CULL_FACE);
 
-
         glBindTexture(GL_TEXTURE_2D, texti->name);
         glBegin(GL_QUADS);
 
@@ -3445,7 +3368,6 @@ void DrawFacesOLD(int option){
         glEnd();
       }
       if(cullfaces == 1)glEnable(GL_CULL_FACE);
-
 
     }
     glDisable(GL_TEXTURE_2D);
@@ -3721,7 +3643,6 @@ void DrawFaces(){
 
         if(facei->type2==BLOCK_face&&cullfaces==0)glDisable(GL_CULL_FACE);
 
-
         glBindTexture(GL_TEXTURE_2D,texti->name);
         glBegin(GL_QUADS);
 
@@ -3740,7 +3661,6 @@ void DrawFaces(){
         glEnd();
       }
       if(cullfaces==1)glEnable(GL_CULL_FACE);
-
 
     }
     glDisable(GL_COLOR_MATERIAL);
@@ -3934,94 +3854,6 @@ void DrawTransparentFaces(){
   }
 
   if(drawing_transparent==1)TransparentOff();
-}
-
-/* ------------------ GetFaceNabor ------------------------ */
-
-facedata *GetFaceNabor(meshdata *meshi, facedata *facei, int dir){
-  meshdata *meshj;
-  int j;
-
-  meshj = meshi->nabors[dir];
-  if(meshj == NULL)return NULL;
-  switch(dir){
-  case MDOWN:
-    if(facei->kmin != 0 || facei->kmin != facei->kmax)return NULL;
-    for(j = 5; j < 6 * meshj->nbptrs; j += 6){
-      facedata *facej;
-
-      facej = meshj->faceinfo + j;
-      if(facej->kmin != meshj->kbar || facej->kmax != facej->kmin)continue;
-      if(facei->imin != facej->imin || facei->jmin != facej->jmin)continue;
-      if(facei->imax != facej->imax || facei->jmax != facej->jmax)continue;
-      return facej;
-    }
-    break;
-  case MUP:
-    if(facei->kmin != meshi->kbar || facei->kmax != facei->kmin)return NULL;
-    for(j = 4; j < 6 * meshj->nbptrs; j += 6){
-      facedata *facej;
-
-      facej = meshj->faceinfo + j;
-      if(facej->kmin != meshj->kbar || facej->kmax != facej->kmin)continue;
-      if(facei->imin != facej->imin || facei->jmin != facej->jmin)continue;
-      if(facei->imax != facej->imax || facei->jmax != facej->jmax)continue;
-      return facej;
-    }
-    break;
-  case MFRONT:
-    if(facei->jmin != 0 || facei->jmin != facei->jmax)return NULL;
-    for(j = 2; j < 6 * meshj->nbptrs; j += 6){
-      facedata *facej;
-
-      facej = meshj->faceinfo + j;
-      if(facej->jmin != meshj->jbar || facej->jmax != facej->jmin)continue;
-      if(facei->imin != facej->imin || facei->kmin != facej->kmin)continue;
-      if(facei->imax != facej->imax || facei->kmax != facej->kmax)continue;
-      return facej;
-    }
-    break;
-  case MBACK:
-    if(facei->jmin != meshi->jbar || facei->jmax != facei->jmin)return NULL;
-    for(j = 0; j < 6 * meshj->nbptrs; j += 6){
-      facedata *facej;
-
-      facej = meshj->faceinfo + j;
-      if(facej->jmin != meshj->jbar || facej->jmax != facej->jmin)continue;
-      if(facei->imin != facej->imin || facei->kmin != facej->kmin)continue;
-      if(facei->imax != facej->imax || facei->kmax != facej->kmax)continue;
-      return facej;
-    }
-    break;
-  case MLEFT:
-    if(facei->imin != 0 || facei->imin != facei->imax)return NULL;
-    for(j = 1; j < 6 * meshj->nbptrs; j += 6){
-      facedata *facej;
-
-      facej = meshj->faceinfo + j;
-      if(facej->imin != meshj->ibar || facej->imax != facej->imin)continue;
-      if(facei->kmin != facej->kmin || facei->jmin != facej->jmin)continue;
-      if(facei->kmax != facej->kmax || facei->jmax != facej->jmax)continue;
-      return facej;
-    }
-    break;
-  case MRIGHT:
-    if(facei->imin != meshi->ibar || facei->imax != facei->imin)return NULL;
-    for(j = 3; j < 6 * meshj->nbptrs; j += 6){
-      facedata *facej;
-
-      facej = meshj->faceinfo + j;
-      if(facej->imin != meshj->ibar || facej->imax != facej->imin)continue;
-      if(facei->kmin != facej->kmin || facei->jmin != facej->kmin)continue;
-      if(facei->kmax != facej->kmax || facei->jmax != facej->kmax)continue;
-      return facej;
-    }
-    break;
-  default:
-    assert(FFALSE);
-    break;
-  }
-  return NULL;
 }
 
 /* ------------------ AllocateFaces ------------------------ */
@@ -4220,240 +4052,6 @@ void UpdateSelectFaces(void){
         sd++;
       }
     }
-  }
-}
-
-/* ------------------ InitDemo ------------------------ */
-
-void InitDemo(float rad, int nlat, int nlong){
-  int i,j;
-  float phi, psi;
-  extern float *sphere_xyz;
-  extern int update_demo;
-  float *s_xyz;
-
-  if(nlat<=0||nlong<=0)return;
-  update_demo=0;
-  FREEMEMORY(sphere_xyz);
-  NewMemory((void **)&sphere_xyz,3*nlat*(nlong+1)*sizeof(float));
-  s_xyz=sphere_xyz;
-  for(j=0; j<nlong+1; j++){
-    phi=-PI + 2.0*PI*j/nlong;
-    for(i=0; i<nlat; i++){
-      psi = -PI/2.0 + i*PI/(nlat-1);
-      *s_xyz++ = 0.2143 + rad*cos(psi)*cos(phi);
-      *s_xyz++ = 0.2143 + rad*cos(psi)*sin(phi);
-      *s_xyz++ = 0.5 + rad*sin(psi);
-    }
-  }
-}
-
-/* ------------------ CalcNormal3 ------------------------ */
-
-void CalcNormal3(const float *v1,
-                 const float *v2,
-                 const float *v3,
-                 float *out){
-  float u[3], v[3];
-  int i;
-
-
-  for(i=0; i<3; i++){
-    u[i]=v2[i]-v1[i];
-    v[i]=v3[i]-v1[i];
-  }
-
-
-  out[0] = u[1]*v[2] - u[2]*v[1];
-  out[1] = u[2]*v[0] - u[0]*v[2];
-  out[2] = u[0]*v[1] - u[1]*v[0];
-
-  ReduceToUnit(out);
-
-}
-
-/* ------------------ CalcNormal4 ------------------------ */
-
-void CalcNormal4(const float *v1,
-                 float *out){
-  out[0]=v1[0]-0.2143;
-  out[1]=v1[1]-0.2143;
-  out[2]=v1[2]-0.5;
-
-
-
-  ReduceToUnit(out);
-
-}
-
-/* ------------------ DrawDemo2 ------------------------ */
-
-void DrawDemo2(void){
-      demo_mode++;
-      glBegin(GL_QUADS);
-      if(demo_mode%2==0){
-        glColor3f(1.0,0.0,0.0);
-      }
-      else{
-        glColor3f(0.0,0.0,1.0);
-      }
-      glVertex3f(0.0,0.3,0.0);
-      glVertex3f(0.0,0.6,0.0);
-      glVertex3f(1.0,0.6,0.0);
-      glVertex3f(1.0,0.3,0.0);
-      glEnd();
-}
-
-/* ------------------ DrawDemo ------------------------ */
-
-void DrawDemo(int nlat, int nlong){
-  int i, j;
-  extern float *sphere_xyz;
-  extern int update_demo,demo_mode;
-  float red, green;
-//  float blue;
-  float *xyz;
-  float *xyz00,*xyz01,*xyz10,*xyz11;
-  float norm[3];
-//  float norm1[3],norm2[3],norm3[3];
-//  float denom;
-  float specular[4]={0.8,0.8,0.8,1.0};
-#define sphere_index(ilat,ilong) (3*((ilong)*nlat + (ilat)))
-
-  if(nlat<=0||nlong<=0)return;
-  if(update_demo==1)InitDemo(0.4,nlat,nlong);
-  switch(demo_mode){
-    case 0:
-      glPointSize(6.0);
-      glColor3f(0.0,0.0,1.0);
-      glBegin(GL_POINTS);
-      for(j=0; j<nlong; j++){
-        for(i=0; i<nlat; i++){
-          xyz = sphere_xyz + sphere_index(i,j);
-          glVertex3fv(xyz);
-        }
-      }
-      glEnd();
-      break;
-    case 1:
-      glLineWidth(2.0);
-      glBegin(GL_LINES);
-      glColor3f(0.0,0.0,1.0);
-      for(j=0; j<nlong; j++){
-        for(i=0; i<nlat-1; i++){
-          xyz00 = sphere_xyz + sphere_index(i,j);
-          xyz10 = sphere_xyz + sphere_index(i,j+1);
-          xyz01 = sphere_xyz + sphere_index(i+1,j);
-          glVertex3fv(xyz00);
-          glVertex3fv(xyz01);
-          glVertex3fv(xyz00);
-          glVertex3fv(xyz10);
-        }
-      }
-      glEnd();
-      break;
-    case 2:
-      glBegin(GL_TRIANGLES);
-      glColor3f(0.0,0.0,1.0);
-      for(j=0; j<nlong; j++){
-        for(i=0; i<nlat-1; i++){
-          xyz00 = sphere_xyz + sphere_index(i,j);
-          xyz10 = sphere_xyz + sphere_index(i,j+1);
-          xyz01 = sphere_xyz + sphere_index(i+1,j);
-          xyz11 = sphere_xyz + sphere_index(i+1,j+1);
-          glVertex3fv(xyz00);
-          glVertex3fv(xyz01);
-          glVertex3fv(xyz11);
-          glVertex3fv(xyz00);
-          glVertex3fv(xyz11);
-          glVertex3fv(xyz10);
-        }
-      }
-      glEnd();
-      break;
-    case 3:
-    case 4:
-    case 5:
-//#define COLOR(x) (1.0+((x)-0.2143)/0.3)/2.0
-#define COLOR(x) 0.0
-      ENABLE_LIGHTING;
-      glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&global_scase.color_defs.block_shininess);
-      glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,global_scase.color_defs.block_ambient2);
-      glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,specular);
-      glEnable(GL_COLOR_MATERIAL);
-      for(j=0; j<nlong; j++){
-        for(i=0; i<nlat-1; i++){
-          xyz00 = sphere_xyz + sphere_index(i,j);
-          xyz10 = sphere_xyz + sphere_index(i,j+1);
-          xyz01 = sphere_xyz + sphere_index(i+1,j);
-          xyz11 = sphere_xyz + sphere_index(i+1,j+1);
-
-          if(demo_mode==3)CalcNormal3(xyz00,xyz11,xyz01,norm);
-          glBegin(GL_TRIANGLES);
-          if(demo_mode!=3)CalcNormal4(xyz00,norm);
-          glNormal3fv(norm);
-          red = COLOR(xyz00[0]);
-          green = COLOR(xyz00[1]);
-          glColor3f(red,green,1.0);
-          glVertex3fv(xyz00);
-
-          red = COLOR(xyz11[0]);
-          green = COLOR(xyz11[1]);
-          if(demo_mode!=3)CalcNormal4(xyz11,norm);
-          glNormal3fv(norm);
-          glColor3f(red,green,1.0);
-          glVertex3fv(xyz11);
-
-          red = COLOR(xyz01[0]);
-          green = COLOR(xyz01[1]);
-          glColor3f(red,green,1.0);
-          if(demo_mode!=3)CalcNormal4(xyz01,norm);
-          glNormal3fv(norm);
-          glVertex3fv(xyz01);
-
-          glEnd();
-          if(demo_mode==5){
-            glLineWidth(2.0);
-            glBegin(GL_LINES);
-            glColor3f(0.0,0.0,0.0);
-            glVertex3fv(xyz00);
-            glVertex3f(xyz00[0]+norm[0]/10.0,xyz00[1]+norm[1]/10.0,xyz00[2]+norm[2]/10.0);
-            glEnd();
-          }
-
-          if(demo_mode==3)CalcNormal3(xyz00,xyz11,xyz01,norm);
-          glBegin(GL_TRIANGLES);
-          if(demo_mode==3)CalcNormal3(xyz00,xyz11,xyz01,norm);
-          red = COLOR(xyz00[0]);
-          green = COLOR(xyz00[1]);
-          glColor3f(red,green,1.0);
-          if(demo_mode!=3)CalcNormal4(xyz00,norm);
-          glNormal3fv(norm);
-          glVertex3fv(xyz00);
-
-          red = COLOR(xyz10[0]);
-          green = COLOR(xyz10[1]);
-          glColor3f(red,green,1.0);
-          if(demo_mode!=3)CalcNormal4(xyz10,norm);
-          glNormal3fv(norm);
-          glVertex3fv(xyz10);
-
-          red = COLOR(xyz11[0]);
-          green = COLOR(xyz11[1]);
-          glColor3f(red,green,1.0);
-          if(demo_mode!=3)CalcNormal4(xyz11,norm);
-          glNormal3fv(norm);
-          glVertex3fv(xyz11);
-
-          glEnd();
-        }
-      }
-      DISABLE_LIGHTING;
-      glDisable(GL_COLOR_MATERIAL);
-      break;
-    default:
-      assert(FFALSE);
-      break;
   }
 }
 
@@ -5237,82 +4835,6 @@ void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent
     *drawing_transparent=1;
     *drawing_vent_transparent=1;
   }
-}
-
-/* ------------------ CompareBlockage ------------------------ */
-
-int CompareBlockage(const void *arg1, const void *arg2){
-  blockagedata *bc1, *bc2;
-  int *ijk1, *ijk2;
-
-  bc1 = *(blockagedata **)arg1;
-  bc2 = *(blockagedata **)arg2;
-
-  ijk1 = bc1->ijk;
-  ijk2 = bc2->ijk;
-
-  if(ijk1[0]<ijk2[0])return -1;
-  if(ijk1[0]>ijk2[0])return 1;
-  if(ijk1[1]<ijk2[1])return -1;
-  if(ijk1[1]>ijk2[1])return 1;
-  if(ijk1[2]<ijk2[2])return -1;
-  if(ijk1[2]>ijk2[2])return 1;
-  if(ijk1[3]<ijk2[3])return -1;
-  if(ijk1[3]>ijk2[3])return 1;
-  if(ijk1[4]<ijk2[4])return -1;
-  if(ijk1[4]>ijk2[4])return 1;
-  if(ijk1[5]<ijk2[5])return -1;
-  if(ijk1[5]>ijk2[5])return 1;
-  return 0;
-}
-
-/* ------------------ RemoveDupBlockages ------------------------ */
-
-void RemoveDupBlockages(void){
-  int i;
-
-  for(i=0; i<global_scase.meshescoll.nmeshes; i++){
-    meshdata *meshi;
-
-    meshi = global_scase.meshescoll.meshinfo + i;
-
-    if(meshi->nbptrs>1){
-      blockagedata **bclist;
-      int jj,j;
-
-      bclist=meshi->blockageinfoptrs;
-      qsort(bclist,(size_t)meshi->nbptrs,sizeof(blockagedata *),CompareBlockage);
-      for(j=1; j<meshi->nbptrs; j++){
-        blockagedata *bc, *bcm1;
-        int *ijk1, *ijk2;
-
-        bc = bclist[j];
-        bcm1 = bclist[j-1];
-        if(bc->nshowtime>0)continue;
-        if(bcm1->nshowtime>0)continue;
-        ijk1=bcm1->ijk;
-        ijk2=bc->ijk;
-        if(ijk1[1]-ijk1[0]>1)continue; // only consider removing one cell blockages
-        if(ijk1[3]-ijk1[2]>1)continue;
-        if(ijk1[5]-ijk1[4]>1)continue;
-        if(ijk1[0]!=ijk2[0]||ijk1[1]!=ijk2[1])continue;
-        if(ijk1[2]!=ijk2[2]||ijk1[3]!=ijk2[3])continue;
-        if(ijk1[4]!=ijk2[4]||ijk1[5]!=ijk2[5])continue;
-        bcm1->dup=1;
-        bc->dup=2;
-      }
-      jj=0;
-      for(j=0; j<meshi->nbptrs; j++){
-        blockagedata *bc;
-
-        bc=bclist[j];
-        if(bc->dup==1)continue;
-        bclist[jj++]=bc;
-      }
-      meshi->nbptrs=jj;
-    }
-  }
-  updatefacelists=1;
 }
 
 /* ------------------ GetObstLabels ------------------------ */

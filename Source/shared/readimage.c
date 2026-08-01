@@ -5,7 +5,6 @@
 
 #include <string.h>
 
-
 #define BUFFER_LEN 255
 
 /* ------------------ ReadJPEG ------------------------ */
@@ -141,7 +140,6 @@ unsigned char *ReadPicture(char *texturedir, char *filename, int *width, int *he
     }
   }
 
-
   if(printflag==1)PRINTF("Loading texture:%s ",filebuffer);
   ext = filebuffer + strlen(filebuffer) - 4;
   if(strncmp(ext,".jpg",4)==0||strncmp(ext,".JPG",4)==0){
@@ -272,4 +270,3 @@ void EncodePNGData(unsigned char *buffer, int nbuffer, unsigned char *data, int 
     }
   }
 }
-

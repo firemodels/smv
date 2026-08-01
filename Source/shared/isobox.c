@@ -718,7 +718,6 @@ void CalcNormal2f(const float *v1, const float *v2, const float *v3,
   float u[3], v[3];
   int i;
 
-
   for(i=0; i<3; i++){
     u[i]=v2[i]-v1[i];
     v[i]=v3[i]-v1[i];
@@ -742,12 +741,10 @@ void CalcNormal2(const unsigned short *v1,
   float u[3], v[3];
   int i;
 
-
   for(i=0; i<3; i++){
     u[i]=v2[i]-v1[i];
     v[i]=v3[i]-v1[i];
   }
-
 
   out[0] = u[1]*v[2] - u[2]*v[1];
   out[1] = u[2]*v[0] - u[0]*v[2];
@@ -769,7 +766,6 @@ void CalcNormal(const float *xx, const float *yy, const float *zz, float *out){
   p1[x]=xx[0]; p1[y]=yy[0]; p1[z]=zz[0];
   p2[x]=xx[1]; p2[y]=yy[1]; p2[z]=zz[1];
   p3[x]=xx[2]; p3[y]=yy[2]; p3[z]=zz[2];
-
 
   u[x] = p2[x] - p1[x];
   u[y] = p2[y] - p1[y];
@@ -1654,7 +1650,6 @@ void CCIsoHeader(char *isofile,
   FILE *isostream=NULL;
   int len[3];
 
-
   *error=-1;
   isostream=FOPEN(isofile,"wb");
   if(isostream==NULL)return;
@@ -1675,7 +1670,6 @@ void CCIsoHeader(char *isofile,
   *error=0;
 }
 
-
 /* ------------------ CCTIsoHeader ------------------------ */
 
 void CCTIsoHeader(char *isofile,
@@ -1685,7 +1679,6 @@ void CCTIsoHeader(char *isofile,
   FILE *isostream=NULL;
   int len[3];
   int one=1;
-
 
   *error=-1;
   isostream=FOPEN(isofile,"wb");
@@ -1836,7 +1829,6 @@ void CCIsoSurfaceT2File(char *isofile, float *t, float *data, int *data2flag, fl
     dataflag=1;
     tdata=data2;
   }
-
 
   PrintMemoryInfo;
   isostream = FOPEN(isofile, "ab");

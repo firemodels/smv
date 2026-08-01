@@ -448,7 +448,6 @@ void MakeOutFile(char *outfile, char *destdir, char *file1, char *ext){
   strcat(outfile,ext);
 }
 
-
 /* ------------------ Writable ------------------------ */
 
 int Writable(char *dir){
@@ -705,7 +704,6 @@ FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE
 #endif
   return chars_read;
 }
-
 
 /* ------------------ PrintTime ------------------------ */
 
@@ -1009,7 +1007,6 @@ FILE *fopen_2dir(char *file, char *mode, char *scratch_dir){
   return stream;
 }
 
-
 /* ------------------ CompareFileList ------------------------ */
 
 int CompareFileList(const void *arg1, const void *arg2){
@@ -1043,6 +1040,8 @@ filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles, filelis
 
 /// @brief Print an error from the windows API to stderr
 /// @param lpszFunction
+/* ------------------ DisplayErrorBox ------------------------ */
+
 void DisplayErrorBox(LPTSTR lpszFunction) {
   WCHAR *lpMsgBuf = NULL;
   WCHAR *lpDisplayBuf = NULL;
@@ -1063,6 +1062,8 @@ void DisplayErrorBox(LPTSTR lpszFunction) {
   LocalFree(lpMsgBuf);
   LocalFree(lpDisplayBuf);
 }
+
+/* ------------------ MakeFileList ------------------------ */
 
 int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files,
                   filelistdata **filelist, int mode) {
@@ -1164,6 +1165,8 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files,
   }
   return nfiles;
 }
+
+/* ------------------ GetFileListSize ------------------------ */
 
 int GetFileListSize(const char *dir, char *filter, int mode) {
   return MakeFileList(dir, filter, -1, 0, NULL, mode);
@@ -1316,6 +1319,8 @@ char *GetFloatFileSizeLabel(float size, char *sizelabel){
   return sizelabel;
 }
 
+/* ------------------ CombinePaths ------------------------ */
+
 char *CombinePaths(const char *path_a, const char *path_b) {
   char *path_out;
   size_t path_a_len = strlen(path_a);
@@ -1355,6 +1360,8 @@ char *GetBinPath(){
   }
 }
 #elif __linux__
+/* ------------------ GetBinPath ------------------------ */
+
 char *GetBinPath(){
   size_t max_buffer_size = 2048 * 20;
   char *buffer;
@@ -1378,6 +1385,8 @@ char *GetBinPath(){
   }
 }
 #else
+/* ------------------ GetBinPath ------------------------ */
+
 char *GetBinPath(){
   uint32_t  max_buffer_size = 2048 * 20;
   char *buffer;
@@ -1413,6 +1422,8 @@ char *GetBinDir(){
   return buffer;
 }
 #elif __linux__
+/* ------------------ GetBinDir ------------------------ */
+
 char *GetBinDir(){
   char *buffer = GetBinPath();
   dirname(buffer);
@@ -1423,6 +1434,8 @@ char *GetBinDir(){
   return buffer;
 }
 #else
+/* ------------------ GetBinDir ------------------------ */
+
 char *GetBinDir(){
   char *buffer = GetBinPath();
   // The BSD and OSX version of dirname uses an internal buffer, therefore we
@@ -1613,8 +1626,6 @@ char *GetSmvScreenIni() {
   return GetSmvRootSubPath("smv_screen.ini");
 }
 
-
-
 /* ------------------ GetSmvRootFile ----------------------- */
 
 char *GetSmvRootFile(const char *path) {
@@ -1641,7 +1652,6 @@ char *GetSmvUserFile(const char *path) {
   FREEMEMORY(user_path);
   return result;
 }
-
 
 /* ------------------ IsSootFile ------------------------ */
 

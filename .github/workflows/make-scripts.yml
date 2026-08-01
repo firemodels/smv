@@ -15,23 +15,11 @@ jobs:
           - gnu
           - clang
         program:
-          - convert
-          - flush
           - pnginfo
           - smokediff
           - smokeview
           - smokezip
-          - timep
           - wind2fds
-        exclude:
-          # no clang build for following programs
-          - compiler: clang
-            program: convert
-          - compiler: clang
-          - compiler: clang
-            program: flush
-          - compiler: clang
-            program: timep
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
@@ -53,18 +41,11 @@ jobs:
         compiler:
           - clang
         program:
-          - convert
-          - flush
           - pnginfo
           - smokediff
           - smokeview
           - smokezip
-          - timep
           - wind2fds
-        exclude:
-          # no clang build for following programs
-          - compiler: clang
-            program: timep
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code

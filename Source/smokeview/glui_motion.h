@@ -104,7 +104,6 @@ EXTERNCPP void GLUIViewpointCB(int val);
 EXTERNCPP void GLUIUpdateMovieParms(void);
 EXTERNCPP void GLUISetCurrentViewPoint(char *viewpoint_label);
 EXTERNCPP void GLUIUpdateUseGeomFactors(void);
-EXTERNCPP void GLUIUpdateWindowAspect(void);
 EXTERNCPP void GLUIShrinkDialogs(void);
 #ifdef __cplusplus
 EXTERNCPP void GLUICloseRollouts(GLUI *dialog);

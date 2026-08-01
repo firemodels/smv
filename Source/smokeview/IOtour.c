@@ -427,6 +427,8 @@ void HermiteXYZ(float t, keyframe *kf1, keyframe *kf2, float *xyz, float *slope)
   }
 }
 
+/* ------------------ GetTourXYZ ------------------------ */
+
 void GetTourXYZ(float t, tourdata *this_tour, float *xyz){
   keyframe *this_key;
 
@@ -569,7 +571,6 @@ void GetTourProperties(tourdata *touri){
     FDS2SMV_XYZ(thiskey->xyz_smv, thiskey->xyz_fds);
   }
   touri->nkeyframes = j;
-
 
   NewMemory((void **)&(tour_times), global_scase.tourcoll.tour_ntimes*sizeof(float));
   NewMemory((void **)&(xyzs),       3*global_scase.tourcoll.tour_ntimes*sizeof(float));
@@ -798,7 +799,6 @@ void DefaultTour(void){
 
 }
 
-
 /* ------------------ AddFrame ------------------------ */
 
 keyframe *AddFrame(keyframe *last_frame, float time_local, float pause_time_local, float *xyz, float view[3], int set_time){
@@ -951,7 +951,6 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
   thisframe->next = &(touri->last_frame);
   selected_frame = touri->first_frame.next;
 }
-
 
 /* ------------------ ReverseTour  ------------------------ */
 

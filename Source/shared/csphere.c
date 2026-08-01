@@ -136,7 +136,6 @@ void FreeSpherePoints(spherepoints *sphereinfo){
   FREEMEMORY(sphereinfo->normals);
 }
 
-
 /* ------------------ GetNormalVectorPtr ------------------------ */
 
 float *GetNormalVectorPtr(spherepoints *sphereinfo, unsigned int index){

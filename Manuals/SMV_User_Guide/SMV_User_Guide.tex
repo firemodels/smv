@@ -543,18 +543,13 @@ Colorbars may then be adapted to best highlight the simulation data visualized.
 Regions in the simulation with certain data values may be highlighted by clicking
 on the colorbar.
 
-\subsubsection{Data Compression}\ An option has been added to the
-{\em LOAD/UNLOAD}\ menu to compress 3D smoke and boundary
-files (Section \ref{ch:smokezip}). The option shells out to the program Smokezip which runs in
-the background enabling one to continue to use Smokeview while
-files are compressing.
+\subsubsection{Data Compression}\ A program named smokezip may be used to compress 3D smoke, slice and boundary file data (Section \ref{ch:smokezip}). 
 
-\subsubsection{Data Comparison}\ A stand alone utility program named Smokediff
+\subsubsection{Data Comparison}\ A program named Smokediff
 may be used to compare two FDS cases (Section \ref{ch:smokediff}).
 Smokediff generates the difference between corresponding slice and boundary
 files for two cases with the same geometry.  Smokediff creates a
-{\tt .smv}\ of the differenced data which may then be viewed with Smokeview.
-
+{\tt .smv}\ file for the differenced data which may then be viewed with Smokeview.
 
 %%-----------------------------------------------------------------------
 \subsection{Exploring the Scene}
@@ -5657,9 +5652,7 @@ Several utilities are included with the FDS/Smokeview distribution allowing one
 to more easily analyze and generate data.  Smokezip may be used to compress
 FDS data files resulting in quicker load times in Smokeview.  Smokediff may be used
 to compare two FDS cases.  Smokediff generates another .smv file and a set of data files
-which can be viewed with Smokeview.  Background may be used to take advantage of multiple
-core computers by running more than one FDS case at a time.  This is most useful when running
-a long list of FDS cases. Background runs a case whenever the CPU load is below a specified level.
+which can be viewed with Smokeview.  
 
 %------------------------ smokezip ------------------------------------------------
 
@@ -5669,17 +5662,9 @@ a long list of FDS cases. Background runs a case whenever the CPU load is below 
 
 \input{smokediff}
 
-%------------------------ background ------------------------------------------------
-
-\input{background}
-
 %------------------------ wind2fds ------------------------------------------------
 
 \input{wind2fds}
-
-%------------------------ dem2fds ------------------------------------------------
-
-%\input{dem2fds}
 
 %---------------------------------------------------------------------------------
 %------------------------ Summary ------------------------------------------------
@@ -5986,9 +5971,6 @@ under the sub-menus {\em Data}, {\em Files}, {\em View}\ and
 \hhitem{Auto load}{Files}Dialog for automatically loading data files.
 
 \hhitem{Clip scene}{View}Dialog for clipping data and/or geometry.
-
-\hhitem{Compress}{Files}
-Dialog for compressing FDS generated data files using the program Smokezip.
 
 \hhitem{Coloring}{Data}Dialog for setting data coloring characteristics.  One may select the colorbar used to color data, how the colorbar is displayed (continuous, stepped or discrete lines, color opacity level {\em etc}.
 

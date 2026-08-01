@@ -1055,7 +1055,6 @@ void UpdateSmoke3DTypes(void){
     int j;
     smokestatedata *smokestate=NULL;
 
-
     smoke3di = global_scase.smoke3dcoll.smoke3dinfo+i;
 #ifdef pp_SMOKE3D_FORCE
     if(smoke3di->dummy == 1)continue;
@@ -1958,12 +1957,6 @@ void *SetupAllIsosurfaces(void *arg){
   }
   THREAD_EXIT(isosurface_threads);
 }
-/* ------------------ ReadSMVCHID ------------------------ */
-
-int ReadSMVCHID(bufferstreamdata *stream){
-  ParseCHIDProcess(&global_scase, stream, SCAN);
-  return 0;
-}
 /* ------------------ GetViewPointPtr ------------------------ */
 
 char *GetViewPointPtr(char **viewpoint_list, int nviewpoint_list, char *viewpoint){
@@ -1988,7 +1981,6 @@ int GetViewpoints(char *inifile, char ***viewpointlist_ptr){
   int nviewpoints = 0;
   while(!feof(stream)){
     char buffer[255];
-
 
     CheckMemory;
     if(fgets(buffer, 255, stream)==NULL)break;
@@ -2617,7 +2609,6 @@ int ReadSMV_Configure(){
     global_scase.results_dir = SetResultsDir(global_scase.plot3dinfo[0].reg_file);
   }
 
-
   GetSkyBoxTextures();
   GetSkyImageTexture();
   InitTextures(use_graphics);
@@ -2762,7 +2753,6 @@ int ReadSMV_Configure(){
   CheckMemory;
 
   /* compute global bar's and box's */
-
 
   for(i=0; i<global_scase.npartclassinfo; i++){
     partclassdata *partclassi;
@@ -2952,7 +2942,6 @@ int ReadSMV_Configure(){
 
   InitUserTicks();
   PRINT_TIMER(timer_readsmv, "InitUserTicks");
-
 
   // define changed_idlist used for blockage editing
 
@@ -6019,7 +6008,6 @@ int ReadIni2(const char *inifile, int localfile){
           char *labelptr, *percenptr, label[256];
           int  colori[4];
 
-
           rgbi = ctableinfo + i;
           fgets(buffer, 255, stream);
           percenptr = strchr(buffer, '%');
@@ -6559,7 +6547,6 @@ int ReadIni2(const char *inifile, int localfile){
         continue;
       }
 
-
       /*
       +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       ++++++++++++++++++++++ TICKS ++++++++++++++++++++++++++++++++
@@ -6589,7 +6576,6 @@ int ReadIni2(const char *inifile, int localfile){
           endt = ticki->end;
           nbarst = &ticki->nbars;
           dxyz = ticki->dxyz;
-
 
           /*
           TICKS
@@ -8433,7 +8419,6 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, " %f %f %f   :text\n", col[0], col[1], col[2]);
     col = tourcol_avatar;
     fprintf(fileout, " %f %f %f   :avatar\n", col[0], col[1], col[2]);
-
 
   }
   fprintf(fileout, "TOURCONSTANTVEL\n");

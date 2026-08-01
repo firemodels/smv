@@ -166,7 +166,6 @@ void ShowScene2(int mode){
 
     /* draw the box framing the simulation (corners at (0,0,0) (xbar,ybar,zbar) */
 
-
     /* ++++++++++++++++++++++++ draw simulation frame (corners at (0,0,0) and (xbar,ybar,zbar) +++++++++++++++++++++++++ */
 
     if( (hide_scene == 1 && mouse_down == 1) ||
@@ -228,7 +227,6 @@ void ShowScene2(int mode){
       glPopMatrix();
     }
 
-
     /* ++++++++++++++++++++++++ draw mesh +++++++++++++++++++++++++ */
 
     if(global_scase.setPDIM == 1){
@@ -245,7 +243,6 @@ void ShowScene2(int mode){
       }
     }
   } /* end of if(mode==DRAWSCENE) code segment */
-
 
     /* ++++++++++++++++++++++++ draw selected particles +++++++++++++++++++++++++ */
 
@@ -290,7 +287,6 @@ void ShowScene2(int mode){
       return;
     }
   }
-
 
   /* ++++++++++++++++++++++++ draw tours +++++++++++++++++++++++++ */
 

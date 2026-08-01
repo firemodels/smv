@@ -100,7 +100,6 @@ GLUI_RadioGroup *RADIO_cface_type = NULL;
 GLUI_RadioGroup *RADIO_hvac_show_component_labels = NULL;
 GLUI_RadioGroup *RADIO_hvac_show_filters          = NULL;
 
-
 GLUI_StaticText *STATIC_vertx1=NULL;
 GLUI_StaticText *STATIC_verty1=NULL;
 GLUI_StaticText *STATIC_vertz1=NULL;
@@ -213,7 +212,6 @@ GLUI_StaticText *STATIC_id_label = NULL;
 char a_updatelabel[1000];
 char *updatelabel=NULL;
 
-
 /* ------------------ GLUIUpdateHVACViews ------------------------ */
 
 extern "C" void GLUIUpdateHVACViews(void){
@@ -306,20 +304,6 @@ extern "C" void GLUIGetGeomDialogState(void){
   }
 }
 
-/* ------------------ HaveTexture ------------------------ */
-
-int HaveTexture(void){
-  int i;
-
-  for(i = 0; i < global_scase.texture_coll.ntextureinfo; i++){
-    texturedata *texti;
-
-    texti = global_scase.texture_coll.textureinfo + i;
-    if(texti->loaded == 1 && texti->used == 1)return 1;
-  }
-  return 0;
-}
-
 /* ------------------ BlockeditDlgCB ------------------------ */
 
 void BlockeditDlgCB(int var){
@@ -339,7 +323,6 @@ void BlockeditDlgCB(int var){
 }
 
 /* ------------------ GLUIUpdateTriangleInfo ------------------------ */
-
 
 extern "C" void GLUIUpdateTriangleInfo(surfdata *tri_surf, float tri_area){
   char label[100];
@@ -1327,12 +1310,6 @@ void VolumeCB(int var){
     assert(FFALSE);
     break;
   }
-}
-
-/* ------------------ GLUIHideHVAC ------------------------ */
-
-extern "C" void GLUIHideHVAC(void){
-  GLUICloseRollouts(glui_geometry);
 }
 
 /* ------------------ GLUIShowHVAC ------------------------ */

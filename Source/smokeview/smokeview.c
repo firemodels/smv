@@ -111,7 +111,6 @@ void TransparentOff(void){
   glDisable(GL_BLEND);
 }
 
-
 /* ------------------ SetViewPoint ------------------------ */
 
 void SetViewPoint(int option){
@@ -295,13 +294,4 @@ void SMV_EXIT(int code){
   fgets(buffer, 255, stdin);
 #endif
   exit(code);
-}
-
-/* ------------------ StartTimer ------------------------ */
-
-void StartTimer(float *timerptr){
-  float timer;
-
-  START_TIMER(timer);
-  *timerptr = timer;
 }

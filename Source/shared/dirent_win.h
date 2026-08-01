@@ -150,14 +150,12 @@
 extern "C" {
 #endif
 
-
 typedef struct dirent
 {
    char d_name[MAX_PATH + 1];                  /* File name */
    size_t d_namlen;                            /* Length of name without \0 */
    int d_type;                                 /* File type */
 } dirent;
-
 
 typedef struct DIR
 {
@@ -168,13 +166,11 @@ typedef struct DIR
    char             patt[MAX_PATH + 3];        /* Initial directory name */
 } DIR;
 
-
 /* Forward declarations */
 static DIR *opendir(const char *dirname);
 static struct dirent *readdir(DIR *dirp);
 static int closedir(DIR *dirp);
 static void rewinddir(DIR* dirp);
-
 
 /* Use the new safe string functions introduced in Visual Studio 2005 */
 #if defined(_MSC_VER) && _MSC_VER >= 1400
@@ -189,7 +185,6 @@ static void rewinddir(DIR* dirp);
 #else
 #define DIRENT_SET_ERRNO(x) (errno = (x))
 #endif
-
 
 /*****************************************************************************
  * Open directory stream DIRNAME for read and return a pointer to the
@@ -257,7 +252,6 @@ static DIR *opendir(const char *dirname)
    return dirp;
 }
 
-
 /*****************************************************************************
  * Read a directory entry, and return a pointer to a dirent structure
  * containing the name of the entry in d_name field.  Individual directory
@@ -312,7 +306,6 @@ static struct dirent *readdir(DIR *dirp)
    return &dirp->curentry;
 }
 
-
 /*****************************************************************************
  * Close directory stream opened by opendir() function.  Close of the
  * directory stream invalidates the DIR structure as well as any previously
@@ -336,7 +329,6 @@ static int closedir(DIR *dirp)
    free (dirp);
    return 0;
 }
-
 
 /*****************************************************************************
  * Resets the position of the directory stream to which dirp refers to the
@@ -364,7 +356,6 @@ static void rewinddir(DIR* dirp)
       }
    }
 }
-
 
 #ifdef __cplusplus
 }

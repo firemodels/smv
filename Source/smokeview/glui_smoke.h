@@ -85,13 +85,7 @@ EXTERNCPP void GLUI3dSmokeSetup(int main_window);
 EXTERNCPP void GLUISmoke3dCB(int var);
 EXTERNCPP void GLUIUpdateCO2ColorbarList(int value);
 EXTERNCPP void GLUIUpdateFireColorbarList(void);
-EXTERNCPP void GLUIUpdateFreeze(int val);
-EXTERNCPP void GLUIUpdateLoadTimeVal(float val);
-EXTERNCPP void GLUIUpdateTimeFrameBounds(float time_min, float time_max);
-EXTERNCPP void GLUIUpdateLoadFrameVal(int frames);
-EXTERNCPP void GLUIUpdateLoadFrameMax(int max_frames);
 EXTERNCPP void GLUISmoke3dCB(int var);
 EXTERNCPP void GLUIUpdateSmoke3dFlags(void);
 
 #endif
-

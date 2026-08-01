@@ -229,7 +229,6 @@ void MakeMovieBashScript(void){
   fprintf(stream, "QSMV=$FIREMODELS/smv/Utilities/Scripts/qsmv.sh\n");
   fprintf(stream, "SMOKEVIEW=$FIREMODELS/smv/Build/smokeview/intel_linux/smokeview_linux\n");
 
-
   fprintf(stream, "$QSMV -j SV_ -P $NPROCS -q $QUEUE -e $SMOKEVIEW -c %s %s\n", movie_ssf_script, global_scase.fdsprefix);
   fprintf(stream, "$MAKEMOVIE -i . -j SV_ -o %s %s %s\n", movie_htmldir, movie_basename, movie_basename);
 
@@ -647,7 +646,6 @@ extern "C" void GLUIUpdateGsliceParms(void){
   CHECKBOX_gslice_data->set_int_val(vis_gslice_data);
 }
 
-
 /* ------------------ GLUIUpdateRotationType ------------------------ */
 
 extern "C" void GLUIUpdateRotationType(int val){
@@ -677,7 +675,6 @@ extern "C" void GLUISetPosXYZFDS(float *xyz){
   memcpy(glui_xyz_fds, xyz, 3*sizeof(float));
   GLUISceneMotionCB(SET_VIEW_XYZ);
 }
-
 
 /* ------------------ ViewExist ------------------------ */
 
@@ -796,7 +793,7 @@ void EnableDisableViews(void){
   }
 }
 
-/*------------------GLUISetCurrentViewPoint------------------------ */
+/* ------------------ GLUISetCurrentViewPoint ------------------------ */
 
 extern "C" void GLUISetCurrentViewPoint(char *viewpoint_label){
   int i;
@@ -1061,7 +1058,6 @@ extern "C" void GLUIEnableResetSavedView(void){
   if(BUTTON_reset_saved_view!=NULL)BUTTON_reset_saved_view->enable();
 }
 
-
 /* ------------------ GLUIUpdateFileLabel ------------------------ */
 
 extern "C" void GLUIUpdateFileLabel(int var){
@@ -1075,12 +1071,6 @@ extern "C" void GLUIUpdateFileLabel(int var){
       }
     }
   }
-}
-
-/* ------------------ GLUIUpdateWindowAspect ------------------------ */
-
-extern "C" void GLUIUpdateWindowAspect(void){
-  if(CHECKBOX_fix_window_aspect != NULL)CHECKBOX_fix_window_aspect->set_int_val(fix_window_aspect);
 }
 
 /* ------------------ GLUIUpdateZoom ------------------------ */
@@ -1287,7 +1277,6 @@ extern "C" void GLUIMotionSetup(int main_window){
 
   if(zaxis_custom==0){
     float vv[3], maxvv;
-
 
     if(global_scase.have_gvec==1){
       vv[0] = -global_scase.gvecphys[0];
@@ -1541,7 +1530,6 @@ extern "C" void GLUIMotionSetup(int main_window){
   CHECKBOX_screenvis[6] = glui_motion->add_checkbox_to_panel(ROLLOUT_lower, "6", screenvis + 6);
   CHECKBOX_screenvis[7] = glui_motion->add_checkbox_to_panel(ROLLOUT_lower, "7", screenvis + 7);
   CHECKBOX_screenvis[8] = glui_motion->add_checkbox_to_panel(ROLLOUT_lower, "8", screenvis + 8);
-
 
   ROLLOUT_middle = glui_motion->add_rollout_to_panel(ROLLOUT_screenvis, "middle", false, MIDDLE_SCREEN_ROLLOUT, ScreenRolloutCB);
   TOGGLE_ROLLOUT(screenprocinfo,nscreenprocinfo,ROLLOUT_middle, MIDDLE_SCREEN_ROLLOUT, glui_motion);

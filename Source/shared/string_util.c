@@ -40,6 +40,8 @@ unsigned int *random_ints, nrandom_ints;
 /// @brief Given a UTF-8 (or ASCII) string, convert it to Windows UTF-16.
 /// @param string a UTF-8 (or ASCII) string
 /// @return a UTF-16 string or NULL on error
+/* ------------------ convert_utf8_to_utf16 ------------------------ */
+
 wchar_t *convert_utf8_to_utf16(const char *input_string) {
   int r;
   r = MultiByteToWideChar(CP_UTF8, 0, input_string, -1, NULL, 0);
@@ -76,6 +78,8 @@ err:
 /// @brief Given a (Windows) UTF-16 string, convert to UTF-8.
 /// @param string a (Windows) UTF-16 string
 /// @return a UTF-8 string or NULL on error
+/* ------------------ convert_utf16_to_utf8 ------------------------ */
+
 char *convert_utf16_to_utf8(const wchar_t *input_string) {
   int r;
   r = WideCharToMultiByte(CP_UTF8, 0, input_string, -1, NULL, 0, NULL, NULL);
@@ -286,6 +290,8 @@ int GetRowCols(FILE *stream, int *nrows, int *ncols){
 #define pp_GITDATE "unknown"
 #endif
 
+/* ------------------ GetGitInfo ------------------------ */
+
 void GetGitInfo(char *githash, char *gitdate, int *gittest){
   char rev[256], *beg=NULL;
 
@@ -327,7 +333,6 @@ void GetGitInfo(char *githash, char *gitdate, int *gittest){
     }
   }
 }
-
 
 /* ------------------ StripQuotes ------------------------ */
 
@@ -378,6 +383,8 @@ int RandInt(int min, int max){
 #else
 #define GETPID getpid
 #endif
+
+/* ------------------ RandStr ------------------------ */
 
 char *RandStr(char* str, int length){
 
@@ -1327,7 +1334,6 @@ int Match(char *buffer, const char *key){
 int MatchINI(char *buffer, const char *key){
   return Match(buffer, key);
 }
-
 
 /* ------------------ MatchSMV ------------------------ */
 

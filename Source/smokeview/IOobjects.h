@@ -1,7 +1,6 @@
 #ifndef IOOBJECT_H_DEFINED
 #define IOOBJECT_H_DEFINED
 
-
 void DrawBox2(float *origin, float *dxyz, float *color, int draw_outline);
 void DrawCone(float d1, float height, unsigned char *rgbcolor);
 void DrawTruncCone(float d1, float d2, float height, unsigned char *rgbcolor);
@@ -23,7 +22,6 @@ EXTERNCPP void DrawWindRosesDevices(void);
 EXTERNCPP devicedata *GetCSVDeviceFromLabel(char *label, int index);
 EXTERNCPP devicedata *GetDeviceFromLabel(char *label, int index);
 EXTERNCPP int GetDeviceIndexFromLabel(char *label);
-EXTERNCPP char *GetDeviceLabel(char *buffer);
 EXTERNCPP float GetDeviceVal(float time_local, devicedata *devicei, int *valid);
 EXTERNCPP void GetGlobalDeviceBounds(int type);
 EXTERNCPP int GetNDevices(char *file);

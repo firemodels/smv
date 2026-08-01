@@ -53,6 +53,9 @@
 #if !defined(MBEDTLS_SHA256_ALT)
 
 /* Implementation that should never be optimized out by the compiler */
+
+/* ------------------ mbedtls_zeroize ------------------------ */
+
 static void mbedtls_zeroize( void *v, size_t n ){
     volatile unsigned char *p = v; while( n-- ) *p++ = 0;
 }
@@ -80,10 +83,14 @@ do {                                                    \
 } while( 0 )
 #endif
 
+/* ------------------ mbedtls_sha256_init ------------------------ */
+
 void mbedtls_sha256_init( mbedtls_sha256_context *ctx )
 {
     memset( ctx, 0, sizeof( mbedtls_sha256_context ) );
 }
+
+/* ------------------ mbedtls_sha256_free ------------------------ */
 
 void mbedtls_sha256_free( mbedtls_sha256_context *ctx )
 {
@@ -92,6 +99,8 @@ void mbedtls_sha256_free( mbedtls_sha256_context *ctx )
 
     mbedtls_zeroize( ctx, sizeof( mbedtls_sha256_context ) );
 }
+
+/* ------------------ mbedtls_sha256_clone ------------------------ */
 
 void mbedtls_sha256_clone( mbedtls_sha256_context *dst,
                            const mbedtls_sha256_context *src )
@@ -102,6 +111,9 @@ void mbedtls_sha256_clone( mbedtls_sha256_context *dst,
 /*
  * SHA-256 context setup
  */
+
+/* ------------------ mbedtls_sha256_starts ------------------------ */
+
 void mbedtls_sha256_starts( mbedtls_sha256_context *ctx, int is224 )
 {
     ctx->total[0] = 0;
@@ -181,6 +193,8 @@ static const uint32_t K[] =
     d += temp1; h = temp1 + temp2;              \
 }
 
+/* ------------------ mbedtls_sha256_process ------------------------ */
+
 void mbedtls_sha256_process( mbedtls_sha256_context *ctx, const unsigned char data[64] )
 {
     uint32_t temp1, temp2, W[64];
@@ -240,6 +254,9 @@ void mbedtls_sha256_process( mbedtls_sha256_context *ctx, const unsigned char da
 /*
  * SHA-256 process buffer
  */
+
+/* ------------------ mbedtls_sha256_update ------------------------ */
+
 void mbedtls_sha256_update( mbedtls_sha256_context *ctx, const unsigned char *input,
                     size_t ilen )
 {
@@ -289,6 +306,9 @@ static const unsigned char sha256_padding[64] =
 /*
  * SHA-256 final digest
  */
+
+/* ------------------ mbedtls_sha256_finish ------------------------ */
+
 void mbedtls_sha256_finish( mbedtls_sha256_context *ctx, unsigned char output[32] )
 {
     uint32_t last, padn;
@@ -325,6 +345,9 @@ void mbedtls_sha256_finish( mbedtls_sha256_context *ctx, unsigned char output[32
 /*
  * output = SHA-256( input buffer )
  */
+
+/* ------------------ mbedtls_sha256 ------------------------ */
+
 void mbedtls_sha256( const unsigned char *input, size_t ilen,
              unsigned char output[32], int is224 )
 {
@@ -391,6 +414,9 @@ static const unsigned char sha256_test_sum[6][32] =
 /*
  * Checkup routine
  */
+
+/* ------------------ mbedtls_sha256_self_test ------------------------ */
+
 int mbedtls_sha256_self_test( int verbose )
 {
     int i, j, k, buflen, ret = 0;

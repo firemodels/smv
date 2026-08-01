@@ -15,7 +15,6 @@
 #include "glutbitmap.h"
 #include "paths.h"
 
-
 #define DENORMAL(x,i, n, min,max) ((min) + (i)*((max)-(min))/(n))
 #define NORMALH(x,min,max) (((x)-(min))/((max)-(min))   )
 
@@ -74,7 +73,6 @@ void OutputSText3(float x, float y, float z, char *string){
   float quateye[4],quatz[4],rot[16];
   float scale_x, scale_y;
 
-
   if(string==NULL)return;
   scale_x = SCALE2FDS(scaled_font3d_height2width*(float)scaled_font3d_height/(float)104.76)/(float)port_pixel_width;
   scale_y = SCALE2FDS((float)scaled_font3d_height/(float)152.38)/(float)port_pixel_height;
@@ -93,34 +91,6 @@ void OutputSText3(float x, float y, float z, char *string){
   glRotatef(90.0,cos(theta*DEG2RAD),sin(theta*DEG2RAD),0.0);
   glRotatef(theta,u[0],u[1],u[2]);
 
-  glScalef(scale_x,scale_y,1.0);
-  for(c=string; *c != '\0'; c++){
-    glutStrokeCharacter(GLUT_STROKE_ROMAN,*c);
-  }
-  glPopMatrix();
-}
-
-
-/* ------------------ OutputSText2r ------------------------ */
-
-void OutputSText2r(float x, float y, float z, char *string){
-  char *c;
-  int total_width=0;
-  float scale_x, scale_y;
-
-  if(string==NULL)return;
-  total_width=0;
-  for(c=string; *c != '\0'; c++){
-    total_width+=glutStrokeWidth(GLUT_STROKE_ROMAN,*c);
-  }
-  glPushMatrix();
-  scale_x = port_unit_width*(scaled_font2d_height2width*(float)scaled_font2d_height/(float)104.76)/(float)port_pixel_width;
-  scale_y = port_unit_height*((float)scaled_font2d_height/(float)152.38)/(float)port_pixel_height;
-  if(render_mode==RENDER_NORMAL&&resolution_multiplier>1&&render_status==RENDER_ON){
-    scale_x *= (float)resolution_multiplier;
-    scale_y *= (float)resolution_multiplier;
-  }
-  glTranslatef(x-scale_x*total_width,y,z);
   glScalef(scale_x,scale_y,1.0);
   for(c=string; *c != '\0'; c++){
     glutStrokeCharacter(GLUT_STROKE_ROMAN,*c);
@@ -353,39 +323,6 @@ void OutputBarText(float x, float y, const GLfloat *color, char *string){
       glutBitmapCharacter(colorbar_font_ptr,(unsigned char)(*c));
     }
   }
-}
-
-/* ------------------ WriteLabels ------------------------ */
-
-void WriteLabels(labels_collection *labelscoll_arg){
-  labeldata *first_label, *thislabel;
-  FILE *stream = NULL;
-  char quote[2];
-
-  if(event_file_exists==0)return;
-  char *event_filename = CasePathEvent(&global_scase);
-  stream = FOPEN(event_filename, "w");
-  FREEMEMORY(event_filename);
-  if(stream==NULL)return;
-
-  first_label = labelscoll_arg->label_first_ptr;
-  strcpy(quote,"\"");
-
-  for(thislabel = first_label->next; thislabel->next!=NULL; thislabel = thislabel->next){
-    float *tstart_stop, *xyz;
-    int *rgblabel;
-
-    tstart_stop = thislabel->tstart_stop;
-    xyz = thislabel->xyz;
-    rgblabel = thislabel->rgb;
-    fprintf(stream, "%f, %f, %f, %f, %f, %i, %i, %i, %s%s%s\n",
-            tstart_stop[0], tstart_stop[1],
-            xyz[0], xyz[1], xyz[2],
-            rgblabel[0], rgblabel[1], rgblabel[2],
-            quote,TrimFrontBack(thislabel->name),quote
-    );
-  }
-  fclose(stream);
 }
 
 /* ------------------ DrawLabels ------------------------ */

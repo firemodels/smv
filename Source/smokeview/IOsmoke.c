@@ -246,61 +246,6 @@ void UpdateSmoke3dFileParms(void){
   }
 #endif
 
-/* ------------------ GetCellindex ------------------------ */
-
-int GetCellindex(float *xyz, meshdata **mesh_tryptr){
-  int i;
-  meshdata *mesh_try=NULL;
-
-  if(mesh_tryptr != NULL)mesh_try = *mesh_tryptr;
-  for(i = -1; i < global_scase.meshescoll.nmeshes; i++){
-    meshdata *meshi;
-    float *boxmin, *boxmax, *dbox;
-
-    if(i == -1){
-      if(mesh_try == NULL)continue;
-      meshi = mesh_try;
-    }
-    else{
-      meshi = global_scase.meshescoll.meshinfo + i;
-      if(meshi == mesh_try)continue;
-    }
-    boxmin = meshi->boxmin_fds;
-    boxmax = meshi->boxmax_fds;
-    dbox   = meshi->dbox_fds;
-    if(boxmin[0] <= xyz[0] && xyz[0] <= boxmax[0] &&
-       boxmin[1] <= xyz[1] && xyz[1] <= boxmax[1] &&
-       boxmin[2] <= xyz[2] && xyz[2] <= boxmax[2]){
-      int nx, ny, nxy, ijk;
-      int ix, iy, iz;
-      int ibar, jbar, kbar;
-
-      ibar = meshi->ibar;
-      jbar = meshi->jbar;
-      kbar = meshi->kbar;
-      nx = ibar + 1;
-      ny = jbar + 1;
-      nxy = nx*ny;
-
-      ix = ibar*(xyz[0] - boxmin[0]) / dbox[0];
-      ix = CLAMP(ix, 0, ibar);
-
-      iy = jbar*(xyz[1] - boxmin[1]) / dbox[1];
-      iy = CLAMP(iy, 0, jbar);
-
-      iz = kbar*(xyz[2] - boxmin[2]) / dbox[2];
-      iz = CLAMP(iz, 0, kbar);
-
-      ijk = IJKNODE(ix, iy, iz);
-      if(mesh_tryptr!=NULL)*mesh_tryptr = meshi;
-      return ijk;
-    }
-  }
-  if(mesh_tryptr!=NULL)*mesh_tryptr = NULL;
-  return -1;
-
-}
-
 /* ------------------ IsSmokeComponentPresent ------------------------ */
 
 int IsSmokeComponentPresent(smoke3ddata *smoke3di){
@@ -469,7 +414,6 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   switch(ssmokedir){
 
     // +++++++++++++++++++++++++++++++++++ DIR 1 +++++++++++++++++++++++++++++++++++++++
-
 
   case 1:
   case -1:
@@ -1610,7 +1554,7 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile,
     printf("***error: smokefile pointer is NULL\n");
     return 1;
   }
-  
+
   SMOKE_SIZE_FILE = FopenSmokeSizefile(smokefile,fortran_skip);
   if(SMOKE_SIZE_FILE == NULL){
     printf("***warning: failed to open 3D smoke size file: %s\n", smokefile);
@@ -2111,7 +2055,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
 
 MFILE *OpenSoot3DFile(char *s3dfile, char *s3ddfile){
   MFILE *stream1=NULL, *stream2 = NULL;
-  
+
   if(s3dfile!=NULL)stream1 = FOPEN(s3dfile, "rb");
   if(s3ddfile!=NULL)stream2 = FOPEN(s3ddfile, "rb");
 
@@ -3695,5 +3639,3 @@ void ComputeAllSmokecolors(void){
   }
 }
 #endif
-
-

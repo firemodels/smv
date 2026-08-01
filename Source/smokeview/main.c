@@ -23,8 +23,6 @@
 
 #include <assert.h>
 
-
-
 /* ------------------ Usage ------------------------ */
 
 void Usage(int option){
@@ -99,6 +97,8 @@ void Usage(int option){
 
 char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts);
 
+/* ------------------ ParseCommandline ------------------------ */
+
 char *ParseCommandline(int argc, char **argv, common_opts *opts){
   enum CommandLineError error;
   char message[256];
@@ -119,6 +119,8 @@ char *ParseCommandline(int argc, char **argv, common_opts *opts){
 /// @param args The args which were previously parsed. All commandline arguments
 /// are parsed into @ref CommandlineArgs.
 /// @return The iput file name (the SMV file).
+/* ------------------ ProcessCommandLine ------------------------ */
+
 char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
   int len_casename;
   size_t len_memory;
@@ -575,7 +577,6 @@ int CheckSMVFile(char *file, char *subdir){
   return 1;
 }
 
-
 /// @brief Get the commandline arguments. On Unix-like systems this will just
 /// return argc and argv. On Windows this will retrieve the commandline
 /// arguments in a UTF-16 format and convert to UTF-8 in a newly allocated
@@ -584,6 +585,8 @@ int CheckSMVFile(char *file, char *subdir){
 /// @param[in] argv argc as defined as an argument to main
 /// @param[out] n_args The number of arguments in the array
 /// @param[out] utf8_args A pointer to where the new array will be allocated
+/* ------------------ GetArgs ------------------------ */
+
 void GetArgs(int argc, char **argv, int *n_args, char ***utf8_args) {
 #if defined(_WIN32) && defined(pp_UNICODE_PATHS)
   LPWSTR *utf16_args = CommandLineToArgvW(GetCommandLineW(), n_args);
@@ -607,6 +610,8 @@ void GetArgs(int argc, char **argv, int *n_args, char ***utf8_args) {
 /// @brief Free an array previously allocated by GetArgs.
 /// @param[in] n_args The length of args
 /// @param[inout] args The array previously allocated by GetArgs
+/* ------------------ FreeArgs ------------------------ */
+
 void FreeArgs(int n_args, char **args) {
 #if defined(_WIN32) && defined(pp_UNICODE_PATHS)
   // We only need to free argument memory on windows as that's the only time we
@@ -618,7 +623,6 @@ void FreeArgs(int n_args, char **args) {
   FREEMEMORY(args);
 #endif
 }
-
 
 /* ------------------ main ------------------------ */
 
@@ -737,18 +741,26 @@ int main(int argc, char **argv){
 
 /* Stub implementations to avoid GameMode backend */
 
+/* ------------------ glutEnterGameMode ------------------------ */
+
 int FGAPIENTRY glutEnterGameMode(void)
 {
     return 0;
 }
 
+/* ------------------ glutLeaveGameMode ------------------------ */
+
 void FGAPIENTRY glutLeaveGameMode(void)
 {
 }
 
+/* ------------------ glutGameModeString ------------------------ */
+
 void FGAPIENTRY glutGameModeString(const char *string)
 {
 }
+
+/* ------------------ glutGameModeGet ------------------------ */
 
 int FGAPIENTRY glutGameModeGet(GLenum query)
 {

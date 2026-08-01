@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-
 #ifdef pp_OSX
 #include <unistd.h>
 #endif
@@ -278,7 +277,7 @@ int SetupCase(char *filename){
   char *smv_bindir = GetSmvRootDir();
   InitTranslate(smv_bindir, tr_name);
   InitDefaultCameras();
-  
+
   FREEMEMORY(smv_bindir);
   PRINT_TIMER(timer_start, "InitTranslate");
 
@@ -842,7 +841,6 @@ void InitOpenGL(int option){
 
    if(fileout==NULL)return;
 
-
    // startup particle
 
    nstartup=0;
@@ -1081,7 +1079,6 @@ void InitOpenGL(int option){
     }
   }
 
-
  /* ------------------ GetStartupISO ------------------------ */
 
   void GetStartupISO(int seq_id){
@@ -1296,7 +1293,6 @@ void AutoLoadSmoke3D(int smoke3d_type){
    // TrainerViewMenu(trainerview); // this breaks auto slice loading
 }
 
-
 /* ------------------ InitTextureDir ------------------------ */
 
 void InitTextureDir(void){
@@ -1435,9 +1431,6 @@ void InitVars(void){
   for(i=0; i<10; i++){
     face_vis[i]=1;
     face_vis_old[i]=1;
-  }
-  for(i=0; i<7; i++){
-    b_state[i]=-1;
   }
   strcpy((char *)degC,"C");
   strcpy((char *)degF,"F");

@@ -39,7 +39,6 @@ GLUI_Panel *PANEL_tour5;
 GLUI_Panel *PANEL_tour6;
 GLUI_Panel *PANEL_tour7;
 
-
 GLUI_Checkbox *CHECKBOX_view1 = NULL;
 GLUI_Checkbox *CHECKBOX_view2 = NULL;
 GLUI_Checkbox *CHECKBOX_tour_constant_velocity = NULL;
@@ -236,7 +235,6 @@ extern "C" void GLUITourSetup(int main_window){
   CHECKBOX_tour_constant_velocity = glui_tour->add_checkbox_to_panel(PANEL_tour5, "Constant velocity",
     &tour_constant_velocity, TOUR_CONSTANT_VELOCITY, TourCB);
 
-
   glui_tour->add_column_to_panel(PANEL_tour6, false);
   PANEL_tour7 = glui_tour->add_panel_to_panel(PANEL_tour6, "");
 
@@ -306,7 +304,7 @@ extern "C" void GLUITourSetup(int main_window){
   update_tour_list =1;
 }
 
-/* ------------------ GLUIUpdateTourList(void) ------------------------ */
+/* ------------------ GLUIUpdateTourList ------------------------ */
 
 extern "C" void GLUIUpdateTourList(void){
 

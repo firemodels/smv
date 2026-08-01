@@ -117,7 +117,6 @@ void GetSmokeSensors(void){
     devicei = global_scase.devicecoll.deviceinfo + i;
     label = devicei->object->label;
 
-
     if(STRCMP(label,"smokesensor")!=0)continue;
 
     col = devicei->screenijk[0];
@@ -213,7 +212,6 @@ int HaveSmokeSensor(void){
   }
   return 0;
 }
-
 
 /* ----------------------- GetPoint2BoxDist ----------------------------- */
 
@@ -347,7 +345,6 @@ float GetPoint2BoxDist(float boxmin[3], float boxmax[3], float p1[3],
   assert(FFALSE);
   return Dist(p1, p2);
 }
-
 
 /* ----------------------- GetDeviceScreenCoords ----------------------------- */
 
@@ -812,7 +809,6 @@ void DrawWindRosesDevices(void){
     vdevicedata *vdevi;
     windrosedata *wr;
     int itime;
-
 
     vdevi = global_scase.devicecoll.vdeviceinfo + i;
     if(vdevi->display==0||vdevi->unique==0)continue;
@@ -1803,7 +1799,6 @@ void DrawPoint(unsigned char *rgbcolor){
   glEnd();
 }
 
-
 /* ----------------------- DrawRectangle ----------------------------- */
 
 void DrawRectangle(float width,float height, unsigned char *rgbcolor){
@@ -1933,7 +1928,7 @@ void DrawCircle(float diameter,unsigned char *rgbcolor, circdata *circinfo){
   glEnd();
 }
 
-/* ----------------------- DrawCuboid ----------------------------- */
+/* ------------------ DrawCuboid ------------------------ */
 
 //     7--------6
 //    /|       /
@@ -2111,7 +2106,6 @@ void DrawCubeC(float size, unsigned char *rgbcolor){
 
   DrawCuboid(NULL,verts,rgbcolor,object_outlines);
 }
-
 
 /* ----------------------- DrawPrismXyz ----------------------------- */
 
@@ -3383,7 +3377,6 @@ void DrawTruncCone(float d1, float d2, float height, unsigned char *rgbcolor){
   }
 }
 
-
 /* ----------------------- InitSphere ----------------------------- */
 
 void InitSphere(int nlat, int nlong){
@@ -3757,7 +3750,6 @@ void DrawDevices(int mode){
           float xyz1_new[3], xyz2_new[3];
           unsigned char arrow_color_old[4], *arrow_color_new;
           float anglemin, anglemax, rmin, rmax;
-
 
           switch(vectortype){
           case VECTOR_PROFILE:
@@ -4229,7 +4221,6 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
       val1 = arg[0];
       val2 = arg[1];
 
-
       val_result = val1 + val2;
 
       *argptr = val_result;
@@ -4352,7 +4343,6 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
       val1 = arg[0];
       val2 = arg[1];
 
-
       val_result = val1 - val2;
 
       *argptr = val_result;
@@ -4365,7 +4355,6 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
       val1 = arg[0];
       val2 = arg[1];
 
-
       val_result = val1*val2;
 
       *argptr = val_result;
@@ -4377,7 +4366,6 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
 
       val1 = arg[0];
       val2 = arg[1];
-
 
       if(val2 == 0.0){
         val_result = 0.0;
@@ -4841,23 +4829,6 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
 
 #define BUFFER_SIZE 10000
 
-/* ----------------------- GetTokenPtr ----------------------------- */
-
-tokendata *GetTokenPtr(char *var,sv_object_frame *frame){
-  int i;
-
-  for(i=0; i<frame->nsymbols; i++){
-    int ii;
-    tokendata *toki;
-    char *token_var;
-
-    ii = frame->symbols[i];
-    toki = frame->tokens+ii;
-    token_var = toki->tokenlabel+1;
-    if(STRCMP(var,token_var)==0)return toki;
-  }
-  return NULL;
-}
 /* ----------------------- GetCSVDeviceFromLabel ----------------------------- */
 
 devicedata *GetCSVDeviceFromLabel(char *label, int index){
@@ -5258,24 +5229,7 @@ void SetupZoneDevs(void){
   }
 }
 
-/* ----------------------- GetDeviceLabel ----------------------------- */
-
-char *GetDeviceLabel(char *buffer){
-  char *label_present;
-
-  label_present = strstr(buffer, "#");
-  if(label_present == NULL) return NULL;
-  if(strlen(label_present) <= 1){
-    label_present[0] = 0;
-    return NULL;
-  }
-  label_present[0] = 0;
-  label_present++;
-  label_present = TrimFront(label_present);
-  TrimBack(label_present);
-  if(strlen(label_present) == 0) return NULL;
-  return label_present;
-}
+/* ------------------ RewindDeviceFile ------------------------ */
 
 void RewindDeviceFile(FILE *stream){
 #define BUFFER_LEN 255
@@ -5305,7 +5259,6 @@ void RewindDeviceFile(FILE *stream){
             "*** Warning //DATA keyword not found in spreadsheet file\n");
   }
 }
-
 
 /* ----------------------- ReadDeviceData ----------------------------- */
 
@@ -5449,7 +5402,6 @@ FILE_SIZE ReadDeviceData(char *file, int filetype, int loadstatus){
   FREEMEMORY(devices);
   return file_size;
 }
-
 
 /* ----------------------- GetVDevice ----------------------------- */
 

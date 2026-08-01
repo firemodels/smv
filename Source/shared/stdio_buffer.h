@@ -30,7 +30,6 @@ typedef struct _readbufferdata {
   int start, size, returnval;
 } readbufferdata;
 
-
 EXTERNCPP void              ReadBufferi(readbufferdata *readbufferi);
 EXTERNCPP bufferstreamdata *FOPEN_RB(char *file, int ntheads, int use_threads);
 EXTERNCPP bufferstreamdata *GetSMVBuffer(char *file);
@@ -46,6 +45,5 @@ EXTERNCPP int               feof_buffer(filedata *fileinfo);
 EXTERNCPP char             *fgets_buffer(filedata *fileinfo, char *buffer, int size);
 EXTERNCPP void              rewind_buffer(filedata *fileinfo);
 EXTERNCPP filedata         *fopen_buffer(char *filename, char *mode, int nthreads, int use_multihread);
-
 
 #endif

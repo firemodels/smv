@@ -531,39 +531,6 @@ keyworddata *GetScriptKeyword(FILE *stream){
   return keywordinfo;
 }
 
-/* ------------------ GetXYZ ------------------------ */
-
-void GetXYZ(char *buffer,int *ival){
-  int i;
-
-  for(i=0; i<(int)strlen(buffer); i++){
-    char *c;
-
-    c = buffer+i;
-    if(*c!=' '){
-      if(*c=='x'||*c=='X'||*c=='1'){
-        *ival=1;
-        return;
-      }
-      if(*c=='y'||*c=='Y'||*c=='2'){
-        *ival=2;
-        return;
-      }
-      if(*c=='z'||*c=='Z'||*c=='3'){
-        *ival=3;
-        return;
-      }
-      if(*c == 'a' || *c == 'A' || *c == '0'){
-        *ival = 0;
-        return;
-      }
-      *ival = 1;
-      break;
-    }
-  }
-}
-
-
 #define SETbuffer \
 param_status = GetParamBuffer(stream);\
 if(param_status == SCRIPT_EOF){\
@@ -1552,7 +1519,6 @@ void ScriptRenderAll(scriptdata *scripti){
 void ScriptRender360All(scriptdata *scripti){
   int skip_local;
 
-
   if(script_startframe>0)scripti->ival3 = script_startframe;
   if(render_startframe0 >= 0)scripti->ival3 = render_startframe0;
   first_frame_index = scripti->ival3;
@@ -2244,7 +2210,6 @@ void ScriptLoadSliceRender(scriptdata *scripti){
     updatemenu = 1;
     STOP_TIMER(slice_load_time);
 
-
     if(frame_current<frames_total){
       PRINTF("files: %i, ", count);
       if(total_slice_size>1000000000){
@@ -2361,7 +2326,6 @@ void ScriptLoadSmokeRender(scriptdata *scripti){
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
   updatemenu = 1;
   STOP_TIMER(smoke_load_time);
-
 
   if(frame_current<frames_total){
     PRINTF("files: %i, ", count);
@@ -2581,7 +2545,6 @@ void ScriptPartClassColor(scriptdata *scripti){
   fprintf(stderr, "*** Error: particle class quantity: %s failed to be set\n", scripti->cval);
   if(stderr2!=NULL)fprintf(stderr2, "*** Error: particle class color: %s failed to be set\n", scripti->cval);
 }
-
 
 /* ------------------ ScriptPlot3dProps ------------------------ */
 
@@ -3359,6 +3322,7 @@ void ScriptRGBtest(scriptdata *scripti){
 }
 
 /* ------------------ ScriptSetClipx ------------------------ */
+
 #define CLIP_xlower 0
 #define CLIP_ylower 1
 #define CLIP_zlower 2
@@ -3477,7 +3441,6 @@ void ScriptViewXYZMINMAXOrtho(int command){
   GLUISceneMotionCB(CUSTOM_VIEW);
   GLUISceneMotionCB(ZAXIS_CUSTOM);
 }
-
 
 /* ------------------ ScriptViewXYZMINMAXPersp ------------------------ */
 
@@ -3971,4 +3934,3 @@ void SetRunScriptVal(int val){
   ThreadUnlock(readkeyboard_threads);
 #endif
 }
- 

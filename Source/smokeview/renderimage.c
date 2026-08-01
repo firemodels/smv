@@ -535,51 +535,22 @@ static struct gif_spec *current_gif_spec = NULL;
 /// frames of the GIF frame specification.
 static size_t current_gif_frame = 0;
 
-/* -------------------------- GifSpec_Clear --------------------------------- */
-
 /// @brief Clear the animated GIF frame specification if one exists. Does
 /// nothing if there is no current frame specification.
-void GifSpec_Clear() {
-  if(current_gif_spec != NULL){
-    if(current_gif_spec->gif_frames != NULL)
-      FREEMEMORY(current_gif_spec->gif_frames);
-    FREEMEMORY(current_gif_spec);
-  }
-  current_gif_frame = 0;
-}
-
-/* -------------------------- GifSpec_PushFrame ----------------------------- */
 
 /// @brief Set the frame specification to be used for animated GIFs. Will clear
 /// the current GIF specification if one already exists.
 /// @param gfs A pointer to a gif_frame spec. This must be allocated with
 /// NEWMEMORY. This pointer will be kept and later needs to be freed by calling
 /// GifSpec_Clear.
-void GifSpec_PushFrame(int frame_number, int duration) {
-  if(current_gif_spec == NULL){
-    NEWMEMORY(current_gif_spec, sizeof(struct gif_spec));
-    current_gif_spec->n_frames = 0;
-    current_gif_spec->capacity = 2;
-    NEWMEMORY(current_gif_spec->gif_frames,
-              current_gif_spec->capacity * sizeof(struct gif_spec_frame));
-  }
-  if(current_gif_spec->n_frames >= current_gif_spec->capacity){
-    current_gif_spec->capacity *= 2;
-    RESIZEMEMORY(current_gif_spec->gif_frames,
-                 current_gif_spec->capacity * sizeof(struct gif_spec_frame));
-  }
-  current_gif_spec->gif_frames[current_gif_spec->n_frames].frame_number =
-      frame_number;
-  current_gif_spec->gif_frames[current_gif_spec->n_frames].duration = duration;
-  current_gif_spec->n_frames++;
-}
 
-/* ------------------------------- GifStart --------------------------------- */
+/* ------------------ GifStart ------------------------ */
 
 /// @brief Open a gif file with the same dimensions as the current render window
 /// at a give path.
 /// @param[in] path The path at which to open the file
 /// @return zero on success, non-zero on failure
+
 int GifStart(const char *path) {
   GLsizei width = screenWidth;
   GLsizei height = screenHeight;
@@ -615,12 +586,13 @@ int GifEnd() {
   return 0;
 }
 
-/* ------------------------------- GifAddFrame ------------------------------ */
+/* ------------------ GifAddFrame ------------------------ */
 
 /// @brief Take the current render window and add it to a frame. A GIF must have
 /// already been started using GifStart.
 /// @param[in] delay
 /// @return zero on success, non-zero on failure
+
 int GifAddFrame(int delay) {
   GLsizei width = screenWidth;
   GLsizei height = screenHeight;
@@ -647,13 +619,14 @@ int GifAddFrame(int delay) {
   return 0;
 }
 
-/* ----------------------------- GifAddFrameSpec ---------------------------- */
+/* ------------------ GifAddFrameSpec ------------------------ */
 
 /// @brief Add a frame to the current animated GIF (which must have been started
 /// with \ref GifStart). This will examine the current options and or
 /// specification to determine whether a frame should be rendered and for how
 /// long.
 /// @return zero on success, non-zero on failure
+
 int GifAddFrameSpec() {
   // Should add the current frame? True by default.
   bool render = true;
@@ -697,7 +670,6 @@ void RenderFrame(int view_mode){
 
   screenH = screenHeight;
   if(view_mode==VIEW_LEFT&&stereotype==STEREO_RB)return;
-
 
   if(stereotype == STEREO_LR && (view_mode == VIEW_LEFT || view_mode == VIEW_RIGHT)){
     hoffset = screenHeight / 4;
@@ -1005,7 +977,6 @@ unsigned int GetScreenMap360(float *xyz, float *xx, float *yy){
     return return_val;
   }
 }
-
 
 #define LEFT 0
 #define RIGHT 1

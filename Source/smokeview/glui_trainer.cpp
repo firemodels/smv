@@ -231,7 +231,6 @@ void RotateCB(int var){
   az = camera_current->az_elev;
   elev = camera_current->az_elev + 1;
 
-
   if(rotation_type != ROTATION_2AXIS){
     rotation_type = ROTATION_2AXIS;
     HandleRotationType(ROTATION_2AXIS);

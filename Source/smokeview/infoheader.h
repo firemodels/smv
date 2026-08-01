@@ -3,7 +3,6 @@
 #define MAX_TITLE_LINE_LENGTH 256
 #define MAX_TITLE_LINES 256
 
-
 /* --------------------------  titledata ---------------------------------- */
 
 typedef struct {
@@ -19,8 +18,6 @@ typedef struct {
   char chidline[MAX_TITLE_LINE_LENGTH];
 } titledata;
 
-EXTERNCPP int addTitleLine(titledata *titleinfo_ptr, const char *string);
-EXTERNCPP int clearTitleLines(titledata *titleinfo_ptr);
 EXTERNCPP int initialiseInfoHeader(titledata *titleinfo_ptr,
                          char *release_title_string, char *smv_githash_string,
                          char *fds_githash_string, char *chidfilebase_string, char *fds_title_arg);

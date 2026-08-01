@@ -30,20 +30,11 @@ cd $CUR
 
 wait_cases_end()
 {
-   if [[ "$QUEUE" == "none" ]]
-   then
-     while [[ `ps -u $USER -f | fgrep .fds | grep -v grep` != '' ]]; do
-        JOBS_REMAINING=`ps -u $USER -f | fgrep .fds | grep -v grep | wc -l`
-        echo "Waiting for ${JOBS_REMAINING} cases to complete."
-        sleep 15
-     done
-   else
-     while [[ `qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep $JOBPREFIX | grep -v 'C$'` != '' ]]; do
-        JOBS_REMAINING=`qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep $JOBPREFIX | grep -v 'C$' | wc -l`
-        echo "Waiting for ${JOBS_REMAINING} cases to complete." 
-        sleep 15
-     done
-   fi
+   while [[ `qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep $JOBPREFIX | grep -v 'C$'` != '' ]]; do
+      JOBS_REMAINING=`qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep $JOBPREFIX | grep -v 'C$' | wc -l`
+      echo "Waiting for ${JOBS_REMAINING} cases to complete." 
+      sleep 15
+   done
 }
 
 function usage {
@@ -166,17 +157,12 @@ QFDSSH="$GITROOT/fds/Utilities/Scripts/qfds.sh -j $JOBPREFIX"
 if [ "$DEBUG" != "" ]; then
   QFDSSH="$QFDSSH -T db "
 fi
-if [ "$QUEUE" == "none" ]; then
-  QFDSSH="$GITROOT/smv/Utilities/Scripts/background.sh -I -s"
-fi
 FDSPARM=
 
 # Set queue to submit cases to
 
 if [ "$QUEUE" != "" ]; then
-   if [ "$QUEUE" != "none" ]; then
-     QUEUE="-q $QUEUE"
-   fi
+   QUEUE="-q $QUEUE"
 fi
 
 export BASEDIR=`pwd`
@@ -195,13 +181,8 @@ fi
 
 # run cases    
 
-if [ "$QUEUE" == "none" ]; then
-  export  RUNCFAST="$QFDSSH -e $CFAST $STOPFDS"
-  export      QFDS="$QFDSSH -e $FDS $STOPFDS"
-else
-  export  RUNCFAST="$QFDSSH $INTEL2 -e $CFAST $QUEUE $STOPFDS"
-  export      QFDS="$QFDSSH $INTEL2 $FDSPARM $OPENMPOPTS $QUEUE $STOPFDS"
-fi
+export  RUNCFAST="$QFDSSH $INTEL2 -e $CFAST $QUEUE $STOPFDS"
+export      QFDS="$QFDSSH $INTEL2 $FDSPARM $OPENMPOPTS $QUEUE $STOPFDS"
 echo QFDS=$QFDS
 echo "*************************************************"
 

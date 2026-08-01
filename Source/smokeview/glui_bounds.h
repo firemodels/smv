@@ -160,9 +160,6 @@
 
 //*** glui_bounds.cpp headers
 
-EXTERNCPP int  GLUIGetChopMin(int type, char *label, int *set_valmin, float *valmin);
-EXTERNCPP int  GLUIGetChopMax(int type, char *label, int *set_valmax, float *valmax);
-EXTERNCPP int  GLUISetChopMin(int type, char *label, int set_chopmin, float chopmin);
 EXTERNCPP int  GLUISetChopMax(int type, char *label, int set_chopmax, float chopmax);
 EXTERNCPP void GLUISetTimeVal(float timeval);
 
@@ -200,8 +197,6 @@ EXTERNCPP void GLUISetMinMax(int type, char *label, int set_valmin, float valmin
 EXTERNCPP void GLUISetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int nall);
 EXTERNCPP void GLUISetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall);
 EXTERNCPP void GLUISetLoadedMinMaxAll(int type, float *valmin, float *valmax, int nall);
-EXTERNCPP void GLUIGetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall);
-EXTERNCPP void GLUIGetLoadedMinMaxAll(int type, float *valmin, float *valmax, int nall);
 EXTERNCPP void GLUIUpdateBounds(void);
 EXTERNCPP void GLUIPlot3DBoundsCPP_CB(int var);
 EXTERNCPP void GLUISetColorbarDigitsCPP(int ndigits);
@@ -267,6 +262,4 @@ EXTERNCPP void SliceBounds2Glui(int slicefile_labelindex);
 EXTERNCPP void UpdateShowExtPatch(int show_option, int hide_option);
 EXTERNCPP void UpdateShowIntPatch(int show_option, int hide_option);
 
-
 #endif
-

@@ -12,98 +12,6 @@
 #define EXPMIN -1
 #define EXPMAX 3
 
-/* ------------------ GetBoundaryColors ------------------------ */
-
-void GetBoundaryColors(float *t, int nt, unsigned char *it,
-              int settmin, float *ttmin, int settmax, float *ttmax,
-              float *tmin_arg, float *tmax_arg,
-              int ndatalevel, int nlevel,
-              char **labels, char *scale, float *tvals256,
-              int *extreme_min, int *extreme_max
-              ){
-  int n;
-  float *tcopy, factor, tval, range;
-  int expmin, expmax;
-  int itt;
-  float local_tmin, local_tmax, tmin2, tmax2;
-
-  tmin2 = *t;
-  tmax2 = *t;
-
-  STRCPY(scale,"");
-  tcopy = t+1;
-  for(n=1; n<nt; n++){
-    if(*tcopy<tmin2)tmin2=*tcopy;
-    if(*tcopy>tmax2)tmax2=*tcopy;
-    tcopy++;
-  }
-  *tmin_arg = tmin2;
-  *tmax_arg = tmax2;
-  *extreme_min=0;
-  *extreme_max=0;
-  if(settmin!=SET_MIN){
-    *ttmin=tmin2;
-  }
-  if(settmax!=SET_MAX){
-    *ttmax=tmax2;
-  }
-  local_tmin = *ttmin;
-  local_tmax = *ttmax;
-
-  range = local_tmax - local_tmin;
-  factor = 0.0f;
-  if(range!=0.0f)factor = (ndatalevel-2*extreme_data_offset)/range;
-  for(n=0; n<nt; n++){
-    float val;
-
-    val = *t;
-
-    if(val<local_tmin){
-      itt=0;
-      *extreme_min=1;
-    }
-    else if(val>local_tmax){
-      itt=ndatalevel-1;
-      *extreme_max=1;
-    }
-    else{
-      itt=extreme_data_offset+(int)(factor*(val-local_tmin));
-    }
-    *it++ = CLAMP(itt, colorbar_offset, ndatalevel - 1 - colorbar_offset);
-    t++;
-  }
-  GetMantissaExponent(local_tmax, &expmax);
-  GetMantissaExponent(local_tmin, &expmin);
-  if(expmin!=0&&expmax!=0&&expmax-expmin<=2&&(expmin<-2||expmin>2)){
-    local_tmin *= pow((double)10.0,(double)-expmin);
-    local_tmax *= pow((double)10.0,(double)-expmin);
-    sprintf(scale,"*10^%i",expmin);
-  }
-  if(expmin==0&&(expmax<EXPMIN||expmax>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmax);
-    local_tmax *= pow((double)10.0,(double)-expmax);
-    sprintf(scale,"*10^%i",expmax);
-  }
-  if(expmax==0&&(expmin<EXPMIN||expmin>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmin);
-    local_tmax *= pow((double)10.0,(double)-expmin);
-    sprintf(scale,"*10^%i",expmin);
-  }
-  range = local_tmax - local_tmin;
-  factor = range/(nlevel-2);
-  for(n=1; n<nlevel-2; n++){
-    tval = local_tmin + (n-1)*factor;
-    Num2String(&labels[n][0],tval);
-  }
-  tval = local_tmin + (nlevel-3)*factor;
-  for(n=0; n<256; n++){
-    tvals256[n] = (local_tmin*(255-n) + n*local_tmax)/255.;
-  }
-  Num2String(&labels[nlevel-2][0],tval);
-  tval = local_tmax;
-  Num2String(&labels[nlevel-1][0],tval);
-}
-
 /* ------------------ GetBoundaryColors3 ------------------------ */
 
 void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned char *it,
@@ -472,7 +380,6 @@ int GetZoneColor(float t, float local_tmin, float local_tmax, int nlevel){
   if(level>nlevel-1)return nlevel-1;
   return level;
 }
-
 
 /* ------------------ GetZoneColors ------------------------ */
 
@@ -1316,7 +1223,6 @@ void UpdateChopColors(void){
   float p3chopmin_temp_local=1.0, p3chopmax_temp_local=0.0;
   float glui_p3min_local=1.0, glui_p3max_local=0.0;
 
-
   cpp_boundsdata *bounds;
 
   SNIFF_ERRORS("UpdateChopColors: start");
@@ -1652,19 +1558,7 @@ void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned cha
   *rr=r; *gg=g; *bb=b;
 }
 
-/* ------------------ GetColorTranPtr ------------------------ */
-
-float *GetColorTranPtr(float *color, float transparency){
-  float col[4];
-
-  col[0] = color[0];
-  col[1] = color[1];
-  col[2] = color[2];
-  col[3] = transparency;
-  return GetColorPtr(&global_scase, col);
-}
-
-  /* ------------------ ConvertColor ------------------------ */
+/* ------------------ ConvertColor ------------------------ */
 
 void ConvertColor(int flag){
   colordata *colorptr;

@@ -275,7 +275,6 @@ void DrawPart(const partdata *parti, int mode){
                   if(vis[j] == 1 && datacopy->tags[j]==selected_part_index){
                     char taglabel[64];
 
-
                     if(itype >= 0){
                       sprintf(taglabel, "%i: %f", selected_part_index, rvals[j]);
                     }
@@ -1392,29 +1391,6 @@ wrapup:
   FREEMEMORY(numpoints_local);
 }
 
-/* ------------------ PrintPartProp ------------------------ */
-
-#ifdef _DEBUG
-void PrintPartProp(void){
-  int i;
-
-  for(i=0; i<npart5prop; i++){
-    partpropdata *propi;
-
-    propi = part5propinfo + i;
-    if(STRCMP(propi->label->longlabel, "Uniform color")==0){
-      PRINTF("label=%s\n", propi->label->longlabel);
-    }
-    else{
-      PRINTF("label=%s min=%f max=%f\n", propi->label->longlabel, propi->valmin, propi->valmax);
-      PRINTF("   glbmin=%f glbmax=%f\n", propi->dlg_global_valmin, propi->dlg_global_valmax);
-    }
-    PRINTF("\n");
-  }
-}
-#endif
-
-
 /* ------------------ GetPartPropIndexS ------------------------ */
 
 int GetPartPropIndexS(char *shortlabel){
@@ -1543,7 +1519,6 @@ void InitPartProp(void){
           propi->user_min=1.0;
           propi->user_max=0.0;
           propi->display=0;
-
 
           propi->setchopmin=0;
           propi->setchopmax=0;
@@ -1934,7 +1909,7 @@ void UpdatePartColors(partdata *parti, int flag){
   }
 }
 
-/* -----  ------------- FinalizePartLoad ------------------------ */
+/* ------------------ FinalizePartLoad ------------------------ */
 
 void FinalizePartLoad(partdata *parti){
   int j;
@@ -1988,7 +1963,7 @@ void FinalizePartLoad(partdata *parti){
   GLUTPOSTREDISPLAY;
 }
 
-/* -----  ------------- ReadPart ------------------------ */
+/* ------------------ ReadPart ------------------------ */
 
 FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_arg){
   size_t lenfile_local;

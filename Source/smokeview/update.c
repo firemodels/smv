@@ -18,18 +18,6 @@
 #include "IOobjects.h"
 #include "readsmvfile.h"
 
-/* ------------------ CompareFloat ------------------------ */
-
-int CompareFloat(const void *arg1, const void *arg2){
-  float x, y;
-
-  x=*(float *)arg1;
-  y=*(float *)arg2;
-  if( x< y)return -1;
-  if( x> y)return 1;
-  return 0;
-}
-
 /* ------------------ UpdateFrameNumber ------------------------ */
 
 void UpdateFrameNumber(int changetime){
@@ -801,94 +789,6 @@ void SynchTimes(void){
 
   }
   ResetGLTime();
-}
-
-/* ------------------ GetLoadvfileinfo ------------------------ */
-
-int GetLoadvfileinfo(FILE *stream, char *filename){
-  int i;
-  char *fileptr;
-
-  TrimBack(filename);
-  fileptr = TrimFront(filename);
-  for(i = 0; i<global_scase.slicecoll.nsliceinfo; i++){
-    slicedata *slicei;
-
-    slicei = global_scase.slicecoll.sliceinfo+i;
-    if(strcmp(fileptr, slicei->file)==0){
-      fprintf(stream, "// LOADVFILE\n");
-      fprintf(stream, "//  %s\n", slicei->file);
-      fprintf(stream, "LOADVSLICEM\n");
-      fprintf(stream, " %s\n", slicei->label.longlabel);
-      if(slicei->slice3d==1){
-        fprintf(stream, " %i %f\n", 0, slicei->position_orig);
-      }
-      else{
-        fprintf(stream, " %i %f\n", slicei->idir, slicei->position_orig);
-      }
-      fprintf(stream, " %i\n", slicei->blocknumber+1);
-      return 1;
-    }
-  }
-  return 0;
-}
-
-/* ------------------ GetLoadfileinfo ------------------------ */
-
-int GetLoadfileinfo(FILE *stream, char *filename){
-  int i;
-  char *fileptr;
-
-  TrimBack(filename);
-  fileptr = TrimFront(filename);
-  for(i = 0; i<global_scase.slicecoll.nsliceinfo; i++){
-    slicedata *slicei;
-
-    slicei = global_scase.slicecoll.sliceinfo+i;
-    if(strcmp(fileptr, slicei->file)==0){
-      fprintf(stream, "// LOADFILE\n");
-      fprintf(stream, "//  %s\n", slicei->file);
-      fprintf(stream, "LOADSLICEM\n");
-      fprintf(stream, " %s\n", slicei->label.longlabel);
-      if(slicei->slice3d==1){
-        fprintf(stream, " %i %f\n", 0, slicei->position_orig);
-      }
-      else{
-        fprintf(stream, " %i %f\n", slicei->idir, slicei->position_orig);
-      }
-      fprintf(stream, " %i\n", slicei->blocknumber+1);
-      return 1;
-    }
-  }
-  for(i = 0; i < global_scase.nisoinfo; i++){
-    isodata *isoi;
-
-    isoi = global_scase.isoinfo + i;
-    if(strcmp(fileptr, isoi->file) == 0){
-      fprintf(stream, "// LOADFILE\n");
-      fprintf(stream, "//  %s\n", isoi->file);
-      fprintf(stream, "LOADISOM\n");
-      fprintf(stream, " %s\n", isoi->surface_label.longlabel);
-      fprintf(stream, " %i\n", isoi->blocknumber+1);
-      return 1;
-    }
-
-  }
-  for(i = 0; i < global_scase.npatchinfo; i++){
-    patchdata *patchi;
-
-    patchi = global_scase.patchinfo + i;
-    if(strcmp(fileptr, patchi->file) == 0){
-      fprintf(stream, "// LOADFILE\n");
-      fprintf(stream, "//  %s\n", patchi->file);
-      fprintf(stream, "LOADBOUNDARYM\n");
-      fprintf(stream, " %s\n", patchi->label.longlabel);
-      fprintf(stream, " %i\n", patchi->blocknumber+1);
-      return 1;
-    }
-
-  }
-  return 0;
 }
 
 /* ------------------ GetTime ------------------------ */
@@ -1796,29 +1696,6 @@ void UpdateIsoIni(void){
   }
 }
 
-/* ------------------ Bytes2Label ------------------------ */
-
-char *Bytes2Label(char *label, FILE_SIZE bytes){
-  char vallabel[256];
-
-  if(bytes >= 0 && bytes < 1000){
-    sprintf(label, "%iB", (int)bytes);
-  }
-  else if(bytes >= 1000 && bytes < 1000000){
-    Float2String(vallabel, (float)bytes/1000.0, ncolorlabel_digits, force_fixedpoint);
-    sprintf(label, "%sKB", vallabel);
-  }
-  else if(bytes >= 1000000 && bytes < 1000000000){
-    Float2String(vallabel, (float)bytes/1000000.0, ncolorlabel_digits, force_fixedpoint);
-    sprintf(label, "%sMB", vallabel);
-  }
-  else{
-    Float2String(vallabel, (float)bytes/1000000000.0, ncolorlabel_digits, force_fixedpoint);
-    sprintf(label, "%sGB", vallabel);
-  }
-  return label;
-}
-
 #ifdef pp_SHOW_UPDATE
 #define SHOW_UPDATE(var) printf("updating: %s\n", #var);INIT_PRINT_TIMER(update_timer);updating=1
 #define END_SHOW_UPDATE(var) PRINT_TIMER(update_timer,#var)
@@ -2284,7 +2161,6 @@ int GetColorbarState(void){
   visColorbarHorizontal_save = 0;
   return COLORBAR_HIDDEN;
 }
-
 
 /* ------------------ OutputMinMax  ------------------------ */
 
@@ -2891,19 +2767,3 @@ void ShiftColorbars(void){
   }
   CheckMemory;
 }
-
-/* ------------------ PauseTime ------------------------ */
-
-void PauseTime(float pause_time){
-  float start_time;
-
-  // pause no more than 60 s
-  assert(opengl_finalized == 1);
-  start_time = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
-  for(;;){
-    float delta_time;
-
-    delta_time = glutGet(GLUT_ELAPSED_TIME) / 1000.0 - start_time;
-    if(delta_time > pause_time || delta_time > 60.0)return;
-    }
-  }

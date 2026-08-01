@@ -16,4 +16,3 @@ int UnCompressVolSliceFrame(unsigned char *compressed_data_in,
                            unsigned char *fullbuffer);
 unsigned char AllZeroRLE(unsigned char *buffer_in, int nchars_in);
 #endif
-

@@ -68,7 +68,6 @@ int ShaderCompileStatus(GLuint obj,char *label){
   return GL_TRUE;
 }
 
-
 /* ------------------ SetZoneSmokeShaders ------------------------ */
 
 int SetZoneSmokeShaders(){
@@ -365,12 +364,6 @@ void LoadZoneSmokeShaders(void){
 
 void LoadSmokeShaders(void){
   glUseProgram(p_smoke);
-}
-
-/* ------------------ LoadVolsmokeShaders ------------------------ */
-
-void LoadVolsmokeShaders(void){
-  glUseProgram(p_volsmoke);
 }
 
 /* ------------------ UnLoadShaders ------------------------ */

@@ -52,6 +52,9 @@ int MemoryLoad(void){
   return (int)stat.dwMemoryLoad;
 }
 #endif
+
+/* ------------------ MemoryLoad ------------------------ */
+
 #ifdef __linux__
 int MemoryLoad(void){
   FILE *fp = fopen("/proc/meminfo", "r");
@@ -564,7 +567,6 @@ void _CheckMemoryOn(void){
 void _CheckMemoryOff(void){
   checkmemoryflag=0;
 }
-
 
 /* ------------------ _CheckMemory ------------------------ */
 

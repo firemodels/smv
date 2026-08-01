@@ -52,7 +52,6 @@ char *GetCSVFilename(smv_case *scase, const char *csv_suffix){
   return p;
 }
 
-
 /* ------------------ CasePathFdsFileIn ------------------------ */
 
 // char *fds_filein;
@@ -60,14 +59,12 @@ char *CasePathFdsFileIn(smv_case *scase){
   return SetupPath(NULL, scase->fds_filein, NULL);
 }
 
-
 /* ------------------ CasePathChidFileBase ------------------------ */
 
 // char *chidfilebase;
 char *CasePathChidFileBase(smv_case *scase){
   return SetupPath(NULL, scase->chidfilebase, NULL);
 }
-
 
 /* ------------------ CasePathHrrCsv ------------------------ */
 
@@ -97,14 +94,12 @@ char *CasePathStepCsv(smv_case *scase){
   return SetupPath(NULL, scase->chidfilebase, "_steps.csv");
 }
 
-
 /* ------------------ CasePathLogFile ------------------------ */
 
 // char *log_filename;
 char *CasePathLogFile(smv_case *scase){
   return SetupPath(NULL, scase->chidfilebase, ".smvlog");
 }
-
 
 /* ------------------ CasePathCaseIni ------------------------ */
 
@@ -195,6 +190,7 @@ char *CasePathSmoke3d(smv_case *scase){
 // if smokezip created part2iso files then concatenate .smv entries found in the
 // .isosmv file to the end of the .smv file creating a new .smv file.  Then read
 // in that .smv file.
+
 char *CasePathIso(smv_case *scase){
   return SetupPath(NULL, scase->fdsprefix, ".isosmv");
 }

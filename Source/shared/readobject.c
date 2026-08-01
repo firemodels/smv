@@ -614,7 +614,6 @@ int GetTokenId(char *token, int *opptr, int *num_opptr, int *num_outopptr){
   int op, num_op, num_outop;
   int return_val;
 
-
   return_val = 0;
   if(STRCMP(token, "translate") == 0){
     op = SV_TRANSLATE;

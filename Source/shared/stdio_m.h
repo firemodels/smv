@@ -25,7 +25,6 @@ typedef struct {
 #define FORTREAD_mv(a,b,c,d)  fseek_m(stream,4,SEEK_CUR);count_read=fread_mv(a,b,c,d);fseek_m(stream,4,SEEK_CUR)
 #endif
 
-
 void   fclose_b(FILE_m *stream_m);
 void   fclose_m(FILE_m *stream_m);
 char   *fgets_m(char *str, int num, FILE_m *stream_m);

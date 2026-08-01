@@ -11,218 +11,6 @@
 #include "smokeviewvars.h"
 #include "interp.h"
 
-/* ------------------ Slerp ------------------------ */
-
-void Slerp(float *p0, float *p1, float t, float *pout){
-  float cosangle,sinangle,denom,angle,factor1,factor2;
-
-  denom = NORM3(p0)*NORM3(p1);
-  if(denom==0.0){
-    pout[0]=p0[0];
-    pout[1]=p0[1];
-    pout[2]=p0[2];
-    return;
-  }
-  cosangle = CLAMP(DOT3(p0,p1)/denom,-1.0,1.0);
-  angle = acos(cosangle);
-  sinangle = sin(angle);
-  if(sinangle == 0.0){
-    factor1 = (1.0 - t);
-    factor2 = t;
-  }
-  else{
-    factor1 = sin((1.0 - t)*angle) / sinangle;
-    factor2 = sin(t*angle) / sinangle;
-  }
-  pout[0]=factor1*p0[0]+factor2*p1[0];
-  pout[1]=factor1*p0[1]+factor2*p1[1];
-  pout[2]=factor1*p0[2]+factor2*p1[2];
-}
-
-/* ----------------------- DrawTetraOutline ----------------------------- */
-
-void DrawTetraOutline(float *v1, float *v2, float *v3, float *v4, unsigned char *rgbcolor){
-  glBegin(GL_LINES);
-  if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-  glVertex3fv(v1);
-  glVertex3fv(v2);
-  glVertex3fv(v2);
-  glVertex3fv(v3);
-  glVertex3fv(v3);
-  glVertex3fv(v1);
-  glVertex3fv(v1);
-  glVertex3fv(v4);
-  glVertex3fv(v2);
-  glVertex3fv(v4);
-  glVertex3fv(v3);
-  glVertex3fv(v4);
-  glEnd();
-}
-
-/* ----------------------- DrawFilledTetra ----------------------------- */
-
-void DrawFilledTetra(float *v1, float *v2, float *v3, float *v4, unsigned char *rgbcolor){
-  float diff1[3],diff2[3],cross[3];
-
-  glBegin(GL_TRIANGLES);
-  if(rgbcolor!=NULL)glColor3ubv(rgbcolor);
-
-  VEC3DIFF(diff1,v1,v2);
-  VEC3DIFF(diff2,v4,v2);
-  CROSS(cross,diff1,diff2);
-  glNormal3f(cross[0],cross[1],cross[2]);
-  glVertex3fv(v1);
-  glVertex3fv(v2);
-  glVertex3fv(v4);
-
-  VEC3DIFF(diff1,v1,v4);
-  VEC3DIFF(diff2,v2,v4);
-  CROSS(cross,diff1,diff2);
-  glNormal3f(cross[0],cross[1],cross[2]);
-  glVertex3fv(v1);
-  glVertex3fv(v4);
-  glVertex3fv(v2);
-
-  VEC3DIFF(diff1,v2,v3);
-  VEC3DIFF(diff2,v4,v3);
-  CROSS(cross,diff1,diff2);
-  glNormal3f(cross[0],cross[1],cross[2]);
-  glVertex3fv(v2);
-  glVertex3fv(v3);
-  glVertex3fv(v4);
-
-  VEC3DIFF(diff1,v2,v4);
-  VEC3DIFF(diff2,v3,v4);
-  CROSS(cross,diff1,diff2);
-  glNormal3f(cross[0],cross[1],cross[2]);
-  glVertex3fv(v2);
-  glVertex3fv(v4);
-  glVertex3fv(v3);
-
-  VEC3DIFF(diff1,v4,v1);
-  VEC3DIFF(diff2,v3,v4);
-  CROSS(cross,diff1,diff2);
-  glNormal3f(cross[0],cross[1],cross[2]);
-  glVertex3fv(v1);
-  glVertex3fv(v4);
-  glVertex3fv(v3);
-
-  VEC3DIFF(diff1,v1,v3);
-  VEC3DIFF(diff2,v4,v3);
-  CROSS(cross,diff1,diff2);
-  glNormal3f(cross[0],cross[1],cross[2]);
-  glVertex3fv(v1);
-  glVertex3fv(v3);
-  glVertex3fv(v4);
-
-  VEC3DIFF(diff1,v1,v3);
-  VEC3DIFF(diff2,v2,v3);
-  CROSS(cross,diff1,diff2);
-  glNormal3f(cross[0],cross[1],cross[2]);
-  glVertex3fv(v1);
-  glVertex3fv(v3);
-  glVertex3fv(v2);
-
-  VEC3DIFF(diff1,v1,v2);
-  VEC3DIFF(diff2,v3,v2);
-  CROSS(cross,diff1,diff2);
-  glNormal3f(cross[0],cross[1],cross[2]);
-  glVertex3fv(v1);
-  glVertex3fv(v2);
-  glVertex3fv(v3);
-  glEnd();
-}
-
-/* ----------------------- DrawFilled2Tetra ----------------------------- */
-
-void DrawFilled2Tetra(float *v1, float *v2, float *v3, float *v4,
-                     unsigned char *rgb0color,
-                     unsigned char *rgb1color,
-                     unsigned char *rgb2color,
-                     unsigned char *rgb3color,
-                     int *vis_plane
-                     ){
-  float diff1[3],diff2[3],cross[3];
-
-  glBegin(GL_TRIANGLES);
-  if(vis_plane[0]==1){
-     if(rgb0color!=NULL)glColor3ubv(rgb0color);
-    VEC3DIFF(diff1,v1,v2);
-    VEC3DIFF(diff2,v4,v2);
-    CROSS(cross,diff2,diff1);
-    glNormal3f(cross[0],cross[1],cross[2]);
-    glVertex3fv(v1);
-    glVertex3fv(v2);
-    glVertex3fv(v4);
-
-    VEC3DIFF(diff1,v1,v4);
-    VEC3DIFF(diff2,v2,v4);
-    CROSS(cross,diff2,diff1);
-    glNormal3f(cross[0],cross[1],cross[2]);
-    glVertex3fv(v1);
-    glVertex3fv(v4);
-    glVertex3fv(v2);
-  }
-
-  if(vis_plane[1]==1){
-    if(rgb1color!=NULL)glColor3ubv(rgb1color);
-    VEC3DIFF(diff1,v2,v3);
-    VEC3DIFF(diff2,v4,v3);
-    CROSS(cross,diff2,diff1);
-    glNormal3f(cross[0],cross[1],cross[2]);
-    glVertex3fv(v2);
-    glVertex3fv(v3);
-    glVertex3fv(v4);
-
-    VEC3DIFF(diff1,v2,v4);
-    VEC3DIFF(diff2,v3,v4);
-    CROSS(cross,diff2,diff1);
-    glNormal3f(cross[0],cross[1],cross[2]);
-    glVertex3fv(v2);
-    glVertex3fv(v4);
-    glVertex3fv(v3);
-  }
-
-  if(vis_plane[2]==1){
-    if(rgb2color!=NULL)glColor3ubv(rgb2color);
-    VEC3DIFF(diff1,v4,v1);
-    VEC3DIFF(diff2,v3,v4);
-    CROSS(cross,diff2,diff1);
-    glNormal3f(cross[0],cross[1],cross[2]);
-    glVertex3fv(v1);
-    glVertex3fv(v4);
-    glVertex3fv(v3);
-
-    VEC3DIFF(diff1,v1,v3);
-    VEC3DIFF(diff2,v4,v3);
-    CROSS(cross,diff2,diff1);
-    glNormal3f(cross[0],cross[1],cross[2]);
-    glVertex3fv(v1);
-    glVertex3fv(v3);
-    glVertex3fv(v4);
-  }
-
-  if(vis_plane[3]==1){
-    if(rgb3color!=NULL)glColor3ubv(rgb3color);
-    VEC3DIFF(diff1,v1,v3);
-    VEC3DIFF(diff2,v2,v3);
-    CROSS(cross,diff2,diff1);
-    glNormal3f(cross[0],cross[1],cross[2]);
-    glVertex3fv(v1);
-    glVertex3fv(v3);
-    glVertex3fv(v2);
-
-    VEC3DIFF(diff1,v1,v2);
-    VEC3DIFF(diff2,v3,v2);
-    CROSS(cross,diff2,diff1);
-    glNormal3f(cross[0],cross[1],cross[2]);
-    glVertex3fv(v1);
-    glVertex3fv(v2);
-    glVertex3fv(v3);
-  }
-  glEnd();
-}
-
 /* ------------------ CompareFloats ------------------------ */
 
 int CompareFloats(const void *arg1, const void *arg2){
@@ -503,7 +291,7 @@ int GetCellIndex(float *xyz){
   int ni  = ncells[0];
   int nj  = ncells[1];
   int nij = ni * nj;
-  
+
   int kcell = (xyz[2] - scene_min[2]) / cell_dxyz[2];
   int jcell = (xyz[1] - scene_min[1]) / cell_dxyz[1];
   int icell = (xyz[0] - scene_min[0]) / cell_dxyz[0];
@@ -523,7 +311,6 @@ scenedata *InitSceneInfo(void){
   float *scene_max = sd->xyz_bar;
   float *scene_mid = sd->xyz_mid_smv;
   float *cell_dxyz = sd->cell_dxyz;
-
 
   {
     meshdata *meshi;
@@ -636,7 +423,7 @@ scenedata *InitSceneInfo(void){
   int nmeshes_total=0;
   for(int i=0; i<ncells_total; i++){
     celldata *ci;
-    
+
     ci = sd->cellinfo + i;
     nmeshes_total += ci->nmeshes;
   }
@@ -989,26 +776,6 @@ int SMVPointInFrustum(float *xyz){
   return 1;
 }
 
-/* ------------------ FDSPointInFrustum ------------------------ */
-
-int FDSPointInFrustum(float *xyz){
-  float xyz_smv[3];
-
-  xyz_smv[0] = FDS2SMV_X(xyz[0]);
-  xyz_smv[1] = FDS2SMV_Y(xyz[1]);
-  xyz_smv[2] = FDS2SMV_Z(xyz[2]);
-  return SMVPointInFrustum(xyz_smv);
-}
-
-/* ------------------ TriangleInFrustum ------------------------ */
-
-int TriangleInFrustum(float *v1, float *v2, float *v3){
-  if(SMVPointInFrustum(v1)==1)return 1;
-  if(SMVPointInFrustum(v2)==1)return 1;
-  if(SMVPointInFrustum(v3)==1)return 1;
-  return 0;
-}
-
 /* ------------------ BoxInFrustum ------------------------ */
 
 int BoxInFrustum(float *xx, float *yy, float *zz, int n){
@@ -1065,7 +832,6 @@ int RectangleInFrustum(float *x11, float *x12, float *x22, float *x21){
    }
    return 1;
 }
-
 
 /* ------------------ MatMultMat ------------------------ */
 
@@ -1249,62 +1015,6 @@ void GetNewPos(float *oldpos, float dx, float dy, float dz,float local_speed_fac
   from_glui_trainer=0;
 }
 
-/* ------------------ GetBlockageDistance ------------------------ */
-
-float GetBlockageDistance(float x, float y, float z){
-  int i;
-  meshdata *meshi;
-  float *xplt, *yplt, *zplt;
-  float xmin, xmax, ymin, ymax, zmin, zmax;
-  int ibar, jbar, kbar, nx, nxy;
-  int ii, jj, kk;
-  int ijknode,ijkcell;
-  float view_height;
-  char *iblank_cell;
-
-  for(i=0; i<global_scase.meshescoll.nmeshes; i++){
-    meshi = global_scase.meshescoll.meshinfo+i;
-
-    iblank_cell = meshi->c_iblank_cell;
-
-    ibar = meshi->ibar;
-    jbar = meshi->jbar;
-    kbar = meshi->kbar;
-    nx = ibar+1;
-    nxy = (ibar+1)*(jbar+1);
-
-    xplt = meshi->xplt_fds;
-    yplt = meshi->yplt_fds;
-    zplt = meshi->zplt_fds;
-
-    xmin = xplt[0];
-    xmax = xplt[ibar];
-    if(x<xmin||x>xmax)continue;
-
-    ymin = yplt[0];
-    ymax = yplt[jbar];
-    if(y<ymin||y>ymax)continue;
-
-    zmin = zplt[0];
-    zmax = zplt[kbar];
-    if(z<zmin||z>zmax)continue;
-
-    ii = GetInterval(x,xplt,ibar+1);
-    jj = GetInterval(y,yplt,jbar+1);
-    kk = GetInterval(z,zplt,kbar+1);
-    if(ii!=-1&&jj!=-1&&kk!=-1){
-      ijkcell=IJKCELL(ii,jj,kk);
-      if(iblank_cell[ijkcell]==SOLID)return 0.0;
-      ijknode=IJKNODE(ii,jj,kk);
-      view_height = meshi->block_zdist[ijknode];
-      if(view_height==0.0)return 0.0;
-      view_height += (z-zplt[kk]);
-      return view_height;
-    }
-  }
-  return -1.0;
-}
-
 /* ------------------ MakeIBlankCarve ------------------------ */
 
 int MakeIBlankCarve(void){
@@ -1322,7 +1032,6 @@ int MakeIBlankCarve(void){
     meshi->c_iblank_embed=NULL;
   }
   if(global_scase.meshescoll.nmeshes==1)return 0;
-
 
   for(i=0; i<global_scase.meshescoll.nmeshes; i++){
     meshdata *meshi;
@@ -1851,7 +1560,6 @@ void InitClip(void){
   stepclip_xmin=0,stepclip_ymin=0,stepclip_zmin=0;
   stepclip_xmax=0,stepclip_ymax=0,stepclip_zmax=0;
 }
-
 
 /* ------------------ VolumeTetrahedron ------------------------ */
 

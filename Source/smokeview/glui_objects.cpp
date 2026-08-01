@@ -1693,34 +1693,6 @@ extern "C" void GLUIUpdateDevices(void){
   GLUIDeviceCB(DEVICE_devicetypes);
 }
 
-/* ------------------ GetDeviceTminTmax ------------------------ */
-
-float GetDeviceTminTmax(void){
-  float return_val=1.0;
-  int first = 1, i;
-
-  for(i = 0; i<global_scase.devicecoll.ndeviceinfo; i++){
-    devicedata *devicei;
-    float *times;
-
-    devicei = global_scase.devicecoll.deviceinfo+i;
-    times = devicei->times;
-    if(times!=NULL&&devicei->nvals>0){
-      float tval;
-
-      tval = times[devicei->nvals-1];
-      if(first==1){
-        first = 0;
-        return_val = tval;
-      }
-      else{
-        return_val = MAX(return_val, tval);
-      }
-    }
-  }
-  return return_val;
-}
-
 /* ------------------ HaveExt ------------------------ */
 
 int HaveExt(void){
@@ -1861,7 +1833,6 @@ extern "C" void GLUIPlot2DSetup(int main_window){
 
     GLUIGenPlotCB(GENPLOT_CSV_FILETYPE);
     GLUIGenPlotCB(GENPLOT_CURVE_UNIT);
-
 
     ROLLOUT_plotproperties = glui_plot2d->add_rollout("plot properties(all plots)", true, PLOT2D_NEW_ROLLOUT, Plot2D_Rollout_CB);
     TOGGLE_ROLLOUT(plot2dprocinfo, nplot2dprocinfo, ROLLOUT_plotproperties, PLOT2D_NEW_ROLLOUT, glui_plot2d);
@@ -2270,7 +2241,6 @@ void OpenCB(int var){
   int i;
   filelistdata *filei;
   char *open_filter_ptr;
-
 
   switch(var){
     case OPEN_UP:

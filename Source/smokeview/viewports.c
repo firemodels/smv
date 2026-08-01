@@ -366,7 +366,6 @@ void GetViewportInfo(void){
   // we want to print and the spacing information
   // only do this if title is set
 
-
   // add the margins
   VP_title.height=titleinfo.top_margin+titleinfo.bottom_margin;
   // count the lines first, then add space after
@@ -524,49 +523,6 @@ int SubPortOrtho(int quad,
 /* ------------------------ SubPortOrtho2custom ------------------------- */
 
 #define WINDOW_MARGIN 0
-int SubPortOrtho2Custom( portdata *p, GLint screen_left, GLint screen_down, int left_percen, int down_percen, int length_percen){
-
-  GLint x0, y0;
-  GLsizei dxy;
-  float df;
-
-  GLdouble portx_left, portx_right, portx_down, portx_top;
-
-  portx_left = p->left;
-  portx_right = p->left + p->width;
-  portx_down = p->down;
-  portx_top = p->down + p->height;
-  port_pixel_width = p->width;
-  port_pixel_height = p->height;
-  port_unit_width = portx_right-portx_left;
-  port_unit_height = portx_top-portx_down;
-
-  dxy = ((float)length_percen/100.0)*MIN(p->width, p->height);
-  {
-    float text_height;
-
-    text_height = (float)GetFontHeight();
-    text_height += 3.0;
-    text_height *= 6.0;
-    if(dxy>text_height){
-      df = text_height/(dxy - text_height);
-    }
-    else{
-      df = 0.25;
-    }
-  }
-
-  x0 = p->left + MIN( (float)left_percen/100.0*p->width,  p->width  - dxy);
-  y0 = p->down + MIN( (float)down_percen/100.0*p->height, p->height - dxy);
-
-  glViewport(x0, y0, dxy, dxy);
-
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluOrtho2D(-0.25, 1.1, -df, 1.1);
-  pixel_dens = dxy/(1.1+df);
-  return 1;
-}
 
 /* ------------------------ SubPortOrtho2 ------------------------- */
 
@@ -849,7 +805,6 @@ void GetClipLabel(char *buffer, int flag){
   strcat(buffer," m");
 }
 
-
  /* ------------------------ ViewportInfo ------------------------- */
 
 void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
@@ -878,7 +833,6 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
      visGrid==GRID_PROBE){
     int iplotval;
     char buff_label[128], *buff_label_ptr;
-
 
     iplotval=mesh_xyz->iplotx_all[iplotx_all];
     buff_label_ptr = buff_label;
@@ -1319,8 +1273,6 @@ void ViewportTitle(int quad, GLint screen_left, GLint screen_down){
 
   if(SubPortOrtho2(quad,&VP_title,screen_left,screen_down)==0)return;
 
-
-
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
@@ -1466,19 +1418,6 @@ void GetEyePos(float *mm){
   fds_viewdir[1] = scene_center[1] - fds_eyepos[1];
   fds_viewdir[2] = scene_center[2] - fds_eyepos[2];
   NORMALIZE3(fds_viewdir);
-}
-
-/* ------------------ CompareVolFaceListData ------------------------ */
-
-int CompareVolFaceListData(const void *arg1, const void *arg2){
-  volfacelistdata *vi, *vj;
-
-  vi = *(volfacelistdata **)arg1;
-  vj = *(volfacelistdata **)arg2;
-
-  if(vi->dist2 < vj->dist2)return 1;
-  if(vi->dist2 > vj->dist2)return -1;
-  return 0;
 }
 
 /* ------------------ GetSmokeDir ------------------------ */

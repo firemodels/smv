@@ -90,6 +90,8 @@ int CompareQuad(const void *arg1, const void *arg2) {
 }
 static char *texturedir = NULL;
 
+/* ------------------ CreateNewCADGeom ------------------------ */
+
 cadgeomdata *CreateNewCADGeom(void) {
   cadgeomdata *cd;
   NewMemory((void **)&cd, sizeof(cadgeomdata));
@@ -310,6 +312,7 @@ void ReadCAD2Geom(cadgeomdata *cd, GLfloat block_shininess) {
  * @param file A path to the file to read.
  * @param block_shininess The block shininess to apply.
  */
+
 int ReadCADGeom(cadgeomdata *cd, const char *file, GLfloat block_shininess) {
   char buffer[255];
   float lastcolor[3];

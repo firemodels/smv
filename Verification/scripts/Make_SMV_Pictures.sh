@@ -4,19 +4,11 @@
 
 wait_cases_end()
 {
-  if [ "$QUEUE" == "none" ]; then
-    while [[ `ps -u $USER -f | fgrep .fds | grep -v grep` != '' ]]; do
-        JOBS_REMAINING=`ps -u $USER -f | fgrep .fds | grep -v grep | wc -l`
-        echo "Waiting for ${JOBS_REMAINING} cases to complete."
-        sleep 15
-     done
-  else
-    while [[ `qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep $JOBPREFIX | grep -v 'C$'` != '' ]]; do
-       JOBS_REMAINING=`qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep $JOBPREFIX | grep -v 'C$' | wc -l`
-       echo "Waiting for ${JOBS_REMAINING} cases to complete."
-       sleep 15
-    done
-  fi
+  while [[ `qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep $JOBPREFIX | grep -v 'C$'` != '' ]]; do
+    JOBS_REMAINING=`qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep $JOBPREFIX | grep -v 'C$' | wc -l`
+     echo "Waiting for ${JOBS_REMAINING} cases to complete."
+     sleep 15
+  done
 }
 
 # --------------------- usage -----------------------------
@@ -178,13 +170,6 @@ if [ ! -e $FDSEXE ]; then
   PREFIX=o  
   FDSEXE=$GITROOT/fds/Build/${PREFIX}mpi_${COMPILER}_$PLATFORM/fds_${PREFIX}mpi_${COMPILER}_$PLATFORM
 fi
-if [ "$QUEUE" == "none" ]; then
-  if [ -e $FDSEXE ]; then
-    echo "" | $FDSEXE 2> $GITROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
-  else
-    echo "FDS version: unknown" $GITROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
-  fi
-fi
 
 if [ "$use_installed" == "1" ] ; then
   export SMV=smokeview
@@ -218,11 +203,7 @@ echo smokeview : $SMV
 echo smokezip  : $SMOKEZIP
 echo
 
-if [ "$QUEUE" == "none" ]; then
-  RUNSMV="$GITROOT/smv/Utilities/Scripts/runsmv.sh"
-else
-  RUNSMV="$GITROOT/smv/Utilities/Scripts/qsmv.sh $CPUS_PER_TASK -j $JOBPREFIX $use_installed -q $QUEUE"
-fi
+RUNSMV="$GITROOT/smv/Utilities/Scripts/qsmv.sh $CPUS_PER_TASK -j $JOBPREFIX $use_installed -q $QUEUE"
 export QFDS=$RUNSMV
 export RUNCFAST=$RUNSMV
 

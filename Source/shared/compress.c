@@ -91,7 +91,6 @@ unsigned int UnCompressRLE(unsigned char *buffer_in, int nchars_in, unsigned cha
       nn++;
     }
 
-
   }
   return nn;
 }
@@ -251,7 +250,6 @@ unsigned char AverageCube(unsigned *buffer, int *ijk_start, int *ijk_end, int *n
   sum *= (ijk_end[1] + 1 - ijk_start[1]);
   sum *= (ijk_end[2] + 1 - ijk_start[2]);
 
-
   for(k = ijk_start[2]; k <= ijk_end[2]; k++){
     for(j = ijk_start[1]; j <= ijk_end[1]; j++){
       for(i = ijk_start[0]; i <= ijk_end[0]; i++){
@@ -351,7 +349,6 @@ void Reorder3D(int **fds2smv, int **smv2fds, int *nijk){
 
   FREEMEMORY(state);
 }
-
 
 /* --------------------------  octtreedata ------------------------------- */
 

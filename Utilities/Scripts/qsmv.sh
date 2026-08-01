@@ -376,7 +376,7 @@ cat << EOF > $scriptfile
 # $0 $commandline
 EOF
 
-if [[ "$queue" != "none" ]] && [[ "$RESOURCE_MANAGER" == "SLURM" ]]; then
+if [[ "$RESOURCE_MANAGER" == "SLURM" ]]; then
   cat << EOF >> $scriptfile
 #SBATCH -J ${SMVJOBPREFIX}$infile
 #SBATCH -e $outerr
@@ -462,8 +462,6 @@ if [ "$SCRIPTFILES" != "" ]; then
   echo $(basename "$scriptfile") >> $SCRIPTFILES
 fi
 $QSUB $scriptfile
-if [ "$queue" != "none" ]; then
-  cat $scriptfile > $scriptlog
-  echo "#$QSUB $scriptfile" >> $scriptlog
-  rm $scriptfile
-fi
+cat $scriptfile > $scriptlog
+echo "#$QSUB $scriptfile" >> $scriptlog
+rm $scriptfile

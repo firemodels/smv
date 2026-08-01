@@ -153,33 +153,6 @@ void DrawTimebar(float xleft, float xright, float ybot, float ytop){
   glEnd();
 }
 
-/* ------------------ DrawSelectColorbar ------------------------ */
-
-void DrawSelectColorbar(void){
-  int i;
-  colorbardata *cbi;
-
-  if(show_firecolormap==0){
-    cbi = colorbars.colorbarinfo + colorbartype;
-  }
-  else{
-    cbi = colorbars.colorbarinfo+colorbars.fire_colorbar_index;
-  }
-
-  glPointSize(20.0f);
-  glBegin(GL_POINTS);
-  for(i=0; i<cbi->nnodes; i++){
-    unsigned char *rrgb, r, g, b;
-
-    GetRGB(i+1, &r, &g, &b);
-    glColor3ub(r, g, b);
-
-    rrgb=cbi->node_rgb+3*i;
-    glVertex3f(rrgb[0]/255.0,rrgb[1]/255.0,rrgb[2]/255.0);
-  }
-  glEnd();
-}
-
 /* ------------------ DrawColorbarPathRGB ------------------------ */
 
 void DrawColorbarPathRGB(void){
@@ -1556,7 +1529,6 @@ void DrawHorizontalColorbarRegLabels(void){
 
       horiz_position = MIX2(i, global_scase.nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
 
-
       if(iposition == i)continue;
       if(patchflag == 1){
         val = tttmin + i*patchrange / (global_scase.nrgb - 2);
@@ -1975,7 +1947,6 @@ void DrawVerticalColorbarRegLabels(void){
     }
     {
       float valmin, valmax;
-
 
       if(slicefactor!=NULL){
         valmin = tttmin;
