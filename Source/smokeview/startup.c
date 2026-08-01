@@ -1436,9 +1436,6 @@ void InitVars(void){
     face_vis[i]=1;
     face_vis_old[i]=1;
   }
-  for(i=0; i<7; i++){
-    b_state[i]=-1;
-  }
   strcpy((char *)degC,"C");
   strcpy((char *)degF,"F");
 
