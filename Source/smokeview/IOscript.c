@@ -531,8 +531,6 @@ keyworddata *GetScriptKeyword(FILE *stream){
   return keywordinfo;
 }
 
-
-
 #define SETbuffer \
 param_status = GetParamBuffer(stream);\
 if(param_status == SCRIPT_EOF){\
@@ -1521,7 +1519,6 @@ void ScriptRenderAll(scriptdata *scripti){
 void ScriptRender360All(scriptdata *scripti){
   int skip_local;
 
-
   if(script_startframe>0)scripti->ival3 = script_startframe;
   if(render_startframe0 >= 0)scripti->ival3 = render_startframe0;
   first_frame_index = scripti->ival3;
@@ -2213,7 +2210,6 @@ void ScriptLoadSliceRender(scriptdata *scripti){
     updatemenu = 1;
     STOP_TIMER(slice_load_time);
 
-
     if(frame_current<frames_total){
       PRINTF("files: %i, ", count);
       if(total_slice_size>1000000000){
@@ -2330,7 +2326,6 @@ void ScriptLoadSmokeRender(scriptdata *scripti){
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
   updatemenu = 1;
   STOP_TIMER(smoke_load_time);
-
 
   if(frame_current<frames_total){
     PRINTF("files: %i, ", count);
@@ -2550,7 +2545,6 @@ void ScriptPartClassColor(scriptdata *scripti){
   fprintf(stderr, "*** Error: particle class quantity: %s failed to be set\n", scripti->cval);
   if(stderr2!=NULL)fprintf(stderr2, "*** Error: particle class color: %s failed to be set\n", scripti->cval);
 }
-
 
 /* ------------------ ScriptPlot3dProps ------------------------ */
 
@@ -3448,7 +3442,6 @@ void ScriptViewXYZMINMAXOrtho(int command){
   GLUISceneMotionCB(ZAXIS_CUSTOM);
 }
 
-
 /* ------------------ ScriptViewXYZMINMAXPersp ------------------------ */
 
 void ResetDefaultMenu(int var);
@@ -3941,4 +3934,3 @@ void SetRunScriptVal(int val){
   ThreadUnlock(readkeyboard_threads);
 #endif
 }
- 

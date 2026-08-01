@@ -165,7 +165,6 @@ void CopyBuckets2Histogram(int *buckets, int nbuckets, float valmin, float valma
   int i;
   float ntotal;
 
-
   FreeHistogram(histogram);
   InitHistogram(histogram, nbuckets, NULL, NULL);
 

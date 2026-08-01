@@ -89,4 +89,3 @@ EXTERNCPP void GLUISmoke3dCB(int var);
 EXTERNCPP void GLUIUpdateSmoke3dFlags(void);
 
 #endif
-

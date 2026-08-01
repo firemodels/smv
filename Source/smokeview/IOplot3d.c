@@ -29,7 +29,6 @@
   }
 #endif
 
-
 /* ------------------ GetPlot3DHists ------------------------ */
 
 void GetPlot3DHists(plot3ddata *p){
@@ -240,7 +239,6 @@ void ComputeLoadedPlot3DBounds(float *valmin_loaded, float *valmax_loaded){
   }
 }
 
-
 /* ------------------ UpdatePlot3DFileLoad  ------------------------ */
 
 void UpdatePlot3DFileLoad(void){
@@ -311,7 +309,6 @@ FILE_SIZE ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   InitContour(meshi->plot3dcontour1,rgb_plot3d_contour,global_scase.nrgb);
   InitContour(meshi->plot3dcontour2,rgb_plot3d_contour,global_scase.nrgb);
   InitContour(meshi->plot3dcontour3,rgb_plot3d_contour,global_scase.nrgb);
-
 
   for(i=0; i<global_scase.meshescoll.nmeshes; i++){
     gbb=global_scase.meshescoll.meshinfo+i;
@@ -597,7 +594,6 @@ void DrawPlot3dTexture(meshdata *meshi){
   c_iblank_y = meshi->c_iblank_y;
   c_iblank_z = meshi->c_iblank_z;
   iblank = meshi->c_iblank_node;
-
 
   nx = ibar+1;
   ny = jbar+1;
@@ -1166,8 +1162,6 @@ void UpdatePlotXYZ(meshdata *current_mesh_local){
       meshi->plotz=iimin;
     }
 
-
-
   }
 }
 
@@ -1243,7 +1237,6 @@ void UpdatePlotSliceMesh(meshdata *mesh_in, int slicedir){
   nz = kbar + 1;
   nxy = nx*ny;
   nxyz = nx*ny*nz;
-
 
   iqdata = meshi->iqdata;
   qdata = meshi->qdata;
@@ -1474,7 +1467,6 @@ void UpdateShowStep(int val, int slicedir){
       ymax2 = meshi->yplt_smv[meshi->jbar];
       zmin2 = meshi->zplt_smv[0];
       zmax2 = meshi->zplt_smv[meshi->kbar];
-
 
       if(slicedir==XDIR&&(xmax-MESHEPS<xmin2||xmax2-MESHEPS<xmin))continue;
       if(slicedir==YDIR&&(ymax-MESHEPS<ymin2||ymax2-MESHEPS<ymin))continue;

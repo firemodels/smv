@@ -75,7 +75,6 @@ int GetGlobalPartBounds(int flag){
   float *partmins = NULL, *partmaxs = NULL;
   int nloaded_files = 0;
 
-
   if(part_bound_buffer == NULL && global_scase.npartinfo > 0 && npart5prop>0){
     NewMemory((void **)&part_bound_buffer, 2*global_scase.npartinfo*npart5prop*sizeof(float));
     for(i = 0; i < global_scase.npartinfo; i++){
@@ -305,7 +304,6 @@ int BoundsGet(char *file, globalboundsdata *globalboundsinfo, char **sorted_file
 
 int GetNinfo(int file_type){
   int ninfo = -1;
-
 
   ASSERT_BOUND_TYPE;
   if(file_type == BOUND_SLICE){
@@ -643,7 +641,6 @@ char *GetShortLabel(int file_type, int i, int ilabel){
   }
   return shortlabel;
 }
-
 
 /* ------------------ GetBoundLabel ------------------------ */
 

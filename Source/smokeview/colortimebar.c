@@ -153,7 +153,6 @@ void DrawTimebar(float xleft, float xright, float ybot, float ytop){
   glEnd();
 }
 
-
 /* ------------------ DrawColorbarPathRGB ------------------------ */
 
 void DrawColorbarPathRGB(void){
@@ -1530,7 +1529,6 @@ void DrawHorizontalColorbarRegLabels(void){
 
       horiz_position = MIX2(i, global_scase.nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
 
-
       if(iposition == i)continue;
       if(patchflag == 1){
         val = tttmin + i*patchrange / (global_scase.nrgb - 2);
@@ -1949,7 +1947,6 @@ void DrawVerticalColorbarRegLabels(void){
     }
     {
       float valmin, valmax;
-
 
       if(slicefactor!=NULL){
         valmin = tttmin;

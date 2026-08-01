@@ -23,7 +23,6 @@ unsigned char *hvac_color_states[2] = {hvac_off_color, hvac_on_color};
 
 #define NODE_XYZ 0.1
 
-
 /* ------------------ UpdateHVACDuctColorLabels ------------------------ */
 
 void UpdateHVACDuctColorLabels(int index){

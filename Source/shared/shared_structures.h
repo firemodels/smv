@@ -42,7 +42,6 @@ typedef struct _sv_object_frame {
   struct _sv_object_frame *prev, *next;
 } sv_object_frame;
 
-
 /* --------------------------  sv_object ------------------------------------ */
 
 /**

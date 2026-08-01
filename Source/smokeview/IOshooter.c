@@ -167,7 +167,6 @@ void DrawShooter(void){
   pe = shoottimeinfo[iframe_local].end;
   nframes = pe + 1 - pb;
 
-
   glPointSize(shooterpointsize);
 
   glPushMatrix();

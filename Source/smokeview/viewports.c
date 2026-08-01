@@ -366,7 +366,6 @@ void GetViewportInfo(void){
   // we want to print and the spacing information
   // only do this if title is set
 
-
   // add the margins
   VP_title.height=titleinfo.top_margin+titleinfo.bottom_margin;
   // count the lines first, then add space after
@@ -806,7 +805,6 @@ void GetClipLabel(char *buffer, int flag){
   strcat(buffer," m");
 }
 
-
  /* ------------------------ ViewportInfo ------------------------- */
 
 void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
@@ -835,7 +833,6 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
      visGrid==GRID_PROBE){
     int iplotval;
     char buff_label[128], *buff_label_ptr;
-
 
     iplotval=mesh_xyz->iplotx_all[iplotx_all];
     buff_label_ptr = buff_label;
@@ -1276,8 +1273,6 @@ void ViewportTitle(int quad, GLint screen_left, GLint screen_down){
 
   if(SubPortOrtho2(quad,&VP_title,screen_left,screen_down)==0)return;
 
-
-
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
@@ -1424,7 +1419,6 @@ void GetEyePos(float *mm){
   fds_viewdir[2] = scene_center[2] - fds_eyepos[2];
   NORMALIZE3(fds_viewdir);
 }
-
 
 /* ------------------ GetSmokeDir ------------------------ */
 

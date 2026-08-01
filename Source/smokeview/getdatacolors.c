@@ -381,7 +381,6 @@ int GetZoneColor(float t, float local_tmin, float local_tmax, int nlevel){
   return level;
 }
 
-
 /* ------------------ GetZoneColors ------------------------ */
 
 void GetZoneColors(const float *t, int nt, unsigned char *it,
@@ -1223,7 +1222,6 @@ void UpdateChopColors(void){
   int setp3chopmin_temp_local=0, setp3chopmax_temp_local=0;
   float p3chopmin_temp_local=1.0, p3chopmax_temp_local=0.0;
   float glui_p3min_local=1.0, glui_p3max_local=0.0;
-
 
   cpp_boundsdata *bounds;
 

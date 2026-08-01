@@ -15,7 +15,6 @@
 #include "glutbitmap.h"
 #include "paths.h"
 
-
 #define DENORMAL(x,i, n, min,max) ((min) + (i)*((max)-(min))/(n))
 #define NORMALH(x,min,max) (((x)-(min))/((max)-(min))   )
 
@@ -74,7 +73,6 @@ void OutputSText3(float x, float y, float z, char *string){
   float quateye[4],quatz[4],rot[16];
   float scale_x, scale_y;
 
-
   if(string==NULL)return;
   scale_x = SCALE2FDS(scaled_font3d_height2width*(float)scaled_font3d_height/(float)104.76)/(float)port_pixel_width;
   scale_y = SCALE2FDS((float)scaled_font3d_height/(float)152.38)/(float)port_pixel_height;
@@ -99,8 +97,6 @@ void OutputSText3(float x, float y, float z, char *string){
   }
   glPopMatrix();
 }
-
-
 
 /* ------------------ OutputSText2 ------------------------ */
 
@@ -328,7 +324,6 @@ void OutputBarText(float x, float y, const GLfloat *color, char *string){
     }
   }
 }
-
 
 /* ------------------ DrawLabels ------------------------ */
 

@@ -390,7 +390,7 @@ void DrawCircVentsExactSolid(int option){
       }
 
       float delta, deltax = 0.0, deltay = 0.0, deltaz = 0.0;
-        
+
       delta = xyzmaxdiff / 400.0;
       switch(cvi->dir){
       case DOWN_X:
@@ -522,7 +522,7 @@ void DrawCircVentsExactOutline(int option){
       }
 
       float delta, deltax = 0.0, deltay = 0.0, deltaz = 0.0;
-        
+
       delta = xyzmaxdiff / 400.0;
       switch(cvi->dir){
       case DOWN_X:
@@ -691,7 +691,6 @@ void UpdateIndexColors(void){
   global_scase.updatefaces=1;
 }
 
-
 /* ------------------ DrawObstOutlines ------------------------ */
 
 void DrawObstOutlines(void){
@@ -769,7 +768,6 @@ void DrawObstOutlines(void){
 void DrawOrigObstOutlines(void){
   int i;
   float *color, *oldcolor=NULL;
-
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
@@ -861,7 +859,6 @@ void DrawOutlines(void){
   glEnd();
   AntiAliasLine(OFF);
 }
-
 
 /* ------------------ GetBlockVals ------------------------ */
 
@@ -1734,7 +1731,6 @@ void DrawCAD2Geom(const cadgeomdata *cd, int trans_flag){
     }
     if(visCadTextures==1&&texti->loaded==1)continue;
 
-
     thiscolor=quadi->cadlookq->rgb;
     if(thiscolor!=lastcolor){
       if(thiscolor[0]<0.0||thiscolor[1]<0.0||thiscolor[2]<0.0){
@@ -1953,7 +1949,6 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
     zminmax2[1] = vi->zmax;
   }
 
-
   for(n=0; n<8; n++){
     xx[n]=xminmax[ii[n]];
     yy[n]=yminmax[jj[n]];
@@ -2078,7 +2073,6 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
       }
       faceptr->linecolor=faceptr->color;
     }
-
 
     if(bc!=NULL){
       faceptr->textureinfo=bc->surf[j]->textureinfo;
@@ -2224,7 +2218,6 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
       faceptr->approx_center_coord[1]+=yvert;
       faceptr->approx_center_coord[2]+=zvert;
 
-
       faceptr->exact_vertex_coords[3*k]  =xx2[jjj]+offset[XXX];
       faceptr->exact_vertex_coords[3*k+1]=yy2[jjj]+offset[YYY];
       faceptr->exact_vertex_coords[3*k+2]=zz2[jjj]+offset[ZZZ];
@@ -2238,7 +2231,6 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
     faceptr->approx_center_coord[0]/=4.0;
     faceptr->approx_center_coord[1]/=4.0;
     faceptr->approx_center_coord[2]/=4.0;
-
 
     {
       float xa_texture[4], ya_texture[4];
@@ -3358,7 +3350,6 @@ void DrawFacesOLD(int option){
 
         if(facei->type2 == BLOCK_face && cullfaces == 0)glDisable(GL_CULL_FACE);
 
-
         glBindTexture(GL_TEXTURE_2D, texti->name);
         glBegin(GL_QUADS);
 
@@ -3377,7 +3368,6 @@ void DrawFacesOLD(int option){
         glEnd();
       }
       if(cullfaces == 1)glEnable(GL_CULL_FACE);
-
 
     }
     glDisable(GL_TEXTURE_2D);
@@ -3653,7 +3643,6 @@ void DrawFaces(){
 
         if(facei->type2==BLOCK_face&&cullfaces==0)glDisable(GL_CULL_FACE);
 
-
         glBindTexture(GL_TEXTURE_2D,texti->name);
         glBegin(GL_QUADS);
 
@@ -3672,7 +3661,6 @@ void DrawFaces(){
         glEnd();
       }
       if(cullfaces==1)glEnable(GL_CULL_FACE);
-
 
     }
     glDisable(GL_COLOR_MATERIAL);

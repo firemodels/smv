@@ -26,7 +26,6 @@ EXTERNCPP void FreeTour(tourdata *touri);
 EXTERNCPP void ReallocTourMemory(tour_collection *tourcoll);
 EXTERNCPP void FreeTours(tour_collection *tourcoll);
 
-
 EXTERNCPP keyframe *CopyFrame(const keyframe *framei);
 
 /**

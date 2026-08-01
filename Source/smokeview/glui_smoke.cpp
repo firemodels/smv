@@ -333,7 +333,6 @@ extern "C" void GLUISmoke3dColorbarCB(int var){
 extern "C" void GLUI3dSmokeSetup(int main_window){
   int i;
 
-
   if(global_scase.smoke3dcoll.nsmoke3dinfo<=0
     )return;
   if(CHECKBOX_meshvisptr!=NULL)FREEMEMORY(CHECKBOX_meshvisptr);
@@ -554,7 +553,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   ROLLOUT_skip = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoke3d, "Planes", false, SKIP_ROLLOUT, SmokeRolloutCB);
   TOGGLE_ROLLOUT(smokeprocinfo, nsmokeprocinfo, ROLLOUT_skip, SKIP_ROLLOUT, glui_3dsmoke);
 
-
   PANEL_skip_planes    = glui_3dsmoke->add_panel_to_panel(ROLLOUT_skip, "skip planes");
   SPINNER_smoke3d_skip = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "all", GLUI_SPINNER_INT, 
     &smoke3d_skip_all, SMOKE_SKIP_ALL, GLUISmoke3dCB);
@@ -647,12 +645,12 @@ extern "C" void GLUISmoke3dCB(int var){
   case SET_SMOKE_THREADS:
     ThreadLock(mergesmoke3d_threads);
     ThreadLock(uncompresssmoke3d_threads);
-    
+
     use_mergesmoke3d_threads      = glui_use_smoke3d_threads;
     n_mergesmoke3d_threads        = glui_n_smoke3d_threads;
     use_uncompresssmoke3d_threads = glui_use_smoke3d_threads;
     n_uncompresssmoke3d_threads   = glui_n_smoke3d_threads;
-    
+
     ThreadUnlock(uncompresssmoke3d_threads);
     ThreadUnlock(mergesmoke3d_threads);
     break;

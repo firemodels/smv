@@ -137,7 +137,6 @@ SVEXTERN int SVDECL(hvac_network_ductnode_index, -1);
 #define HVAC_NCIRC 72
 SVEXTERN float SVDECL(*hvac_circ_x, NULL), SVDECL(*hvac_circ_y, NULL);
 
-
 //*** buffers for consolidating memory allocations
 #define MAXFILELEN 360
 SVEXTERN float SVDECL(*part_bound_buffer, NULL);
@@ -152,7 +151,6 @@ SVEXTERN char SVDECL(*patch_gbnd_filename,  NULL), SVDECL(**sorted_patch_filenam
 SVEXTERN globalboundsdata SVDECL(*plot3dglobalboundsinfo, NULL);
 SVEXTERN globalboundsdata SVDECL(*sliceglobalboundsinfo,  NULL);
 SVEXTERN globalboundsdata SVDECL(*patchglobalboundsinfo,  NULL);
-
 
 SVEXTERN FILE_SIZE SVDECL(last_size_for_bound, 0);
 
@@ -344,7 +342,6 @@ SVEXTERN float SVDECL(*terrain_vertices, NULL), SVDECL(*terrain_tvertices, NULL)
 SVEXTERN unsigned int SVDECL(*terrain_indices, NULL);
 SVEXTERN int SVDECL(terrain_nindices, 0);
 SVEXTERN int SVDECL(terrain_nfaces, 0);
-
 
 SVEXTERN int SVDECL(terrain_show_geometry_surface, 1);
 SVEXTERN int SVDECL(terrain_show_geometry_outline, 0);
@@ -554,7 +551,6 @@ SVEXTERN int SVDECL(*plotz_list, NULL);
 SVEXTERN int SVDECL(show_3dsmoke, 1);
 SVEXTERN int SVDECL(show_plot3dfiles, 1), SVDECL(show_isofiles,1);
 SVEXTERN int SVDECL(show_boundaryfiles, 1);
-
 
 SVEXTERN int SVDECL(clip_rotate, 0);
 SVEXTERN char SVDECL(*file_smokesensors, NULL);
@@ -847,7 +843,6 @@ SVEXTERN int SVDECL(slice_celltype, 0);
   SVEXTERN int slice_edgetypes[3];
 #endif
 
-
 SVEXTERN int SVDECL(show_geom_normal, 0), SVDECL(smooth_geom_normal, 1);
 
 SVEXTERN geomlistdata SVDECL(*geomlistinfo, NULL);
@@ -993,7 +988,6 @@ SVEXTERN float SVDECL(vertical_factor,1.0);
 
 SVEXTERN char input_filename_ext[5];
 
-
 SVEXTERN float xtemp;
 
 SVEXTERN float glui_xyz_fds[3],user_zaxis[3];
@@ -1031,7 +1025,6 @@ SVEXTERN GLfloat iso_specular[4]={0.7,0.7,0.7,1.0};
 SVEXTERN GLfloat iso_specular[4];
 #endif
 SVEXTERN GLfloat SVDECL(iso_shininess, 50.0), SVDECL(glui_shininess, 50.0);
-
 
 #ifdef INMAIN
 SVEXTERN GLfloat light_position0[4]={1.0,1.0,1.0,0.0};
@@ -1191,7 +1184,6 @@ SVEXTERN int SVDECL(show_mirror_boundary,0), SVDECL(show_open_boundary, 0);
 SVEXTERN int SVDECL(n_mirrorvents,0), SVDECL(n_openvents,0);
 SVEXTERN int SVDECL(from_read_boundary, 0);
 SVEXTERN int SVDECL(have_boundary_arrival, 0);
-
 
 SVEXTERN int setp3min_all[MAXPLOT3DVARS];
 SVEXTERN float p3min_all[MAXPLOT3DVARS], p3min_global[MAXPLOT3DVARS];
@@ -1563,7 +1555,6 @@ SVEXTERN int SVDECL(vis_gslice_data,0),SVDECL(SHOW_gslice_data,0),SVDECL(SHOW_gs
 SVEXTERN int SVDECL(show_gslice_triangulation,0);
 SVEXTERN int SVDECL(show_gslice_normal,0),SVDECL(show_gslice_normal_keyboard,0);
 
-
 #ifdef INMAIN
 SVEXTERN float static_color[4]={0.0,1.0,0.0,1.0};
 SVEXTERN float sensorcolor[4]={1.0,1.0,0.0,1.0};
@@ -1884,7 +1875,6 @@ SVEXTERN int SVDECL(glui_avatar_index,0);
 SVEXTERN int SVDECL(device_sphere_segments,6);
 SVEXTERN int SVDECL(nlat_hsphere, 20), SVDECL(nlong_hsphere, 40);
 SVEXTERN int ntexturestack;
-
 
 SVEXTERN float SVDECL(global_temp_cb_min, 600.0),          SVDECL(global_temp_cb_max,2000.0);
 SVEXTERN float SVDECL(global_temp_cb_min_default, 600.0),  SVDECL(global_temp_cb_max_default, 2000.0);

@@ -2412,7 +2412,6 @@ void SetLoadedPartBounds(int *list, int nlist){
   int i, j;
   int npart_types;
 
-
   npart_types = GLUIGetNValtypes(BOUND_PART);
 
   NewMemory((void **)&valmin,     npart_types*sizeof(float));
@@ -2852,7 +2851,6 @@ int      nloadprocinfo = 0;
 procdata  isoprocinfo[3];
 int      nisoprocinfo=0;
 
-
 //*** hvacductprocinfo entries
 procdata  hvacductprocinfo[1];
 int      nhvacductprocinfo = 0;
@@ -2883,8 +2881,6 @@ int      nsliceprocinfo=0;
 
 procdata  plot3dprocinfo[4];
 int      nplot3dprocinfo=0;
-
-
 
 //*** filedatacolprocinfo entries
 #define FILE_ROLLOUT     0
@@ -3186,7 +3182,6 @@ extern "C" void GLUIUpdateListIsoColorobar(void){
   if(LIST_iso_colorbar!=NULL)LIST_iso_colorbar->set_int_val(colorbars.iso_colorbar_index);
 }
 
-
 /* ------------------ GLUIUpdateIsoBounds ------------------------ */
 
 extern "C" void GLUIUpdateIsoBounds(void){
@@ -3231,13 +3226,11 @@ extern "C" void GLUIUpdateIsoBounds(void){
 }
 /* ------------------ GLUIUpdateVectorpointsize ------------------------ */
 
-
 extern "C" void GLUIUpdateVectorpointsize(void){
   if(SPINNER_vectorpointsize!=NULL)SPINNER_vectorpointsize->set_int_val(vectorpointsize);
 }
 
 /* ------------------ GLUIUpdateSliceDupDialog ------------------------ */
-
 
 extern "C" void GLUIUpdateSliceDupDialog(void){
   if(RADIO_boundaryslicedup != NULL)RADIO_boundaryslicedup->set_int_val(boundaryslicedup_option);
@@ -4585,7 +4578,6 @@ void AddColorbarListBound(GLUI_Listbox *LIST_cbar, int index, char *label_arg, i
   char cbar_type[256];
   int i, nitems = 0;
 
-
   for(i = 0; i < colorbars.ncolorbars; i++){
     colorbardata *cbi;
 
@@ -4738,10 +4730,9 @@ void AddMeshCheckbox(int icol,int nm, GLUI_Panel *PANEL, GLUI_Checkbox **CHECKBO
 #define HIDE_ALL_PATCHES 1
 /* ------------------ BoundDebugCB ------------------------ */
 
-
 void BoundDebugCB(int var){
   int i;
-  
+
   switch(var){
     case SHOW_ALL_PATCHES:
       for(i=0; i<NPATCHES_DEBUG; i++){
@@ -4920,7 +4911,6 @@ extern "C" void GLUIBoundsSetup(int main_window){
   }
 
   // ----------------------------------- 3D smoke ----------------------------------------
-
 
   if(global_scase.smoke3dcoll.nsmoke3dinfo > 0 
     ){
@@ -5389,7 +5379,6 @@ extern "C" void GLUIBoundsSetup(int main_window){
     RADIO_slice_celltype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_region, &slice_celltype, IMMERSED_SWITCH_CELLTYPE, GLUIImmersedBoundCB);
     glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "gas");
     glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "solid");
-
 
     RADIO_button_cutcell = glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "cut cell");
     if(global_scase.ngeom_data == 0)RADIO_button_cutcell->disable();
@@ -5985,7 +5974,6 @@ extern "C" void GLUIUpdateTracers(void){
   CHECKBOX_showtracer->set_int_val(show_tracers_always);
 }
 
-
 /* ------------------ GLUIUpdateIsotype ------------------------ */
 
 extern "C" void GLUIUpdateIsotype(void){
@@ -5994,9 +5982,7 @@ extern "C" void GLUIUpdateIsotype(void){
   CHECKBOX_show_iso_points->set_int_val((visAIso&4)/4);
 }
 
-
 /* ------------------ GLUIUpdatePlot3Dtype ------------------------ */
-
 
 extern "C" void GLUIUpdatePlot3Dtype(void){
   RADIO_plot3d_isotype->set_int_val(p3dsurfacetype);
@@ -6237,7 +6223,6 @@ extern "C" void GLUIScriptEnable(void){
   }
 
 /* ------------------ GLUIScriptDisable ------------------------ */
-
 
 extern "C"  void GLUIScriptDisable(void){
     BUTTON_script_start->disable();

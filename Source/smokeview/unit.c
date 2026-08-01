@@ -354,7 +354,6 @@ void InitUnits(void){
   units[1].scale[1]=0.0;
   CheckMemory;
 
-
   // Concentration
 
   ut = unitclasses_default + 5;

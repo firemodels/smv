@@ -334,7 +334,6 @@ void GetGitInfo(char *githash, char *gitdate, int *gittest){
   }
 }
 
-
 /* ------------------ StripQuotes ------------------------ */
 
 void StripQuotes(char *buffer){
@@ -1335,7 +1334,6 @@ int Match(char *buffer, const char *key){
 int MatchINI(char *buffer, const char *key){
   return Match(buffer, key);
 }
-
 
 /* ------------------ MatchSMV ------------------------ */
 

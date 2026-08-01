@@ -33,7 +33,6 @@ GLUI_Spinner *SPINNER_LB_tick_ydir=NULL;
 GLUI_Spinner *SPINNER_LB_tick_zdir=NULL;
 GLUI_Spinner *SPINNER_ntick_decimals = NULL;
 
-
 GLUI_Spinner *SPINNER_light_az0=NULL;
 GLUI_Spinner *SPINNER_light_az1=NULL;
 GLUI_Spinner *SPINNER_light_elev0=NULL;
@@ -303,7 +302,6 @@ GLUI_Button *BUTTON_label_4=NULL;
 
 #define UPDATEPLOT 10
 
-
 #define LABELS_TITLES_ROLLOUT  0
 #define LABELS_OFFSETS_ROLLOUT 1
 #define LIGHT_ROLLOUT          2
@@ -374,7 +372,6 @@ void UpdateGluiLabelText(void){
     SPINNER_LB_tick_ydir->set_float_val(gl->tick_direction[1]);
     SPINNER_LB_tick_zdir->set_float_val(gl->tick_direction[2]);
     CHECKBOX_labels_showtick->set_int_val(gl->show_tick);
-
 
     SPINNER_LB_time_start->set_float_val(gl->tstart_stop[0]);
     SPINNER_LB_time_stop->set_float_val(gl->tstart_stop[1]);
@@ -1031,7 +1028,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
   CHECKBOX_label_2=glui_labels->add_checkbox_to_panel(ROLLOUT_general2,"Sort transparent faces",&sort_transparent_faces,LABELS_drawface,GLUILabelsCB);
   CHECKBOX_label_3=glui_labels->add_checkbox_to_panel(ROLLOUT_general2,"Hide overlaps",&hide_overlaps,LABELS_hide_overlaps,GLUILabelsCB);
   CHECKBOX_label_4=glui_labels->add_checkbox_to_panel(ROLLOUT_general2, "Only show horizontal mesh outlines", &meshface_horiz,MESH_HORIZ, GLUILabelsCB);
-  
+
   if(nface_transparent>0){
     glui_labels->add_column_to_panel(PANEL_gen1,true);
     PANEL_transparency = glui_labels->add_panel_to_panel(ROLLOUT_general2,"Geometry transparency");
@@ -1088,7 +1085,6 @@ extern "C" void GLUIDisplaySetup(int main_window){
 
   PANEL_positional = glui_labels->add_panel_to_panel(ROLLOUT_light2, "direction");
   glui_labels->add_checkbox_to_panel(PANEL_positional, "show directions", &drawlights);
-
 
   PANEL_positional2 = glui_labels->add_panel_to_panel(PANEL_positional, "",false);
   PANEL_position0 = glui_labels->add_panel_to_panel(PANEL_positional2, "light 1");
@@ -1243,7 +1239,6 @@ extern "C" void GLUIDisplaySetup(int main_window){
   TOGGLE_ROLLOUT(displayprocinfo, ndisplayprocinfo, ROLLOUT_user_labels, LABELS_TICKS_ROLLOUT, glui_labels);
 
   PANEL_LB_panel1 = glui_labels->add_panel_to_panel(ROLLOUT_user_labels,"",GLUI_PANEL_NONE);
-
 
   PANEL_LB_panel3 = glui_labels->add_panel_to_panel(ROLLOUT_user_labels,"Labels");
 

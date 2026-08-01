@@ -448,7 +448,6 @@ void MakeOutFile(char *outfile, char *destdir, char *file1, char *ext){
   strcat(outfile,ext);
 }
 
-
 /* ------------------ Writable ------------------------ */
 
 int Writable(char *dir){
@@ -705,7 +704,6 @@ FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE
 #endif
   return chars_read;
 }
-
 
 /* ------------------ PrintTime ------------------------ */
 
@@ -1008,7 +1006,6 @@ FILE *fopen_2dir(char *file, char *mode, char *scratch_dir){
   }
   return stream;
 }
-
 
 /* ------------------ CompareFileList ------------------------ */
 
@@ -1629,8 +1626,6 @@ char *GetSmvScreenIni() {
   return GetSmvRootSubPath("smv_screen.ini");
 }
 
-
-
 /* ------------------ GetSmvRootFile ----------------------- */
 
 char *GetSmvRootFile(const char *path) {
@@ -1657,7 +1652,6 @@ char *GetSmvUserFile(const char *path) {
   FREEMEMORY(user_path);
   return result;
 }
-
 
 /* ------------------ IsSootFile ------------------------ */
 

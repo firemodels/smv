@@ -100,7 +100,6 @@ GLUI_RadioGroup *RADIO_cface_type = NULL;
 GLUI_RadioGroup *RADIO_hvac_show_component_labels = NULL;
 GLUI_RadioGroup *RADIO_hvac_show_filters          = NULL;
 
-
 GLUI_StaticText *STATIC_vertx1=NULL;
 GLUI_StaticText *STATIC_verty1=NULL;
 GLUI_StaticText *STATIC_vertz1=NULL;
@@ -213,7 +212,6 @@ GLUI_StaticText *STATIC_id_label = NULL;
 char a_updatelabel[1000];
 char *updatelabel=NULL;
 
-
 /* ------------------ GLUIUpdateHVACViews ------------------------ */
 
 extern "C" void GLUIUpdateHVACViews(void){
@@ -325,7 +323,6 @@ void BlockeditDlgCB(int var){
 }
 
 /* ------------------ GLUIUpdateTriangleInfo ------------------------ */
-
 
 extern "C" void GLUIUpdateTriangleInfo(surfdata *tri_surf, float tri_area){
   char label[100];

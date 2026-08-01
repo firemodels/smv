@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
 #include "smokeviewvars.h"
 #include "glui_motion.h"
 #include "IOscript.h"
@@ -87,7 +86,6 @@ void UpdateCameraYpos(cameradata *ci, int option){
   local_aperture_default = Zoom2Aperture(1.0);
   if(VP_scene.width==0||VP_scene.height==0)GetViewportInfo();
   if(VP_scene.height!=0)asp = (float)VP_scene.width/(float)VP_scene.height;
-
 
   if(use_geom_factors==1&&have_geom_factors==1){
     dx = FDS2SMV_X(geom_xmax) - FDS2SMV_X(geom_xmin);
@@ -293,7 +291,6 @@ void InitCamera(cameradata *ci,char *name){
     cam->ymax=clipinfo.ymax;
     cam->zmax=clipinfo.zmax;
   }
-
 
 /* ------------------ Clip2Cam ------------------------ */
 

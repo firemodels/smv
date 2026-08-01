@@ -18,7 +18,6 @@
 #include "IOobjects.h"
 #include "readsmvfile.h"
 
-
 /* ------------------ UpdateFrameNumber ------------------------ */
 
 void UpdateFrameNumber(int changetime){
@@ -791,8 +790,6 @@ void SynchTimes(void){
   }
   ResetGLTime();
 }
-
-
 
 /* ------------------ GetTime ------------------------ */
 
@@ -1699,7 +1696,6 @@ void UpdateIsoIni(void){
   }
 }
 
-
 #ifdef pp_SHOW_UPDATE
 #define SHOW_UPDATE(var) printf("updating: %s\n", #var);INIT_PRINT_TIMER(update_timer);updating=1
 #define END_SHOW_UPDATE(var) PRINT_TIMER(update_timer,#var)
@@ -2165,7 +2161,6 @@ int GetColorbarState(void){
   visColorbarHorizontal_save = 0;
   return COLORBAR_HIDDEN;
 }
-
 
 /* ------------------ OutputMinMax  ------------------------ */
 

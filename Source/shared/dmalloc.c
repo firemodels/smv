@@ -568,7 +568,6 @@ void _CheckMemoryOff(void){
   checkmemoryflag=0;
 }
 
-
 /* ------------------ _CheckMemory ------------------------ */
 
 void _CheckMemory(void){

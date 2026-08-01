@@ -61,4 +61,3 @@ EXTERNCPP int  ThreadCount(void);
 #endif
 
 #endif
-

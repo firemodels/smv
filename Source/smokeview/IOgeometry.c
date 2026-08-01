@@ -73,7 +73,6 @@ int CompareVerts2(const void *arg1, const void *arg2){
   vertdata *vert1, *vert2;
   float *xyz1, *xyz2;
 
-
   vert1 = *( vertdata ** )arg1;
   xyz1 = vert1->xyz;
 
@@ -161,7 +160,6 @@ void ClassifyGeom(geomdata *geomi, int *geom_frame_index){
     int j;
     vertdata *vertbase;
 
-
     geomlisti = geomi->geomlistinfo + i;
     if(i != -1 && geom_frame_index != NULL)geomlisti = geomi->geomlistinfo + (*geom_frame_index);
 
@@ -238,7 +236,6 @@ void ClassifyGeom(geomdata *geomi, int *geom_frame_index){
         edgelist_ptr[3 * ii + 1] = edges + 3 * ii + 1;
         edgelist_ptr[3 * ii + 2] = edges + 3 * ii + 2;
       }
-
 
       // remove duplicate edges
       qsort(edgelist_ptr, nedgelist_index, sizeof(edgedata *), CompareEdges);
@@ -356,7 +353,6 @@ void *ClassifyAllGeom(void *arg){
   }
   THREAD_EXIT(readallgeom_threads);
 }
-
 
 /* ------------------ GetFaceInfo ------------------------ */
 
@@ -2445,7 +2441,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   patchi->cvals_offsets = cvals_offsets;
   patchi->cvals_sizes   = cvals_sizes;
 
-
   if(ntimes_local>0){
     NewMemory((void **)&patchi->geom_nstatics,             ntimes_local*sizeof(int));
     NewMemory((void **)&patchi->geom_ndynamics,            ntimes_local*sizeof(int));
@@ -2706,7 +2701,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   return return_filesize;
 }
 
-
 /* ------------------ SetupReadAllGeom ------------------------ */
 
 void SetupReadAllGeom(void){
@@ -2886,7 +2880,6 @@ void UpdateAllGeomTriangles(void){
   }
 }
 
-
 /* ------------------ ReadGeom0 ------------------------ */
 
 FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index){
@@ -2926,7 +2919,6 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
   // nfloat vals
   // nints
   // nint vals
-
 
   stream = fopen_b(geomi->file, filebuffer, nfilebuffer, "rb");
   if(stream==NULL)return 0;
@@ -4331,7 +4323,6 @@ void DrawGeomValues(slicedata *sd, patchdata *patchi, int geom_type){
   }
   cell_center = sd->cell_center;
 
-
   // show values
 
   if(
@@ -4703,7 +4694,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
     }
   }
 }
-
 
 /* ------------------ GetGeomInfoPtrs ------------------------ */
 

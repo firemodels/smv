@@ -129,8 +129,6 @@ EXTERNCPP void InitDefaultColorbars(colorbar_collection *colorbars, int nini,
                                     unsigned char rgb_above_max[3],
                                     colorbardata **colorbarcopyinfoptr);
 
-
-
 EXTERNCPP void AdjustColorBar(colorbardata *cbi);
 EXTERNCPP void RemapColorbar(colorbardata *cbi, int show_extreme_mindata,
                              unsigned char rgb_below_min[3],

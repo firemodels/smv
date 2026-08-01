@@ -262,6 +262,4 @@ EXTERNCPP void SliceBounds2Glui(int slicefile_labelindex);
 EXTERNCPP void UpdateShowExtPatch(int show_option, int hide_option);
 EXTERNCPP void UpdateShowIntPatch(int show_option, int hide_option);
 
-
 #endif
-

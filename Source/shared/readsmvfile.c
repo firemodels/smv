@@ -645,7 +645,6 @@ void ReadHRR(smv_case *scase, int flag){
     char label[256];
     hrrdata *hi_chirad;
 
-
     scase->chirad_col = scase->hrr_coll.nhrrinfo+scase->hrr_coll.nhrrhcinfo;
     hi_chirad = scase->hrr_coll.hrrinfo+scase->chirad_col;
 
@@ -2678,7 +2677,6 @@ void UpdateSortedSurfIdList(surf_collection *surfcoll){
   NewMemory((void **)&surfcoll->sorted_surfidlist, surfcoll->nsurfinfo*sizeof(int));
   NewMemory((void **)&surfcoll->inv_sorted_surfidlist, surfcoll->nsurfinfo*sizeof(int));
 
-
   surfcoll->nsorted_surfidlist = surfcoll->nsurfinfo;
   for(i = 0; i<surfcoll->nsorted_surfidlist; i++){
     surfcoll->sorted_surfidlist[i] = i;
@@ -2743,7 +2741,6 @@ void ParseSurfs(smv_case *scase, char *file){
       if(fgets(buffer, 1000, stream)==NULL)break;
       if(STRSTR(buffer, "&SURF")==NULL)continue;
 
-
       slashptr = strstr(buffer, "/");
       if(slashptr!=NULL)strcpy(buffer2, buffer);
       buffer3 = buffer;
@@ -2773,7 +2770,6 @@ void ParseSurfs(smv_case *scase, char *file){
     scase->surfcoll.surfids[0].location = 0;
     scase->surfcoll.surfids[0].show = 1;
 
-
     /* now look for IDs and copy them into an array */
 
     rewind(stream);
@@ -2781,7 +2777,6 @@ void ParseSurfs(smv_case *scase, char *file){
     while(!feof(stream)){
       if(fgets(buffer, 1000, stream)==NULL)break;
       if(STRSTR(buffer, "&SURF")==NULL)continue;
-
 
       slashptr = strstr(buffer, "/");
       if(slashptr!=NULL)strcpy(buffer2, buffer);
@@ -3798,7 +3793,6 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
   return RETURN_CONTINUE;
 }
 
-
 /* ------------------ ParseSLCFCount ------------------------ */
 
 int ParseSLCFCount(smv_case *scase, int option, bufferstreamdata *stream, char *buffer, int *nslicefiles_in){
@@ -4775,7 +4769,6 @@ int ReadSMV_Init(smv_case *scase){
   }
   scase->npartinfo=0;
 
-
   //*** free slice data
   FreeSliceData(scase);
 
@@ -5144,7 +5137,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         if(nvals!=0)scase->terrain_texture_coll.nterrain_textures = MAX(nvals,0);
       }
 
-
       if(scase->terrain_texture_coll.nterrain_textures>0){
         NewMemory((void **)&scase->terrain_texture_coll.terrain_textures, scase->terrain_texture_coll.nterrain_textures*sizeof(texturedata));
 
@@ -5488,7 +5480,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
    CreateNullLabel(partclassi->labels);
 
    scase->npartclassinfo=0;
-
 
  }
 
@@ -6494,7 +6485,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       }
       continue;
     }
-
 
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -7892,7 +7882,6 @@ typedef struct {
         }
         nn++;
 
-
         if(meshi->blockageinfoptrs != NULL && meshi->blockageinfoptrs[nn] != NULL){
           bc = meshi->blockageinfoptrs[nn];
         }
@@ -8843,7 +8832,6 @@ typedef struct {
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&n_blocks);
 
-
       if(n_blocks<=0)n_blocks=0;
       if(n_blocks==0)continue;
 
@@ -9004,7 +8992,6 @@ void DestroyScase(smv_case *scase) {
   FreeCADGeomCollection(&scase->cadgeomcoll);
   FreeLabelsCollection(&scase->labelscoll);
 }
-
 
 /* ------------------ GetElevAz ------------------------ */
 

@@ -35,8 +35,6 @@
   81 cases.  The 2-d array contourline_list describes the 81 cases for
   drawing contour lines (rather than shaded contours).
 
-
-
 */
 int contourfill_list[81][9]={
   {0},{3,-5,3,-7},{4,-5,-6,-8,-7},
@@ -446,8 +444,6 @@ void GetLineContours(const  float *xgrid, const float *ygrid, int nx, int ny,
   int blankit=0;
   float dval;
 
-
-
   nlevels=ci->nlevels;
   dval=0.0;
   if(nlevels>1&&line_min!=line_max){
@@ -627,7 +623,6 @@ void GetLineContourNodes(double linelevel, const double x[4], const double y[4],
   }
   *nline_nodes=contourline_list[casenum][0];
   if(casenum==0)return;
-
 
   for(n = 0; n < 4; n++){
     xcopy[n] = x[n];

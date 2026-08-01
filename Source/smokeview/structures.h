@@ -31,7 +31,6 @@ typedef struct _procdata {
 } procdata;
 #endif
 
-
 /* --------------------------  geomdiagdata ------------------------------------ */
 
 typedef struct _geomdiagdata {
@@ -112,7 +111,6 @@ typedef struct _keyworddata{
   char keyword[32];
   int index, nparams, line_number;
 } keyworddata;
-
 
 /* --------------------------  facedata ------------------------------------ */
 

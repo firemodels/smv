@@ -411,7 +411,6 @@ void FilterCSVFilename(char *file){
   char *csv, *newfile;
   int i, lenfile;
 
-
   lenfile = strlen(file);
   {
     char *c;
@@ -896,7 +895,6 @@ void AddColorbarListEdit(GLUI_Listbox *LIST_cbar, int index, char *label_arg, in
   char cbar_type[256];
   int i, nitems=0;
 
-
   for(i = 0; i < colorbars.ncolorbars; i++){
     colorbardata *cbi;
 
@@ -1093,7 +1091,6 @@ extern "C" void GLUIColorbarSetup(int main_window){
   SPINNER_cb_rgb[0] = glui_colorbar->add_spinner_to_panel(PANEL_cb_general2, "red",  GLUI_SPINNER_INT, cb_rgb,   COLORBAR_RGB, GLUIColorbarCB);
   SPINNER_cb_rgb[1] = glui_colorbar->add_spinner_to_panel(PANEL_cb_general2,"green", GLUI_SPINNER_INT, cb_rgb+1, COLORBAR_RGB, GLUIColorbarCB);
   SPINNER_cb_rgb[2] = glui_colorbar->add_spinner_to_panel(PANEL_cb_general2,"blue",  GLUI_SPINNER_INT, cb_rgb+2, COLORBAR_RGB, GLUIColorbarCB);
-
 
   SPINNER_cb_rgb[0]->set_int_limits(0,255);
   SPINNER_cb_rgb[1]->set_int_limits(0,255);

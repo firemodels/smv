@@ -2558,7 +2558,6 @@ void Plot3DShowMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-
 /* ------------------ GridDigitsMenu ------------------------ */
 
 void GridDigitsMenu(int value){
@@ -3598,7 +3597,6 @@ void TourCopyMenu(int value){
   }
 }
 
-
 /* ------------------ UpdateStreakValue ------------------------ */
 
 void UpdateStreakValue(float value){
@@ -3650,7 +3648,6 @@ void ParticleStreakShowMenu(int value){
   updatemenu=1;
   GLUTPOSTREDISPLAY;
 }
-
 
 /* ------------------ PropMenu ------------------------ */
 
@@ -4189,7 +4186,6 @@ void UnloadBoundaryMenu(int value){
   }
 }
 
-
 /* ------------------ LoadVSliceMenu2 ------------------------ */
 
 FILE_SIZE LoadVSliceMenu2(int value){
@@ -4296,7 +4292,6 @@ FILE_SIZE LoadVSliceMenu2(int value){
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
   return return_filesize;
 }
-
 
 /* ------------------ LoadVSliceMenu ------------------------ */
 
@@ -5286,7 +5281,6 @@ void UpdateMenu(void){
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }
-
 
 /* ------------------ LoadPlot3DMenu ------------------------ */
 
@@ -6586,7 +6580,6 @@ void ShowObjectsMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-
 /* ------------------ TerrainGeomShowMenu ------------------------ */
 
 void TerrainGeomShowMenu(int value){
@@ -6760,7 +6753,6 @@ void ZoneShowMenu(int value){
   updatemenu=1;
   GLUTPOSTREDISPLAY;
 }
-
 
 /* ------------------ HVACConnectMenu ------------------------ */
 
@@ -7229,7 +7221,6 @@ void GeometryMenu(int value){
   updatemenu=1;
   GLUTPOSTREDISPLAY;
 }
-
 
 /* ------------------ GeometryMainMenu ------------------------ */
 
@@ -8174,13 +8165,11 @@ void InitMultiVectorUnloadSliceMenu(int *unloadmultivslicemenuptr){
   glutAddMenuEntry("Unload all", UNLOAD_ALL);
 }
 
-
 /* ------------------ InitMultiVectorSubMenu ------------------------ */
 
 void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
   int i, *loadsubmvslicemenu;
   int nloadsubmvslicemenu;
-
 
   nloadsubmvslicemenu = 1;
   for(i = 1; i<global_scase.slicecoll.nmultivsliceinfo; i++){
@@ -8498,7 +8487,6 @@ void InitMenus(void){
   int showhide_data = 0;
   int patchgeom_slice_showhide;
 
-
 static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdialogmenu=0;
 static int labelmenu=0, titlemenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0,colorbardigitmenu=0;
 static int optionmenu=0, rotatetypemenu=0, translatetypemenu=0;
@@ -8804,7 +8792,6 @@ if(opengl_finalized == 0)return;
   }
 
   /* --------------------------------terrain menu -------------------------- */
-
 
   if(global_scase.terrain_texture_coll.nterrain_textures>0){
     CREATEMENU(terrain_geom_showmenu, TerrainGeomShowMenu);
@@ -10414,7 +10401,6 @@ if(opengl_finalized == 0)return;
 
   }
 
-
   /* --------------------------------smoke3d showmenu -------------------------- */
 
   if(nsmoke3dloaded>0){
@@ -11005,7 +10991,6 @@ if(opengl_finalized == 0)return;
 #ifdef pp_MEMPRINT
   glutAddMenuEntry("Show Memory block info",MENU_SHOWHIDE_PRINT);
 #endif
-
 
 /* --------------------------------frame rate menu -------------------------- */
 
@@ -11744,7 +11729,6 @@ if(opengl_finalized == 0)return;
                            );
   }
 
-
     /* --------------------------------unload and load 3d smoke menus -------------------------- */
 
       if(nsmoke3dloaded>0){
@@ -12334,7 +12318,6 @@ if(opengl_finalized == 0)return;
     FREEMEMORY(user_ini_path);
    }
 
-
     {
       char caselabel[255];
 
@@ -12366,7 +12349,6 @@ if(opengl_finalized == 0)return;
     if(periodic_reload_value==10)glutAddMenuEntry("   *every 10 minutes",10);
     if(periodic_reload_value!=10)glutAddMenuEntry("   every 10 minutes",10);
     glutAddMenuEntry("Cancel",STOP_RELOADING);
-
 
     {
       int nscripts;

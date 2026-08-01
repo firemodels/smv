@@ -908,7 +908,6 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
 
 /* ------------------ TimeAveragePlot2DData ------------------------ */
 
-
 void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals, float time_interval){
   int i;
 
@@ -1045,7 +1044,6 @@ void DrawTreePlot(int first, int n){
     );
   }
 }
-
 
 /* ------------------ DrawPlot2D ------------------------ */
 

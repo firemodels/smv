@@ -1063,7 +1063,6 @@ void DrawIsoOrig(int tranflag){
     glPopAttrib();
     if(isoi->dataflag==1)glDisable(GL_TEXTURE_1D);
 
-
     if(tranflag==DRAW_TRANSPARENT)TransparentOff();
     if(cullfaces==1)glEnable(GL_CULL_FACE);
     CheckMemory;
@@ -1487,7 +1486,6 @@ void UpdateIsoType(void){
   int i;
   isodata *isoi;
 
-
   for(i=0; i<global_scase.nisoinfo; i++){
     isoi = global_scase.isoinfo + i;
     if(isoi->loaded==0)continue;
@@ -1599,7 +1597,6 @@ void SetIsoLabels(float smin, float smax,
 int CompareIsoTriangles(const void *arg1, const void *arg2){
   isotri *trii, *trij;
   float disti, distj;
-
 
   trii = *(isotri **)arg1;
   trij = *(isotri **)arg2;

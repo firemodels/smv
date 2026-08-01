@@ -240,7 +240,6 @@ void NextZIndex(int inc,int flag){
   }
 }
 
-
 /* ------------------ MouseEditTour ------------------------ */
 
 void MouseEditTour(int x, int y){
@@ -3398,7 +3397,6 @@ void HandleMoveKeys(int  key){
   float *eye_xyz;
 #define LOOKANGLE_CHANGE 11.25
 
-
   eye_xyz = camera_current->eye;
 
   azimuth=&camera_current->azimuth;
@@ -3719,7 +3717,6 @@ void SetScreenSize(int *width, int *height){
     GLUIUpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
   }
 }
-
 
 /* ------------------ ReshapeCB ------------------------ */
 
@@ -4276,7 +4273,6 @@ void SetMainWindow(void){
 }
 
 /* ------------------ ResizeWindow ------------------------ */
-
 
 void ResizeWindow(int width, int height){
   float wscaled, hscaled;

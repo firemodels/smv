@@ -275,7 +275,6 @@ void DrawPart(const partdata *parti, int mode){
                   if(vis[j] == 1 && datacopy->tags[j]==selected_part_index){
                     char taglabel[64];
 
-
                     if(itype >= 0){
                       sprintf(taglabel, "%i: %f", selected_part_index, rvals[j]);
                     }
@@ -1520,7 +1519,6 @@ void InitPartProp(void){
           propi->user_min=1.0;
           propi->user_max=0.0;
           propi->display=0;
-
 
           propi->setchopmin=0;
           propi->setchopmax=0;

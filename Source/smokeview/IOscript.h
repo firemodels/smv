@@ -130,4 +130,3 @@ EXTERNCPP void SetRunScriptVal(int val);
 EXTERNCPP void SetViewZMAXPersp(void);
 EXTERNCPP void StartScript(void);
 #endif
-

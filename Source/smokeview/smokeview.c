@@ -111,7 +111,6 @@ void TransparentOff(void){
   glDisable(GL_BLEND);
 }
 
-
 /* ------------------ SetViewPoint ------------------------ */
 
 void SetViewPoint(int option){

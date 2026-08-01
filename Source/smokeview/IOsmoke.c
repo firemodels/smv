@@ -246,7 +246,6 @@ void UpdateSmoke3dFileParms(void){
   }
 #endif
 
-
 /* ------------------ IsSmokeComponentPresent ------------------------ */
 
 int IsSmokeComponentPresent(smoke3ddata *smoke3di){
@@ -415,7 +414,6 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   switch(ssmokedir){
 
     // +++++++++++++++++++++++++++++++++++ DIR 1 +++++++++++++++++++++++++++++++++++++++
-
 
   case 1:
   case -1:
@@ -1556,7 +1554,7 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile,
     printf("***error: smokefile pointer is NULL\n");
     return 1;
   }
-  
+
   SMOKE_SIZE_FILE = FopenSmokeSizefile(smokefile,fortran_skip);
   if(SMOKE_SIZE_FILE == NULL){
     printf("***warning: failed to open 3D smoke size file: %s\n", smokefile);
@@ -2057,7 +2055,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
 
 MFILE *OpenSoot3DFile(char *s3dfile, char *s3ddfile){
   MFILE *stream1=NULL, *stream2 = NULL;
-  
+
   if(s3dfile!=NULL)stream1 = FOPEN(s3dfile, "rb");
   if(s3ddfile!=NULL)stream2 = FOPEN(s3ddfile, "rb");
 
@@ -3641,5 +3639,3 @@ void ComputeAllSmokecolors(void){
   }
 }
 #endif
-
-

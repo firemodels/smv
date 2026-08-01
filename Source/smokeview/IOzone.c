@@ -1352,7 +1352,6 @@ void DrawZoneRoomGeom(void){
       yroom = roomi->y1;
       zroom = roomi->z1;
 
-
       glVertex3f(xroom0, yroom0, zroom);
       glVertex3f(xroom, yroom0, zroom);
 
@@ -1535,7 +1534,7 @@ void DrawZoneVentDataProfile(void){
     zventdata *zvi;
     int j;
     float zelev[NELEV_ZONE];
-    
+
     float *vcolor1;
     float xmid, ymid;
 
@@ -1742,7 +1741,6 @@ void DrawZoneWallData(void){
   lw = izonelw + izone*global_scase.nrooms;
   fl = izonefl + izone*global_scase.nrooms;
 
-
 /* draw the frame */
 
   glBegin(GL_TRIANGLES);
@@ -1759,7 +1757,6 @@ void DrawZoneWallData(void){
     y1 = roomi->y1;
     z1 = roomi->z1;
     z  = roomi->ylay;
-
 
     // ceiling
     glColor4fv(rgb_full[cl[i]]);

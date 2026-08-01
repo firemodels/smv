@@ -147,7 +147,6 @@ int HaveTerrainTexture(int *draw_surfaceptr){
   return draw_texture;
 }
 
-
 /* ------------------ DrawTerrainGeom ------------------------ */
 
 void DrawTerrainGeom(int option){
@@ -413,7 +412,6 @@ void DrawTerrainGeom(int option){
         int inside_domain=0, outside_domain=1;
 
         ind = terrain_indices+3*i;
-
 
         v1 = terrain_vertices+9*ind[0];
         v2 = terrain_vertices+9*ind[1];
@@ -723,10 +721,8 @@ void DrawTrees(void){
     }
     glPopMatrix();
 
-
   }
   glPopMatrix();
-
 
   glDisable(GL_COLOR_MATERIAL);
 
@@ -862,7 +858,6 @@ void UpdateTerrainColors(void){
     rgbterrain[4*i+3]=1.0;
   }
 }
-
 
 /* ------------------ ComputeTerrainNormalsManual ------------------------ */
 
@@ -1135,7 +1130,6 @@ void ComputeTerrainNormalsAuto(void){
     }
   }
 }
-
 
 /* ------------------ GetTerrainData ------------------------ */
 
@@ -1608,7 +1602,6 @@ void DrawTerrainOBSTTexture(terraindata *terri){
 
   zcut = terri->zmin_cutoff;
 
-
   terrain_color[0]=1.0;
   terrain_color[1]=1.0;
   terrain_color[2]=1.0;
@@ -1684,11 +1677,9 @@ void DrawTerrainOBSTTexture(terraindata *terri){
         glTexCoord2f(tx,ty);
         glVertex3f(x[i],y[j],zval1);
 
-
         glNormal3fv(zn2);
         glTexCoord2f(txp1,ty);
         glVertex3f(x[ip1],y[j],zval2);
-
 
         glNormal3fv(zn3);
         glTexCoord2f(txp1,typ1);
@@ -1749,7 +1740,6 @@ void DrawTerrainOBSTTexture(terraindata *terri){
 
   glPopMatrix();
 }
-
 
 /* ------------------ GetTerrainElev ------------------------ */
 

@@ -544,7 +544,6 @@ static size_t current_gif_frame = 0;
 /// NEWMEMORY. This pointer will be kept and later needs to be freed by calling
 /// GifSpec_Clear.
 
-
 /* ------------------ GifStart ------------------------ */
 
 /// @brief Open a gif file with the same dimensions as the current render window
@@ -671,7 +670,6 @@ void RenderFrame(int view_mode){
 
   screenH = screenHeight;
   if(view_mode==VIEW_LEFT&&stereotype==STEREO_RB)return;
-
 
   if(stereotype == STEREO_LR && (view_mode == VIEW_LEFT || view_mode == VIEW_RIGHT)){
     hoffset = screenHeight / 4;
@@ -979,7 +977,6 @@ unsigned int GetScreenMap360(float *xyz, float *xx, float *yy){
     return return_val;
   }
 }
-
 
 #define LEFT 0
 #define RIGHT 1

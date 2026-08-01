@@ -30,11 +30,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define LABELS_shadedata 30
 #define LABELS_colorbar_shift 36
 
-
 #define OBJECT_PLOT_SHOW_ALL        -8
 #define OBJECT_PLOT_SHOW_SELECTED  -11
 #define OBJECT_PLOT_SHOW_TREE_ALL  -12
-
 
 #define PLOT_HRRPUV           -13
 
@@ -83,7 +81,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define PLOT_ONLY_DATA  0
 #define PLOT_ALL        1
 #define PLOT_ONLY_FRAME 2
-
 
 #define    ALL_FILES 0
 #define LOADED_FILES 1
@@ -357,7 +354,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define YWALLMAX  2
 #define ZWALLMIN -3
 #define ZWALLMAX  3
-
 
 #define NODATA  0
 #define HASDATA 1

@@ -1834,7 +1834,6 @@ extern "C" void GLUIPlot2DSetup(int main_window){
     GLUIGenPlotCB(GENPLOT_CSV_FILETYPE);
     GLUIGenPlotCB(GENPLOT_CURVE_UNIT);
 
-
     ROLLOUT_plotproperties = glui_plot2d->add_rollout("plot properties(all plots)", true, PLOT2D_NEW_ROLLOUT, Plot2D_Rollout_CB);
     TOGGLE_ROLLOUT(plot2dprocinfo, nplot2dprocinfo, ROLLOUT_plotproperties, PLOT2D_NEW_ROLLOUT, glui_plot2d);
 
@@ -2242,7 +2241,6 @@ void OpenCB(int var){
   int i;
   filelistdata *filei;
   char *open_filter_ptr;
-
 
   switch(var){
     case OPEN_UP:

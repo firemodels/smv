@@ -11,10 +11,6 @@
 #include "smokeviewvars.h"
 #include "interp.h"
 
-
-
-
-
 /* ------------------ CompareFloats ------------------------ */
 
 int CompareFloats(const void *arg1, const void *arg2){
@@ -295,7 +291,7 @@ int GetCellIndex(float *xyz){
   int ni  = ncells[0];
   int nj  = ncells[1];
   int nij = ni * nj;
-  
+
   int kcell = (xyz[2] - scene_min[2]) / cell_dxyz[2];
   int jcell = (xyz[1] - scene_min[1]) / cell_dxyz[1];
   int icell = (xyz[0] - scene_min[0]) / cell_dxyz[0];
@@ -315,7 +311,6 @@ scenedata *InitSceneInfo(void){
   float *scene_max = sd->xyz_bar;
   float *scene_mid = sd->xyz_mid_smv;
   float *cell_dxyz = sd->cell_dxyz;
-
 
   {
     meshdata *meshi;
@@ -428,7 +423,7 @@ scenedata *InitSceneInfo(void){
   int nmeshes_total=0;
   for(int i=0; i<ncells_total; i++){
     celldata *ci;
-    
+
     ci = sd->cellinfo + i;
     nmeshes_total += ci->nmeshes;
   }
@@ -781,8 +776,6 @@ int SMVPointInFrustum(float *xyz){
   return 1;
 }
 
-
-
 /* ------------------ BoxInFrustum ------------------------ */
 
 int BoxInFrustum(float *xx, float *yy, float *zz, int n){
@@ -839,7 +832,6 @@ int RectangleInFrustum(float *x11, float *x12, float *x22, float *x21){
    }
    return 1;
 }
-
 
 /* ------------------ MatMultMat ------------------------ */
 
@@ -1023,7 +1015,6 @@ void GetNewPos(float *oldpos, float dx, float dy, float dz,float local_speed_fac
   from_glui_trainer=0;
 }
 
-
 /* ------------------ MakeIBlankCarve ------------------------ */
 
 int MakeIBlankCarve(void){
@@ -1041,7 +1032,6 @@ int MakeIBlankCarve(void){
     meshi->c_iblank_embed=NULL;
   }
   if(global_scase.meshescoll.nmeshes==1)return 0;
-
 
   for(i=0; i<global_scase.meshescoll.nmeshes; i++){
     meshdata *meshi;
@@ -1570,7 +1560,6 @@ void InitClip(void){
   stepclip_xmin=0,stepclip_ymin=0,stepclip_zmin=0;
   stepclip_xmax=0,stepclip_ymax=0,stepclip_zmax=0;
 }
-
 
 /* ------------------ VolumeTetrahedron ------------------------ */
 

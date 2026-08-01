@@ -61,7 +61,6 @@ GLUI_Checkbox *CHECKBOX_shooter_3=NULL;
 
 GLUI_Listbox *LIST_shooter_times=NULL;
 
-
 #define SHOOTER_VEL_TYPE 101
 #define SHOOTER_APPLY 102
 #define SHOOTER_DURATION 103

@@ -23,8 +23,6 @@
 
 #include <assert.h>
 
-
-
 /* ------------------ Usage ------------------------ */
 
 void Usage(int option){
@@ -579,7 +577,6 @@ int CheckSMVFile(char *file, char *subdir){
   return 1;
 }
 
-
 /// @brief Get the commandline arguments. On Unix-like systems this will just
 /// return argc and argv. On Windows this will retrieve the commandline
 /// arguments in a UTF-16 format and convert to UTF-8 in a newly allocated
@@ -626,7 +623,6 @@ void FreeArgs(int n_args, char **args) {
   FREEMEMORY(args);
 #endif
 }
-
 
 /* ------------------ main ------------------------ */
 

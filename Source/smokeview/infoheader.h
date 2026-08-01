@@ -3,7 +3,6 @@
 #define MAX_TITLE_LINE_LENGTH 256
 #define MAX_TITLE_LINES 256
 
-
 /* --------------------------  titledata ---------------------------------- */
 
 typedef struct {

@@ -428,7 +428,6 @@ EXTERNCPP void UpdateIsoShowLevels(smv_case *scase, meshdata *isomesh);
 EXTERNCPP void *UpdateTrianglesAll(void *arg);
 EXTERNCPP void ResetDefaultMenu(int var);
 
-
 //*** IOpart.c headers
 
 EXTERNCPP void ClosePartFiles(void);
@@ -568,7 +567,6 @@ EXTERNCPP int  UpdateSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void UpdateSmoke3dFileParms(void);
 EXTERNCPP void UpdateSmoke3dMenuLabels(void);
 EXTERNCPP void UpdateSmokeAlphas(void);
-
 
 //*** IOtour.c headers
 
@@ -836,7 +834,6 @@ EXTERNCPP void SetupGlut(int argc, char **argv);
 EXTERNCPP int  SetupCase(char *file);
 EXTERNCPP void GluiPostRedisplayOn(void);
 EXTERNCPP void GluiPostRedisplayOff(void);
-
 
 //*** unit.c headers
 
