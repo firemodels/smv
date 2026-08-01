@@ -50,6 +50,9 @@
 #if !defined(MBEDTLS_SHA1_ALT)
 
 /* Implementation that should never be optimized out by the compiler */
+
+/* ------------------ mbedtls_zeroize ------------------------ */
+
 static void mbedtls_zeroize( void *v, size_t n ){
     volatile unsigned char *p = (unsigned char*)v; while( n-- ) *p++ = 0;
 }
@@ -77,10 +80,14 @@ static void mbedtls_zeroize( void *v, size_t n ){
 }
 #endif
 
+/* ------------------ mbedtls_sha1_init ------------------------ */
+
 void mbedtls_sha1_init( mbedtls_sha1_context *ctx )
 {
     memset( ctx, 0, sizeof( mbedtls_sha1_context ) );
 }
+
+/* ------------------ mbedtls_sha1_free ------------------------ */
 
 void mbedtls_sha1_free( mbedtls_sha1_context *ctx )
 {
@@ -89,6 +96,8 @@ void mbedtls_sha1_free( mbedtls_sha1_context *ctx )
 
     mbedtls_zeroize( ctx, sizeof( mbedtls_sha1_context ) );
 }
+
+/* ------------------ mbedtls_sha1_clone ------------------------ */
 
 void mbedtls_sha1_clone( mbedtls_sha1_context *dst,
                          const mbedtls_sha1_context *src )
@@ -99,6 +108,8 @@ void mbedtls_sha1_clone( mbedtls_sha1_context *dst,
 /*
  * SHA-1 context setup
  */
+/* ------------------ mbedtls_sha1_starts ------------------------ */
+
 void mbedtls_sha1_starts( mbedtls_sha1_context *ctx )
 {
     ctx->total[0] = 0;
@@ -112,6 +123,8 @@ void mbedtls_sha1_starts( mbedtls_sha1_context *ctx )
 }
 
 #if !defined(MBEDTLS_SHA1_PROCESS_ALT)
+/* ------------------ mbedtls_sha1_process ------------------------ */
+
 void mbedtls_sha1_process( mbedtls_sha1_context *ctx, const unsigned char data[64] )
 {
     uint32_t temp, W[16], A, B, C, D, E;
@@ -272,6 +285,8 @@ void mbedtls_sha1_process( mbedtls_sha1_context *ctx, const unsigned char data[6
 /*
  * SHA-1 process buffer
  */
+/* ------------------ mbedtls_sha1_update ------------------------ */
+
 void mbedtls_sha1_update( mbedtls_sha1_context *ctx, const unsigned char *input, size_t ilen )
 {
     size_t fill;
@@ -320,6 +335,8 @@ static const unsigned char sha1_padding[64] =
 /*
  * SHA-1 final digest
  */
+/* ------------------ mbedtls_sha1_finish ------------------------ */
+
 void mbedtls_sha1_finish( mbedtls_sha1_context *ctx, unsigned char output[20] )
 {
     uint32_t last, padn;
@@ -351,6 +368,8 @@ void mbedtls_sha1_finish( mbedtls_sha1_context *ctx, unsigned char output[20] )
 /*
  * output = SHA-1( input buffer )
  */
+/* ------------------ mbedtls_sha1 ------------------------ */
+
 void mbedtls_sha1( const unsigned char *input, size_t ilen, unsigned char output[20] )
 {
     mbedtls_sha1_context ctx;
@@ -391,6 +410,8 @@ static const unsigned char sha1_test_sum[3][20] =
 /*
  * Checkup routine
  */
+/* ------------------ mbedtls_sha1_self_test ------------------------ */
+
 int mbedtls_sha1_self_test( int verbose )
 {
     int i, j, buflen, ret = 0;

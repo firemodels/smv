@@ -1852,6 +1852,7 @@ void GetLabels(char *buffer, char **label1, char **label2){
 /// @param prop_id The id to search for
 /// @return A pointer to the first instance of propdata with the matching id.
 /// Returns NULL if there are no matching props.
+
 propdata *GetPropID(smv_case *scase, char *prop_id){
   int i;
 
@@ -2286,6 +2287,7 @@ int GetInpf(smv_case *scase, bufferstreamdata *stream_in){
 /// @param[inout] scase The case
 /// @param[inout] texti A pointer to the texture data
 /// @return 1 if there is a duplicate, 0 if there is no duplicate.
+
 int IsDupTexture(smv_case *scase, texturedata *texti) {
   int dup_texture;
   int i, j;
@@ -2312,6 +2314,7 @@ int IsDupTexture(smv_case *scase, texturedata *texti) {
 /// @param[in] scase The case
 /// @param[in] texti A pointer to the texture data
 /// @return 1 if it is a terrain texture, 0 otherwise.
+
 int IsTerrainTexture(smv_case *scase, texturedata *texti){
   int is_terrain_texture;
   int i;
@@ -2335,6 +2338,7 @@ int IsTerrainTexture(smv_case *scase, texturedata *texti){
 /// @param label The label to search for
 /// @return An offset into scase->smoke3dcoll.nsmoke3dtypes of the first
 /// matching smoke3dtype. Returns -1 if there are no matching props.
+
 int GetSmoke3DType(smv_case *scase, const char *label) {
   int i;
 
@@ -2438,6 +2442,7 @@ int CreateNullLabel(flowlabels *flowlabel){
 /// @param label The label to search for
 /// @return An offset into scase->surfcoll.nsurfinfo of the first
 /// matching surface. Returns -1 if there are no matching props.
+
 surfdata *GetSurface(smv_case *scase, const char *label){
   int i;
 

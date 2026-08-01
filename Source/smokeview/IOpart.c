@@ -1934,7 +1934,7 @@ void UpdatePartColors(partdata *parti, int flag){
   }
 }
 
-/* -----  ------------- FinalizePartLoad ------------------------ */
+/* ------------------ FinalizePartLoad ------------------------ */
 
 void FinalizePartLoad(partdata *parti){
   int j;
@@ -1988,7 +1988,7 @@ void FinalizePartLoad(partdata *parti){
   GLUTPOSTREDISPLAY;
 }
 
-/* -----  ------------- ReadPart ------------------------ */
+/* ------------------ ReadPart ------------------------ */
 
 FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_arg){
   size_t lenfile_local;

@@ -1933,7 +1933,7 @@ void DrawCircle(float diameter,unsigned char *rgbcolor, circdata *circinfo){
   glEnd();
 }
 
-/* ----------------------- DrawCuboid ----------------------------- */
+/* ------------------ DrawCuboid ------------------------ */
 
 //     7--------6
 //    /|       /
@@ -5276,6 +5276,8 @@ char *GetDeviceLabel(char *buffer){
   if(strlen(label_present) == 0) return NULL;
   return label_present;
 }
+
+/* ------------------ RewindDeviceFile ------------------------ */
 
 void RewindDeviceFile(FILE *stream){
 #define BUFFER_LEN 255

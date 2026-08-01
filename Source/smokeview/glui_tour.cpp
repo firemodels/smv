@@ -306,7 +306,7 @@ extern "C" void GLUITourSetup(int main_window){
   update_tour_list =1;
 }
 
-/* ------------------ GLUIUpdateTourList(void) ------------------------ */
+/* ------------------ GLUIUpdateTourList ------------------------ */
 
 extern "C" void GLUIUpdateTourList(void){
 

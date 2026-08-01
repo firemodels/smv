@@ -1700,7 +1700,7 @@ void AdjustPart5Chops(void){
   }
 }
 
-/* -----  ------------- ReadPartBounds ------------------------ */
+/* ------------------ ReadPartBounds ------------------------ */
 
 int ReadPartBounds(partdata *parti,int read_bounds_arg){
   FILE *stream=NULL;

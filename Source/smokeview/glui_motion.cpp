@@ -796,7 +796,7 @@ void EnableDisableViews(void){
   }
 }
 
-/*------------------GLUISetCurrentViewPoint------------------------ */
+/* ------------------ GLUISetCurrentViewPoint ------------------------ */
 
 extern "C" void GLUISetCurrentViewPoint(char *viewpoint_label){
   int i;

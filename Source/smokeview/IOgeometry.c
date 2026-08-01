@@ -2177,7 +2177,7 @@ int GetGeomDataSize(char *filename, int *nvars, int time_frame, int *cvals_offse
   return ntimes_local;
 }
 
-/* ------------------ GetGeomData------------------------ */
+/* ------------------ GetGeomData ------------------------ */
 
 FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int load_flag, int ntimes, int nvals, float *times, int *nstatics, int *ndynamics, float *vals,
                       int time_frame, float *time_value, int *geom_offsets, int *error){
@@ -3836,7 +3836,7 @@ void DrawGeomVData(vslicedata *vd){
   }
 }
 
-  /* ------------------ DrawGeomData ------------------------ */
+/* ------------------ DrawGeomData ------------------------ */
 
 #define GEOMVAL(index) ( patchi->is_compressed==0 ? vals[(index)] : (float)cvals[(index)] )
 #define GEOMTEXTURE(index, vmin, vmax) ( CLAMP( (vals[(index)]-vmin)/(vmax-vmin),0.0,1.0) )
@@ -3845,7 +3845,6 @@ void DrawGeomVData(vslicedata *vd){
         CLAMP( (geomval-vmin)/(vmax-vmin),0.0,1.0) : \
         CLAMP( (float)geomval/255.0,0.0,1.0) \
         )
-
 void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   int i;
   unsigned char *ivals, *cvals;

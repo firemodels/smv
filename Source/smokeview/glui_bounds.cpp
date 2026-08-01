@@ -272,6 +272,8 @@ void bounds_dialog::RestoreBounds(void){
   memcpy(all_bounds, all_bounds_save, nall_bounds*sizeof(cpp_boundsdata));
 }
 
+/* ------------------ setupNoGraphics ------------------------ */
+
 void bounds_dialog::setupNoGraphics(const char *file_type, cpp_boundsdata *bounds_arg, int nbounds_arg){
 
   all_bounds = bounds_arg;
@@ -1756,7 +1758,7 @@ extern "C" void GLUISetLoadedMinMaxAll(int type, float *valmin, float *valmax, i
   }
 }
 
-/* ------------------ HVAC callback: GLUIHVACDuctBoundsCPP_CB ------------------------ */
+/* ------------------ GLUIHVACDuctBoundsCPP_CB ------------------------ */
 
 extern "C" void GLUIHVACDuctBoundsCPP_CB(int var){
   if(nhvacductbounds == 0)return;
@@ -1788,7 +1790,7 @@ extern "C" void GLUIHVACDuctBoundsCPP_CB(int var){
   }
 }
 
-/* ------------------ HVAC callback: GLUIHVACNodeBoundsCPP_CB ------------------------ */
+/* ------------------ GLUIHVACNodeBoundsCPP_CB ------------------------ */
 
 extern "C" void GLUIHVACNodeBoundsCPP_CB(int var){
   if(nhvacnodebounds == 0)return;
@@ -1826,7 +1828,7 @@ extern "C" void GLUIUpdateHVACDuctType(void){
   GLUIHVACDuctBoundsCPP_CB(BOUND_VAL_TYPE);
 }
 
-/* ------------------ slice callback: GLUIHVACSliceBoundsCPP_CB ------------------------ */
+/* ------------------ GLUIHVACSliceBoundsCPP_CB ------------------------ */
 
 extern "C" void GLUIHVACSliceBoundsCPP_CB(int var){
   int ii, last_slice;
@@ -1962,7 +1964,7 @@ int HavePlot3DData(void){
   return 1;
 }
 
-/* ------------------ plot3d callback: GLUIPlot3DBoundsCPP_CB ------------------------ */
+/* ------------------ GLUIPlot3DBoundsCPP_CB ------------------------ */
 
 extern "C" void GLUIPlot3DBoundsCPP_CB(int var){
   cpp_boundsdata *bounds;
@@ -2068,7 +2070,7 @@ extern "C" void GLUIPlot3DBoundsCPP_CB(int var){
   }
 }
 
-/* ------------------ part callback: GLUIPartBoundsCPP_CB ------------------------ */
+/* ------------------ GLUIPartBoundsCPP_CB ------------------------ */
 
 extern "C" void GLUIPartBoundsCPP_CB(int var){
   cpp_boundsdata *bounds;
@@ -2206,7 +2208,7 @@ int HaveAnyPatchData(void){
   return 0;
 }
 
-/* ------------------ patch callback: GLUIPatchBoundsCPP_CB ------------------------ */
+/* ------------------ GLUIPatchBoundsCPP_CB ------------------------ */
 
 extern "C" void GLUIPatchBoundsCPP_CB(int var){
   int i;
@@ -3827,11 +3829,11 @@ void BoundsDlgCB(int var){
   }
 }
 
-/* ------------------ GLUIImmersedBoundCB ------------------------ */
-
 #define SHOW_POLYGON_EDGES 0
 #define SHOW_TRIANGLE_EDGES 1
 #define HIDE_EDGES 2
+
+/* ------------------ GLUIImmersedBoundCB ------------------------ */
 
 extern "C" void GLUIImmersedBoundCB(int var){
   int i;
@@ -4823,12 +4825,12 @@ extern "C" void GLUIUpdateColorbarListBound(int flag){
   strcpy(label, "user defined"); AddColorbarListBound(LIST_cb, -7, label, &max_LISTBOX_cb_bound);
 }
 
-/* ------------------ GLUIShowHideGeomDataCB ------------------------ */
-
 #define SHOW_ALL_MESH_GEOM 0
 #define HIDE_ALL_MESH_GEOM 1
 #define SHOW_ALL_MESH_DATA 2
 #define HIDE_ALL_MESH_DATA 3
+
+/* ------------------ GLUIShowHideGeomDataCB ------------------------ */
 
 void GLUIShowHideGeomDataCB(int var){
   int i;

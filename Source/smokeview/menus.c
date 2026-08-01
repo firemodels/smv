@@ -2311,6 +2311,9 @@ void OpenUrl(char *url){
 }
 #endif
 #ifdef __linux__
+
+/* ------------------ OpenUrl ------------------------ */
+
 void OpenUrl(char *url){
   char command[1000];
 
@@ -2328,6 +2331,8 @@ void OpenUrl(char *url){
 #else
 #define OPENURL(url) OpenUrl(url)
 #endif
+
+/* ------------------ HelpMenu ------------------------ */
 
 void HelpMenu(int value){
   switch(value){

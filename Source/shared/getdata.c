@@ -32,7 +32,7 @@ _Static_assert(sizeof(float) == 4, "getdata.c assumes that float is 4 bytes");
 #endif
 #endif
 
-//  ------------------ fortread ------------------------
+/* ------------------ fortread ------------------------ */
 
 int fortread(void *ptr, size_t size, size_t count, FILE *file){
   // TODO: check endianess, currently little-endian is assumed
@@ -68,7 +68,7 @@ int fortread(void *ptr, size_t size, size_t count, FILE *file){
   return 0;
 }
 
-//  ------------------ fortwrite ------------------------
+/* ------------------ fortwrite ------------------------ */
 
 int fortwrite(void *ptr, size_t size, size_t count, FILE *file){
   // TODO: check endianess
@@ -94,14 +94,14 @@ int fortwrite(void *ptr, size_t size, size_t count, FILE *file){
   return 0;
 }
 
-//  ------------------ fortseek ------------------------
+/* ------------------ fortseek ------------------------ */
 
 int fortseek(FILE *file, size_t size, size_t count, int whence){
   return fseek(file, sizeof(uint32_t) + size * count + sizeof(uint32_t),
                whence);
 }
 
-//  ------------------ getzonesize ------------------------
+/* ------------------ getzonesize ------------------------ */
 
 void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
                  int *nfires, int *error){
@@ -162,7 +162,7 @@ void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
   fclose(file);
 }
 
-// !  ------------------ getpatchsizes1 ------------------------
+/* ------------------ getpatchsizes1 ------------------------ */
 
 void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
                     int *headersize, int *error){
@@ -191,7 +191,7 @@ void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
   return;
 }
 
-// !  ------------------ getpatchsizes2 ------------------------
+/* ------------------ getpatchsizes2 ------------------------ */
 
 void getpatchsizes2(FILE *file, int version, int npatch, int *npatchsize,
                     int *pi1, int *pi2, int *pj1, int *pj2, int *pk1, int *pk2,
@@ -334,7 +334,7 @@ void GetSliceParms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
   return;
 }
 
-// !  ------------------ openpart ------------------------
+/* ------------------ openpart ------------------------ */
 
 FILE *openpart(const char *partfilename, int *error){
   *error = 0;
@@ -345,7 +345,7 @@ FILE *openpart(const char *partfilename, int *error){
   return file;
 }
 
-// !  ------------------ openslice ------------------------
+/* ------------------ openslice ------------------------ */
 
 void openslice(const char *slicefilename, FILE **file, int *is1, int *is2,
                int *js1, int *js2, int *ks1, int *ks2, int *error){
@@ -374,14 +374,14 @@ void openslice(const char *slicefilename, FILE **file, int *is1, int *is2,
   return;
 }
 
-// !  ------------------ closefortranfile ------------------------
+/* ------------------ closefortranfile ------------------------ */
 
 void closefortranfile(FILE *unit){
   fclose(unit);
   return;
 }
 
-// !  ------------------ getboundaryheader1 ------------------------
+/* ------------------ getboundaryheader1 ------------------------ */
 
 void getboundaryheader1(const char *boundaryfilename, FILE **file, int *npatch,
                         int *error){
@@ -416,7 +416,7 @@ void getboundaryheader1(const char *boundaryfilename, FILE **file, int *npatch,
   return;
 }
 
-// !  ------------------ getboundaryheader2 ------------------------
+/* ------------------ getboundaryheader2 ------------------------ */
 
 void getboundaryheader2(FILE *file, int version, int npatch, int *pi1, int *pi2,
                         int *pj1, int *pj2, int *pk1, int *pk2, int *patchdir){
@@ -441,7 +441,7 @@ void getboundaryheader2(FILE *file, int version, int npatch, int *pi1, int *pi2,
   return;
 }
 
-// !  ------------------ openboundary ------------------------
+/* ------------------ openboundary ------------------------ */
 
 FILE *openboundary(const char *boundaryfilename, int version, int *error){
   char patchlonglabel[31] = {0};
@@ -494,7 +494,7 @@ end:
   return file;
 }
 
-// !  ------------------ getpartheader1 ------------------------
+/* ------------------ getpartheader1 ------------------------ */
 
 void getpartheader1(FILE *file, int *nclasses, int *fdsversion, int *size){
   int one;
@@ -508,7 +508,7 @@ void getpartheader1(FILE *file, int *nclasses, int *fdsversion, int *size){
   return;
 }
 
-// !  ------------------ getpartheader2 ------------------------
+/* ------------------ getpartheader2 ------------------------ */
 
 void getpartheader2(FILE *file, int nclasses, int *nquantities, int *size){
   char clabel[31] = {0};
@@ -532,7 +532,7 @@ void getpartheader2(FILE *file, int nclasses, int *nquantities, int *size){
   return;
 }
 
-// !  ------------------ getpartdataframe ------------------------
+/* ------------------ getpartdataframe ------------------------ */
 
 void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
                       float *time, int *tagdata, float *pdata, int *size,
@@ -578,7 +578,7 @@ void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
   return;
 }
 
-// !  ------------------ getzonedata ------------------------
+/* ------------------ getzonedata ------------------------ */
 
 void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
                  int *nfires, float *zonet, float *zoneqfire, float *zonepr,
@@ -637,8 +637,10 @@ void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
   return;
 }
 
-// !  ------------------ getpatchdata ------------------------
+/* ------------------ getpatchdata ------------------------ */
+
 // TODO: distinguish between more error conditions
+
 void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
                   int *pj2, int *pk1, int *pk2, float *patchtime, float *pqq,
                   int *npqq, int *file_sizeptr, int *error){
@@ -673,7 +675,7 @@ void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
   return;
 }
 
-// !  ------------------ getdata1 ------------------------
+/* ------------------ getdata1 ------------------------ */
 
 void getdata1(FILE *file, int *ipart, int *error){
   int nspr, nv;
@@ -726,7 +728,7 @@ void getdata1(FILE *file, int *ipart, int *error){
   return;
 }
 
-// !  ------------------ writeslicedata ------------------------
+/* ------------------ writeslicedata ------------------------ */
 
 void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
                     int js2, int ks1, int ks2, float *qdata, float *times,
@@ -772,7 +774,7 @@ void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
   return;
 }
 
-// !  ------------------ getsliceframe ------------------------
+/* ------------------ getsliceframe ------------------------ */
 
 void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
                    int ks2, float *time, float *qframe, int testslice,
@@ -810,7 +812,7 @@ void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
   return;
 }
 
-// !  ------------------ outsliceheader ------------------------
+/* ------------------ outsliceheader ------------------------ */
 
 void outsliceheader(const char *slicefilename, FILE **file, int ip1, int ip2,
                     int jp1, int jp2, int kp1, int kp2, int *error){
@@ -838,7 +840,7 @@ void outsliceheader(const char *slicefilename, FILE **file, int ip1, int ip2,
   return;
 }
 
-// !  ------------------ outsliceframe ------------------------
+/* ------------------ outsliceframe ------------------------ */
 
 void outsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
                    int ks2, float time, float *qframe, int *error){
@@ -852,7 +854,7 @@ void outsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
   return;
 }
 
-// !  ------------------ outboundaryheader ------------------------
+/* ------------------ outboundaryheader ------------------------ */
 
 void outboundaryheader(const char *boundaryfilename, FILE **file, int npatches,
                        int *pi1, int *pi2, int *pj1, int *pj2, int *pk1,
@@ -889,7 +891,7 @@ void outboundaryheader(const char *boundaryfilename, FILE **file, int npatches,
   return;
 }
 
-// !  ------------------ outpatchframe ------------------------
+/* ------------------ outpatchframe ------------------------ */
 
 void outpatchframe(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
                    int *pj2, int *pk1, int *pk2, float patchtime, float *pqq,
@@ -914,9 +916,11 @@ void outpatchframe(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
   return;
 }
 
-// !  ------------------ getplot3dq ------------------------ TODO: we don't need
+/* ------------------ getplot3dq ------------------------ */
+
 // to pass in the nx, ny, and nz values. This previously allowed us to allocate
 // prior to this function.
+
 void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq, float *qmin, float *qmax,
                 int *error, int isotest){
   float qval;
@@ -1019,7 +1023,7 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq, float 
   }
 }
 
-// !  ------------------ plot3dout ------------------------
+/* ------------------ plot3dout ------------------------ */
 
 void plot3dout(const char *outfile, int nx, int ny, int nz, float *qout,
                int *error){

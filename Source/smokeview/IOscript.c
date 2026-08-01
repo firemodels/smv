@@ -3359,6 +3359,7 @@ void ScriptRGBtest(scriptdata *scripti){
 }
 
 /* ------------------ ScriptSetClipx ------------------------ */
+
 #define CLIP_xlower 0
 #define CLIP_ylower 1
 #define CLIP_zlower 2

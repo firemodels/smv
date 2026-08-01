@@ -427,6 +427,8 @@ void HermiteXYZ(float t, keyframe *kf1, keyframe *kf2, float *xyz, float *slope)
   }
 }
 
+/* ------------------ GetTourXYZ ------------------------ */
+
 void GetTourXYZ(float t, tourdata *this_tour, float *xyz){
   keyframe *this_key;
 

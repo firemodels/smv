@@ -409,6 +409,7 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
 /// @param[inout] stime_min The minimum time value.
 /// @param[inout] stime_max The maximum time value.
 /// @return The number of frames in the file or < 0 on error.
+
 int GetNSliceFrames(char *file, float *stime_min, float *stime_max){
   int is1, is2, js1, js2, ks1, ks2, error;
 

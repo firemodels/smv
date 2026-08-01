@@ -34,7 +34,7 @@ int GetInterval(float val, float *array, int n) {
   return low;
 }
 
-// !  ------------------ Dist ------------------------
+/* ------------------ Dist ------------------------ */
 
 float Dist(float v1[3], float v2[3]){
   float dx = v1[0] - v2[0];
@@ -133,7 +133,7 @@ void AngleAxis2Quat(float angle, float *axis, float *quat){
   }
 }
 
-/* ------------------ Quat2Rot------------------ */
+/* ------------------ Quat2Rot ------------------------ */
 
 void Quat2Rot(float quat[4], float rot[16]){
   float w = 0.0, x = 0.0, y = 0.0, z = 0.0, sum;
@@ -216,7 +216,7 @@ void XYZ2AzElev(float *xyz, float *azimuth, float *elevation){
   *azimuth = RAD2DEG * atan2(xyz[1], xyz[0]);
 }
 
-// !  ------------------ GetVertType ------------------------
+/* ------------------ GetVertType ------------------------ */
 
 void GetVertType(int nverts, int *triangles, int ntriangles, int *vert_type){
   // ! classify each vertex in a geometry as either interior or exterior
@@ -312,7 +312,7 @@ void GetVertType(int nverts, int *triangles, int ntriangles, int *vert_type){
   FREEMEMORY(vert_count);
 }
 
-// !  ------------------ AverageVerts2 ------------------------
+/* ------------------ AverageVerts2 ------------------------ */
 
 void AverageVerts2(float v1[3], int v1type, float v2[3], int v2type,
                    float mesh_bounds[6], float *vavg){
@@ -369,7 +369,7 @@ void AverageVerts2(float v1[3], int v1type, float v2[3], int v2type,
   }
 }
 
-// !  ------------------ AverageVerts3 ------------------------
+/* ------------------ AverageVerts3 ------------------------ */
 
 void AverageVerts3(float v1[3], int v1type, float v2[3], int v2type,
                    float v3[3], int v3type, float mesh_bounds[6], float *vavg){
