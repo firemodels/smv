@@ -529,7 +529,7 @@ int MakeSliceSizefile(char *file, char *sizefile, int compression_type){
         fread(&ncompressed, 4, 1, stream);
       }
       if(compression_type==COMPRESSED_ZLIB)fprintf(sizestream, "%f %i %i\n", time_local, ncompressed, 0);
-      if(compression_type==COMPRESSED_RLE )fprintf(sizestream, "%f %i %i\n", time_local, noriginal, ncompressed);
+      if(compression_type==COMPRESSED_RLE)fprintf(sizestream, "%f %i %i\n", time_local, noriginal, ncompressed);
       count++;
 
       FSKIP;FSEEK(stream, ncompressed, SEEK_CUR); FSKIP;

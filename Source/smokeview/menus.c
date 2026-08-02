@@ -355,7 +355,7 @@ void OpenSMVFile(char *filebuffer,int filebufferlength,int *openfile){
   if(GetOpenFileName(&openfinfo)){
     STRCPY(smv_directory,"");
     strncat(smv_directory,filebuffer,openfinfo.nFileOffset);
-    if( _chdir( smv_directory )  ){
+    if(_chdir( smv_directory )){
       PRINTF( "Unable to locate the directory: %s\n", smv_directory );
     }
     else{
@@ -12305,7 +12305,7 @@ if(opengl_finalized == 0)return;
     char *global_ini_path = GetSystemIniPath();
     char *user_ini_path = GetUserIniPath();
     char *caseini_filename = CasePathCaseIni(&global_scase);
-    if( n_inifiles>0||FILE_EXISTS(user_ini_path)==YES||FILE_EXISTS(caseini_filename)==YES||FILE_EXISTS(global_ini_path)==YES){
+    if(n_inifiles>0||FILE_EXISTS(user_ini_path)==YES||FILE_EXISTS(caseini_filename)==YES||FILE_EXISTS(global_ini_path)==YES){
       if(n_inifiles==0){
         glutAddMenuEntry("Read ini file",MENU_READINI);
       }

@@ -102,7 +102,7 @@ int ParseLang(char *file, trdata **trinfoptr, int *ntrinfoptr){
       tri->key=keybuf;
     }
 
-    for(doit=1; doit==1; ){
+    for(doit=1; doit==1;){
       doit=0;
       if(fgets(buffer,1000,stream)==NULL)break;
       buf=TrimFront(buffer);

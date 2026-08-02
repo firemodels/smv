@@ -590,7 +590,7 @@ void DrawPartFrame(int mode){
   int i;
 
   if(use_tload_begin==1&&GetTime()<global_scase.tload_begin)return;
-  if(  use_tload_end==1&&GetTime()>global_scase.tload_end)return;
+  if(use_tload_end==1&&GetTime()>global_scase.tload_end)return;
   for(i=0; i<global_scase.npartinfo; i++){
     partdata *parti;
     meshdata *meshi;

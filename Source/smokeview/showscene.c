@@ -168,7 +168,7 @@ void ShowScene2(int mode){
 
     /* ++++++++++++++++++++++++ draw simulation frame (corners at (0,0,0) and (xbar,ybar,zbar) +++++++++++++++++++++++++ */
 
-    if( (hide_scene == 1 && mouse_down == 1) ||
+    if((hide_scene == 1 && mouse_down == 1) ||
         (global_scase.isZoneFireModel == 0 && outline_mode == SCENE_OUTLINE_SCENE)
       ){
       CLIP_GEOMETRY;

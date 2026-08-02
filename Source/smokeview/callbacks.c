@@ -1469,7 +1469,7 @@ void MouseDragCB(int xm, int ym){
 
   in_external=0;
 
-  if( colorbar_drag==1&&(showtime==1 || showplot3d==1)){
+  if(colorbar_drag==1&&(showtime==1 || showplot3d==1)){
     ColorbarDrag(xm,ym);
     GLUTPOSTREDISPLAY;
     return;
@@ -3001,12 +3001,12 @@ void Keyboard(unsigned char key, int flag){
     if(strncmp((const char *)&key2,"<",1)==0||strncmp((const char *)&key2,",",1)==0){ClipDir=-1;}
      else if(strncmp((const char *)&key2,">",1)==0||strncmp((const char *)&key2,".",1)==0){ClipDir=1;}
 
-    if(stepclip_xmin==1  )clip_i += skip_global*ClipDir;
-    if(stepclip_ymin==1  )clip_j += skip_global*ClipDir;
-    if(stepclip_zmin==1  )clip_k += skip_global*ClipDir;
-    if(stepclip_xmax==1  )global_scase.clip_I += skip_global*ClipDir;
-    if(stepclip_ymax==1  )global_scase.clip_J += skip_global*ClipDir;
-    if(stepclip_zmax==1  )global_scase.clip_K += skip_global*ClipDir;
+    if(stepclip_xmin==1)clip_i += skip_global*ClipDir;
+    if(stepclip_ymin==1)clip_j += skip_global*ClipDir;
+    if(stepclip_zmin==1)clip_k += skip_global*ClipDir;
+    if(stepclip_xmax==1)global_scase.clip_I += skip_global*ClipDir;
+    if(stepclip_ymax==1)global_scase.clip_J += skip_global*ClipDir;
+    if(stepclip_zmax==1)global_scase.clip_K += skip_global*ClipDir;
 
     UpdateClipbounds(clipinfo.clip_xmin,&clip_i,clipinfo.clip_xmax,&global_scase.clip_I,current_mesh->ibar);
     UpdateClipbounds(clipinfo.clip_ymin,&clip_j,clipinfo.clip_ymax,&global_scase.clip_J,current_mesh->jbar);

@@ -261,7 +261,7 @@ filedata *fopen_buffer(char *filename, char *mode, int nthreads, int use_multith
   // only support r and rb modes (ascii and binary)
 
   if(mode==NULL)return NULL;
-  if( strcmp(mode, "r")!=0 && strcmp(mode, "rb")!=0 )return NULL;
+  if(strcmp(mode, "r")!=0 && strcmp(mode, "rb")!=0)return NULL;
 
   if(FILE_EXISTS(filename)==NO)return NULL;
   filesize = GetFileSizeSMV(filename);

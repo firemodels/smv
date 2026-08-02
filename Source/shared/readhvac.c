@@ -222,7 +222,7 @@ void GetCellXYZs(float *xyz, int nxyz, int ncells, float **xyz_cellptr,
   fractions_cell[ncells] = 1.0;
 
   int i1, i2, nmerge;
-  for(i1 = 0, i2 = 0, nmerge = 0; i1 < nxyz || i2 < ncells; ){
+  for(i1 = 0, i2 = 0, nmerge = 0; i1 < nxyz || i2 < ncells;){
     if(i1 >= nxyz){
       fractions_both[nmerge++] = fractions_cell[i2++];
       continue;

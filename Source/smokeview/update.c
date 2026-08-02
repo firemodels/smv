@@ -536,7 +536,7 @@ void UpdateShow(void){
     shooter_flag=1;
   }
 
-  if( plotstate==DYNAMIC_PLOTS &&
+  if(plotstate==DYNAMIC_PLOTS &&
     ( showdeviceflag==1 || showhrrflag==1 || sliceflag==1 || vsliceflag==1 || partflag==1 || patchflag==1 ||
     shooter_flag==1|| smoke3dflag==1 || showtours==1 || showhvacflag == 1 || plot2dflag == 1 ||
     (ReadZoneFile==1&&visZone==1&&visTimeZone==1)
@@ -860,7 +860,7 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
   }
 
   // merge global_times and times_in into times_buffer
-  for(left=0,right=0,nbuffer=0; left<nglobal_times||right<ntimes_in; ){
+  for(left=0,right=0,nbuffer=0; left<nglobal_times||right<ntimes_in;){
     float minval;
 
     if(left>=nglobal_times){
