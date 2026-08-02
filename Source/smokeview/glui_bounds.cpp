@@ -4673,7 +4673,7 @@ void GLUIShowHideGeomDataCB(int var){
   int i;
   int nn=MIN(global_scase.meshescoll.nmeshes,256);
 
-  switch (var){
+  switch(var){
     case SHOW_ALL_MESH_GEOM:
       for(i=0; i<nn; i++){
         CHECKBOX_show_mesh_geom[i]->set_int_val(1);

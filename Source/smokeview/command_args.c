@@ -16,7 +16,7 @@
 
 const char *CLE_Message(enum CommandLineError cle, char *message){
   char message_local[80];
-  switch (cle){
+  switch(cle){
   case CLE_OK:
     return NULL;
     break;
