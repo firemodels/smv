@@ -6,8 +6,10 @@
 #include "zlib.h"
 #include "svzip.h"
 
-/* ------------------ CompressAllMT ------------------------ */
 #ifdef pp_THREAD
+
+/* ------------------ CompressAllMT ------------------------ */
+
 void CompressAllMT(void){
   int i;
   pthread_t *thread_ids;
@@ -36,7 +38,7 @@ void CompressAllMT(void){
 }
 #endif
 
-/* ------------------ init_all_threads ------------------------ */
+/* ------------------ InitPthreadMutexes ------------------------ */
 
 void InitPthreadMutexes(void){
 #ifdef pp_THREAD
@@ -82,5 +84,3 @@ void PrintThreadStats(void){
   }
 #endif
 }
-
-

@@ -836,7 +836,6 @@ void ReadINI2(char *inifile){
       partpropdata *partpropi;
       int type=1;
 
-
       if(Match(buffer,"V2_PARTICLES")==1)type = 1;
       fgets(buffer,BUFFERSIZE,stream);
       strcpy(buffer2,"");

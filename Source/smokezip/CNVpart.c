@@ -12,9 +12,7 @@
 #include "compress.h"
 #include "getdata.h"
 
-
 void Part2Iso(part *parti,int *thread_index);
-
 
 /* ------------------ GetPartPropIndex ------------------------ */
 
@@ -41,7 +39,6 @@ partpropdata *GetPartProp(char *string){
   }
   return NULL;
 }
-
 
 /* ------------------ ConvertParts2Iso ------------------------ */
 
@@ -125,7 +122,7 @@ void *ConvertParts2Iso(void *arg){
 
 #define IJKVAL(ix,iy,iz) ((ix) + (iy)*nx2 + (iz)*nx2*ny2)
 
-  /* ------------------ Part2Iso ------------------------ */
+/* ------------------ Part2Iso ------------------------ */
 
 void Part2Iso(part *parti, int *thread_index){
   float *pdata;

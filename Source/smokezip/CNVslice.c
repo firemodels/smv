@@ -15,7 +15,7 @@
                            returncode=fread(var,4,size,SLICEFILE);\
                            FSEEK(SLICEFILE,4,SEEK_CUR)
 
-/* ------------------ GetPatchBoundInfo ------------------------ */
+/* ------------------ GetSliceBoundInfo ------------------------ */
 
 bounddata *GetSliceBoundInfo(char *label){
   int i;
@@ -195,7 +195,6 @@ int ConvertVolSlice(slicedata *slicei, int *thread_index){
   }
 #endif
 
-
   {
     int skip;
 
@@ -215,7 +214,6 @@ int ConvertVolSlice(slicedata *slicei, int *thread_index){
     fwrite(&version_local,4,1,slicestream);
     fwrite(&completion,4,1,slicestream);
   }
-
 
   {
     int ni, nj, nk;
@@ -331,7 +329,7 @@ int ConvertVolSlice(slicedata *slicei, int *thread_index){
 
 }
 
-/* ------------------ ConvertSlice ------------------------ */
+/* ------------------ MakeSliceFile ------------------------ */
 
 void MakeSliceFile(char *slicefile, slicedata *slicei, char *ext){
   if(GLOBdestdir!=NULL){
@@ -349,8 +347,6 @@ void MakeSliceFile(char *slicefile, slicedata *slicei, char *ext){
 }
 
 /* ------------------ ConvertSlice ------------------------ */
-
-// unsigned int UnCompressRLE(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out)
 
 int ConvertSlice(slicedata *slicei, int *thread_index){
 
@@ -529,7 +525,6 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
     }
   }
 
-
   fwrite(&one,4,1,slicestream);           // write out a 1 to determine "endianness" when file is read in later
   fwrite(&zero,4,1,slicestream);          // write out a zero now, then a one just before file is closed
   fwrite(&fileversion,4,1,slicestream);   // write out compressed fileversion in case file format changes later
@@ -550,8 +545,6 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
   // time, compressed frame size
   // qq(1,nbuffer)              where nbuffer = (i2+1-i1)*(j2+1-j1)*(k2+1-k1)
 
-
-
   //*** ZLIB format (C - no extra bytes surrounding data)
 
   //*** header
@@ -562,11 +555,9 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
   // global min max (used to perform conversion)
   // i1,i2,j1,j2,k1,k2
 
-
   //*** frame
   // time, compressed frame size                        for each frame
   // compressed buffer
-
 
   //*** RLE format (FORTRAN)
 
@@ -575,7 +566,6 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
   // fileversion, slice version
   // global min max (used to perform conversion)
   // i1,i2,j1,j2,k1,k2
-
 
   //*** frame
   // time
@@ -602,7 +592,6 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
   fwrite(minmax,4,2,slicestream);    // min max vals
   fwrite(ijkbar,4,6,slicestream);
   sizeafter+=(8+24);
-
 
   ncompressed_save=1.02*framesize+600;
   if(NewMemory((void **)&sliceframe_data,ncompressed_save*sizeof(float))==0)goto wrapup;
@@ -632,7 +621,6 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
     ncol = ijkbar[3] + 1 - ijkbar[2];
     nrow = ijkbar[5] + 1 - ijkbar[4];
   }
-
 
   {
     int ni, nj, nk;
@@ -862,7 +850,6 @@ void *CompressSlices(void *arg){
   int *thread_index;
 
   thread_index = (int *)arg;
-
 
   if(nsliceinfo<=0)return NULL;
   LOCK_SLICE;

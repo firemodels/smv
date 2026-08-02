@@ -209,7 +209,6 @@ int ConvertBoundaryGEOM(patchdata *patchi, int *thread_index){
   sizeafter = 12;
   float denom, valmin, valmax, valminmax[2];
 
-
   valmin = patchi->valmin;
   valmax = patchi->valmax;
   denom = valmax - valmin;
@@ -470,7 +469,6 @@ int ConvertBoundaryBNDF(patchdata *patchi, int *thread_index){
     return 0;
   }
 
-
   // read and write boundary header
 #ifndef pp_THREAD
   PRINTF("Compressing %s (%s)\n",boundary_file,filetype);
@@ -491,7 +489,6 @@ int ConvertBoundaryBNDF(patchdata *patchi, int *thread_index){
   PRINTF(" max=%s %s\n",cval,units);
 #endif
 
-
   fwrite(&one,4,1,boundarystream);           // write out a 1 to determine "endianness" when file is read in later
   fwrite(&zero,4,1,boundarystream);          // write out a zero now, then a one just before file is closed
   fwrite(&fileversion,4,1,boundarystream);   // write out compressed fileversion in case file format changes later
@@ -509,7 +506,6 @@ int ConvertBoundaryBNDF(patchdata *patchi, int *thread_index){
   // time_local
   // compressed size of frame
   // compressed buffer
-
 
   {
     int skip;

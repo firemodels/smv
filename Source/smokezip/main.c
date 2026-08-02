@@ -104,7 +104,6 @@ int main(int argc, char **argv){
 
   strcpy(GLOBpp,"%");
   strcpy(GLOBx,"X");
-  GLOBfirst_initsphere=1;
   GLOBfirst_slice=1;
   GLOBfirst_patch=1;
   GLOBfirst_part2iso=1;
@@ -116,7 +115,6 @@ int main(int argc, char **argv){
   GLOBno_chop=0;
   GLOBmake_demo=0;
   GLOBsyst=0;
-  GLOBendianfile=NULL;
   GLOBdestdir=NULL;
   GLOBsourcedir=NULL;
   GLOBoverwrite_b=0;

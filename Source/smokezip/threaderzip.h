@@ -23,7 +23,6 @@ typedef struct {
   char label[256];
 } threaddata;
 
-
 // setup LOCKS
 
 #ifdef pp_THREAD

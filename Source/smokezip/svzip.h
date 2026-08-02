@@ -58,11 +58,9 @@
                            if(returncode!=count||returncode==0)break;\
                            if(option==1){FSEEK(STREAM,4,SEEK_CUR);}
 
-
 //***********************
 //************* structures
 //***********************
-
 
 /* --------------------------  volrenderdata ------------------------------------ */
 
@@ -211,7 +209,6 @@ typedef struct {
 #define BOUND(x,xmin,xmax) (((x)<(xmin))?(xmin):((x)>(xmax))?(xmax):(x))
 #define GET_INTERVAL(xyz,xyz0,dxyz) (((xyz)-(xyz0))/(dxyz))
 
-
 //***********************
 //************* headers
 //***********************
@@ -248,7 +245,7 @@ EXTERN int GLOBdoit_smoke3d, GLOBdoit_boundary, GLOBdoit_slice, GLOBdoit_volslic
 
 EXTERN FILE *SMZLOG_STREAM;
 
-EXTERN int GLOBfirst_initsphere,GLOBfirst_slice,GLOBfirst_patch,GLOBfirst_part2iso,GLOBfirst_part2iso_smvopen;
+EXTERN int GLOBfirst_slice,GLOBfirst_patch,GLOBfirst_part2iso,GLOBfirst_part2iso_smvopen;
 EXTERN int GLOBframeskip;
 EXTERN int GLOBno_chop;
 
@@ -262,7 +259,6 @@ EXTERN part *partinfo;
 EXTERN partclassdata *partclassinfo;
 EXTERN partpropdata *part5propinfo;
 EXTERN threaddata *threadinfo;
-EXTERN spherepoints sphereinfo;
 EXTERN char *smvzip_filename;
 
 EXTERN int npatchinfo, nsliceinfo, npartinfo;
@@ -281,7 +277,6 @@ EXTERN char GLOBpp[2],GLOBx[2];
 EXTERN int GLOBsmoke3dzipstep, GLOBboundzipstep, GLOBslicezipstep;
 EXTERN int GLOBfilesremoved;
 EXTERN int GLOBsyst;
-EXTERN char *GLOBendianfile;
 EXTERN int GLOBmake_demo;
 EXTERN int GLOBpartfile2iso;
 EXTERN char GLOBsmvisofile[1024];
