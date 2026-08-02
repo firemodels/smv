@@ -57,7 +57,7 @@ int main(int argc, char **argv){
     PRINTVERSION("pnginfo", &opts);
     return 0;
   }
-  for(i=1;i<argc;i++){
+  for(i=1; i<argc; i++){
     size_t lenarg;
     char *arg;
 
@@ -149,7 +149,7 @@ int main(int argc, char **argv){
         if(strlen((char *)revision_data) >= 4){
           if(strncmp((char *)revision_data, "<br>", 4) == 0)ibeg = 4;
         }
-        for(i = ibeg; i < strlen((char *)revision_data); i++){
+        for(i=ibeg; i<strlen((char *)revision_data); i++){
           if((char)revision_data[i] == '\n'){
             printf("<br>");
           }
@@ -220,10 +220,10 @@ int main(int argc, char **argv){
     RENDERimage = gdImageCreateTrueColor(width, height);
 
     int count = 0;
-    for(i = 0; i < height; i++){
+    for(i=0; i<height; i++){
       int j;
 
-      for(j = 0; j < width; j++){
+      for(j=0; j<width; j++){
         unsigned char r, g, b;
         unsigned int rgb_local;
 
