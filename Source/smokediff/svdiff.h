@@ -12,7 +12,6 @@
 
 #include "string_util.h"
 
-
 #ifdef _WIN32
 #define STDCALLF extern void _stdcall
 #else
@@ -102,7 +101,6 @@ void DiffBoundarYes(FILE *stream_out);
 void DiffSlices(FILE *stream_out);
 void DiffPlot3Ds(FILE *stream_out);
 int SimilarGrid(meshdata *mesh1, meshdata *mesh2, int *factor);
-int ExactGrid(meshdata *mesh1, meshdata *mesh2, int *factor);
 int GetPatchIndex(int in1, boundary *boundaryin, boundary *boundaryout);
 
 //************************** global variables ****************************************

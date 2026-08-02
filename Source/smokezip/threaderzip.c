@@ -6,8 +6,10 @@
 #include "zlib.h"
 #include "svzip.h"
 
-/* ------------------ CompressAllMT ------------------------ */
 #ifdef pp_THREAD
+
+/* ------------------ CompressAllMT ------------------------ */
+
 void CompressAllMT(void){
   int i;
   pthread_t *thread_ids;
@@ -17,13 +19,13 @@ void CompressAllMT(void){
   NewMemory((void **)&index,mt_nthreads*sizeof(int));
   NewMemory((void **)&threadinfo,mt_nthreads*sizeof(threaddata));
 
-  for(i=0;i<mt_nthreads;i++){
+  for(i=0; i<mt_nthreads; i++){
     index[i]=i;
     pthread_create(&thread_ids[i],NULL,CompressAll,&index[i]);
     threadinfo[i].stat=-1;
   }
 
-  for(i=0;i<mt_nthreads;i++){
+  for(i=0; i<mt_nthreads; i++){
     pthread_join(thread_ids[i],NULL);
   }
   if(GLOBcleanfiles == 0){
@@ -36,7 +38,7 @@ void CompressAllMT(void){
 }
 #endif
 
-/* ------------------ init_all_threads ------------------------ */
+/* ------------------ InitPthreadMutexes ------------------------ */
 
 void InitPthreadMutexes(void){
 #ifdef pp_THREAD
@@ -62,14 +64,14 @@ void PrintThreadStats(void){
   int lastthread;
 
   sum=0;
-  for(i=0;i<mt_nthreads;i++){
+  for(i=0; i<mt_nthreads; i++){
     if(threadinfo[i].stat>0){
       sum++;
       lastthread=i;
     }
   }
   if(sum>0){
-    for(i=0;i<mt_nthreads;i++){
+    for(i=0; i<mt_nthreads; i++){
       threaddata *ti;
 
       ti = threadinfo+i;
@@ -82,5 +84,3 @@ void PrintThreadStats(void){
   }
 #endif
 }
-
-

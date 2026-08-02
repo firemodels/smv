@@ -7,7 +7,7 @@
 #include "file_util.h"
 #include "getdata.h"
 
-/* ------------------ setup_slice ------------------------ */
+/* ------------------ SetupBoundary ------------------------ */
 
 void SetupBoundary(FILE *stream_out){
   casedata *case1, *case2;
@@ -16,7 +16,7 @@ void SetupBoundary(FILE *stream_out){
   case1 = caseinfo;
   case2 = caseinfo + 1;
 
-  for(i=0;i<case1->nboundary_files;i++){
+  for(i=0; i<case1->nboundary_files; i++){
     boundary *boundaryi;
 
     boundaryi = case1->boundaryinfo + i;
@@ -34,7 +34,7 @@ void SetupBoundary(FILE *stream_out){
   }
 }
 
-/* ------------------ getboundary ------------------------ */
+/* ------------------ GetBoundary ------------------------ */
 
 boundary *GetBoundary(boundary *boundaryin, casedata *case2){
   int i,j;
@@ -42,7 +42,7 @@ boundary *GetBoundary(boundary *boundaryin, casedata *case2){
   if(strlen(type_label)>0&&strcmp(type_label,boundaryin->label.shortlabel)!=0){
     return NULL;
   }
-  for(i=0;i<case2->nboundary_files;i++){
+  for(i=0; i<case2->nboundary_files; i++){
     boundary *boundaryout;
     int *patch2index;
     int nmatches=0;
@@ -52,7 +52,7 @@ boundary *GetBoundary(boundary *boundaryin, casedata *case2){
     if(strcmp(boundaryin->label.longlabel,boundaryout->label.longlabel)!=0)continue;
     if(MeshMatch(boundaryin->boundarymesh,boundaryout->boundarymesh)==0)continue;
     patch2index=boundaryin->patch2index;
-    for(j=0;j<boundaryin->npatches;j++){
+    for(j=0; j<boundaryin->npatches; j++){
       patch2index[j]=GetPatchIndex(j,boundaryin,boundaryout);
       if(patch2index[j]!=-1)nmatches++;
     }
@@ -63,7 +63,7 @@ boundary *GetBoundary(boundary *boundaryin, casedata *case2){
   return NULL;
 }
 
-/* ------------------ getpatchindex ------------------------ */
+/* ------------------ GetPatchIndex ------------------------ */
 
 int GetPatchIndex(int in1, boundary *boundaryin, boundary *boundaryout){
   int j;
@@ -87,7 +87,7 @@ int GetPatchIndex(int in1, boundary *boundaryin, boundary *boundaryout){
   pk2 = boundaryout->pk2;
   patchdir2 = boundaryout->patchdir;
 
-  for(j=0;j<boundaryout->npatches;j++){
+  for(j=0; j<boundaryout->npatches; j++){
     if(i1!=pi1[j]||i2!=pi2[j])continue;
     if(j1!=pj1[j]||j2!=pj2[j])continue;
     if(k1!=pk1[j]||k2!=pk2[j])continue;
@@ -97,13 +97,13 @@ int GetPatchIndex(int in1, boundary *boundaryin, boundary *boundaryout){
   return -1;
 }
 
-/* ------------------ diff_slices ------------------------ */
+/* ------------------ DiffBoundarYes ------------------------ */
 
 void DiffBoundarYes(FILE *stream_out){
   int j;
   int file_size;
 
-  for(j=0;j<caseinfo->nboundary_files;j++){
+  for(j=0; j<caseinfo->nboundary_files; j++){
     char *file1, *file2;
     char fullfile1[1024], fullfile2[1024], outfile[1024], outfile2[1024];
     boundary *boundaryi, *boundary1, *boundary2;
@@ -140,7 +140,7 @@ void DiffBoundarYes(FILE *stream_out){
     nsize1=0;
     nsize3=0;
     npatches3=0;
-    for(i=0;i<boundary1->npatches;i++){
+    for(i=0; i<boundary1->npatches; i++){
       nsize1+=boundary1->patchsize[i];
       if(boundary1->patch2index[i]!=-1){
         npatches3++;
@@ -155,7 +155,7 @@ void DiffBoundarYes(FILE *stream_out){
     p2k2 = boundary2->pk2;
 
     nsize2=0;
-    for(i=0;i<boundary2->npatches;i++){
+    for(i=0; i<boundary2->npatches; i++){
       nsize2+=boundary2->patchsize[i];
     }
 
@@ -204,7 +204,7 @@ void DiffBoundarYes(FILE *stream_out){
       float valmin_percentile, valmax_percentile;
 
       ii=0;
-      for(i=0;i<boundary1->npatches;i++){
+      for(i=0; i<boundary1->npatches; i++){
         int jj;
 
         jj = boundary1->patch2index[i];
@@ -245,7 +245,7 @@ void DiffBoundarYes(FILE *stream_out){
         if(error1!=0||error2!=0)break;
 
         while(patchtime1>patchtime2b){
-          for(i=0;i<nsize2;i++){
+          for(i=0; i<nsize2; i++){
             pqq2a[i]=pqq2b[i];
           }
           patchtime2a=patchtime2b;
@@ -261,12 +261,12 @@ void DiffBoundarYes(FILE *stream_out){
           f1 = (patchtime2b - patchtime1)/dt;
           f2 = (patchtime1-patchtime2a)/dt;
         }
-        for(i=0;i<nsize2;i++){
+        for(i=0; i<nsize2; i++){
           pqq2out[i]=f1*pqq2a[i]+f2*pqq2b[i];
         }
 
         iq=0;
-        for(i=0;i<boundary1->npatches;i++){
+        for(i=0; i<boundary1->npatches; i++){
           int jj, kk;
           float *pq1, *pq2;
 
@@ -275,7 +275,7 @@ void DiffBoundarYes(FILE *stream_out){
 
           pq1 = pqq1 + boundary1->qoffset[i];
           pq2 = pqq2out + boundary2->qoffset[jj];
-          for(kk=0;kk<boundary1->patchsize[i];kk++){
+          for(kk=0; kk<boundary1->patchsize[i]; kk++){
             pqq3[iq++]=pq1[kk]-pq2[kk];
             if(pq1[kk]<valmin)valmin=pq1[kk];
             if(pq1[kk]>valmax)valmax=pq1[kk];

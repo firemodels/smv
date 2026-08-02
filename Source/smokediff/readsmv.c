@@ -85,7 +85,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
     int i;
 
     NewMemory((void **)&sliceinfo,nsliceinfo*sizeof(slice));
-    for(i=0;i<nsliceinfo;i++){
+    for(i=0; i<nsliceinfo; i++){
       slicei = sliceinfo + i;
       slicei->file=NULL;
     }
@@ -100,7 +100,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
     int i;
 
     NewMemory((void **)&boundaryinfo,nboundary_files*sizeof(boundary));
-    for(i=0;i<nboundary_files;i++){
+    for(i=0; i<nboundary_files; i++){
       boundaryi = boundaryinfo + i;
       boundaryi->file=NULL;
     }
@@ -202,14 +202,14 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
         fprintf(stream_out,"%s\n",buffer);
       }
       sscanf(buffer,"%i ",&idummy);
-      for(nn=0;nn<idummy;nn++){
+      for(nn=0; nn<idummy; nn++){
         FGETS(buffer,255,streamsmv);
         if(stream_out!=NULL){
           TrimBack(buffer);
           fprintf(stream_out,"%s\n",buffer);
         }
       }
-      for(nn=0;nn<=ibar;nn++){
+      for(nn=0; nn<=ibar; nn++){
         FGETS(buffer,255,streamsmv);
         if(stream_out!=NULL){
           TrimBack(buffer);
@@ -247,14 +247,14 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
         fprintf(stream_out,"%s\n",buffer);
       }
       sscanf(buffer,"%i ",&idummy);
-      for(nn=0;nn<idummy;nn++){
+      for(nn=0; nn<idummy; nn++){
         FGETS(buffer,255,streamsmv);
         if(stream_out!=NULL){
           TrimBack(buffer);
           fprintf(stream_out,"%s\n",buffer);
         }
       }
-      for(nn=0;nn<=jbar;nn++){
+      for(nn=0; nn<=jbar; nn++){
         FGETS(buffer,255,streamsmv);
         if(stream_out!=NULL){
           TrimBack(buffer);
@@ -291,14 +291,14 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
         fprintf(stream_out,"%s\n",buffer);
       }
       sscanf(buffer,"%i ",&idummy);
-      for(nn=0;nn<idummy;nn++){
+      for(nn=0; nn<idummy; nn++){
         FGETS(buffer,255,streamsmv);
         if(stream_out!=NULL){
           TrimBack(buffer);
           fprintf(stream_out,"%s\n",buffer);
         }
       }
-      for(nn=0;nn<=kbar;nn++){
+      for(nn=0; nn<=kbar; nn++){
         FGETS(buffer,255,streamsmv);
         if(stream_out!=NULL){
           TrimBack(buffer);
@@ -343,7 +343,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
         int i;
 
         NewMemory((void **)&plot3di->file,(unsigned int)(strlen(full_file)+1));
-        for(i = 0; i < 5; i++){
+        for(i=0; i<5; i++){
           NewMemory((void **)&plot3di->histogram[i], sizeof(histogramdata));
           InitHistogram(plot3di->histogram[i],NHIST_BUCKETS, NULL, NULL);
         }
@@ -549,7 +549,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
           boundaryi->patchsize=patchsize;
           boundaryi->qoffset=qoffset;
           getboundaryheader2(boundaryunitnumber, version_local, npatches, pi1, pi2, pj1, pj2, pk1, pk2, patchdir);
-          for(i=0;i<npatches;i++){
+          for(i=0; i<npatches; i++){
             boundaryi->patchsize[i] = (pi2[i]+1-pi1[i])*(pj2[i]+1-pj1[i])*(pk2[i]+1-pk1[i]);
             if(i==0){
               boundaryi->qoffset[i]=0;
@@ -604,7 +604,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
 
         FGETS(buffer,255,streamsmv);
         sscanf(buffer,"%i",&nlines);
-        for(i=0;i<nlines;i++){
+        for(i=0; i<nlines; i++){
           FGETS(buffer,255,streamsmv);
         }
       }
@@ -616,7 +616,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
       if(Match(comm,"TISOF")==1){
         int i;
 
-        for(i=0;i<3;i++){
+        for(i=0; i<3; i++){
           FGETS(buffer,255,streamsmv);
         }
       }
@@ -633,4 +633,3 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
   }
   return 0;
 }
-

@@ -8,7 +8,7 @@
 #include "dmalloc.h"
 #include "datadefs.h"
 
-/* ------------------ mesh_match ------------------------ */
+/* ------------------ MeshMatch ------------------------ */
 
 int MeshMatch(meshdata *mesh1, meshdata *mesh2){
   int ibar, jbar, kbar;
@@ -28,7 +28,7 @@ int MeshMatch(meshdata *mesh1, meshdata *mesh2){
   return 1;
 }
 
-/* ------------------ similar_grid ------------------------ */
+/* ------------------ SimilarGrid ------------------------ */
 
 int SimilarGrid(meshdata *mesh1, meshdata *mesh2, int *factor){
 
@@ -52,22 +52,5 @@ int SimilarGrid(meshdata *mesh1, meshdata *mesh2, int *factor){
   factor[2] = mesh2->kbar/mesh1->kbar;
   if(mesh1->kbar*factor[2]!=mesh2->kbar)return 0;
 
-  return 1;
-}
-
-/* ------------------ exact_grid ------------------------ */
-
-int ExactGrid(meshdata *mesh1, meshdata *mesh2, int *factor){
-  float eps;
-
-  factor[0]=1;
-  factor[1]=1;
-  factor[2]=1;
-  eps = mesh1->dx/1000.0;
-  if(ABS(mesh1->dx-mesh2->dx)>eps)return 0;
-  eps = mesh1->dy/1000.0;
-  if(ABS(mesh1->dy-mesh2->dy)>eps)return 0;
-  eps = mesh1->dz/1000.0;
-  if(ABS(mesh1->dz-mesh2->dz)>eps)return 0;
   return 1;
 }

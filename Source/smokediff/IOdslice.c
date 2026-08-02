@@ -18,7 +18,7 @@ void SetupSlice(FILE *stream_out){
   case1 = caseinfo;
   case2 = caseinfo + 1;
 
-  for(i=0;i<case1->nsliceinfo;i++){
+  for(i=0; i<case1->nsliceinfo; i++){
     slice *slicei;
 
     slicei = case1->sliceinfo + i;
@@ -48,7 +48,7 @@ slice *GetSlice(slice *slicein, casedata *case2){
   if(strlen(type_label)>0&&strcmp(type_label,slicein->label.shortlabel)!=0){
     return NULL;
   }
-  for(i=0;i<case2->nsliceinfo;i++){
+  for(i=0; i<case2->nsliceinfo; i++){
     slice *sliceout;
 
     sliceout = case2->sliceinfo + i;
@@ -71,7 +71,7 @@ slice *GetSlice(slice *slicein, casedata *case2){
 void DiffSlices(FILE *stream_out){
   int j;
 
-  for(j=0;j<caseinfo->nsliceinfo;j++){
+  for(j=0; j<caseinfo->nsliceinfo; j++){
     float valmin, valmax;
     char *file1, *file2;
     char fullfile1[1024], fullfile2[1024], outfile[1024], outfile_bnd[1024], outfile2[1024];
@@ -199,7 +199,7 @@ void DiffSlices(FILE *stream_out){
         FFLUSH();
       }
       while(time1>time2b){
-        for(i=0;i<nqframe2;i++){
+        for(i=0; i<nqframe2; i++){
           qframe2a[i]=qframe2b[i];
         }
         time2a=time2b;
@@ -221,7 +221,7 @@ void DiffSlices(FILE *stream_out){
 
       // ijk2 = k*nx2*ny2 + j*nx2 + i
 
-      for(i=0;i<nqframe1;i++){
+      for(i=0; i<nqframe1; i++){
         int i1, jj1, k1;
         int i2, j2, k2;
         int ijk2;

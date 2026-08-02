@@ -69,7 +69,7 @@ int ReadSMV(char *smvfile){
       FGETS(buffer,BUFFERSIZE,streamsmv);
       sscanf(buffer,"%i",&nclasses);
       if(nclasses>0)maxpart5propinfo+=nclasses;
-      for(i=0;i<nclasses;i++){
+      for(i=0; i<nclasses; i++){
         FGETS(buffer,BUFFERSIZE,streamsmv);
       }
       continue;
@@ -123,7 +123,7 @@ int ReadSMV(char *smvfile){
     int i;
 
     NewMemory((void **)&smoke3dinfo,nsmoke3dinfo*sizeof(smoke3d));
-    for(i=0;i<nsmoke3dinfo;i++){
+    for(i=0; i<nsmoke3dinfo; i++){
       smoke3di = smoke3dinfo + i;
       smoke3di->file=NULL;
       smoke3di->filebase=NULL;
@@ -138,7 +138,7 @@ int ReadSMV(char *smvfile){
 
     NewMemory((void **)&patchinfo,  npatchinfo*sizeof(patchdata));
     NewMemory((void **)&patchbounds,npatchinfo*sizeof(bounddata));
-    for(i=0;i<npatchinfo;i++){
+    for(i=0; i<npatchinfo; i++){
       patchi = patchinfo + i;
       patchi->file=NULL;
       patchi->filebase=NULL;
@@ -162,7 +162,7 @@ int ReadSMV(char *smvfile){
 
     NewMemory((void **)&slicebounds, nsliceinfo*sizeof(bounddata));
     NewMemory((void **)&sliceinfo,   nsliceinfo*sizeof(slicedata));
-    for(i=0;i<nsliceinfo;i++){
+    for(i=0; i<nsliceinfo; i++){
       slicei = sliceinfo + i;
       slicei->file=NULL;
       slicei->filebase=NULL;
@@ -188,7 +188,7 @@ int ReadSMV(char *smvfile){
     int i;
 
     NewMemory((void **)&partinfo,npartinfo*sizeof(part));
-    for(i=0;i<npartinfo;i++){
+    for(i=0; i<npartinfo; i++){
       parti = partinfo + i;
       parti->file=NULL;
       parti->filebase=NULL;
@@ -360,7 +360,7 @@ int ReadSMV(char *smvfile){
       sscanf(buffer,"%i",&partclassi->ntypes);
       if(partclassi->ntypes>0){
         NewMemory((void **)&partclassi->labels,partclassi->ntypes*sizeof(flowlabels));
-        for(j=0;j<partclassi->ntypes;j++){
+        for(j=0; j<partclassi->ntypes; j++){
           flowlabels *labelj;
           partpropdata *part5propi;
 
@@ -448,7 +448,7 @@ int ReadSMV(char *smvfile){
       else{
         parti->nclasses=0;
       }
-      for(i=0;i<parti->nclasses;i++){
+      for(i=0; i<parti->nclasses; i++){
         int classindex;
 
         if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
@@ -542,7 +542,7 @@ int ReadSMV(char *smvfile){
             patchi->npatches=npatches;
             patchi->patchsize=patchsize;
             getboundaryheader2(boundaryunitnumber, version_local, npatches, pi1, pi2, pj1, pj2, pk1, pk2, patchdir);
-            for(i=0;i<npatches;i++){
+            for(i=0; i<npatches; i++){
               patchi->patchsize[i] = (pi2[i]+1-pi1[i])*(pj2[i]+1-pj1[i])*(pk2[i]+1-pk1[i]);
             }
             CheckMemory;
@@ -641,7 +641,7 @@ int ReadSMV(char *smvfile){
   {
     int i;
 
-    for(i=0;i<nmeshes;i++){
+    for(i=0; i<nmeshes; i++){
       meshdata *meshi;
       int ii, jj, kk;
       float *xplt, *yplt, *zplt;
@@ -658,7 +658,7 @@ int ReadSMV(char *smvfile){
       meshi->xplt=NULL;
       NewMemory((void **)&meshi->xplt,(meshi->ibar+1)*sizeof(float));
       xplt = meshi->xplt;
-      for(ii=0;ii<meshi->ibar;ii++){
+      for(ii=0; ii<meshi->ibar; ii++){
         xplt[ii] = meshi->xbar0 + ii*meshi->dx;
       }
       xplt[meshi->ibar]=meshi->xbar;
@@ -667,7 +667,7 @@ int ReadSMV(char *smvfile){
       meshi->xpltcell=NULL;
       NewMemory((void **)&meshi->xpltcell,(meshi->ibar+2)*sizeof(float));
       xpltcell = meshi->xpltcell+1;
-      for(ii=-1;ii<meshi->ibar+1;ii++){
+      for(ii=-1; ii<meshi->ibar+1; ii++){
         xpltcell[ii] = meshi->xbar0 + (ii+0.5)*meshi->dx;
       }
       CheckMemory;
@@ -675,7 +675,7 @@ int ReadSMV(char *smvfile){
       meshi->yplt=NULL;
       NewMemory((void **)&meshi->yplt,(meshi->jbar+1)*sizeof(float));
       yplt = meshi->yplt;
-      for(jj=0;jj<meshi->jbar;jj++){
+      for(jj=0; jj<meshi->jbar; jj++){
         yplt[jj] = meshi->ybar0 + jj*meshi->dy;
       }
       yplt[meshi->jbar]=meshi->ybar;
@@ -684,7 +684,7 @@ int ReadSMV(char *smvfile){
       meshi->ypltcell=NULL;
       NewMemory((void **)&meshi->ypltcell,(meshi->jbar+2)*sizeof(float));
       ypltcell = meshi->ypltcell+1;
-      for(ii=-1;ii<meshi->jbar+1;ii++){
+      for(ii=-1; ii<meshi->jbar+1; ii++){
         ypltcell[ii] = meshi->ybar0 + (ii+0.5)*meshi->dy;
       }
       CheckMemory;
@@ -692,7 +692,7 @@ int ReadSMV(char *smvfile){
       meshi->zplt=NULL;
       NewMemory((void **)&meshi->zplt,(meshi->kbar+1)*sizeof(float));
       zplt = meshi->zplt;
-      for(kk=0;kk<meshi->kbar;kk++){
+      for(kk=0; kk<meshi->kbar; kk++){
         zplt[kk] = meshi->zbar0 + kk*meshi->dz;
       }
       zplt[meshi->kbar]=meshi->zbar;
@@ -701,7 +701,7 @@ int ReadSMV(char *smvfile){
       meshi->zpltcell=NULL;
       NewMemory((void **)&meshi->zpltcell,(meshi->kbar+2)*sizeof(float));
       zpltcell = meshi->zpltcell+1;
-      for(ii=-1;ii<meshi->kbar+1;ii++){
+      for(ii=-1; ii<meshi->kbar+1; ii++){
         zpltcell[ii] = meshi->zbar0 + (ii+0.5)*meshi->dz;
       }
       CheckMemory;
@@ -835,7 +835,6 @@ void ReadINI2(char *inifile){
       float partmin, partmax;
       partpropdata *partpropi;
       int type=1;
-
 
       if(Match(buffer,"V2_PARTICLES")==1)type = 1;
       fgets(buffer,BUFFERSIZE,stream);

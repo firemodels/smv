@@ -59,7 +59,7 @@ int ReadSMV(char *smvfile){
     int i;
 
     NewMemory((void **)&sliceinfo,   nsliceinfo*sizeof(slicedata));
-    for(i=0;i<nsliceinfo;i++){
+    for(i=0; i<nsliceinfo; i++){
       slicei = sliceinfo + i;
       slicei->file=NULL;
       slicei->filebase=NULL;
@@ -69,7 +69,7 @@ int ReadSMV(char *smvfile){
     int i;
 
     NewMemory((void **)&meshinfo, nmeshinfo * sizeof(meshdata));
-    for(i = 0; i < nmeshinfo; i++){
+    for(i=0; i<nmeshinfo; i++){
       meshdata *meshi;
 
       meshi = meshinfo + i;
@@ -81,7 +81,6 @@ int ReadSMV(char *smvfile){
       meshi->kbar = 0;
     }
   }
-
 
   // read in smv file a second time
 
@@ -130,7 +129,7 @@ int ReadSMV(char *smvfile){
         vals = meshi->zplt;
       }
       if(FGETS(buffer, BUFFERSIZE, streamsmv) == NULL)break;
-      for(i = 0; i <= nvals; i++){
+      for(i=0; i<=nvals; i++){
         if(FGETS(buffer, BUFFERSIZE, streamsmv) == NULL)break;
         sscanf(buffer, "%i %f", &dummy, vals + i);
       }
@@ -238,7 +237,7 @@ int MatchFED(slicedata *slicei, slicedata *slicej){
   return 1;
 }
 
-/* ------------------ MakeFEDSliceFileName ------------------------ */
+/* ------------------ MakeFEDFileNames ------------------------ */
 
 void MakeFEDFileNames(char *fedslicefile, char *fedisofile, char *bndfedfile, char *slicefile){
   char *ext;
@@ -265,7 +264,7 @@ void AddSlice(slicedata *slicei){
   feddata *fedi;
   int i;
 
-  for(i = 0;i < nfedinfo;i++){
+  for(i=0; i<nfedinfo; i++){
     fedi = fedinfo + i;
     if(fedi->co != NULL && slicei != fedi->co && MatchFED(slicei, fedi->co)==1){
       if(slicei->quant == O2)fedi->o2 = slicei;
@@ -312,7 +311,7 @@ void MakeFEDSmv(char *file){
   if(stream == NULL)return;
 
   nfedisos = 0;
-  for(i = 0;i < nfedinfo;i++){
+  for(i=0; i<nfedinfo; i++){
     feddata *fedi;
     slicedata *fed=NULL;
 
@@ -346,7 +345,7 @@ void MakeFED(void){
   nfedinfo = 0;
   if(nsliceinfo == 0)return;
   NewMemory((void **)&fedinfo, nsliceinfo * sizeof(feddata));
-  for(i = 0;i < nsliceinfo; i++){
+  for(i=0; i<nsliceinfo; i++){
     feddata *fedi;
 
     fedi      = fedinfo + i;
@@ -354,7 +353,7 @@ void MakeFED(void){
     fedi->co2 = NULL;
     fedi->o2  = NULL;
   }
-  for(i = 0;i < nsliceinfo;i++){
+  for(i=0; i<nsliceinfo; i++){
     slicedata *slicei;
 
     slicei = sliceinfo + i;
@@ -424,7 +423,7 @@ void ReadSlice(slicedata *slicei){
   STREAM = FOPEN(slicei->file, "rb");
   if(STREAM == NULL)return;
   FSEEK(STREAM, slicei->headersize, SEEK_CUR);
-  for(i = 0; i < slicei->nframes; i++){
+  for(i=0; i<slicei->nframes; i++){
     FORTREAD(slicei->times + i, 1, STREAM);
     FORTREAD(slicei->vals + i*slicei->memframesize, slicei->memframesize, STREAM);
   }
@@ -475,7 +474,7 @@ void MakeFEDIso(feddata *fedi){
   nz = isomesh->kbar + 1;
 
   CCIsoHeader(fedi->iso_file, "Fractional effective dose", "FED", "", levels, &nlevels, &error_local);
-  for(i = 0; i < fedi->nframes; i++){
+  for(i=0; i<fedi->nframes; i++){
     float *vals;
 
     vals = fedi->vals + i * fedi->memframesize;
@@ -534,7 +533,7 @@ void MakeFEDSlice(feddata *fedi){
     NewMemory((void **)&vals, fedi->nframes * fedi->memframesize * sizeof(float));
     fedi->times = times;
     fedi->vals = vals;
-    for(i = 0; i < fedi->memframesize; i++){
+    for(i=0; i<fedi->memframesize; i++){
       vals[i] = 0.0;
     }
     valmin  = 0.0;
@@ -543,7 +542,7 @@ void MakeFEDSlice(feddata *fedi){
     hvco20  = HVCO2(0.0);
     fedco0  = FEDCO(0.0);
     memcpy(fedi->times, timesfrom, fedi->nframes * sizeof(float));
-    for(i = 1; i < fedi->nframes; i++){
+    for(i=1; i<fedi->nframes; i++){
       int j;
       float dt, *vali, *valim1;
       float *coi=NULL, *co2i=NULL, *o2i=NULL;
@@ -554,7 +553,7 @@ void MakeFEDSlice(feddata *fedi){
       if(fedi->co!=NULL)coi   = fedi->co->vals  + i*fedi->memframesize;
       if(fedi->co2!=NULL)co2i = fedi->co2->vals + i*fedi->memframesize;
       if(fedi->o2!=NULL)o2i   = fedi->o2->vals  + i*fedi->memframesize;
-      for(j=0;j<fedi->memframesize;j++){
+      for(j=0; j<fedi->memframesize; j++){
         float fedval, fedo2, hvco2, fedco;
 
         fedco  = fedco0;
@@ -588,7 +587,7 @@ void MakeFEDSlices(void){
 
   if(nfedinfo == 0)printf("no fed slices were found\n");
   if(nfedisos == 0)printf("no fed isosurfaces were found\n");
-  for(i = 0; i < nfedinfo; i++){
+  for(i=0; i<nfedinfo; i++){
     feddata *fedi;
     int output;
 

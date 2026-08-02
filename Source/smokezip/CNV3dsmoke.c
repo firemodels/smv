@@ -24,13 +24,13 @@ void ReduceSmoke3D(unsigned char *full_alphabuffer, int *nxyz_in, int skip_smoke
   nz = nxyz_in[2];
   nxy = nx*ny;
 
-  for(k = 0;k < nz;k += skip_smokeplanes){
+  for(k=0; k<nz; k+=skip_smokeplanes){
     int j;
 
-    for(j = 0;j < ny;j += skip_smokeplanes){
+    for(j=0; j<ny; j+=skip_smokeplanes){
       int i;
-      
-      for(i = 0;i < nx;i+=skip_smokeplanes){
+
+      for(i=0; i<nx; i+=skip_smokeplanes){
 
         *full_alphabuffer_out = full_alphabuffer[IJKNODE(i, j, k)];
         full_alphabuffer_out++;
@@ -330,7 +330,7 @@ void Convert3DSmoke(smoke3d *smoke3di, int *thread_index){
   FREEMEMORY(compressed_alphabuffer);
 }
 
-/* ------------------ convert_smoke3ds ------------------------ */
+/* ------------------ Compress3DSmokes ------------------------ */
 
 void *Compress3DSmokes(void *arg){
   int i;
@@ -339,7 +339,7 @@ void *Compress3DSmokes(void *arg){
 
   thread_index = (int *)arg;
 
-  for(i=0;i<nsmoke3dinfo;i++){
+  for(i=0; i<nsmoke3dinfo; i++){
     smoke3di = smoke3dinfo + i;
     LOCK_SMOKE;
     if(smoke3di->inuse==1){

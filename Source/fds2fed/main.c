@@ -6,7 +6,7 @@
 #include <math.h>
 #include "fds2fed.h"
 
-/* ------------------ usage ------------------------ */
+/* ------------------ Usage ------------------------ */
 
 void Usage(int option){
   char githash[100];
@@ -53,7 +53,7 @@ int main(int argc, char **argv){
     PRINTVERSION("fds2fed ", &opts);
     return 0;
   }
-  for(i=1;i<argc;i++){
+  for(i=1; i<argc; i++){
     arg=argv[i];
     if(arg[0]=='-'&&strlen(arg)>1){
       switch(arg[1]){

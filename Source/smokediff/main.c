@@ -9,7 +9,7 @@
 #include "dmalloc.h"
 #include "stdio_buffer.h"
 
-/* ------------------ usage ------------------------ */
+/* ------------------ Usage ------------------------ */
 
 void Usage(int option){
   char githash[100];
@@ -89,7 +89,6 @@ int main(int argc, char **argv){
 
   NewMemory((void **)&caseinfo,2*sizeof(casedata));
 
-
  // check_histogram();
   test_mode=0;
   sourcedir1=NULL;
@@ -103,7 +102,7 @@ int main(int argc, char **argv){
   }
 
 /* -e{850} loop index i is modified within loop */
-  for(i=1;i<argc;i++){
+  for(i=1; i<argc; i++){
     arg=argv[i];
     if(arg[0]=='-'&&strlen(arg)>1){
       char *key;

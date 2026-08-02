@@ -53,7 +53,7 @@ int gettokens(char *tokens, char **tokenptrs){
     tokenptrs[ntokenptrs++]=token;
     token=strtok(NULL,",");
   }
-  for(i=0;i<ntokenptrs;i++){
+  for(i=0; i<ntokenptrs; i++){
     TrimBack(tokenptrs[i]);
     tokenptrs[i]=TrimFront(tokenptrs[i]);
   }
@@ -113,7 +113,7 @@ int main(int argc, char **argv){
    return 1;
   }
 
-  for(i=1;i<argc;i++){
+  for(i=1; i<argc; i++){
     arg=argv[i];
     if(strcmp(arg,"-wv")==0){
       is_sodar_file=0;
@@ -287,7 +287,7 @@ int main(int argc, char **argv){
 
   nlabelptrs=gettokens(labels,labelptrs);
   ntransfer=0;
-  for(i=0;i<nlabelptrs;i++){
+  for(i=0; i<nlabelptrs; i++){
     char *token;
 
     token=labelptrs[i];
@@ -343,7 +343,7 @@ int main(int argc, char **argv){
   if(c_maxdatetime_ptr!=NULL){
     fprintf(stream_out,"  //  maxdate: %s\n",c_maxdatetime_ptr);
   }
-  for(i=0;i<nlabelptrs;i++){
+  for(i=0; i<nlabelptrs; i++){
     char token2[256];
 
     strcpy(token2,"");
@@ -374,7 +374,7 @@ int main(int argc, char **argv){
   }
   fprintf(stream_out,"//DATA\n");
   itransfer=0;
-  for(i=0;i<nlabelptrs;i++){
+  for(i=0; i<nlabelptrs; i++){
     if(transfer[i]==1){
       fprintf(stream_out,"s,s");
       itransfer++;
@@ -403,7 +403,7 @@ int main(int argc, char **argv){
   }
   fprintf(stream_out,"\n");
   itransfer=0;
-  for(i=0;i<nlabelptrs;i++){
+  for(i=0; i<nlabelptrs; i++){
     char token2[256];
 
     strcpy(token2,"");
@@ -441,7 +441,7 @@ int main(int argc, char **argv){
     ndatalabelptrs=gettokens(datalabels,datalabelptrs);
     itransfer=0;
     skip_time=0;
-    for(i=0;i<ndatalabelptrs;i++){
+    for(i=0; i<ndatalabelptrs; i++){
       char *token;
 
       if(transfer[i]==0)continue;

@@ -18,7 +18,7 @@ void SetupPlot3D(FILE *stream_out){
   case1 = caseinfo;
   case2 = caseinfo + 1;
 
-  for(i=0;i<case1->nplot3dinfo;i++){
+  for(i=0; i<case1->nplot3dinfo; i++){
     plot3d *plot3di;
 
     plot3di = case1->plot3dinfo + i;
@@ -30,7 +30,7 @@ void SetupPlot3D(FILE *stream_out){
       fprintf(stream_out,"%s\n",plot3di->keyword);
       MakeOutFile(outfile,NULL,plot3di->file,".q");
       fprintf(stream_out," %s\n",outfile);
-      for(j=0;j<5;j++){
+      for(j=0; j<5; j++){
         flowlabels *label;
 
         label = plot3di->labels + j;
@@ -42,7 +42,7 @@ void SetupPlot3D(FILE *stream_out){
   }
 }
 
-/* ------------------ getplot3d ------------------------ */
+/* ------------------ GetPlot3D ------------------------ */
 
 plot3d *GetPlot3D(plot3d *plot3din, casedata *case2){
   int i;
@@ -54,7 +54,7 @@ plot3d *GetPlot3D(plot3d *plot3din, casedata *case2){
   dy = meshin->dy/2.0;
   dz = meshin->dz/2.0;
 
-  for(i=0;i<case2->nplot3dinfo;i++){
+  for(i=0; i<case2->nplot3dinfo; i++){
     plot3d *plot3dout_local;
     meshdata *meshout;
 
@@ -77,7 +77,7 @@ plot3d *GetPlot3D(plot3d *plot3din, casedata *case2){
   return NULL;
 }
 
-/* ------------------ diff_plot3ds ------------------------ */
+/* ------------------ DiffPlot3Ds ------------------------ */
 
 void DiffPlot3Ds(FILE *stream_out){
   int j;
@@ -85,7 +85,7 @@ void DiffPlot3Ds(FILE *stream_out){
   char fullfile1[1024], fullfile2[1024], outfile[1024], outfile2[1024];
   float valmin, valmax;
 
-  for(j=0;j<caseinfo->nplot3dinfo;j++){
+  for(j=0; j<caseinfo->nplot3dinfo; j++){
     plot3d *plot3di, *plot3d1, *plot3d2;
     float *qframe1, *qframe2, *qout;
     meshdata *plot3dmesh;
@@ -149,20 +149,20 @@ void DiffPlot3Ds(FILE *stream_out){
     PRINTF(" differencing data,");
     FFLUSH();
 
-    for(i=0;i<nq;i++){
+    for(i=0; i<nq; i++){
       qout[i]=qframe1[i]-qframe2[i];
     }
     nn=0;
     fprintf(stream_out,"MINMAXPL3D\n");
     fprintf(stream_out,"  %s\n",outfile2);
-    for(n=0;n<5;n++){
+    for(n=0; n<5; n++){
       int nvals;
       float valmin_percentile, valmax_percentile;
 
       valmin=1000000000.0;
       valmax=-valmin;
 
-      for(i=0;i<nq/5;i++){
+      for(i=0; i<nq/5; i++){
         if(qframe1[nn]<valmin)valmin=qframe1[nn];
         if(qframe1[nn]>valmax)valmax=qframe1[nn];
         nn++;
