@@ -89,7 +89,6 @@ int main(int argc, char **argv){
 
   NewMemory((void **)&caseinfo,2*sizeof(casedata));
 
-
  // check_histogram();
   test_mode=0;
   sourcedir1=NULL;

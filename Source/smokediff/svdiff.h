@@ -12,7 +12,6 @@
 
 #include "string_util.h"
 
-
 #ifdef _WIN32
 #define STDCALLF extern void _stdcall
 #else
