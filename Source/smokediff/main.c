@@ -9,7 +9,7 @@
 #include "dmalloc.h"
 #include "stdio_buffer.h"
 
-/* ------------------ usage ------------------------ */
+/* ------------------ Usage ------------------------ */
 
 void Usage(int option){
   char githash[100];

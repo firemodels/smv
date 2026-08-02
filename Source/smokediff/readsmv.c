@@ -633,4 +633,3 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
   }
   return 0;
 }
-

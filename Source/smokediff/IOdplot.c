@@ -42,7 +42,7 @@ void SetupPlot3D(FILE *stream_out){
   }
 }
 
-/* ------------------ getplot3d ------------------------ */
+/* ------------------ GetPlot3D ------------------------ */
 
 plot3d *GetPlot3D(plot3d *plot3din, casedata *case2){
   int i;
@@ -77,7 +77,7 @@ plot3d *GetPlot3D(plot3d *plot3din, casedata *case2){
   return NULL;
 }
 
-/* ------------------ diff_plot3ds ------------------------ */
+/* ------------------ DiffPlot3Ds ------------------------ */
 
 void DiffPlot3Ds(FILE *stream_out){
   int j;

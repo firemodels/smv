@@ -7,7 +7,7 @@
 #include "file_util.h"
 #include "getdata.h"
 
-/* ------------------ setup_slice ------------------------ */
+/* ------------------ SetupBoundary ------------------------ */
 
 void SetupBoundary(FILE *stream_out){
   casedata *case1, *case2;
@@ -34,7 +34,7 @@ void SetupBoundary(FILE *stream_out){
   }
 }
 
-/* ------------------ getboundary ------------------------ */
+/* ------------------ GetBoundary ------------------------ */
 
 boundary *GetBoundary(boundary *boundaryin, casedata *case2){
   int i,j;
@@ -63,7 +63,7 @@ boundary *GetBoundary(boundary *boundaryin, casedata *case2){
   return NULL;
 }
 
-/* ------------------ getpatchindex ------------------------ */
+/* ------------------ GetPatchIndex ------------------------ */
 
 int GetPatchIndex(int in1, boundary *boundaryin, boundary *boundaryout){
   int j;
@@ -97,7 +97,7 @@ int GetPatchIndex(int in1, boundary *boundaryin, boundary *boundaryout){
   return -1;
 }
 
-/* ------------------ diff_slices ------------------------ */
+/* ------------------ DiffBoundarYes ------------------------ */
 
 void DiffBoundarYes(FILE *stream_out){
   int j;
