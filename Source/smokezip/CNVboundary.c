@@ -282,7 +282,7 @@ int ConvertBoundaryGEOM(patchdata *patchi, int *thread_index){
         int exit_loop;
 
         exit_loop = 0;
-        for(i = 0; i < 4; i++){
+        for(i=0; i<4; i++){
           if(nvals[i] > 0){
             FORTREAD(vals + offset[i], nvals[i]);
             sizebefore += 8 + 4*nvals[i];
@@ -293,7 +293,7 @@ int ConvertBoundaryGEOM(patchdata *patchi, int *thread_index){
           }
         }
         if(exit_loop==1)break;
-        for(i = 0; i < ntotal; i++){
+        for(i=0; i<ntotal; i++){
           float val;
 
           val      = CLAMP((vals[i] - valmin) / denom, 0.0, 1.0);
@@ -540,7 +540,7 @@ int ConvertBoundaryBNDF(patchdata *patchi, int *thread_index){
     if(version_local==1)nbounds=9;
 
     npatchfull=0;
-    for(i=0;i<npatch;i++){
+    for(i=0; i<npatch; i++){
       int j;
 
       FORTREAD(ijkbounds,nbounds);
@@ -555,7 +555,7 @@ int ConvertBoundaryBNDF(patchdata *patchi, int *thread_index){
       j2 = ijkbounds[3];
       k1 = ijkbounds[4];
       k2 = ijkbounds[5];
-      for(j=0;j<6;j++){
+      for(j=0; j<6; j++){
         *ijkscopy++=ijkbounds[j];
       }
       npatchfull+=(i2+1-i1)*(j2+1-j1)*(k2+1-k1);
@@ -578,7 +578,7 @@ int ConvertBoundaryBNDF(patchdata *patchi, int *thread_index){
       if(returncode==0)break;
 
       patchvalscopy=patchvals;
-      for(j=0;j<npatch;j++){
+      for(j=0; j<npatch; j++){
         int size;
 
         i1 = ijks[6*j];
@@ -603,7 +603,7 @@ int ConvertBoundaryBNDF(patchdata *patchi, int *thread_index){
       if(count%GLOBboundzipstep!=0)continue;
       time_max=time_local;
 
-      for(i=0;i<npatchfull;i++){
+      for(i=0; i<npatchfull; i++){
         unsigned char ival;
         float val;
 
@@ -692,7 +692,7 @@ wrapup:
 bounddata *GetPatchBoundInfo(char *label){
   int i;
 
-  for(i = 0; i < npatchbounds; i++){
+  for(i=0; i<npatchbounds; i++){
     bounddata *boundi;
     char *labeli;
 
@@ -709,7 +709,7 @@ void InitBoundaryBounds(void){
   int i;
 
   npatchbounds = 0;
-  for(i = 0; i < npatchinfo; i++){
+  for(i=0; i<npatchinfo; i++){
     patchdata *patchi;
     bounddata *pb;
 
@@ -731,14 +731,14 @@ void InitBoundaryBounds(void){
 void GetBoundaryBounds(void){
   int i;
 
-  for(i=0;i<npatchbounds;i++){
+  for(i=0; i<npatchbounds; i++){
     bounddata *pbi;
     int j;
     int have_bound=0;
 
     pbi = patchbounds + i;
     if(pbi->setvalmin==1&&pbi->setvalmax==1)continue; // bound obtained from ini file
-    for(j=0;j<npatchinfo;j++){  // bound computed from .bnd files
+    for(j=0; j<npatchinfo; j++){  // bound computed from .bnd files
       patchdata *patchj;
 
       patchj = patchinfo + j;
@@ -752,7 +752,7 @@ void GetBoundaryBounds(void){
     if(have_bound==1){
       pbi->setvalmin = 1;
       pbi->setvalmax = 1;
-      for(j = 0;j < npatchinfo;j++){  // bound computed from .bnd files
+      for(j=0; j<npatchinfo; j++){  // bound computed from .bnd files
         patchdata *patchj;
 
         patchj = patchinfo + j;
@@ -781,19 +781,19 @@ void *CompressPatches(void *arg){
     GLOBfirst_patch=0;
 
     if(GLOBcleanfiles==1){
-      for(i=0;i<npatchinfo;i++){
+      for(i=0; i<npatchinfo; i++){
         patchi = patchinfo + i;
         CleanBoundary(patchi);
       }
       UNLOCK_PATCH;
       return NULL;
     }
-    for(i=0;i<npatchbounds;i++){
+    for(i=0; i<npatchbounds; i++){
       bounddata *pbi;
       int j;
 
       pbi = patchbounds + i;
-      for(j = 0; j < npatchinfo; j++){
+      for(j=0; j<npatchinfo; j++){
         patchdata *patchj;
 
         patchj = patchinfo + j;
@@ -809,7 +809,7 @@ void *CompressPatches(void *arg){
   // find bounds
 
     GetBoundaryBounds();
-    for(i=0;i<npatchinfo;i++){
+    for(i=0; i<npatchinfo; i++){
       patchi = patchinfo + i;
       if(patchi->setvalmin==1&&patchi->setvalmax==1){
         patchi->doit=1;
@@ -825,7 +825,7 @@ void *CompressPatches(void *arg){
 
   // convert and compress files
 
-  for(i=0;i<npatchinfo;i++){
+  for(i=0; i<npatchinfo; i++){
     patchi = patchinfo + i;
 
     if(patchi->doit==1){

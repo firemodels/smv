@@ -153,7 +153,7 @@ int main(int argc, char **argv){
     return 0;
   }
 
-  for(i=1;i<argc;i++){
+  for(i=1; i<argc; i++){
     int lenarg;
     int lenarg2;
     char *arg2;
@@ -439,7 +439,7 @@ void PrintSummary(void){
   PRINTF("\n");
   nsum=0;
   nsum2=0;
-  for(i=0;i<nsliceinfo;i++){
+  for(i=0; i<nsliceinfo; i++){
     slicedata *slicei;
 
     slicei = sliceinfo + i;
@@ -448,7 +448,7 @@ void PrintSummary(void){
   }
   if(nsum>0||nsum2>0)PRINTF("*** slice files ***\n");
   if(nsum>0){
-    for(i=0;i<nsliceinfo;i++){
+    for(i=0; i<nsliceinfo; i++){
       slicedata *slicei;
       flowlabels *label;
 
@@ -461,14 +461,14 @@ void PrintSummary(void){
   }
 
   nsum=0;
-  for(i=0;i<nsliceinfo;i++){
+  for(i=0; i<nsliceinfo; i++){
     slicedata *slicei;
 
     slicei = sliceinfo + i;
     if(slicei->vol_compressed==1)nsum++;
   }
   if(nsum>0){
-    for(i=0;i<nsliceinfo;i++){
+    for(i=0; i<nsliceinfo; i++){
       slicedata *slicei;
       flowlabels *label;
 
@@ -481,7 +481,7 @@ void PrintSummary(void){
   if(nsum>0||nsum2>0)PRINTF("\n");
 
   nsum=0;
-  for(i=0;i<nsmoke3dinfo;i++){
+  for(i=0; i<nsmoke3dinfo; i++){
     smoke3d *smoke3di;
 
     smoke3di = smoke3dinfo + i;
@@ -489,7 +489,7 @@ void PrintSummary(void){
   }
   if(nsum>0){
     PRINTF("\n*** 3D smoke/fire files ***\n");
-    for(i=0;i<nsmoke3dinfo;i++){
+    for(i=0; i<nsmoke3dinfo; i++){
       smoke3d *smoke3di;
 
       smoke3di = smoke3dinfo + i;
@@ -500,7 +500,7 @@ void PrintSummary(void){
   }
 
   nsum=0;
-  for(i=0;i<npatchinfo;i++){
+  for(i=0; i<npatchinfo; i++){
     patchdata *patchi;
 
     patchi = patchinfo + i;
@@ -508,7 +508,7 @@ void PrintSummary(void){
   }
   if(nsum>0){
     PRINTF("*** boundary files ***\n");
-    for(i=0;i<npatchinfo;i++){
+    for(i=0; i<npatchinfo; i++){
       patchdata *patchi;
       flowlabels *label;
       char type[32];
@@ -529,7 +529,7 @@ void PrintSummary(void){
   }
 
   nsum=0;
-  for(i=0;i<npartinfo;i++){
+  for(i=0; i<npartinfo; i++){
     part *parti;
 
     parti = partinfo + i;
@@ -537,7 +537,7 @@ void PrintSummary(void){
   }
   if(nsum>0){
     PRINTF("*** particle files ***\n");
-    for(i=0;i<npartinfo;i++){
+    for(i=0; i<npartinfo; i++){
       int j;
       part *parti;
 
@@ -545,7 +545,7 @@ void PrintSummary(void){
       if(parti->compressed2==0)continue;
 
       PRINTF("%s converted to:\n",parti->file);
-      for(j=0;j<parti->nsummaries;j++){
+      for(j=0; j<parti->nsummaries; j++){
         PRINTF("  %s\n",parti->summaries[j]);
       }
       PRINTF("\n");

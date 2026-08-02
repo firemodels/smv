@@ -20,7 +20,7 @@ int GetPartPropIndex(char *string){
   int i;
   partpropdata *partpropi;
 
-  for(i=0;i<npart5propinfo;i++){
+  for(i=0; i<npart5propinfo; i++){
     partpropi = part5propinfo + i;
     if(strcmp(partpropi->label.shortlabel,string)==0)return i;
   }
@@ -33,7 +33,7 @@ partpropdata *GetPartProp(char *string){
   int i;
   partpropdata *partpropi;
 
-  for(i=0;i<npart5propinfo;i++){
+  for(i=0; i<npart5propinfo; i++){
     partpropi = part5propinfo + i;
     if(strcmp(partpropi->label.shortlabel,string)==0)return partpropi;
   }
@@ -65,12 +65,12 @@ void *ConvertParts2Iso(void *arg){
         GLOBfilesremoved++;
         UNLOCK_COMPRESS;
       }
-      for(j=0;j<npartinfo;j++){
+      for(j=0; j<npartinfo; j++){
         part *parti;
 
         parti = partinfo + j;
 
-        for(i=0;i<npart5propinfo;i++){
+        for(i=0; i<npart5propinfo; i++){
           partpropdata *propi;
           flowlabels *labels;
           char isofilename[1024];
@@ -102,7 +102,7 @@ void *ConvertParts2Iso(void *arg){
   if(GLOBcleanfiles==1)return NULL;
 
   if(GLOBpartfile2iso==1){
-    for(i=0;i<npartinfo;i++){
+    for(i=0; i<npartinfo; i++){
       part *parti;
 
       parti = partinfo + i;
@@ -222,16 +222,16 @@ void Part2Iso(part *parti, int *thread_index){
   if(npart5propinfo>0)NewMemory((void **)&part5propinfo_copy,npart5propinfo*sizeof(partpropdata));
   if(part5propinfo_copy == NULL)return;
 
-  for(i=0;i<npart5propinfo;i++){
+  for(i=0; i<npart5propinfo; i++){
     partpropdata *propi;
 
     propi = part5propinfo_copy + i;
     propi->used=0;
   }
-  for(j=0;j<nclasses;j++){
+  for(j=0; j<nclasses; j++){
     int k;
 
-    for(k=0;k<nquantities[j];k++){
+    for(k=0; k<nquantities[j]; k++){
       partclassdata *classj;
       partpropdata *propi;
 
@@ -243,7 +243,7 @@ void Part2Iso(part *parti, int *thread_index){
 
   NewMemory((void **)&partcount,npartcount*sizeof(float));
 
-  for(i=0;i<npart5propinfo;i++){
+  for(i=0; i<npart5propinfo; i++){
     partpropdata *propi;
 
     propi = part5propinfo_copy + i;
@@ -275,7 +275,7 @@ void Part2Iso(part *parti, int *thread_index){
   PRINTF("  %s\n",isofile);
 #endif
 
-  for(i=0;i<npart5propinfo;i++){
+  for(i=0; i<npart5propinfo; i++){
     partpropdata *propi,*propi_ro;
     flowlabels *labels;
 
@@ -337,22 +337,22 @@ void Part2Iso(part *parti, int *thread_index){
 #endif
     if(error!=0)break;
 
-    for(j=0;j<npartcount;j++){
+    for(j=0; j<npartcount; j++){
       partcount[j]=0.0;
     }
-    for(i=0;i<npart5propinfo;i++){
+    for(i=0; i<npart5propinfo; i++){
       partpropdata *propi;
 
       propi = part5propinfo_copy + i;
       if(propi->used==0)continue;
 
-      for(j=0;j<npartcount;j++){
+      for(j=0; j<npartcount; j++){
         propi->partvals[j]=0.0;
       }
     }
 
     vals=pdata;
-    for(j=0;j<nclasses;j++){
+    for(j=0; j<nclasses; j++){
       partclassdata *classj;
 
       if(npoints[j]==0)continue;
@@ -364,7 +364,7 @@ void Part2Iso(part *parti, int *thread_index){
 
 // construct 3D particle density array
 
-      for(i=0;i<npoints[j];i++){
+      for(i=0; i<npoints[j]; i++){
         int ix, iy, iz;
         int ijkval;
 
@@ -375,18 +375,18 @@ void Part2Iso(part *parti, int *thread_index){
         partindex[i]=ijkval;
         partcount[ijkval]++;
       }
-      for(k=0;k<nquantities[j];k++){
+      for(k=0; k<nquantities[j]; k++){
         partpropdata *propi;
 
         propi=part5propinfo_copy+GetPartPropIndex(classj->labels[k].shortlabel);
 
-        for(i=0;i<npoints[j];i++){
+        for(i=0; i<npoints[j]; i++){
           int ijkval;
 
           ijkval = partindex[i];
           propi->partvals[ijkval]+=vals[i];
         }
-        for(i=0;i<npartcount;i++){
+        for(i=0; i<npartcount; i++){
           if(partcount[i]>0){
             propi->partvals[i]/=partcount[i];
           }
@@ -398,7 +398,7 @@ void Part2Iso(part *parti, int *thread_index){
         xpltcell, &nx2, ypltcell, &ny2, zpltcell, &nz2,
         &reduce_triangles, &error);
 
-    for(i=0;i<npart5propinfo;i++){
+    for(i=0; i<npart5propinfo; i++){
       partpropdata *propi;
 
       propi = part5propinfo_copy + i;
@@ -416,7 +416,7 @@ void Part2Iso(part *parti, int *thread_index){
     int lenfile;
     char **summaries;
 
-    for(i=0;i<npart5propinfo;i++){
+    for(i=0; i<npart5propinfo; i++){
       partpropdata *propi;
 
       propi = part5propinfo_copy + i;
@@ -433,7 +433,7 @@ void Part2Iso(part *parti, int *thread_index){
     parti->nsummaries=nconv;
 
     nconv=1;
-    for(i=0;i<npart5propinfo;i++){
+    for(i=0; i<npart5propinfo; i++){
       partpropdata *propi;
 
       propi = part5propinfo_copy + i;
@@ -462,7 +462,7 @@ void Part2Iso(part *parti, int *thread_index){
   FREEMEMORY(tagdata);
   FREEMEMORY(partindex);
 
-  for(i=0;i<npart5propinfo;i++){
+  for(i=0; i<npart5propinfo; i++){
     partpropdata *propi;
 
     propi = part5propinfo_copy + i;
@@ -576,16 +576,16 @@ void Part2Object(part *parti, int *thread_index){
   if(npart5propinfo>0)NewMemory((void **)&part5propinfo_copy,npart5propinfo*sizeof(partpropdata));
   if(part5propinfo_copy==NULL)return;
 
-  for(i=0;i<npart5propinfo;i++){
+  for(i=0; i<npart5propinfo; i++){
     partpropdata *propi;
 
     propi = part5propinfo_copy + i;
     propi->used=0;
   }
-  for(j=0;j<nclasses;j++){
+  for(j=0; j<nclasses; j++){
     int k;
 
-    for(k=0;k<nquantities[j];k++){
+    for(k=0; k<nquantities[j]; k++){
       partclassdata *classj;
       partpropdata *propi;
 
@@ -597,7 +597,7 @@ void Part2Object(part *parti, int *thread_index){
 
   NewMemory((void **)&partcount,npartcount*sizeof(float));
 
-  for(i=0;i<npart5propinfo;i++){
+  for(i=0; i<npart5propinfo; i++){
     partpropdata *propi;
 
     propi = part5propinfo_copy + i;
@@ -629,7 +629,7 @@ void Part2Object(part *parti, int *thread_index){
   PRINTF("  %s\n",isofile);
 #endif
 
-  for(i=0;i<npart5propinfo;i++){
+  for(i=0; i<npart5propinfo; i++){
     partpropdata *propi,*propi_ro;
     flowlabels *labels;
 
@@ -691,22 +691,22 @@ void Part2Object(part *parti, int *thread_index){
 #endif
     if(error!=0)break;
 
-    for(j=0;j<npartcount;j++){
+    for(j=0; j<npartcount; j++){
       partcount[j]=0.0;
     }
-    for(i=0;i<npart5propinfo;i++){
+    for(i=0; i<npart5propinfo; i++){
       partpropdata *propi;
 
       propi = part5propinfo_copy + i;
       if(propi->used==0)continue;
 
-      for(j=0;j<npartcount;j++){
+      for(j=0; j<npartcount; j++){
         propi->partvals[j]=0.0;
       }
     }
 
     vals=pdata;
-    for(j=0;j<nclasses;j++){
+    for(j=0; j<nclasses; j++){
       partclassdata *classj;
 
       if(npoints[j]==0)continue;
@@ -718,7 +718,7 @@ void Part2Object(part *parti, int *thread_index){
 
       // construct 3D particle density array
 
-      for(i=0;i<npoints[j];i++){
+      for(i=0; i<npoints[j]; i++){
         int ix, iy, iz;
         int ijkval;
 
@@ -729,18 +729,18 @@ void Part2Object(part *parti, int *thread_index){
         partindex[i]=ijkval;
         partcount[ijkval]++;
       }
-      for(k=0;k<nquantities[j];k++){
+      for(k=0; k<nquantities[j]; k++){
         partpropdata *propi;
 
         propi=part5propinfo_copy+GetPartPropIndex(classj->labels[k].shortlabel);
 
-        for(i=0;i<npoints[j];i++){
+        for(i=0; i<npoints[j]; i++){
           int ijkval;
 
           ijkval = partindex[i];
           propi->partvals[ijkval]+=vals[i];
         }
-        for(i=0;i<npartcount;i++){
+        for(i=0; i<npartcount; i++){
           if(partcount[i]>0){
             propi->partvals[i]/=partcount[i];
           }
@@ -752,7 +752,7 @@ void Part2Object(part *parti, int *thread_index){
       xpltcell, &nx2, ypltcell, &ny2, zpltcell, &nz2,
       &reduce_triangles, &error);
 
-    for(i=0;i<npart5propinfo;i++){
+    for(i=0; i<npart5propinfo; i++){
       partpropdata *propi;
 
       propi = part5propinfo_copy + i;
@@ -770,7 +770,7 @@ void Part2Object(part *parti, int *thread_index){
     int lenfile;
     char **summaries;
 
-    for(i=0;i<npart5propinfo;i++){
+    for(i=0; i<npart5propinfo; i++){
       partpropdata *propi;
 
       propi = part5propinfo_copy + i;
@@ -787,7 +787,7 @@ void Part2Object(part *parti, int *thread_index){
     parti->nsummaries=nconv;
 
     nconv=1;
-    for(i=0;i<npart5propinfo;i++){
+    for(i=0; i<npart5propinfo; i++){
       partpropdata *propi;
 
       propi = part5propinfo_copy + i;
@@ -816,7 +816,7 @@ void Part2Object(part *parti, int *thread_index){
   FREEMEMORY(tagdata);
   FREEMEMORY(partindex);
 
-  for(i=0;i<npart5propinfo;i++){
+  for(i=0; i<npart5propinfo; i++){
     partpropdata *propi;
 
     propi = part5propinfo_copy + i;

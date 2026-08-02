@@ -20,7 +20,7 @@
 bounddata *GetSliceBoundInfo(char *label){
   int i;
 
-  for(i = 0; i < nslicebounds; i++){
+  for(i=0; i<nslicebounds; i++){
     bounddata *boundi;
     char *labeli;
 
@@ -37,7 +37,7 @@ void InitSliceBounds(void){
   int i;
 
   nslicebounds = 0;
-  for(i = 0; i < nsliceinfo; i++){
+  for(i=0; i<nsliceinfo; i++){
     slicedata *slicei;
     bounddata *pb;
 
@@ -59,13 +59,13 @@ void InitSliceBounds(void){
 void GetSliceBounds(void){
   int i;
 
-  for(i = 0;i < nslicebounds;i++){
+  for(i=0; i<nslicebounds; i++){
     bounddata *pbi;
     int j;
 
     pbi = slicebounds + i;
     if(pbi->setvalmin == 0 || pbi->setvalmax == 0){
-      for(j = 0;j < nsliceinfo;j++){  // bound computed from .bnd files
+      for(j=0; j<nsliceinfo; j++){  // bound computed from .bnd files
         slicedata *slicej;
 
         slicej = sliceinfo + j;
@@ -79,7 +79,7 @@ void GetSliceBounds(void){
       }
     }
     if(pbi->setvalmin == 1 && pbi->setvalmax == 1){
-      for(j = 0;j < nsliceinfo;j++){  // bound computed from .bnd files
+      for(j=0; j<nsliceinfo; j++){  // bound computed from .bnd files
         slicedata *slicej;
 
         slicej = sliceinfo + j;
@@ -665,7 +665,7 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
         percent_next += PERCENT_SKIP;
       }
 #endif
-      for(i=0;i<framesize;i++){
+      for(i=0; i<framesize; i++){
         int ival;
         int icol, jrow, index2;
         int ii,jj,kk;
@@ -774,7 +774,7 @@ void *CompressVolSlices(void *arg){
 
   // convert and compress files
 
-  for(i=0;i<nsliceinfo;i++){
+  for(i=0; i<nsliceinfo; i++){
     slicedata *slicei;
 
     slicei = sliceinfo + i;
@@ -801,7 +801,7 @@ void GetGlobalSliceBounds(char *label){
   float valmin, valmax;
 
   count = 0;
-  for(j = 0;j<nsliceinfo;j++){
+  for(j=0; j<nsliceinfo; j++){
     slicedata *slicej;
     FILE *stream;
 
@@ -828,7 +828,7 @@ void GetGlobalSliceBounds(char *label){
     fclose(stream);
   }
   if(count>0){
-    for(j = 0;j<nsliceinfo;j++){
+    for(j=0; j<nsliceinfo; j++){
       slicedata *slicej;
 
       slicej = sliceinfo+j;
@@ -856,7 +856,7 @@ void *CompressSlices(void *arg){
   if(GLOBfirst_slice==1){
     GLOBfirst_slice=0;
     if(GLOBcleanfiles==1){
-      for(i=0;i<nsliceinfo;i++){
+      for(i=0; i<nsliceinfo; i++){
         slicei = sliceinfo + i;
         ConvertSlice(slicei,thread_index);
       }
@@ -871,7 +871,7 @@ void *CompressSlices(void *arg){
 
   // convert and compress files
 
-  for(i=0;i<nsliceinfo;i++){
+  for(i=0; i<nsliceinfo; i++){
     slicei = sliceinfo + i;
     LOCK_SLICE;
     if(slicei->inuse==1){
