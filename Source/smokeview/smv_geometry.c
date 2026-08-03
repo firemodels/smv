@@ -278,7 +278,7 @@ int InExterior(float *xyz){
   return 1;
 }
 
-#ifdef pp_GETMESH_TEST
+#ifdef pp_GETMESH
 #define IJKSCELL(i,j,k) ((k)*nij+(j)*ni+(i))
 
 /* --------------------------  GetCellIndex ----------------------------------- */

@@ -2016,7 +2016,7 @@ SVEXTERN float SVDECL(co2_halfdepth, 10.0);
 
 SVEXTERN int SVDECL(co2_colormap_type, CO2_COLORBAR);
 
-#ifdef pp_GETMESH_TEST
+#ifdef pp_GETMESH
 SVEXTERN scenedata SVDECL(*sceneinfo, NULL);
 #endif
 
