@@ -230,11 +230,6 @@ int UnCompressVolSliceFrame(unsigned char *compressed_data_in,
   return countout;
 }
 
-#ifdef pp_COMPRESS
-#ifndef IJKMAP
-#define IJKMAP(i,j,k,nx,nxy) ((i)+(j)*nx+(k)*nxy)
-#endif
-
 /* ------------------ Compress3D ------------------------ */
 
 unsigned char AverageCube(unsigned *buffer, int *ijk_start, int *ijk_end, int *nijk, unsigned char *minmax){
