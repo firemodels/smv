@@ -17,8 +17,8 @@ int CompareFloats(const void *arg1, const void *arg2){
   float x, y;
   x=*(float *)arg1;
   y=*(float *)arg2;
-  if( x< y)return -1;
-  if( x> y)return 1;
+  if(x< y)return -1;
+  if(x> y)return 1;
   return 0;
 }
 
@@ -824,10 +824,10 @@ int RectangleInFrustum(float *x11, float *x12, float *x22, float *x21){
    int p;
 
    for(p = 0; p < 6; p++){
-      if( frustum[p][0]*x11[0] + frustum[p][1]*x11[1] + frustum[p][2]*x11[2] + frustum[p][3] > 0 )continue;
-      if( frustum[p][0]*x12[0] + frustum[p][1]*x12[1] + frustum[p][2]*x12[2] + frustum[p][3] > 0 )continue;
-      if( frustum[p][0]*x22[0] + frustum[p][1]*x22[1] + frustum[p][2]*x22[2] + frustum[p][3] > 0 )continue;
-      if( frustum[p][0]*x21[0] + frustum[p][1]*x21[1] + frustum[p][2]*x21[2] + frustum[p][3] > 0 )continue;
+      if(frustum[p][0]*x11[0] + frustum[p][1]*x11[1] + frustum[p][2]*x11[2] + frustum[p][3] > 0)continue;
+      if(frustum[p][0]*x12[0] + frustum[p][1]*x12[1] + frustum[p][2]*x12[2] + frustum[p][3] > 0)continue;
+      if(frustum[p][0]*x22[0] + frustum[p][1]*x22[1] + frustum[p][2]*x22[2] + frustum[p][3] > 0)continue;
+      if(frustum[p][0]*x21[0] + frustum[p][1]*x21[1] + frustum[p][2]*x21[2] + frustum[p][3] > 0)continue;
       return 0;
    }
    return 1;
@@ -1168,11 +1168,11 @@ void SetHiddenBlockages(meshdata *meshi){
     bc->hidden6[3] = 1;
     bc->hidden6[4] = 1;
     bc->hidden6[5] = 1;
-    if(bc->ijk[0] == 0          )bc->hidden6[0] = 0;
+    if(bc->ijk[0] == 0)bc->hidden6[0] = 0;
     if(bc->ijk[1] == meshi->ibar)bc->hidden6[1] = 0;
-    if(bc->ijk[2] == 0          )bc->hidden6[2] = 0;
+    if(bc->ijk[2] == 0)bc->hidden6[2] = 0;
     if(bc->ijk[3] == meshi->jbar)bc->hidden6[3] = 0;
-    if(bc->ijk[4] == 0          )bc->hidden6[4] = 0;
+    if(bc->ijk[4] == 0)bc->hidden6[4] = 0;
     if(bc->ijk[5] == meshi->kbar)bc->hidden6[5] = 0;
 
 // check bottom plane

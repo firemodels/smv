@@ -56,7 +56,7 @@
 
 /* ------------------ mbedtls_zeroize ------------------------ */
 
-static void mbedtls_zeroize( void *v, size_t n ){
+static void mbedtls_zeroize( void *v, size_t n){
     volatile unsigned char *p = v; while( n-- ) *p++ = 0;
 }
 
@@ -94,7 +94,7 @@ void mbedtls_sha256_init( mbedtls_sha256_context *ctx )
 
 void mbedtls_sha256_free( mbedtls_sha256_context *ctx )
 {
-    if( ctx == NULL )
+    if(ctx == NULL)
         return;
 
     mbedtls_zeroize( ctx, sizeof( mbedtls_sha256_context ) );
@@ -119,8 +119,7 @@ void mbedtls_sha256_starts( mbedtls_sha256_context *ctx, int is224 )
     ctx->total[0] = 0;
     ctx->total[1] = 0;
 
-    if( is224 == 0 )
-    {
+    if(is224 == 0){
         /* SHA-256 */
         ctx->state[0] = 0x6A09E667;
         ctx->state[1] = 0xBB67AE85;
@@ -201,13 +200,12 @@ void mbedtls_sha256_process( mbedtls_sha256_context *ctx, const unsigned char da
     uint32_t A[8];
     unsigned int i;
 
-    for( i = 0; i < 8; i++ )
+    for(i = 0; i < 8; i++)
         A[i] = ctx->state[i];
 
 #if defined(MBEDTLS_SHA256_SMALLER)
-    for( i = 0; i < 64; i++ )
-    {
-        if( i < 16 )
+    for(i = 0; i < 64; i++){
+        if(i < 16 )
             GET_UINT32_BE( W[i], data, 4 * i );
         else
             R( i );
@@ -218,11 +216,10 @@ void mbedtls_sha256_process( mbedtls_sha256_context *ctx, const unsigned char da
         A[3] = A[2]; A[2] = A[1]; A[1] = A[0]; A[0] = temp1;
     }
 #else /* MBEDTLS_SHA256_SMALLER */
-    for( i = 0; i < 16; i++ )
+    for(i = 0; i < 16; i++)
         GET_UINT32_BE( W[i], data, 4 * i );
 
-    for( i = 0; i < 16; i += 8 )
-    {
+    for(i = 0; i < 16; i += 8){
         P( A[0], A[1], A[2], A[3], A[4], A[5], A[6], A[7], W[i+0], K[i+0] );
         P( A[7], A[0], A[1], A[2], A[3], A[4], A[5], A[6], W[i+1], K[i+1] );
         P( A[6], A[7], A[0], A[1], A[2], A[3], A[4], A[5], W[i+2], K[i+2] );
@@ -233,8 +230,7 @@ void mbedtls_sha256_process( mbedtls_sha256_context *ctx, const unsigned char da
         P( A[1], A[2], A[3], A[4], A[5], A[6], A[7], A[0], W[i+7], K[i+7] );
     }
 
-    for( i = 16; i < 64; i += 8 )
-    {
+    for(i = 16; i < 64; i += 8){
         P( A[0], A[1], A[2], A[3], A[4], A[5], A[6], A[7], R(i+0), K[i+0] );
         P( A[7], A[0], A[1], A[2], A[3], A[4], A[5], A[6], R(i+1), K[i+1] );
         P( A[6], A[7], A[0], A[1], A[2], A[3], A[4], A[5], R(i+2), K[i+2] );
@@ -246,7 +242,7 @@ void mbedtls_sha256_process( mbedtls_sha256_context *ctx, const unsigned char da
     }
 #endif /* MBEDTLS_SHA256_SMALLER */
 
-    for( i = 0; i < 8; i++ )
+    for(i = 0; i < 8; i++)
         ctx->state[i] += A[i];
 }
 #endif /* !MBEDTLS_SHA256_PROCESS_ALT */
@@ -263,7 +259,7 @@ void mbedtls_sha256_update( mbedtls_sha256_context *ctx, const unsigned char *in
     size_t fill;
     uint32_t left;
 
-    if( ilen == 0 )
+    if(ilen == 0 )
         return;
 
     left = ctx->total[0] & 0x3F;
@@ -272,11 +268,10 @@ void mbedtls_sha256_update( mbedtls_sha256_context *ctx, const unsigned char *in
     ctx->total[0] += (uint32_t) ilen;
     ctx->total[0] &= 0xFFFFFFFF;
 
-    if( ctx->total[0] < (uint32_t) ilen )
+    if(ctx->total[0] < (uint32_t) ilen)
         ctx->total[1]++;
 
-    if( left && ilen >= fill )
-    {
+    if(left && ilen >= fill){
         memcpy( (void *) (ctx->buffer + left), input, fill );
         mbedtls_sha256_process( ctx, ctx->buffer );
         input += fill;
@@ -291,7 +286,7 @@ void mbedtls_sha256_update( mbedtls_sha256_context *ctx, const unsigned char *in
         ilen  -= 64;
     }
 
-    if( ilen > 0 )
+    if(ilen > 0)
         memcpy( (void *) (ctx->buffer + left), input, ilen );
 }
 
@@ -336,7 +331,7 @@ void mbedtls_sha256_finish( mbedtls_sha256_context *ctx, unsigned char output[32
     PUT_UINT32_BE( ctx->state[5], output, 20 );
     PUT_UINT32_BE( ctx->state[6], output, 24 );
 
-    if( ctx->is224 == 0 )
+    if(ctx->is224 == 0 )
         PUT_UINT32_BE( ctx->state[7], output, 28 );
 }
 
@@ -425,9 +420,8 @@ int mbedtls_sha256_self_test( int verbose )
     mbedtls_sha256_context ctx;
 
     buf = mbedtls_calloc( 1024, sizeof(unsigned char) );
-    if( NULL == buf )
-    {
-        if( verbose != 0 )
+    if(NULL == buf){
+        if(verbose != 0 )
             mbedtls_printf( "Buffer allocation failed\n" );
 
         return( 1 );
@@ -435,21 +429,19 @@ int mbedtls_sha256_self_test( int verbose )
 
     mbedtls_sha256_init( &ctx );
 
-    for( i = 0; i < 6; i++ )
-    {
+    for(i = 0; i < 6; i++){
         j = i % 3;
         k = i < 3;
 
-        if( verbose != 0 )
+        if(verbose != 0 )
             mbedtls_printf( "  SHA-%d test #%d: ", 256 - k * 32, j + 1 );
 
         mbedtls_sha256_starts( &ctx, k );
 
-        if( j == 2 )
-        {
+        if(j == 2){
             memset( buf, 'a', buflen = 1000 );
 
-            for( j = 0; j < 1000; j++ )
+            for(j = 0; j < 1000; j++)
                 mbedtls_sha256_update( &ctx, buf, buflen );
         }
         else
@@ -458,20 +450,19 @@ int mbedtls_sha256_self_test( int verbose )
 
         mbedtls_sha256_finish( &ctx, sha256sum );
 
-        if( memcmp( sha256sum, sha256_test_sum[i], 32 - k * 4 ) != 0 )
-        {
-            if( verbose != 0 )
+        if(memcmp( sha256sum, sha256_test_sum[i], 32 - k * 4 ) != 0){
+            if(verbose != 0 )
                 mbedtls_printf( "failed\n" );
 
             ret = 1;
             goto exit;
         }
 
-        if( verbose != 0 )
+        if(verbose != 0 )
             mbedtls_printf( "passed\n" );
     }
 
-    if( verbose != 0 )
+    if(verbose != 0 )
         mbedtls_printf( "\n" );
 
 exit:

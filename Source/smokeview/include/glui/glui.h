@@ -402,7 +402,7 @@ public:
   GLUI_StdBitmaps( void ) {
     int i;
 
-    for( i=0; i<GLUI_STDBITMAP_NUM_ITEMS; i++ ){
+    for(i=0; i<GLUI_STDBITMAP_NUM_ITEMS; i++){
       bitmaps[i].load_from_array( bitmap_arrays[i] );
     }
   }
@@ -811,7 +811,7 @@ public:
     hidden         = false;
 
     int i;
-    for( i=0; i<GLUI_DEF_MAX_ARRAY; i++ )
+    for(i=0; i<GLUI_DEF_MAX_ARRAY; i++)
       float_array_val[i] = last_live_float_array[i] = 0.0;
   };
 
@@ -1618,7 +1618,7 @@ public:
   float get_z( void ) {		return float_array_val[0];	}
   float get_x( void ) {		return float_array_val[0];	}
   float get_y( void ) {
-    if( trans_type == GLUI_TRANSLATION_XY )    return float_array_val[1];
+    if(trans_type == GLUI_TRANSLATION_XY )    return float_array_val[1];
     else					return float_array_val[0];
   }
 

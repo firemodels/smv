@@ -3871,7 +3871,7 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
       if(FGETS(buffer, 255, stream)==NULL){
         return RETURN_BREAK;
       }
-      if( (Match(buffer, "SLCF") == 1) ||
+      if((Match(buffer, "SLCF") == 1) ||
           (Match(buffer, "SLCC") == 1) ||
 #ifdef pp_SLFC
           (Match(buffer, "SLFC") == 1) ||
@@ -4226,7 +4226,7 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
         sd->full_mesh = YES;
     }
     if(sd->slice_filetype==SLICE_CELL_CENTER){
-      if(                         sd->is1==sd->is2&&sd->is1==1)sd->cell_center_edge = 1;
+      if(sd->is1==sd->is2&&sd->is1==1)sd->cell_center_edge = 1;
       if(sd->cell_center_edge==0&&sd->js1==sd->js2&&sd->js1==1)sd->cell_center_edge = 1;
       if(sd->cell_center_edge==0&&sd->ks1==sd->ks2&&sd->ks1==1)sd->cell_center_edge = 1;
       if(sd->cell_center_edge==0&&sd->is1==sd->is2&&sd->is1==meshi->ibar)sd->cell_center_edge = 1;
@@ -5328,7 +5328,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
 //*** SLCF
 
-    if( (MatchSMV(buffer, "SLCF") == 1) ||
+    if((MatchSMV(buffer, "SLCF") == 1) ||
         (MatchSMV(buffer, "SLCC") == 1) ||
 #ifdef pp_SLFC
         (MatchSMV(buffer, "SLFC") == 1) ||
@@ -8621,7 +8621,7 @@ typedef struct {
     ++++++++++++++++++++++ SLCF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if( (MatchSMV(buffer, "SLCF") == 1) ||
+    if((MatchSMV(buffer, "SLCF") == 1) ||
         (MatchSMV(buffer, "SLCC") == 1) ||
 #ifdef pp_SLFC
         (MatchSMV(buffer, "SLFC") == 1) ||
