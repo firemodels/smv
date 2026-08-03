@@ -703,12 +703,6 @@ void UpdateSmokeAlphas(void){
     for(j=0; j<NDISTS; j++){
       float maxval;
 
-#ifndef pp_SPEEDUP
-      assert(
-             (smoke3di->soot_loaded == 1 && smoke3di->maxvals!=NULL) ||
-             (smoke3di->soot_loaded == 0 && smoke3di->maxvals==NULL)
-            );
-#endif
       maxval = smoke3di->maxval;
       if(smoke3di->soot_loaded == 1 && smoke3di->maxvals!=NULL)maxval = smoke3di->maxvals[smoke3di->ismoke3d_time];
       InitAlphas(smoke3di->alphas_smokedir[j], smoke3di->alphas_firedir[j], smoke3di->extinct, smoke3di->soot_loaded, maxval, glui_mass_extinct, smoke_mesh->dxyz_fds[0], dists[j]);
@@ -1298,12 +1292,10 @@ void DrawSmokeFrame(void){
     xyz = smokemesh->boxmiddle_smv;
     Output3Text(foregroundcolor, xyz[0], xyz[1], xyz[2], alabel);
 #endif
-#ifdef pp_SPEEDUP
     if(vis_smokemesh == 1||vis_only_smokemesh==1){
       DrawBoxMinMax(smokemesh->boxmin_smv, smokemesh->boxmax_smv, foregroundcolor);
     }
     if(vis_only_smokemesh == 0){
-#endif
 #ifdef pp_GPU
       if(usegpu_local == 1){
         DrawSmoke3DGPU(smoke3di);
@@ -1316,9 +1308,7 @@ void DrawSmokeFrame(void){
       nsmoke_triangles += DrawSmoke3D(smoke3di);
 #endif
       }
-#ifdef pp_SPEEDUP
     }
-#endif
   STOP_TIMER(smoke3d_timer);
   if((show_trirates==1 && smoke3d_timer>0.0) || (show_timings==1  && smoke3d_timer>0.1)){
      float tri_fps = -1.0;
@@ -2695,20 +2685,11 @@ void MergeSmoke3D(smoke3ddata *smoke3dset){
 
 /* ------------------ UncompressSmoke3DAll ------------------------ */
 
-#ifdef pp_SPEEDUP
   void *UncompressSmoke3DAll(void *arg){
-#else
-void UncompressSmoke3DAll(void){
-#endif
   int i, nthreads, thread_num;
-#ifdef pp_SPEEDUP
 
   thread_num = *(int *)arg;
   nthreads = uncompresssmoke3d_threads->n_threads;
-#else
-  thread_num = 0;
-  nthreads = 1;
-#endif
 
   for(i = thread_num; i < global_scase.smoke3dcoll.nsmoke3dinfo; i+=nthreads){
     smoke3ddata *smoke3di;
@@ -2721,27 +2702,16 @@ void UncompressSmoke3DAll(void){
     if(IsSmokeComponentPresent(smoke3di) == 0)continue;
     UncompressSmoke3D(smoke3di);
   }
-#ifdef pp_SPEEDUP
   THREAD_EXIT(uncompresssmoke3d_threads);
-#endif
 }
 
 /* ------------------ MergeSmoke3DAll ------------------------ */
 
-#ifdef pp_SPEEDUP
   void *MergeSmoke3DAll(void *arg){
-#else
-void MergeSmoke3DAll(void){
-#endif
   int i, nthreads, thread_num;
-#ifdef pp_SPEEDUP
 
   thread_num = *(int *)arg;
   nthreads = mergesmoke3d_threads->n_threads;
-#else
-  thread_num = 0;
-  nthreads = 1;
-#endif
 
   for(i = thread_num; i < global_scase.smoke3dcoll.nsmoke3dinfo; i+=nthreads){
     smoke3ddata *smoke3di;
@@ -2754,9 +2724,7 @@ void MergeSmoke3DAll(void){
     if(IsSmokeComponentPresent(smoke3di) == 0)continue;
     MergeSmoke3D(smoke3di);
   }
-#ifdef pp_SPEEDUP
   THREAD_EXIT(mergesmoke3d_threads);
-#endif
 }
 
 /* ------------------ UpdateSmoke3dMenuLabels ------------------------ */
