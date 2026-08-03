@@ -20,7 +20,6 @@
 //#define pp_GETMESH_TEST
 //#define pp_COMPRESS         // new compression code
 //#define pp_ZONEVENT         // shouldn't need code surrounded by this directive
-//#define pp_PART_SCALE       // add scale call when drawing particle objects (probably not necessary)
 
 //*** options: windows
 
