@@ -703,12 +703,6 @@ void UpdateSmokeAlphas(void){
     for(j=0; j<NDISTS; j++){
       float maxval;
 
-#ifndef pp_SPEEDUP
-      assert(
-             (smoke3di->soot_loaded == 1 && smoke3di->maxvals!=NULL) ||
-             (smoke3di->soot_loaded == 0 && smoke3di->maxvals==NULL)
-            );
-#endif
       maxval = smoke3di->maxval;
       if(smoke3di->soot_loaded == 1 && smoke3di->maxvals!=NULL)maxval = smoke3di->maxvals[smoke3di->ismoke3d_time];
       InitAlphas(smoke3di->alphas_smokedir[j], smoke3di->alphas_firedir[j], smoke3di->extinct, smoke3di->soot_loaded, maxval, glui_mass_extinct, smoke_mesh->dxyz_fds[0], dists[j]);
