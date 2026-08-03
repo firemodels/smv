@@ -597,7 +597,7 @@ mallocflag CreateBlockInfo(bbyte *pbNew, size_t sizeNew){
   assert(pbNew != NULL && sizeNew != 0);
 
   pbi = (blockinfo *)malloc(sizeof(blockinfo));
-  if( pbi != NULL){
+  if(pbi != NULL){
     pbi->pb = pbNew;
     pbi->size = sizeNew;
     pbi->pbiNext = pbiHead;

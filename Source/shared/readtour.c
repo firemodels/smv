@@ -210,7 +210,7 @@ keyframe *CopyFrame(const keyframe *framei) {
 void DeleteTourFrames(tourdata *thistour) {
   keyframe *frame;
 
-  for(frame = thistour->first_frame.next; frame->next != NULL; ){
+  for(frame = thistour->first_frame.next; frame->next != NULL;){
     keyframe *next;
 
     next = frame->next;

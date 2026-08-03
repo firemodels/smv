@@ -54,7 +54,7 @@ void FreeObject(sv_object *object){
 
   frame_start = &object->first_frame;
   framei = frame_start->next;
-  for(; framei->next != NULL; ){
+  for(; framei->next != NULL;){
     sv_object_frame *next_frame;
 
     next_frame = framei->next;
@@ -126,7 +126,7 @@ sv_object *GetSmvObjectType2(object_collection *objectscoll, char *olabel,
   if(strlen(labelptr) == 0) return default_object;
   object_start = objectscoll->object_def_first.next;
   objecti = object_start;
-  for(; objecti->next != NULL; ){
+  for(; objecti->next != NULL;){
     if(STRCMP(labelptr, objecti->label) == 0){
       objecti->used = 1;
       return objecti;
@@ -1283,7 +1283,7 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file){
   object_start = objectscoll->object_def_first.next;
   objecti = object_start;
   objectscoll->nobject_defs = 0;
-  for(; objecti->next != NULL; ){
+  for(; objecti->next != NULL;){
     CheckMemory;
     (objectscoll->nobject_defs)++;
     objecti->obj_frames = NULL;
@@ -1303,7 +1303,7 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file){
     object_start = objectscoll->object_def_first.next;
     objecti = object_start;
     i = 0;
-    for(; objecti->next != NULL; ){
+    for(; objecti->next != NULL;){
       sv_object_frame *frame_start, *framei;
 
       CheckMemory;
@@ -1312,7 +1312,7 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file){
       frame_start = objecti->first_frame.next;
       framei = frame_start;
       j = 0;
-      for(; framei->next != NULL; ){
+      for(; framei->next != NULL;){
         int npushpop = 0, ii;
 
         CheckMemory;

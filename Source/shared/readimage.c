@@ -27,7 +27,7 @@ unsigned char *ReadJPEG(const char *filename,int *width, int *height, int *is_tr
   HEIGHT=gdImageSY(image);
   *width=WIDTH;
   *height=HEIGHT;
-  if( NewMemory((void **)&dataptr,(unsigned int)(4*WIDTH*HEIGHT) )==0){
+  if(NewMemory((void **)&dataptr,(unsigned int)(4*WIDTH*HEIGHT) )==0){
     gdImageDestroy(image);
     return NULL;
   }
@@ -69,7 +69,7 @@ unsigned char *ReadPNG(const char *filename,int *width, int *height, int *is_tra
   fclose(file);
   *width=gdImageSX(image);
   *height=gdImageSY(image);
-  if( NewMemory((void **)&dataptr,(unsigned int)(4*(*width)*(*height)) )==0){
+  if(NewMemory((void **)&dataptr,(unsigned int)(4*(*width)*(*height)) )==0){
     gdImageDestroy(image);
     return NULL;
   }

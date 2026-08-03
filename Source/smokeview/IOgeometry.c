@@ -2956,7 +2956,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
   // ijk 3*ntris
   // surf_ind ntris
   icount=-1;
-  for(iframe=-1; iframe<ntimes_local; ){
+  for(iframe=-1; iframe<ntimes_local;){
     float times_local[2]={0.0, 0.0};
     geomlistdata *geomlisti;
     int nverts, ntris;
@@ -4797,7 +4797,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
       if(global_scase.auto_terrain==1&&i==0)continue;
       if(geomi->is_terrain==1)continue;
       have_geom_triangles = 1;
-      if( (geomi->fdsblock == NOT_FDSBLOCK && geomi->geomtype!=GEOM_ISO)|| geomi->patchactive == 1)continue;
+      if((geomi->fdsblock == NOT_FDSBLOCK && geomi->geomtype!=GEOM_ISO)|| geomi->patchactive == 1)continue;
       for(itime = 0; itime < 2; itime++){
         geomlistdata *geomlisti;
         int j;
@@ -4813,7 +4813,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
         if(itime==1&&geomi->geomtype==GEOM_ISO){
           if(plotstate != DYNAMIC_PLOTS)continue;
           if(use_tload_begin==1&&GetTime()<global_scase.tload_begin)continue;
-          if(  use_tload_end==1&&GetTime()>global_scase.tload_end)continue;
+          if(use_tload_end==1&&GetTime()>global_scase.tload_end)continue;
         }
 
         for(j = 0; j < geomlisti->ntriangles; j++){

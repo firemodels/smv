@@ -52,7 +52,7 @@
 /* Implementation that should never be optimized out by the compiler */
 /* ------------------ mbedtls_zeroize ------------------------ */
 
-static void mbedtls_zeroize( void *v, size_t n ){
+static void mbedtls_zeroize( void *v, size_t n){
     volatile unsigned char *p = v; while( n-- ) *p++ = 0;
 }
 
@@ -90,7 +90,7 @@ void mbedtls_md5_init( mbedtls_md5_context *ctx )
 
 void mbedtls_md5_free( mbedtls_md5_context *ctx )
 {
-    if( ctx == NULL )
+    if(ctx == NULL)
         return;
 
     mbedtls_zeroize( ctx, sizeof( mbedtls_md5_context ) );
@@ -257,7 +257,7 @@ void mbedtls_md5_update( mbedtls_md5_context *ctx, const unsigned char *input, s
     size_t fill;
     uint32_t left;
 
-    if( ilen == 0 )
+    if(ilen == 0)
         return;
 
     left = ctx->total[0] & 0x3F;
@@ -266,11 +266,10 @@ void mbedtls_md5_update( mbedtls_md5_context *ctx, const unsigned char *input, s
     ctx->total[0] += (uint32_t) ilen;
     ctx->total[0] &= 0xFFFFFFFF;
 
-    if( ctx->total[0] < (uint32_t) ilen )
+    if(ctx->total[0] < (uint32_t) ilen )
         ctx->total[1]++;
 
-    if( left && ilen >= fill )
-    {
+    if(left && ilen >= fill){
         memcpy( (void *) (ctx->buffer + left), input, fill );
         mbedtls_md5_process( ctx, ctx->buffer );
         input += fill;
@@ -285,8 +284,7 @@ void mbedtls_md5_update( mbedtls_md5_context *ctx, const unsigned char *input, s
         ilen  -= 64;
     }
 
-    if( ilen > 0 )
-    {
+    if(ilen > 0){
         memcpy( (void *) (ctx->buffer + left), input, ilen );
     }
 }
@@ -395,26 +393,24 @@ int mbedtls_md5_self_test( int verbose )
     int i;
     unsigned char md5sum[16];
 
-    for( i = 0; i < 7; i++ )
-    {
-        if( verbose != 0 )
+    for(i = 0; i < 7; i++){
+        if(verbose != 0 )
             mbedtls_printf( "  MD5 test #%d: ", i + 1 );
 
         mbedtls_md5( md5_test_buf[i], md5_test_buflen[i], md5sum );
 
-        if( memcmp( md5sum, md5_test_sum[i], 16 ) != 0 )
-        {
-            if( verbose != 0 )
+        if(memcmp( md5sum, md5_test_sum[i], 16 ) != 0){
+            if(verbose != 0 )
                 mbedtls_printf( "failed\n" );
 
             return( 1 );
         }
 
-        if( verbose != 0 )
+        if(verbose != 0 )
             mbedtls_printf( "passed\n" );
     }
 
-    if( verbose != 0 )
+    if(verbose != 0 )
         mbedtls_printf( "\n" );
 
     return( 0 );

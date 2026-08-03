@@ -2589,7 +2589,7 @@ int IsVentVisible(ventdata *vi){
   if(vi->wall_type == FRONTwall)return 1 - vis_boundary_type[FRONTwall];
   if(vi->wall_type == BACKwall)return  1 - vis_boundary_type[BACKwall];
   if(vi->wall_type == DOWNwall)return  1 - vis_boundary_type[DOWNwall];
-  if(vi->wall_type == UPwall  )return  1 - vis_boundary_type[UPwall];
+  if(vi->wall_type == UPwall)return  1 - vis_boundary_type[UPwall];
 
   return 0; //boundary file is visible so hide vent
 }

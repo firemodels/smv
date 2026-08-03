@@ -1739,7 +1739,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     }
   }
   START_TIMER(read_time);
-  for(ii=framestart; ii<patchi->ntimes; ){
+  for(ii=framestart; ii<patchi->ntimes;){
     if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES){
       meshi->patchval_iframe = meshi->patchval + ii*meshi->npatchsize;
     }

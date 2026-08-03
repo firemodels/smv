@@ -146,7 +146,7 @@ void ColorbarGeneral2Simple(colorbardata *cbi){
     }
     ROLLOUT_cb_general->open();
     if(cbi->nnodes > 5)colorbar_simple_type = 6;
-    if(cbi->nnodes < 2 )colorbar_simple_type = 0;
+    if(cbi->nnodes < 2)colorbar_simple_type = 0;
     RADIO_cb_simple_type->set_int_val(colorbar_simple_type);
     return;
   }

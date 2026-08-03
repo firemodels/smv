@@ -98,7 +98,7 @@ public:
   /* (changing the eye point in the process)                */
   /* The lookat point is unaffected                         */
   void set_distance( float new_distance ) {
-    if( new_distance <= 0.0 )  /* Distance has to be positive */
+    if(new_distance <= 0.0)  /* Distance has to be positive */
       return;
 
     /* We find the current forward vector */
