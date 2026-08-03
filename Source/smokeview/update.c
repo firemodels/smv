@@ -95,7 +95,6 @@ void UpdateFrameNumber(int changetime){
       }
     }
     if(show3dsmoke==1 && global_scase.smoke3dcoll.nsmoke3dinfo > 0){
-#ifdef pp_SPEEDUP
       INIT_PRINT_TIMER(update_smoke_time);
       ThreadInit(&uncompresssmoke3d_threads, n_uncompresssmoke3d_threads, use_uncompresssmoke3d_threads, serial_override, UncompressSmoke3DAll);
       ThreadRunLoop(uncompresssmoke3d_threads);
@@ -107,15 +106,6 @@ void UpdateFrameNumber(int changetime){
       ThreadRunLoop(mergesmoke3d_threads);
       ThreadJoin(&mergesmoke3d_threads);
       PRINT_TIMER(merge_smoke_time, "MergeSmoke3D");
-#else
-      INIT_PRINT_TIMER(update_smoke_time);
-      UncompressSmoke3DAll();
-      PRINT_TIMER(update_smoke_time, "UncompressSmoke3D");
-
-      INIT_PRINT_TIMER(merge_smoke_time);
-      MergeSmoke3DAll();
-      PRINT_TIMER(merge_smoke_time, "MergeSmoke3D");
-#endif
       PrintMemoryInfo;
     }
     if(showpatch==1){
@@ -2542,9 +2532,7 @@ void UpdateDisplay(void){
     update_make_iblank = 0;
     update_setvents    = 1;
     update_setcvents   = 1;
-#ifdef pp_SPEEDUP
     printf("blanking data structures updated\n");
-#endif
   }
   if(update_setvents==1){
     SetVentDirs();

@@ -2866,12 +2866,8 @@ int ReadSMV_Configure(){
     ThreadRun(readkeyboard_threads);
   }
 #endif
-#ifdef pp_SPEEDUP
   ThreadInit(&makeiblank_threads, n_makeiblank_threads, use_makeiblank_threads, serial_override, MakeIBlank);
   ThreadRun(makeiblank_threads);
-#else
-  MakeIBlank();
-#endif
   PRINT_TIMER(timer_readsmv, "MakeIBlank");
 
   SetCVentDirs();
