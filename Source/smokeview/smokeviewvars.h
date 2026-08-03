@@ -43,11 +43,9 @@ SVEXTERN threaderdata SVDECL(*sliceparms_threads, NULL);
 SVEXTERN int SVDECL(n_meshnabors_threads, 1), SVDECL(use_meshnabors_threads, 1);
 SVEXTERN threaderdata SVDECL(*meshnabors_threads, NULL);
 
-#ifdef pp_SPEEDUP
 //***MakeIBlank
 SVEXTERN int SVDECL(n_makeiblank_threads, 1), SVDECL(use_makeiblank_threads, 1);
 SVEXTERN threaderdata SVDECL(*makeiblank_threads,       NULL);
-#endif
 
 //***checkfiles
 SVEXTERN int SVDECL(n_checkfiles_threads, 1), SVDECL(use_checkfiles_threads, 1);
@@ -405,9 +403,7 @@ SVEXTERN int nplot3dloaded, nsmoke3dloaded, nisoloaded, nsliceloaded, nvsliceloa
 SVEXTERN int npartloaded, npatchloaded, npart5loaded, npartloaded;
 SVEXTERN int nplot3dvis, nsmoke3dvis, nisovis, nslicevis, nvslicevis;
 SVEXTERN int npatchvis, npart5vis, npartvis;
-#ifdef pp_SPEEDUP
 SVEXTERN int SVDECL(vis_smokemesh, 0), SVDECL(vis_only_smokemesh, 0);
-#endif
 
 SVEXTERN int SVDECL(nplot3dloaded_old,0),     SVDECL(nsmoke3dloaded_old,0), SVDECL(nisoloaded_old,0);
 SVEXTERN int SVDECL(nsliceloaded_old,0),      SVDECL(nvsliceloaded_old,0),  SVDECL(npatchloaded_old,0);
