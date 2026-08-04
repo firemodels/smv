@@ -773,7 +773,7 @@ extern "C" void GLUISkyCB(int var){
     GLUIUpdateFarclip();
   }
 
-  switch (var){
+  switch(var){
     case SKY_BOX:
       if(sky_diam<1.0){
         sky_diam = 1.0;

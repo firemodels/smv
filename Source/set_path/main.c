@@ -37,7 +37,7 @@ void backup_path(char *path_type_local, char *pathbuffer){
 
   strcpy(filebase,path_type_local);
   strcat(filebase,"_path_backup");
-  for(i=0;i<=100;i++){
+  for(i=0; i<=100; i++){
     if(i==0){
       strcpy(file,filebase);
       strcat(file,".txt");
@@ -133,8 +133,7 @@ int main(int argc, char **argv){
     return 1;
   }
 
-
-  for(i=1;i<argc;i++){
+  for(i=1; i<argc; i++){
     arg=argv[i];
     if(arg[0]!='-'||strlen(arg)<=1)break;
 
@@ -337,7 +336,7 @@ int reg_path(int setget, int pathtype, char *path){
   char cPATH[]="Path";
   LPCTSTR PATH=(LPCTSTR)cPATH;
 
-  switch (pathtype) {
+  switch(pathtype){
     case REG_USER_PATH:
       reg_path_local=reg_user_path;
       hTree=HKEY_CURRENT_USER;
@@ -350,10 +349,10 @@ int reg_path(int setget, int pathtype, char *path){
       assert(0);
       break;
   }
-  switch (setget) {
+  switch(setget){
     case REG_GET:
       lRet = RegOpenKeyEx( hTree, reg_path_local, 0, KEY_QUERY_VALUE, &hKey );
-      switch (lRet){
+      switch(lRet){
         case ERROR_FILE_NOT_FOUND:
           printf("%s path not present\n",path_type);
           strcpy(path,"");
@@ -367,7 +366,7 @@ int reg_path(int setget, int pathtype, char *path){
       }
       dwBufLen=sizeof(temp);
       lRet = RegQueryValueEx( hKey, PATH, NULL, NULL, (BYTE*)&temp, &dwBufLen );
-      switch (lRet){
+      switch(lRet){
         case ERROR_SUCCESS:
           strncpy(path,temp,dwBufLen);
           path[dwBufLen]=0;
