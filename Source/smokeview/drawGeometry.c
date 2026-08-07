@@ -412,7 +412,7 @@ void DrawCircVentsExactSolid(int option){
         deltaz = delta;
         break;
       default:
-        assert(0);
+        assert(FFALSE);
         break;
       }
       color=cvi->color;
@@ -544,7 +544,7 @@ void DrawCircVentsExactOutline(int option){
         deltaz = delta;
         break;
       default:
-        assert(0);
+        assert(FFALSE);
         break;
       }
       color=cvi->color;
