@@ -111,7 +111,6 @@ EXTERNCPP int ReadCSVColorbar(colorbardata *colorbar, const char *filepath,
  *    - Reading and initializing from the use config directory.
  *
  * @param colorbars The colorbar collection to read into.
- * @param nini
  * @param show_extreme_mindata Should this colorbar color data below it's
  * bounds?
  * @param rgb_below_min What color should data below the minimum bound be
@@ -122,7 +121,7 @@ EXTERNCPP int ReadCSVColorbar(colorbardata *colorbar, const char *filepath,
  * colored.
  * @param colorbarcopyinfo
  */
-EXTERNCPP void InitDefaultColorbars(colorbar_collection *colorbars, int nini,
+EXTERNCPP void InitDefaultColorbars(colorbar_collection *colorbars,
                                     int show_extreme_mindata,
                                     unsigned char rgb_below_min[3],
                                     int show_extreme_maxdata,

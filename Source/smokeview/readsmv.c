@@ -6243,9 +6243,7 @@ int ReadIni2(const char *inifile, int localfile){
       */
 
       if(MatchINI(buffer, "GCOLORBAR") == 1){
-        colorbardata *cbi;
         int r1, g1, b1;
-        int n;
         int ncolorbarini;
 
         fgets(buffer, 255, stream);
@@ -6254,18 +6252,19 @@ int ReadIni2(const char *inifile, int localfile){
 
         ncolorbarini = MAX(ncolorbarini, 0);
         if(colorbars.ndefaultcolorbars==0){
-          InitDefaultColorbars(&colorbars, ncolorbarini, show_extreme_mindata,
+          InitDefaultColorbars(&colorbars,  show_extreme_mindata,
                              rgb_below_min, show_extreme_maxdata,
                              rgb_above_max, &colorbarcopyinfo);
           UpdateColorbarDialogs();
           UpdateCurrentColorbar(colorbars.colorbarinfo + colorbartype);
           update_colorbar_dialog = 0;
         }
-        colorbars.ncolorbars = colorbars.ndefaultcolorbars + ncolorbarini;
-        for(n = colorbars.ndefaultcolorbars; n<colorbars.ncolorbars; n++){
+        // Iterate through each of the colorbar entries in the GCOLOBAR section
+        // of the ini file (of which there are ncolorbarini).
+        for(int n = 0; n<ncolorbarini; n++){
           char *cb_buffptr;
-
-          cbi = colorbars.colorbarinfo + n;
+          // Add a new (empty) colorbar to the colobars list.
+          colorbardata *cbi = NewColorbar(&colorbars);
           fgets(buffer, 255, stream);
           TrimBack(buffer);
           cb_buffptr = TrimFront(buffer);
@@ -6296,8 +6295,10 @@ int ReadIni2(const char *inifile, int localfile){
           }
           RemapColorbar(cbi, show_extreme_mindata, rgb_below_min,
                   show_extreme_maxdata, rgb_above_max);
+          }
+          // A number of new colorbars may have been added, so update the GUI
+          // dialogs accordingly.
           UpdateColorbarDialogs();
-        }
 
         continue;
       }
@@ -7068,7 +7069,7 @@ int ReadIni(char *inifile){
     if(showall_textures==1)TextureShowMenu(MENU_TEXTURE_SHOWALL);
   }
   if(colorbars.ndefaultcolorbars==0){
-    InitDefaultColorbars(&colorbars, 0, show_extreme_mindata, rgb_below_min,
+    InitDefaultColorbars(&colorbars, show_extreme_mindata, rgb_below_min,
                          show_extreme_maxdata, rgb_above_max, &colorbarcopyinfo);
     UpdateColorbarDialogs();
     UpdateCurrentColorbar(colorbars.colorbarinfo + colorbartype);

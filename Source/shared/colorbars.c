@@ -613,7 +613,14 @@ colorbardata *NextColorbar(colorbar_collection *colorbars){
 }
 
 /* ------------------ NewColorbar ------------------------ */
-
+/**
+ * @brief Allocate a new (empty) colorbar and add it to the colorbar_collection.
+ *
+ * This function handles all of the allocation and array resizing necessary.
+ *
+ * @return A pointer to the new colorbar. This pointer remains valid until
+ * NewColorbar is called again.
+ */
 colorbardata *NewColorbar(colorbar_collection *colorbars){
   colorbardata *cb = NextColorbar(colorbars);
   memset(cb, 0, sizeof(colorbardata));
@@ -655,13 +662,12 @@ void ReadColorbarDir(colorbar_collection *colorbars, const char *dir_path,
   int n_files = GetFileListSize(dir_path, "*.csv", FILE_MODE);
   MakeFileList(dir_path, "*.csv", n_files, NO, &filelist, FILE_MODE);
   for(int i = 0; i < n_files; i++){
-    colorbardata *cbi = NextColorbar(colorbars);
-
     if(filelist[i].file == NULL || strlen(filelist[i].file) == 0) return;
     if(dir_path == NULL || strlen(dir_path) == 0) return;
     char *filepath = CombinePaths(dir_path, filelist[i].file);
+
+    colorbardata *cbi = NewColorbar(colorbars);
     ReadCSVColorbar(cbi, filepath, label, type);
-    colorbars->ncolorbars++;
     cbi->can_adjust = 1;
     FREEMEMORY(filepath);
   }
@@ -677,7 +683,7 @@ void ReadColorbarSubDir(colorbar_collection *colorbars, const char *subdir, int 
 
 /* ------------------ InitDefaultColorbars ------------------------ */
 
-void InitDefaultColorbars(colorbar_collection *colorbars, int nini,
+void InitDefaultColorbars(colorbar_collection *colorbars,
                                     int show_extreme_mindata,
                                     unsigned char rgb_below_min[3],
                                     int show_extreme_maxdata,
