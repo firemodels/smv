@@ -664,21 +664,15 @@ void UpdateColorbarDialogs(void){
 /* ------------------ AddColorbar ------------------------ */
 
 int AddColorbar(int icolorbar){
-  colorbardata *cb_to, *cb_from;
   char cb_label[255];
 
-  colorbars.ncolorbars++;
-  CheckMemory;
-  ResizeMemory((void **)&colorbars.colorbarinfo, colorbars.ncolorbars * sizeof(colorbardata));
+  colorbardata *cb_from = colorbars.colorbarinfo + icolorbar;
+  colorbardata *cb_to = NewColorbar(&colorbars);
   UpdateCurrentColorbar(colorbars.colorbarinfo + colorbartype);
 
-  cb_from = colorbars.colorbarinfo + icolorbar;
   CheckMemory;
 
-  // new colorbar
-
-  cb_to = colorbars.colorbarinfo + colorbars.ncolorbars - 1;
-
+  // Copy all of the data from the source colorbar
   memcpy(cb_to, cb_from, sizeof(colorbardata));
   strcpy(cb_to->menu_label, cb_from->menu_label);
   strcat(cb_to->menu_label, "_copy");
