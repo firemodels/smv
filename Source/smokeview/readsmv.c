@@ -3994,7 +3994,7 @@ int ReadIni2(const char *inifile, int localfile){
       continue;
     }
 
-    if(MatchINI(buffer, "SHOW2TERRAIN") == 1){
+    if(MatchINI(buffer, "SHOWTERRAIN") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i", &global_scase.visTerrainType, &terrain_slice_overlap);
       continue;
@@ -8140,7 +8140,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", visSprinkPart);
   fprintf(fileout, "SHOWSTREAK\n");
   fprintf(fileout, " %i %i %i %i\n", streak5show, streak5step, showstreakhead, streak_index);
-  fprintf(fileout, "SHOW2TERRAIN\n");
+  fprintf(fileout, "SHOWTERRAIN\n");
   fprintf(fileout, " %i %i\n", global_scase.visTerrainType, terrain_slice_overlap);
   fprintf(fileout, "SHOWTHRESHOLD\n");
   fprintf(fileout, " %i %i %f\n", vis_threshold, vis_onlythreshold, temp_threshold);
