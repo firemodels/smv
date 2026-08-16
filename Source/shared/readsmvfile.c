@@ -8919,7 +8919,6 @@ void InitScase(smv_case *scase) {
   scase->tourcoll.tour_dist3 = NULL;
   scase->tourcoll.tour_tstart = 0.0;
   scase->tourcoll.tour_tstop = 100.0;
-  scase->visTerrainType = TERRAIN_HIDDEN;
   scase->fuel_hoc = -1.0;
   scase->fuel_hoc_default = -1.0;
   scase->have_cface_normals = CFACE_NORMALS_NO;
