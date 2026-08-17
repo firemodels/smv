@@ -4943,6 +4943,11 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
     // n_ducts
     // id node1 node2 comp
 
+    if(MatchSMV(buffer, "SHOWTERRAIN") == 1){
+      FGETS(buffer, 255, stream);
+      sscanf(buffer, "%i", &(scase->visTerrainType));
+      continue;
+    }
     if(MatchSMV(buffer, "HoC") == 1){
       int nfuelinfo_local;
 
