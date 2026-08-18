@@ -14,7 +14,7 @@ using gcc and gfortran gnu compilers.
 
 ### Building Libraries Needed by Smokeview
 
-  * Smokeview requires several libraries such as glut, png and glui used for implementing dialog boxes, rendering images or interacting with the OS.  To build these libraries using Intel compilers where platform is linux, osx or win:
+  * Smokeview requires several libraries such as glut, png and glui used for implementing dialog boxes, rendering images and interacting with the OS.  To build these libraries using Intel compilers where platform is linux, osx or win:
       * cd to `smv/Build/LIBS/intel_platform4`
       * type make_LIBS.sh on a Linux or OSX system and make_LIBS.bat on a Windows system
 

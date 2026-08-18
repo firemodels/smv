@@ -2473,6 +2473,12 @@ void TextureShowMenu(int value){
       }
     }
   }
+  if(visGeomTextures==1){
+    show_faces_shaded = 0;
+  }
+  else{
+    show_faces_shaded = 1;
+  }
   GLUIUpdateTextureDisplay();
   updatemenu=1;
   GLUTPOSTREDISPLAY;
@@ -6031,6 +6037,33 @@ void VentMenu(int value){
 #define GEOMETRY_DUMMY                -999
 #define GEOMETRY_TERRAIN_SHOW_TOP       22
 
+/* ------------------ HideGeomTextures ------------------------ */
+
+void HideGeomTextures(void){
+  visGeomTextures=0;
+  for(int i=0; i<global_scase.ngeominfo; i++){
+    geomdata *geomi;
+    surfdata *surf;
+    texturedata *textii=NULL;
+
+    geomi = global_scase.geominfo + i;
+    surf = geomi->surfgeom;
+    if(global_scase.terrain_texture_coll.terrain_textures!=NULL){
+      textii = global_scase.terrain_texture_coll.terrain_textures+iterrain_textures;
+    }
+    else{
+      if(surf!=NULL)textii = surf->textureinfo;
+    }
+    if(textii!=NULL){
+      textii->display = 0;
+      break;
+    }
+  }
+  GLUIUpdateTextureDisplay();
+  updatemenu=1;
+  GLUTPOSTREDISPLAY;
+}
+
 /* ------------------ ImmersedMenu ------------------------ */
 
 void ImmersedMenu(int value){
@@ -6123,6 +6156,9 @@ void ImmersedMenu(int value){
     default:
       assert(FFALSE);
       break;
+  }
+  if(show_faces_shaded == 1){
+   HideGeomTextures();
   }
   GLUIUpdateGeometryControls();
 
