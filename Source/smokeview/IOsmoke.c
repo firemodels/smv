@@ -1361,6 +1361,9 @@ void SkipSmokeFrames(MFILE *SMOKE3DFILE, smoke3ddata *smoke3di, int nsteps){
 
   if(nsteps==0)return;
   skip_local = 4+8*4+4;            // header
+  if(smoke3di->version == 2){
+    skip_local = 4+2*4+4;            // 2 min/max bounds floats
+  }
   for(i = 0; i<nsteps; i++){
     skip_local += 4+4+4;           // time
     skip_local += 4+2*4+4;         // size
@@ -1709,6 +1712,11 @@ int GetSmoke3DVersion2(smoke3ddata *smoke3di){
   smoke3di->file = file;
 
   SKIP;fread(nxyz, 4, 8, SMOKE3DFILE); SKIP;
+  if(smoke3di->version == 2){
+    float bounds_local[2];
+    
+    SKIP_SMOKE(SMOKE3DFILE);fread(bounds_local,4,2,SMOKE3DFILE);SKIP_SMOKE(SMOKE3DFILE);
+  }
   {
     float time_local;
     int nchars[2];
@@ -2112,6 +2120,12 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   int nxyz_local[8];
 
   SKIP_SMOKE(SMOKE3DFILE);FREAD_SMOKE(nxyz_local,4,8,SMOKE3DFILE);SKIP_SMOKE(SMOKE3DFILE);
+  if(smoke3di->version == 2){
+    float bounds_local[2];
+    
+    SKIP_SMOKE(SMOKE3DFILE);fread(bounds_local,4,2,SMOKE3DFILE);SKIP_SMOKE(SMOKE3DFILE);
+    file_size_local +=4+2*8+4;
+  }
   file_size_local +=4+4*8+4;
   smoke3di->is1=nxyz_local[2];
   smoke3di->is2=nxyz_local[3];
