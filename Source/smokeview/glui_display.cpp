@@ -352,7 +352,7 @@ void UpdateGluiLabelText(void){
   if(LabelGetNUserLabels(&global_scase.labelscoll)>0){
     labeldata *gl;
 
-    gl=&LABEL_local;
+    gl=&LABEL_global;
 
     LIST_LB_labels->set_int_val(gl->glui_id);
     EDIT_LB_label_string->set_text(gl->name);
@@ -425,7 +425,7 @@ void TextLabelsCB(int var){
   int count;
   char name[300];
 
-  gl = &LABEL_local;
+  gl = &LABEL_global;
   switch(var){
   case LB_VISLABELS:
     updatemenu = 1;
@@ -1251,7 +1251,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
 
   // -------------- User labels -------------------
 
-  gl=&LABEL_local;
+  gl=&LABEL_global;
   ROLLOUT_user_labels = glui_labels->add_rollout("Labels + Ticks",false,LABELS_TICKS_ROLLOUT,DisplayRolloutCB);
   TOGGLE_ROLLOUT(displayprocinfo, ndisplayprocinfo, ROLLOUT_user_labels, LABELS_TICKS_ROLLOUT, glui_labels);
 
