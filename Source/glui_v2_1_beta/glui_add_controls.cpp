@@ -99,7 +99,9 @@ int    GLUI_Main::add_control( GLUI_Node *parent, GLUI_Control *control )
   if ( parent_control->hidden OR 
        (parent_control->collapsible AND NOT parent_control->is_open ) )
   {
-    control->hidden = true;
+    // Compound controls may already have children when added to a hidden panel.
+    //*** keep errant widgets from appearing
+    control->hide_internal(true);
   }
 
   return true;

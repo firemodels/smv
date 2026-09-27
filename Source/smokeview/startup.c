@@ -1464,7 +1464,7 @@ void InitVars(void){
     gl->tick_direction[2] = 0.0;
     gl->show_tick = 0;
     gl->labeltype = TYPE_INI;
-    memcpy(&LABEL_local,&LABEL_default,sizeof(labeldata));
+    memcpy(&LABEL_global,&LABEL_default,sizeof(labeldata));
   }
 
   strcpy(startup_lang_code,"en");
