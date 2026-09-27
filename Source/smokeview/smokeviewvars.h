@@ -746,7 +746,7 @@ SVEXTERN portdata VP_hrr_plot, VP_slice_plot;
 
 SVEXTERN int SVDECL(in_external,0);
 SVEXTERN int SVDECL(label_list_index,0);
-SVEXTERN labeldata LABEL_local, SVDECL(*LABEL_global_ptr,NULL), LABEL_default;
+SVEXTERN labeldata LABEL_global, SVDECL(*LABEL_global_ptr,NULL), LABEL_default;
 
 SVEXTERN int port_pixel_width, port_pixel_height;
 SVEXTERN float port_unit_width, port_unit_height;
