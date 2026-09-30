@@ -4248,7 +4248,13 @@ void DoNonStereo(void){
 
 void DisplayCB(void){
   SNIFF_ERRORS("DisplayDB: start");
-  DoScript();
+  // force scene display before running a script
+  if(runscript_firsttime == 1){
+    runscript_firsttime = 0;
+  }
+  else{
+    DoScript();
+  }
   UpdateDisplay();
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   if(stereotype==STEREO_NONE){

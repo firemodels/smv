@@ -1718,6 +1718,7 @@ SVEXTERN char SVDECL(*script_dir_path,NULL);
 SVEXTERN int SVDECL(nscriptinfo,0);
 SVEXTERN scriptfiledata SVDECL(*script_recording,NULL);
 SVEXTERN int SVDECL(runscript,0), SVDECL(noexit,0);
+SVEXTERN int SVDECL(runscript_firsttime, 1);
 SVEXTERN int SVDECL(serial_override, 0);
 SVEXTERN int SVDECL(runhtmlscript, 0);
 #ifdef INMAIN
