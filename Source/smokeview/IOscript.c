@@ -2521,10 +2521,6 @@ void ScriptLoadBoundary(scriptdata *scripti, int meshnum){
   int count=0;
 
   PRINTF("Script: loading boundary files of type: %s\n\n",scripti->cval);
-  if(from_commandline == 1){
-    solid_state = visBLOCKHide;
-    visBlocks = solid_state;
-  }
   for(i=0; i<global_scase.npatchinfo; i++){
     patchdata *patchi;
 
@@ -2963,10 +2959,6 @@ void ScriptLoadFile(scriptdata *scripti){
 
     patchi = global_scase.patchinfo + i;
     if(scripti->cval != NULL && strcmp(patchi->file,scripti->cval)==0){
-      if(from_commandline == 1){
-        solid_state = visBLOCKHide;
-        visBlocks = solid_state;
-      }
       patchi->finalize = 1;
       ReadBoundary(i,LOAD,&errorcode);
       if(show_boundaryfiles_interior == 1){
