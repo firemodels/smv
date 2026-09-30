@@ -5947,6 +5947,7 @@ void HideInternalBlockages(void){
   hide_internal_blockages = 1;
   outline_state = OUTLINE_NONE;
   solid_state = visBLOCKHide;
+  visBlocks = solid_state;
   show_faces_shaded = 1;
   ImmersedMenu(GEOMETRY_HIDE);
   updatemenu = 1;
