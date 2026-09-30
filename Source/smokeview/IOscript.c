@@ -2546,7 +2546,6 @@ void ScriptLoadBoundary(scriptdata *scripti, int meshnum){
       if(scripti->cval != NULL && BoundLabelMatch(patchi, scripti->cval) == 0){
         ReadBoundary(i, LOAD, &errorcode);
         count++;
-        if(meshnum != -1)break;
       }
     }
   }
