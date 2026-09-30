@@ -2674,9 +2674,23 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     if(force_bound_update == 1 || current_script_command != NULL)bound_update = 1;
     if(patchi->boundary == 1){
       if(bound_update==1||patch_bounds_defined==0 || BuildGbndFile(BOUND_PATCH) == 1){
+        int set_valmin_save, set_valmax_save;
+        float qmin_save, qmax_save;
+
+        // Preserve user bounds when recomputing geometry boundary bounds.
+        GLUIGetMinMax(BOUND_PATCH, patchi->label.shortlabel, &set_valmin_save, &qmin_save, &set_valmax_save, &qmax_save);
         GetGlobalPatchBounds(1,DONOT_SET_MINMAX_FLAG,patchi->label.shortlabel);
         SetLoadedPatchBounds(NULL, 0);
         GLUIPatchBoundsCPP_CB(BOUND_DONTUPDATE_COLORS);
+        if(set_valmin_save == BOUND_SET_MIN){
+          SetPatchMin(set_valmin_save, qmin_save, patchi->label.shortlabel);
+        }
+        if(set_valmax_save == BOUND_SET_MAX){
+          SetPatchMax(set_valmax_save, qmax_save, patchi->label.shortlabel);
+        }
+        if(set_valmin_save == BOUND_SET_MIN || set_valmax_save == BOUND_SET_MAX){
+          UpdateAllBoundaryColors(0);
+        }
       }
     }
     else{
