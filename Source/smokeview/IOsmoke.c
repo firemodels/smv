@@ -142,33 +142,15 @@ void UpdateSmoke3dFileParms(void){
     glVertex3f(XX,YY,ZZ+z_offset[mm]);                                \
   }
 
+// GPU fire opacity is selected in the shader from a per-vertex half-depth flag.
+// Use raw soot values for the zero-soot test; the CPU is_firenode array is not updated in GPU mode.
 // -------------------------- DRAWVERTEXGPU ----------------------------------
 #ifdef pp_GPU
 #define DRAWVERTEXGPU(XX,YY,ZZ) \
-  value[0] = smokealpha_map[alphaf_in[n11]]; \
-  value[1] = smokealpha_map[alphaf_in[n12]]; \
-  value[2] = smokealpha_map[alphaf_in[n22]]; \
-  value[3] = smokealpha_map[alphaf_in[n21]]; \
-  if(is_firenode != NULL){\
-    if(is_firenode[n11] == FIRE_USE_ALPHAMAP)value[0] = firealpha_map[alphaf_in[n11]]; \
-    if(is_firenode[n12] == FIRE_USE_ALPHAMAP)value[1] = firealpha_map[alphaf_in[n12]]; \
-    if(is_firenode[n22] == FIRE_USE_ALPHAMAP)value[2] = firealpha_map[alphaf_in[n22]]; \
-    if(is_firenode[n21] == FIRE_USE_ALPHAMAP)value[3] = firealpha_map[alphaf_in[n21]]; \
-  }\
-  if(iblank_smoke3d!=NULL){\
-    if(iblank_smoke3d[n11]==SOLID)value[0]=0;\
-    if(iblank_smoke3d[n12]==SOLID)value[1]=0;\
-    if(iblank_smoke3d[n22]==SOLID)value[2]=0;\
-    if(iblank_smoke3d[n21]==SOLID)value[3]=0;\
-  }\
-  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
-  if(firecolor==NULL&&value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
-  if(ABS(value[0]-value[2])<ABS(value[1]-value[3])){     \
-    xyzindex=xyzindex1;                                  \
-  }                                                      \
-  else{                                                  \
-    xyzindex=xyzindex2;                                  \
-  }                                                      \
+  value[0] = have_smoke_local==1 ? smokealpha_map[alphaf_in[n11]] : 0; \
+  value[1] = have_smoke_local==1 ? smokealpha_map[alphaf_in[n12]] : 0; \
+  value[2] = have_smoke_local==1 ? smokealpha_map[alphaf_in[n22]] : 0; \
+  value[3] = have_smoke_local==1 ? smokealpha_map[alphaf_in[n21]] : 0; \
   if(firecolor!=NULL){\
     fvalue[0]=firecolor[n11];\
     fvalue[1]=firecolor[n12];\
@@ -181,9 +163,23 @@ void UpdateSmoke3dFileParms(void){
     fvalue[2]=0.0;\
     fvalue[3]=0.0;\
   }\
+  if(iblank_smoke3d!=NULL){\
+    if(iblank_smoke3d[n11]==SOLID){value[0]=0; fvalue[0]=0;}\
+    if(iblank_smoke3d[n12]==SOLID){value[1]=0; fvalue[1]=0;}\
+    if(iblank_smoke3d[n22]==SOLID){value[2]=0; fvalue[2]=0;}\
+    if(iblank_smoke3d[n21]==SOLID){value[3]=0; fvalue[3]=0;}\
+  }\
+  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0 && (have_fire_local==0 || (fvalue[0]==0&&fvalue[1]==0&&fvalue[2]==0&&fvalue[3]==0)))continue;\
+  if(ABS(value[0]-value[2])<ABS(value[1]-value[3])){     \
+    xyzindex=xyzindex1;                                  \
+  }                                                      \
+  else{                                                  \
+    xyzindex=xyzindex2;                                  \
+  }                                                      \
   for(node=0; node<6; node++){                             \
     int mm;\
-    mm = xyzindex[node];                                 \
+    mm = xyzindex[node];\
+    glVertexAttrib1f(GPU_firehalfdepth, have_smoke_local==0 || alphaf_in[mm==0?n11:mm==1?n12:mm==2?n22:n21]==0 ? 1.0f : 0.0f);                                 \
     glVertexAttrib1f(GPU_hrr, fvalue[mm]); \
     glVertexAttrib1f(GPU_smokealpha, value[mm]); \
     glVertex3f(XX, YY, ZZ);                                \
@@ -197,29 +193,10 @@ void UpdateSmoke3dFileParms(void){
   z_offset[YYY]=znode_offset[m12];\
   z_offset[ZZZ]=znode_offset[m22];\
   z_offset[3]=znode_offset[m21];\
-  value[0] = smokealpha_map[alphaf_in[n11]]; \
-  value[1] = smokealpha_map[alphaf_in[n12]]; \
-  value[2] = smokealpha_map[alphaf_in[n22]]; \
-  value[3] = smokealpha_map[alphaf_in[n21]]; \
-  if(is_firenode != NULL){\
-    if(is_firenode[n11] == FIRE_USE_ALPHAMAP)value[0] = firealpha_map[alphaf_in[n11]]; \
-    if(is_firenode[n12] == FIRE_USE_ALPHAMAP)value[1] = firealpha_map[alphaf_in[n12]]; \
-    if(is_firenode[n22] == FIRE_USE_ALPHAMAP)value[2] = firealpha_map[alphaf_in[n22]]; \
-    if(is_firenode[n21] == FIRE_USE_ALPHAMAP)value[3] = firealpha_map[alphaf_in[n21]]; \
-  }\
-  if(iblank_smoke3d!=NULL){\
-    if(iblank_smoke3d[n11]==SOLID)value[0]=0;\
-    if(iblank_smoke3d[n12]==SOLID)value[1]=0;\
-    if(iblank_smoke3d[n22]==SOLID)value[2]=0;\
-    if(iblank_smoke3d[n21]==SOLID)value[3]=0;\
-  }\
-  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
-  if(ABS(value[0]-value[2])<ABS(value[1]-value[3])){     \
-    xyzindex=xyzindex1;                                  \
-  }                                                      \
-  else{                                                  \
-    xyzindex=xyzindex2;                                  \
-  }                                                        \
+  value[0] = have_smoke_local==1 ? smokealpha_map[alphaf_in[n11]] : 0; \
+  value[1] = have_smoke_local==1 ? smokealpha_map[alphaf_in[n12]] : 0; \
+  value[2] = have_smoke_local==1 ? smokealpha_map[alphaf_in[n22]] : 0; \
+  value[3] = have_smoke_local==1 ? smokealpha_map[alphaf_in[n21]] : 0; \
   if(firecolor!=NULL){\
     fvalue[0]=firecolor[n11];\
     fvalue[1]=firecolor[n12];\
@@ -232,9 +209,23 @@ void UpdateSmoke3dFileParms(void){
     fvalue[2]=0.0;\
     fvalue[3]=0.0;\
   }\
+  if(iblank_smoke3d!=NULL){\
+    if(iblank_smoke3d[n11]==SOLID){value[0]=0; fvalue[0]=0;}\
+    if(iblank_smoke3d[n12]==SOLID){value[1]=0; fvalue[1]=0;}\
+    if(iblank_smoke3d[n22]==SOLID){value[2]=0; fvalue[2]=0;}\
+    if(iblank_smoke3d[n21]==SOLID){value[3]=0; fvalue[3]=0;}\
+  }\
+  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0 && (have_fire_local==0 || (fvalue[0]==0&&fvalue[1]==0&&fvalue[2]==0&&fvalue[3]==0)))continue;\
+  if(ABS(value[0]-value[2])<ABS(value[1]-value[3])){     \
+    xyzindex=xyzindex1;                                  \
+  }                                                      \
+  else{                                                  \
+    xyzindex=xyzindex2;                                  \
+  }                                                        \
   for(node=0; node<6; node++){                             \
     int mm;\
-    mm = xyzindex[node];                                 \
+    mm = xyzindex[node];\
+    glVertexAttrib1f(GPU_firehalfdepth, have_smoke_local==0 || alphaf_in[mm==0?n11:mm==1?n12:mm==2?n22:n21]==0 ? 1.0f : 0.0f);                                 \
     glVertexAttrib1f(GPU_smokealpha,(float)value[mm]);\
     glVertexAttrib1f(GPU_hrr,(float)fvalue[mm]);\
     glVertex3f(XX,YY,ZZ+z_offset[mm]);                                \
@@ -290,7 +281,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   int iii, jjj, kkk;
   int slice_end, slice_beg;
   int ssmokedir;
-  unsigned char *iblank_smoke3d, *is_firenode;
+  unsigned char *iblank_smoke3d;
   int have_smoke_local;
   int have_fire_local;
 
@@ -383,8 +374,6 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   xyzindex2[4] = 2;
   xyzindex2[5] = 3;
 
-  is_firenode = meshi->is_firenode;
-
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
   glUniform1f(GPU_soot_multiplier, soot_multiplier);
@@ -405,7 +394,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   TransparentOn();
 
-  unsigned char *smokealpha_map, *firealpha_map;
+  unsigned char *smokealpha_map;
   switch(ssmokedir){
 
     // +++++++++++++++++++++++++++++++++++ DIR 1 +++++++++++++++++++++++++++++++++++++++
@@ -414,7 +403,6 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case -1:
 
     smokealpha_map = smoke3di->alphas_smokedir[ALPHA_X];
-    firealpha_map  = smoke3di->alphas_firedir[ALPHA_X];
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 
@@ -487,7 +475,6 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case -2:
 
     smokealpha_map = smoke3di->alphas_smokedir[ALPHA_Y];
-    firealpha_map  = smoke3di->alphas_firedir[ALPHA_Y];
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 
@@ -560,7 +547,6 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case -3:
 
     smokealpha_map = smoke3di->alphas_smokedir[ALPHA_Z];
-    firealpha_map  = smoke3di->alphas_firedir[ALPHA_Z];
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 

@@ -267,7 +267,7 @@ int SetSmokeShaders(){
     "uniform float soot_multiplier_u, fire_alpha0255_u;"
     "uniform sampler1D smokecolormap_u;"
     "uniform int have_smoke_u, have_fire_u, use_fire_alpha_u, force_alpha_opaque_u;"
-    "varying  float fireval_v, alpha01_v;"
+    "varying  float fireval_v, alpha01_v, fire_halfdepth_v;"
 
     "void main(){"
     "  vec3 firecolor_l;"
@@ -281,7 +281,7 @@ int SetSmokeShaders(){
     "    }"
     "    else{"
     "      opacity_multiplier_l=1.0+(soot_multiplier_u-1.0)*fireval_v/global_hrrpuv_max_u;"
-    "      fire_alpha01_l = alpha01_v*opacity_multiplier_l;"
+    "      fire_alpha01_l = mix(alpha01_v*opacity_multiplier_l, fire_alpha0255_u/255.0, fire_halfdepth_v);"
     "    }"
     "    if(force_alpha_opaque_u == 1 && fire_alpha01_l>0.0)fire_alpha01_l = 1.0;"
     "    if(fireval_v>global_hrrpuv_cb_min_u)alpha01_l = fire_alpha01_l;"
@@ -305,13 +305,14 @@ int SetSmokeShaders(){
 
   const GLchar *VertexShaderSource[]={
     "#version 120\n"
-    "attribute float fire_a, smoke_alpha0255_a;"
-    "varying float fireval_v, alpha01_v;"
+    "attribute float fire_a, smoke_alpha0255_a, fire_halfdepth_a;"
+    "varying float fireval_v, alpha01_v, fire_halfdepth_v;"
     "uniform float global_hrrpuv_max_u;"
 
     "void main(){"
     "  fireval_v = (fire_a/255.0)*global_hrrpuv_max_u;"
     "  alpha01_v = smoke_alpha0255_a/255.0;"
+    "  fire_halfdepth_v = fire_halfdepth_a;"
     "  gl_Position = ftransform();"
     "}"
 };
@@ -335,6 +336,7 @@ int SetSmokeShaders(){
 
   GPU_hrr                    = glGetAttribLocation(p_smoke,  "fire_a");
   GPU_smokealpha             = glGetAttribLocation(p_smoke,  "smoke_alpha0255_a");
+  GPU_firehalfdepth          = glGetAttribLocation(p_smoke,  "fire_halfdepth_a");
 
   GPU_global_hrrpuv_max      = glGetUniformLocation(p_smoke, "global_hrrpuv_max_u");
   GPU_global_hrrpuv_cb_min   = glGetUniformLocation(p_smoke, "global_hrrpuv_cb_min_u");
