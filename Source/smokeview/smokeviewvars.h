@@ -908,6 +908,7 @@ SVEXTERN int GPU_hrr, GPU_global_hrrpuv_max, GPU_global_hrrpuv_cb_min;
 SVEXTERN int GPU_fire_alpha, GPU_force_alpha_opaque, GPU_have_smoke, GPU_smokecolormap;
 SVEXTERN int GPU_have_fire;
 SVEXTERN int GPU_smokealpha;
+SVEXTERN int GPU_firehalfdepth;
 SVEXTERN int GPU_use_fire_alpha, GPU_soot_multiplier;
 
 SVEXTERN int GPUzone_zonedir;
