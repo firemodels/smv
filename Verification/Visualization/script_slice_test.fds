@@ -76,3 +76,4 @@
 &BNDF QUANTITY='GAUGE HEAT FLUX' /   Common surface quantities. Good for monitoring fire spread.
 &BNDF QUANTITY='BURNING RATE' /
 &BNDF QUANTITY='WALL TEMPERATURE' /
+&TAIL /
