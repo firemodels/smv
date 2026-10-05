@@ -183,6 +183,13 @@ typedef struct _curvedata{
   float linewidth;
 } curvedata;
 
+/* --------------------------  patchmenudata ------------------------------------ */
+
+typedef struct _patchmenudata{
+  char quantity[256];
+  int index, loaded, isgeom, skip;
+} patchmenudata;
+
 /* --------------------------  plot2ddata ----------------------------------- */
 
 #define PLOT2D_MAX_CURVES 50

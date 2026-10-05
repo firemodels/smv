@@ -5,15 +5,21 @@ LABEL
   put rendered files in specified directory
 
 RENDERDIR
- ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+ .
 
+UNLOADALL
 LOADBOUNDARY
  WALL TEMPERATURE
 SETTIMEVAL
- 2.5
+ 1.000000
 RENDERONCE
- sphere_propaneu_walltemp_25
+ sptest_bound_001
 SETTIMEVAL
- 5.0
+ 3.000000
 RENDERONCE
- sphere_propaneu_walltemp_50
+ sptest_bound_003
+SETTIMEVAL
+ 5.000000
+RENDERONCE
+ sptest_bound_005
+

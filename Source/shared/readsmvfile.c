@@ -3576,13 +3576,15 @@ int ParseBNDFProcess(smv_case *scase, bufferstreamdata *stream, char *buffer, in
     else if(patchi->structured==NO){
       char geomlabel[256];
 
-      strcpy(geomlabel, "(geometry)");
+      strcpy(geomlabel, "");
       if(patchi->filetype_label!=NULL){
         if(strcmp(patchi->filetype_label, "EXIMBND_FACES")==0){
+          strcpy(geomlabel, "(geometry)");
           strcat(geomlabel, " - EXIM faces");
           strcpy(geomlabel2, " - EXIM faces");
         }
-        if(strcmp(patchi->filetype_label, "CUT_CELLS")==0){
+        else if(strcmp(patchi->filetype_label, "CUT_CELLS")==0){
+          strcpy(geomlabel, "(geometry)");
           strcat(geomlabel, " - Cut cell faces");
           strcpy(geomlabel2, " - Cut cell faces");
         }

@@ -1,7 +1,7 @@
 
 RENDERDIR
  ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
-
+ 
 UNLOADALL
 LOADFILE
  geom2_1_1.sf
@@ -23,16 +23,8 @@ RENDERONCE
 // render boundary files
 
 UNLOADALL
-LOADFILE
- geom2_1_1.be
-LOADFILE
- geom2_2_1.be
-LOADFILE
- geom2_3_1.be
-LOADFILE
- geom2_4_1.be
-LOADINIFILE
- geom2.ini
+LOADBOUNDARY
+ WALL TEMPERATURE
 SETTIMEVAL
  5.0
 RENDERONCE

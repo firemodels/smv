@@ -2498,6 +2498,21 @@ void ScriptLoadTour(scriptdata *scripti){
   updatemenu=1;
 }
 
+/* ------------------ BoundLabelMatch ------------------------ */
+
+int BoundLabelMatch(patchdata *patchi, char *scriptlabel){
+  char plabel[256], slabel[256];
+
+  strcpy(plabel, patchi->label.longlabel);
+  strcpy(slabel, scriptlabel);
+  if(patchi->patch_filetype != PATCH_GEOMETRY_BOUNDARY){
+    return strcmp(plabel, slabel);
+  }
+  char *paren = strchr(slabel, '(');
+  if(paren != NULL)paren[0] = 0;
+  return strcmp(plabel, slabel);
+}
+
 /* ------------------ ScriptLoadBoundary ------------------------ */
 
 void ScriptLoadBoundary(scriptdata *scripti, int meshnum){
@@ -2510,17 +2525,40 @@ void ScriptLoadBoundary(scriptdata *scripti, int meshnum){
     patchdata *patchi;
 
     patchi = global_scase.patchinfo + i;
+    patchi->finalize = 0;
+  }
+  for(i=global_scase.npatchinfo-1;i>=0;i--){
+    patchdata *patchi;
+
+    patchi = global_scase.patchinfo + i;
     if(meshnum == -1 || patchi->blocknumber + 1 == meshnum){
-      if(scripti->cval != NULL && strcmp(patchi->label.longlabel, scripti->cval) == 0){
-        ReadBoundary(i, LOAD, &errorcode);
-        count++;
-        if(meshnum != -1)break;
+      if(scripti->cval != NULL && BoundLabelMatch(patchi, scripti->cval) == 0){
+        patchi->finalize = 1;
+        break;
       }
     }
   }
+  for(i=0;i<global_scase.npatchinfo;i++){
+    patchdata *patchi;
+
+    patchi = global_scase.patchinfo + i;
+    if(meshnum == -1 || patchi->blocknumber + 1 == meshnum){
+      if(scripti->cval != NULL && BoundLabelMatch(patchi, scripti->cval) == 0){
+        ReadBoundary(i, LOAD, &errorcode);
+        count++;
+      }
+    }
+  }
+  HideInternalBlockages();
   if(count == 0){
     fprintf(stderr, "*** Error: Boundary files of type %s failed to load\n", scripti->cval);
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: Boundary files of type %s failed to load\n", scripti->cval);
+  }
+  if(show_boundaryfiles_interior == 1){
+    ShowBoundaryMenu(SHOW_INTERIOR_WALL_MENU);
+  }
+  else{
+    ShowBoundaryMenu(HIDE_INTERIOR_WALL_MENU);
   }
   force_redisplay=1;
   updatemenu=1;
@@ -2923,6 +2961,12 @@ void ScriptLoadFile(scriptdata *scripti){
     if(scripti->cval != NULL && strcmp(patchi->file,scripti->cval)==0){
       patchi->finalize = 1;
       ReadBoundary(i,LOAD,&errorcode);
+      if(show_boundaryfiles_interior == 1){
+        ShowBoundaryMenu(SHOW_INTERIOR_WALL_MENU);
+      }
+      else{
+        ShowBoundaryMenu(HIDE_INTERIOR_WALL_MENU);
+      }
       return;
     }
   }
@@ -3694,7 +3738,7 @@ int RunScriptCommand(scriptdata *script_command){
       ScriptLoadIniFile(scripti);
       break;
     case SCRIPT_GPUOFF:
-#ifdef pp_GPOU
+#ifdef pp_GPU
       usegpu = 0;
 #endif
       gpuactive = 0;

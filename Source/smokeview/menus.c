@@ -35,6 +35,11 @@ float     part_load_time;
 #include <direct.h>
 #endif
 
+#define MENU_PATCH_DUMMY  -1
+#define MENU_PATCH_UNLOAD -2
+#define MENU_PATCH_UNLOAD2 -3
+void LoadBoundaryMenu2(int var);
+
 #define ABOUT_DATA_TRANSFER_TEST      2
 
 #define GEOM_Vents                   15
@@ -47,6 +52,24 @@ float     part_load_time;
 #define GEOM_HideAll                 13
 #define GEOM_BOUNDING_BOX_MOUSE_DOWN  9
 #define SKY_OUTLINE                   4
+
+#define GEOMETRY_SOLID                   0
+#define GEOMETRY_OUTLINE                 1
+#define GEOMETRY_SOLIDOUTLINE            2
+#define GEOMETRY_INTERIOR_SOLID         23
+#define GEOMETRY_INTERIOR_OUTLINE       24
+#define GEOMETRY_HIDE                    7
+#define GEOMETRY_SHOWNORMAL              3
+#define GEOMETRY_SORTFACES               6
+#define GEOMETRY_SMOOTHNORMAL            4
+#define GEOMETRY_HILIGHTSKINNY           5
+#define GEOMETRY_HIDEALL                 8
+#define GEOMETRY_INSIDE_DOMAIN          25
+#define GEOMETRY_OUTSIDE_DOMAIN         15
+#define GEOMETRY_VOLUMES_INTERIOR       18
+#define GEOMETRY_VOLUMES_EXTERIOR       19
+#define GEOMETRY_DUMMY                -999
+#define GEOMETRY_TERRAIN_SHOW_TOP       22
 
 #define MENU_TERRAIN_SHOW_SURFACE      -1
 #define MENU_TERRAIN_SHOW_LINES        -2
@@ -3253,9 +3276,7 @@ void LoadUnloadMenu(int value){
     for(i = 0; i<global_scase.nplot3dinfo; i++){
       ReadPlot3D("",i,UNLOAD,&errorcode);
     }
-    for(i=0; i<global_scase.npatchinfo; i++){
-      ReadBoundary(i,UNLOAD,&errorcode);
-    }
+    LoadBoundaryMenu2(MENU_PATCH_UNLOAD);
     for(i=0; i<global_scase.npartinfo; i++){
       ReadPart("",i,UNLOAD,&errorcode);
     }
@@ -3342,6 +3363,12 @@ void LoadUnloadMenu(int value){
       assert(patchi->loaded==0||patchi->loaded==1);
       if(patchi->loaded == 1){
         ReadBoundary(i, LOAD,&errorcode);
+      }
+      if(show_boundaryfiles_interior == 1){
+        ShowBoundaryMenu(SHOW_INTERIOR_WALL_MENU);
+      }
+      else{
+        ShowBoundaryMenu(HIDE_INTERIOR_WALL_MENU);
       }
     }
 
@@ -5563,11 +5590,19 @@ void LoadIsoMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }
 
-/* ------------------ LoadBoundaryMenu ------------------------ */
+/* ------------------ InPatchList ------------------------ */
 
 int InPatchList(patchdata *patchj, patchdata *patchi){
+// include boundary file if it is geometry and has the same quantity
+  if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
+    char label[256], *ext;
+
+    strcpy(label, patchj->label.longlabel);
+    ext = strchr(label, '(');
+    if(ext != NULL)ext[0] = 0;
+    if(strcmp(label, patchi->label.longlabel) == 0)return 1;
+  }
   if(strcmp(patchj->label.longlabel, patchi->label.longlabel)!=0)return 0;
-  if(patchj->patch_filetype!=patchi->patch_filetype)return 0;
   return 1;
 }
 
@@ -5743,9 +5778,44 @@ void LoadBoundaryMenu(int value){
       break;
     }
   }
+  if(show_boundaryfiles_interior == 1){
+    ShowBoundaryMenu(SHOW_INTERIOR_WALL_MENU);
+  }
+  else{
+    ShowBoundaryMenu(HIDE_INTERIOR_WALL_MENU);
+  }
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
+}
+
+/* ------------------ LoadBoundaryMenu2 ------------------------ */
+
+void LoadBoundaryMenu2(int value){
+  if(value==MENU_PATCH_DUMMY)return;
+  if(value == MENU_PATCH_UNLOAD|| value == MENU_PATCH_UNLOAD2){
+    for(int i=0;i<global_scase.npatchinfo;i++){
+      int errorcode;
+
+      ReadBoundary(i, UNLOAD, &errorcode);
+    }
+    for(int i=0;i<npatchmenuinfo;i++){
+      patchmenudata *pmi;
+
+      pmi = patchmenuinfo + i;
+      pmi->loaded=0;
+    }
+    ShowInternalBlockages();
+  }
+  else{
+    patchmenudata *pmi;
+
+    LoadBoundaryMenu2(MENU_PATCH_UNLOAD2);
+    pmi = patchmenuinfo + value;
+    int index = -(10 + pmi->index);
+    pmi->loaded = 1;
+    LoadBoundaryMenu(index);
+  }
 }
 
 /* ------------------ GetInternalFaceShow ------------------------ */
@@ -5777,6 +5847,69 @@ int GetInternalFaceShow(void){
   return show;
 }
 
+/* ------------------ ImmersedMenu ------------------------ */
+
+void ImmersedMenu(int value){
+  if(value == GEOMETRY_DUMMY)return;
+  updatemenu = 1;
+  switch(value){
+  case GEOM_TriangleCount:
+    show_triangle_count = 1 - show_triangle_count;
+    break;
+  case GEOMETRY_TERRAIN_SHOW_TOP:
+    terrain_showonly_top = 1 - terrain_showonly_top;
+    GLUIUpdateShowOnlyTop();
+    break;
+  case GEOMETRY_SOLIDOUTLINE:
+    show_faces_shaded = 1;
+    show_faces_outline = 1;
+    break;
+  case GEOMETRY_SOLID:
+    show_faces_shaded = 1;
+    show_faces_outline = 0;
+    break;
+  case GEOMETRY_OUTLINE:
+    show_faces_shaded = 0;
+    show_faces_outline = 1;
+    break;
+  case GEOMETRY_SHOWNORMAL:
+    show_geom_normal = 1 - show_geom_normal;
+    break;
+  case GEOMETRY_SMOOTHNORMAL:
+    smooth_geom_normal = 1 - smooth_geom_normal;
+    break;
+  case GEOMETRY_HILIGHTSKINNY:
+    hilight_skinny = 1 - hilight_skinny;
+    break;
+  case GEOMETRY_SORTFACES:
+    sort_geometry = 1 - sort_geometry;
+    break;
+  case GEOMETRY_HIDE:
+    show_faces_shaded = 0;
+    show_faces_outline = 0;
+    break;
+  case GEOMETRY_HIDEALL:
+    ImmersedMenu(GEOMETRY_HIDE);
+    show_geom_normal = 0;
+    break;
+  case MENU_DUMMY:
+    break;
+  case GEOMETRY_INSIDE_DOMAIN:
+    showgeom_inside_domain = 1 - showgeom_inside_domain;
+    GLUIUpdateWhereFaceVolumes();
+    break;
+  case GEOMETRY_OUTSIDE_DOMAIN:
+    showgeom_outside_domain = 1 - showgeom_outside_domain;
+    GLUIUpdateWhereFaceVolumes();
+    break;
+  default:
+    assert(FFALSE);
+    break;
+  }
+  GLUIUpdateGeometryControls();
+  GLUTPOSTREDISPLAY;
+}
+
 /* ------------------ ShowInternalBlockages ------------------------ */
 
 void ShowInternalBlockages(void){
@@ -5785,28 +5918,46 @@ void ShowInternalBlockages(void){
   show = GetInternalFaceShow();
   hide_internal_blockages = 1 - show;
   if(show == 0){
-    outline_state=OUTLINE_NONE;
-    solid_state=visBLOCKHide;
-  }
-  else{
     if(update_showblock_ini == 1){
       update_showblock_ini = 0;
-      visBlocks     = visBlocks_ini;
-      solid_state   = solid_state_ini;
-      outline_state = outline_state_ini;
+      visBlocks_save     = visBlocks;
+      solid_state_save   = solid_state;
+      outline_state_save = outline_state;
     }
-    else{
-      visBlocks = visBLOCKNormal;
-      solid_state = visBLOCKNormal;
-      outline_state = OUTLINE_NONE;
-    }
+    outline_state=OUTLINE_NONE;
+    solid_state=visBLOCKHide;
+    show_faces_shaded = 1;
+    ImmersedMenu(GEOMETRY_HIDE);
+  }
+  else{
 #ifdef pp_TERRAIN_HIDE
     GeometryMenu(17 + TERRAIN_HIDDEN);
 #endif
+    show_geom_bndf = 1;
+    GetGeomInfoPtrs(0);
   }
   updatemenu = 1;
   global_scase.updatefaces = 1;
   updatefacelists = 1;
+}
+
+/* ------------------ HideInternalBlockages ------------------------ */
+
+void HideInternalBlockages(void){
+  hide_internal_blockages = 1;
+  outline_state = OUTLINE_NONE;
+  solid_state = visBLOCKHide;
+  show_faces_shaded = 1;
+  ImmersedMenu(GEOMETRY_HIDE);
+  updatemenu = 1;
+  global_scase.updatefaces = 1;
+  updatefacelists = 1;
+}
+
+/* ------------------ HideImmersedMenu ------------------------ */
+
+void HideImmersedMenu(void){
+  ImmersedMenu(GEOMETRY_HIDE);
 }
 
 /* ------------------ ShowBoundaryMenu ------------------------ */
@@ -5816,15 +5967,10 @@ void ShowBoundaryMenu(int value){
   updatefacelists=1;
   GLUTPOSTREDISPLAY;
   if(value>=1000){
-    patchdata *patchj;
-    int i;
-
-    patchj = global_scase.patchinfo + value-1000;
+    patchdata *patchj = global_scase.patchinfo + value-1000;
     patchj->display = 1 - patchj->display;
-    for(i=0; i<global_scase.npatchinfo; i++){
-      patchdata *patchi;
-
-      patchi = global_scase.patchinfo + i;
+    for(int i=0; i<global_scase.npatchinfo; i++){
+      patchdata *patchi = global_scase.patchinfo + i;
       if(patchi->loaded == 0)continue;
       if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0)patchi->display=patchj->display;
     }
@@ -5852,78 +5998,74 @@ void ShowBoundaryMenu(int value){
   }
   if(value<0){
     if(value==SHOW_EXTERIOR_WALL_MENU||value==HIDE_EXTERIOR_WALL_MENU){
-      int i,val;
+      int val;
 
       if(value==SHOW_EXTERIOR_WALL_MENU){
         val = 1;
+        show_boundaryfiles_exterior = 1;
       }
       else{
         val = 0;
+        show_boundaryfiles_exterior = 0;
       }
-      for(i = 0; i < global_scase.npatchinfo; i++){
-        int n;
-
-        patchdata *patchi;
-
-        patchi = global_scase.patchinfo + i;
+      for(int i = 0;i < global_scase.npatchinfo;i++){
+        patchdata *patchi = global_scase.patchinfo + i;
         if(patchi->loaded == 0)continue;
-        for(n = 0; n < patchi->npatches; n++){
-          patchfacedata *pfi;
-
-          pfi = patchi->patchfaceinfo + n;
+        for(int n = 0; n < patchi->npatches; n++){
+          patchfacedata *pfi = patchi->patchfaceinfo + n;
           if(pfi->type != INTERIORwall){
             pfi->vis = val;
           }
         }
       }
-      for(i=1; i<7; i++){
+      for(int i=1; i<7; i++){
         vis_boundary_type[i]=val;
       }
       update_patch_vis = 1;
     }
-    else if(value==INTERIOR_WALL_MENU){
-      int i;
-
-      hide_all_interior_patch_data    = show_all_interior_patch_data;
-      show_all_interior_patch_data    = 1 - show_all_interior_patch_data;
+    else if(value==TOGGLE_INTERIOR_WALL_MENU){
+      show_faces_shaded  = 1 - show_faces_shaded;
+      show_faces_outline = 1 - show_faces_outline;
+      show_all_interior_patch_data = 1 - show_all_interior_patch_data;
       vis_boundary_type[INTERIORwall] = show_all_interior_patch_data;
-      for(i = 0; i < global_scase.npatchinfo; i++){
-        patchdata *patchi;
-        int n;
-
-        patchi = global_scase.patchinfo + i;
+      for(int i = 0; i < global_scase.npatchinfo; i++){
+        patchdata *patchi = global_scase.patchinfo + i;
         if(patchi->loaded == 0)continue;
-        for(n = 0; n < patchi->npatches; n++){
-          patchfacedata *pfi;
-
-          pfi = patchi->patchfaceinfo + n;
+        if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY)continue;
+        if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE)continue;
+        for(int n = 0;n < patchi->npatches;n++){
+          patchfacedata *pfi = patchi->patchfaceinfo + n;
           if(pfi->type == INTERIORwall){
             pfi->vis = show_all_interior_patch_data;
           }
         }
       }
       ShowInternalBlockages();
-      UpdateShowIntPatch(hide_all_interior_patch_data, show_all_interior_patch_data);
+      show_boundaryfiles_interior = 1 - show_all_interior_patch_data;
+      UpdateShowIntPatch(1 - show_all_interior_patch_data);
     }
-    else if(value == SHOW_INTERIOR_WALL_MENU || value == HIDE_INTERIOR_WALL_MENU){
-      if(value == SHOW_INTERIOR_WALL_MENU)show_all_interior_patch_data = 1;
-      if(value == HIDE_INTERIOR_WALL_MENU)show_all_interior_patch_data = 0;
-      ShowBoundaryMenu(INTERIOR_WALL_MENU);
+    else if(value == SHOW_INTERIOR_WALL_MENU){
+      show_all_interior_patch_data = 1;
+      ShowBoundaryMenu(TOGGLE_INTERIOR_WALL_MENU);
+      show_all_interior_patch_data = 1;
+      ShowBoundaryMenu(TOGGLE_INTERIOR_WALL_MENU); // work around - need to call twice
+      show_boundaryfiles_interior = 1;
+      vis_boundary_type[INTERIORwall] = 1;
+    }
+    else if(value == HIDE_INTERIOR_WALL_MENU){
+      show_faces_shaded  = 1 - show_faces_shaded_save;
+      show_faces_outline = 1 - show_faces_outline_save;
+      show_all_interior_patch_data = 0;
+      ShowBoundaryMenu(TOGGLE_INTERIOR_WALL_MENU);
+      show_boundaryfiles_interior = 0;
+      vis_boundary_type[INTERIORwall] = 0;
     }
     if(value==INI_EXTERIORwallmenu){
-      int i;
-
-      for(i = 0; i < global_scase.npatchinfo; i++){
-        int n;
-
-        patchdata *patchi;
-
-        patchi = global_scase.patchinfo + i;
+      for(int i = 0; i < global_scase.npatchinfo; i++){
+        patchdata *patchi = global_scase.patchinfo + i;
         if(patchi->loaded == 0)continue;
-        for(n = 0; n < patchi->npatches; n++){
-          patchfacedata *pfi;
-
-          pfi = patchi->patchfaceinfo + n;
+        for(int n = 0;n < patchi->npatches;n++){
+          patchfacedata *pfi = patchi->patchfaceinfo + n;
           if(pfi->type != INTERIORwall){
             pfi->vis = vis_boundary_type[pfi->type];
           }
@@ -5931,19 +6073,12 @@ void ShowBoundaryMenu(int value){
       }
     }
     else if(value != DUMMYwallmenu){
-      int i;
-
       value = -(value + 2); /* map xxxwallmenu to xxxwall */
-      for(i = 0; i < global_scase.npatchinfo; i++){
-        patchdata *patchi;
-        int n;
-
-        patchi = global_scase.patchinfo + i;
+      for(int i = 0; i < global_scase.npatchinfo; i++){
+        patchdata *patchi = global_scase.patchinfo + i;
         if(patchi->loaded == 0)continue;
-        for(n = 0; n < patchi->npatches; n++){
-          patchfacedata *pfi;
-
-          pfi = patchi->patchfaceinfo + n;
+        for(int n = 0;n < patchi->npatches;n++){
+          patchfacedata *pfi = patchi->patchfaceinfo + n;
           if(pfi->type == value){
             pfi->vis = 1 - pfi->vis;
             vis_boundary_type[value] = pfi->vis;
@@ -5954,6 +6089,7 @@ void ShowBoundaryMenu(int value){
     update_patch_vis = 1;
   }
   plotstate=GetPlotState(DYNAMIC_PLOTS);
+  UpdateTimes();
 }
 
 /* ------------------ VentMenu ------------------------ */
@@ -6017,151 +6153,6 @@ void VentMenu(int value){
   }
   updatefacelists=1;
   updatemenu=1;
-  GLUTPOSTREDISPLAY;
-}
-#define GEOMETRY_SOLID                   0
-#define GEOMETRY_OUTLINE                 1
-#define GEOMETRY_SOLIDOUTLINE            2
-#define GEOMETRY_INTERIOR_SOLID         23
-#define GEOMETRY_INTERIOR_OUTLINE       24
-#define GEOMETRY_HIDE                    7
-#define GEOMETRY_SHOWNORMAL              3
-#define GEOMETRY_SORTFACES               6
-#define GEOMETRY_SMOOTHNORMAL            4
-#define GEOMETRY_HILIGHTSKINNY           5
-#define GEOMETRY_HIDEALL                 8
-#define GEOMETRY_INSIDE_DOMAIN          25
-#define GEOMETRY_OUTSIDE_DOMAIN         15
-#define GEOMETRY_VOLUMES_INTERIOR       18
-#define GEOMETRY_VOLUMES_EXTERIOR       19
-#define GEOMETRY_DUMMY                -999
-#define GEOMETRY_TERRAIN_SHOW_TOP       22
-
-/* ------------------ HideGeomTextures ------------------------ */
-
-void HideGeomTextures(void){
-  visGeomTextures=0;
-  for(int i=0; i<global_scase.ngeominfo; i++){
-    geomdata *geomi;
-    surfdata *surf;
-    texturedata *textii=NULL;
-
-    geomi = global_scase.geominfo + i;
-    surf = geomi->surfgeom;
-    if(global_scase.terrain_texture_coll.terrain_textures!=NULL){
-      textii = global_scase.terrain_texture_coll.terrain_textures+iterrain_textures;
-    }
-    else{
-      if(surf!=NULL)textii = surf->textureinfo;
-    }
-    if(textii!=NULL){
-      textii->display = 0;
-      break;
-    }
-  }
-  GLUIUpdateTextureDisplay();
-  updatemenu=1;
-  GLUTPOSTREDISPLAY;
-}
-
-/* ------------------ ImmersedMenu ------------------------ */
-
-void ImmersedMenu(int value){
-  if(value==GEOMETRY_DUMMY)return;
-  updatemenu=1;
-  switch(value){
-    case GEOM_TriangleCount:
-      show_triangle_count=1-show_triangle_count;
-      break;
-    case GEOMETRY_TERRAIN_SHOW_TOP:
-      terrain_showonly_top = 1 - terrain_showonly_top;
-      GLUIUpdateShowOnlyTop();
-      break;
-    case GEOMETRY_SOLIDOUTLINE:
-      if(show_faces_shaded==1&&show_faces_outline==1){
-        show_faces_shaded=1;
-        show_faces_outline=0;
-      }
-      else{
-        show_faces_shaded=1;
-        show_faces_outline=1;
-      }
-      break;
-    case GEOMETRY_SOLID:
-      if(show_faces_shaded==1&&show_faces_outline==1){
-        show_faces_shaded=1;
-        show_faces_outline=0;
-      }
-      else if(show_faces_shaded==1&&show_faces_outline==0){
-        show_faces_shaded=0;
-        show_faces_outline=1;
-      }
-      else if(show_faces_shaded==0&&show_faces_outline==1){
-        show_faces_shaded=1;
-        show_faces_outline=0;
-      }
-      else{
-        show_faces_shaded=1;
-        show_faces_outline=0;
-      }
-      break;
-    case GEOMETRY_OUTLINE:
-      if(show_faces_shaded==1&&show_faces_outline==1){
-        show_faces_shaded=0;
-        show_faces_outline=1;
-      }
-      else if(show_faces_shaded==1&&show_faces_outline==0){
-        show_faces_shaded=0;
-        show_faces_outline=1;
-      }
-      else if(show_faces_shaded==0&&show_faces_outline==1){
-        show_faces_shaded=1;
-        show_faces_outline=0;
-      }
-      else{
-        show_faces_shaded=0;
-        show_faces_outline=1;
-      }
-      break;
-    case GEOMETRY_SHOWNORMAL:
-      show_geom_normal=1-show_geom_normal;
-      break;
-    case GEOMETRY_SMOOTHNORMAL:
-      smooth_geom_normal=1-smooth_geom_normal;
-      break;
-    case GEOMETRY_HILIGHTSKINNY:
-      hilight_skinny = 1 - hilight_skinny;
-      break;
-    case GEOMETRY_SORTFACES:
-      sort_geometry=1-sort_geometry;
-      break;
-    case GEOMETRY_HIDE:
-      show_faces_shaded=0;
-      show_faces_outline=0;
-      break;
-    case GEOMETRY_HIDEALL:
-      ImmersedMenu(GEOMETRY_HIDE);
-      show_geom_normal = 0;
-      break;
-    case MENU_DUMMY:
-      break;
-    case GEOMETRY_INSIDE_DOMAIN:
-      showgeom_inside_domain = 1 - showgeom_inside_domain;
-      GLUIUpdateWhereFaceVolumes();
-      break;
-    case GEOMETRY_OUTSIDE_DOMAIN:
-      showgeom_outside_domain = 1 - showgeom_outside_domain;
-      GLUIUpdateWhereFaceVolumes();
-      break;
-    default:
-      assert(FFALSE);
-      break;
-  }
-  if(show_faces_shaded == 1){
-   HideGeomTextures();
-  }
-  GLUIUpdateGeometryControls();
-
   GLUTPOSTREDISPLAY;
 }
 
@@ -7317,6 +7308,16 @@ int IsBoundaryType(int type){
       pfi = patchi->patchfaceinfo + n;
       if(pfi->type == type)return 1;
     }
+  }
+  return 0;
+}
+
+/* ------------------ GetBoundaryDisplay ------------------------ */
+
+int GetBoundaryDisplay(void){
+  if(show_boundaryfiles_interior == 1)return 1;
+  for(int i = 1;i < 7;i++){
+    if(IsBoundaryType(i) == 1 && vis_boundary_type[i]==1)return 1;
   }
   return 0;
 }
@@ -8556,13 +8557,14 @@ static int loadsmoke3dmenu = 0;
 static int unloadsmoke3dmenu = 0;
 static int loadslicemenu=0, loadmultislicemenu = 0, loadhvacmenu = 0;
 static int *loadsubvslicemenu=NULL, nloadsubvslicemenu=0;
-static int *loadsubpatchmenu_b = NULL, *nsubpatchmenus_b=NULL, iloadsubpatchmenu_b=0, nloadsubpatchmenu_b = 0;
+static int *loadsubpatchmenu_b = NULL, *nsubpatchmenus_b = NULL;
+static int nloadsubpatchmenu_b = 0;
 static int *loadsubpatchmenu_s = NULL, *nsubpatchmenus_s=NULL, nloadsubpatchmenu_s = 0;
 static int *loadsubmslicemenu=NULL, nloadsubmslicemenu=0;
 static int *loadsubmvslicemenu=NULL, nloadsubmvslicemenu=0;
 static int *loadsubplot3dmenu=NULL, nloadsubplot3dmenu=0;
 static int loadmultivslicemenu=0, unloadmultivslicemenu=0;
-static int duplicatevectorslicemenu=0, duplicateslicemenu=0, duplicateboundaryslicemenu=0;
+static int duplicatevectorslicemenu=0, duplicateslicemenu=0;
 static int unloadmultislicemenu=0, vsliceloadmenu=0, staticslicemenu=0;
 static int particlemenu=0, showpatchmenu=0, zonemenu=0, isoshowmenu=0, isolevelmenu=0, smoke3dshowmenu=0;
 static int particlepropshowmenu=0;
@@ -8696,29 +8698,33 @@ if(opengl_finalized == 0)return;
 
 /* --------------------------------patch menu -------------------------- */
   if(global_scase.npatchinfo>0){
-    int ii;
-    char menulabel[1024];
-    int next_total=0;
+    int next_total=0, next_have = 0;
 
     CREATEMENU(showpatchextmenu, ShowBoundaryMenu);
     for(i=1; i<7; i++){
-      next_total+=vis_boundary_type[i];
+      if(IsBoundaryType(i) == 1){
+        next_have++;
+        next_total += vis_boundary_type[i];
+      }
     }
-    if(next_total == 6){
+    if(next_total == next_have){
       show_all_exterior_patch_data = 1;
       hide_all_exterior_patch_data = 0;
+      show_boundaryfiles_exterior = 1;
       glutAddMenuEntry("*Show all",  SHOW_EXTERIOR_WALL_MENU);
       glutAddMenuEntry("Hide all",   HIDE_EXTERIOR_WALL_MENU);
     }
     else if(next_total == 0){
       show_all_exterior_patch_data = 0;
       hide_all_exterior_patch_data = 1;
+      show_boundaryfiles_exterior = 0;
       glutAddMenuEntry("Show all",  SHOW_EXTERIOR_WALL_MENU);
       glutAddMenuEntry("*Hide all", HIDE_EXTERIOR_WALL_MENU);
     }
     else{
       show_all_exterior_patch_data = 0;
       hide_all_exterior_patch_data = 0;
+      show_boundaryfiles_exterior = 0;
       glutAddMenuEntry("#Show all",  SHOW_EXTERIOR_WALL_MENU);
       glutAddMenuEntry("#Hide all",  HIDE_EXTERIOR_WALL_MENU);
     }
@@ -8750,43 +8756,22 @@ if(opengl_finalized == 0)return;
 
     CREATEMENU(showpatchmenu,ShowBoundaryMenu);
     if(npatchloaded>0){
-      patchdata *patchi=NULL, *patchim1=NULL;
-
-      for(ii = 0; ii<global_scase.npatchinfo; ii++){
-
-        i = patchorderindex[ii];
-        patchi = global_scase.patchinfo+i;
+      for(i = 0; i<global_scase.npatchinfo; i++){
+        patchdata *patchi = global_scase.patchinfo+i;
         if(patchi->loaded==0)continue;
-        if(patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0)continue;
-        if(ii>0){
-          if(patchim1!=NULL){
-            if(strcmp(patchi->label.longlabel,patchim1->label.longlabel)==0){
-              patchim1 = patchi;
-              continue;
-            }
-          }
+        if(show_boundaryfiles_exterior == 1 && show_boundaryfiles_interior == 1){
+          glutAddMenuEntry("*Show all", GLUI_SHOWALL_BOUNDARY);
+          glutAddMenuEntry("Hide all",  GLUI_HIDEALL_BOUNDARY);
         }
-        patchim1 = patchi;
-        strcpy(menulabel,"");
-        if(patchi->display==1){
-          strcat(menulabel,"*");
-        }
-        strcat(menulabel,patchi->label.longlabel);
-        if(patchi->structured == NO){
-          if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label, "INCLUDE_GEOM")!=0){
-            glutAddMenuEntry(menulabel, 1000+i);
-          }
+        else if(show_boundaryfiles_exterior == 0 && show_boundaryfiles_interior == 0){
+          glutAddMenuEntry("Show all",  GLUI_SHOWALL_BOUNDARY);
+          glutAddMenuEntry("*Hide all", GLUI_HIDEALL_BOUNDARY);
         }
         else{
-          if(show_boundaryfiles==1){
-            glutAddMenuEntry("*Show all", GLUI_SHOWALL_BOUNDARY);
-            glutAddMenuEntry("Hide all",  GLUI_HIDEALL_BOUNDARY);
-          }
-          else{
-            glutAddMenuEntry("Show all",  GLUI_SHOWALL_BOUNDARY);
-            glutAddMenuEntry("*Hide all", GLUI_HIDEALL_BOUNDARY);
-          }
+          glutAddMenuEntry("#Show all",  GLUI_SHOWALL_BOUNDARY);
+          glutAddMenuEntry("#Hide all", GLUI_HIDEALL_BOUNDARY);
         }
+        break;
       }
     }
     npatchloaded=0;
@@ -8801,7 +8786,7 @@ if(opengl_finalized == 0)return;
         if(patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0)continue;
         npatchloaded++;
       }
-      for(ii=0; ii<global_scase.npatchinfo; ii++){
+      for(int ii=0; ii<global_scase.npatchinfo; ii++){
         patchdata *patchi;
 
         i = patchorderindex[ii];
@@ -8823,8 +8808,14 @@ if(opengl_finalized == 0)return;
       }
     }
     GLUTADDSUBMENU("Exterior", showpatchextmenu);
-    if(vis_boundary_type[INTERIORwall]==1)glutAddMenuEntry("*Interior", INTERIOR_WALL_MENU);
-    if(vis_boundary_type[INTERIORwall]==0)glutAddMenuEntry("Interior",  INTERIOR_WALL_MENU);
+    if(vis_boundary_type[INTERIORwall] == 1){
+      glutAddMenuEntry("*Show interior", SHOW_INTERIOR_WALL_MENU);
+      glutAddMenuEntry("Hide interior",  HIDE_INTERIOR_WALL_MENU);
+    }
+    if(vis_boundary_type[INTERIORwall] == 0){
+      glutAddMenuEntry("Show interior",  SHOW_INTERIOR_WALL_MENU);
+      glutAddMenuEntry("*Hide interior", HIDE_INTERIOR_WALL_MENU);
+    }
   }
 
   /* --------------------------------terrain menu -------------------------- */
@@ -12023,178 +12014,20 @@ if(opengl_finalized == 0)return;
 
 /* --------------------------------load patch menu -------------------------- */
 
-    if(global_scase.npatchinfo>0){
-      int ii;
+    if(npatchmenuinfo >0){
+      CREATEMENU(loadpatchmenu,LoadBoundaryMenu2);
+      for(i=0; i<npatchmenuinfo; i++){
+        patchmenudata *pmi;
+        char menulabel[256];
 
-      nloadpatchsubmenus=0;
-
-      if(global_scase.meshescoll.nmeshes>1&&loadpatchsubmenus==NULL){
-        NewMemory((void **)&loadpatchsubmenus,global_scase.npatchinfo*sizeof(int));
+        pmi = patchmenuinfo + i;
+        strcpy(menulabel, "");
+        if(pmi->loaded==1)strcat(menulabel, "*");
+        strcat(menulabel, pmi->quantity);
+        glutAddMenuEntry(menulabel, i);
       }
-
-      if(global_scase.meshescoll.nmeshes>1){
-        CREATEMENU(loadpatchsubmenus[nloadpatchsubmenus],LoadBoundaryMenu);
-        nloadpatchsubmenus++;
-      }
-      else{
-        CREATEMENU(loadpatchmenu,LoadBoundaryMenu);
-      }
-
-      for(ii=0; ii<global_scase.npatchinfo; ii++){
-        patchdata *patchim1, *patchi;
-        char menulabel[1024];
-
-        i = patchorderindex[ii];
-        patchi = global_scase.patchinfo + i;
-        if(ii>0){
-          patchim1 = global_scase.patchinfo + patchorderindex[ii-1];
-          if(global_scase.meshescoll.nmeshes>1&&strcmp(patchim1->label.longlabel,patchi->label.longlabel)!=0){
-            CREATEMENU(loadpatchsubmenus[nloadpatchsubmenus],LoadBoundaryMenu);
-            nloadpatchsubmenus++;
-          }
-        }
-        if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label,"INCLUDE_GEOM")!=0){
-          STRCPY(menulabel, "");
-          if(patchi->loaded==1)STRCAT(menulabel,"*");
-          STRCAT(menulabel,patchi->menulabel);
-          glutAddMenuEntry(menulabel,i);
-        }
-      }
-      if(nboundaryslicedups>0){
-        GLUTADDSUBMENU("Duplicate boundary slices",duplicateboundaryslicemenu);
-      }
-      glutAddMenuEntry("-",MENU_DUMMY3);
-      glutAddMenuEntry("Settings...", MENU_BOUNDARY_SETTINGS);
-      glutAddMenuEntry("Unload",UNLOAD_ALL);
-
-      if(nboundaryslicedups>0){
-        CREATEMENU(duplicateboundaryslicemenu,LoadBoundaryMenu);
-        if(boundaryslicedup_option == SLICEDUP_KEEPALL){
-          glutAddMenuEntry("  *keep all", MENU_KEEP_ALL);
-        }
-        else{
-          glutAddMenuEntry("  keep all", MENU_KEEP_ALL);
-        }
-        if(boundaryslicedup_option == SLICEDUP_KEEPFINE){
-          glutAddMenuEntry("  *keep fine", MENU_KEEP_FINE);
-        }
-        else{
-          glutAddMenuEntry("  keep fine", MENU_KEEP_FINE);
-        }
-        if(boundaryslicedup_option == SLICEDUP_KEEPCOARSE){
-          glutAddMenuEntry("  *keep coarse", MENU_KEEP_COARSE);
-        }
-        else{
-          glutAddMenuEntry("  keep coarse", MENU_KEEP_COARSE);
-        }
-      }
-      if(global_scase.meshescoll.nmeshes>1){
-
-// count patch submenus
-
-        nloadsubpatchmenu_b=0;
-        for(ii=0; ii<global_scase.npatchinfo; ii++){
-          int im1;
-          patchdata *patchi, *patchim1;
-
-          i = patchorderindex[ii];
-          if(ii>0){
-            im1 = patchorderindex[ii-1];
-            patchim1=global_scase.patchinfo + im1;
-          }
-          patchi = global_scase.patchinfo + i;
-          if(ii==0||strcmp(patchi->menulabel_base,patchim1->menulabel_base)!=0){
-            nloadsubpatchmenu_b++;
-          }
-        }
-
-// create patch submenus
-
-        if(nloadsubpatchmenu_b > 0){
-          NewMemory((void **)&loadsubpatchmenu_b, nloadsubpatchmenu_b * sizeof(int));
-          NewMemory((void **)&nsubpatchmenus_b, nloadsubpatchmenu_b * sizeof(int));
-        }
-        for(i=0; i<nloadsubpatchmenu_b; i++){
-          loadsubpatchmenu_b[i]=0;
-          nsubpatchmenus_b[i]=0;
-        }
-
-        iloadsubpatchmenu_b=0;
-        for(ii=0; ii<global_scase.npatchinfo; ii++){
-          int im1;
-          patchdata *patchi, *patchim1;
-
-          i = patchorderindex[ii];
-          if(ii>0){
-            im1 = patchorderindex[ii-1];
-            patchim1=global_scase.patchinfo + im1;
-          }
-          patchi = global_scase.patchinfo + i;
-          if(ii==0||strcmp(patchi->menulabel_base,patchim1->menulabel_base)!=0){
-            CREATEMENU(loadsubpatchmenu_b[iloadsubpatchmenu_b],LoadBoundaryMenu);
-            iloadsubpatchmenu_b++;
-          }
-          if(ii==0||strcmp(patchi->menulabel_suffix,patchim1->menulabel_suffix)!=0){
-            if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label,"INCLUDE_GEOM")!=0){
-              char menulabel[256];
-
-              nsubpatchmenus_b[iloadsubpatchmenu_b-1]++;
-              strcpy(menulabel, patchi->menulabel_suffix);
-              if(patchi->compression_type == COMPRESSED_ZLIB){
-                strcat(menulabel, "(ZLIB)");
-              }
-              glutAddMenuEntry(menulabel,-i-10);
-            }
-          }
-        }
-
-// call patch submenus from main patch menu
-
-        CREATEMENU(loadpatchmenu,LoadBoundaryMenu);
-        iloadsubpatchmenu_b=0;
-        for(ii=0; ii<global_scase.npatchinfo; ii++){
-          int im1;
-          patchdata *patchi, *patchim1;
-
-          i = patchorderindex[ii];
-          if(ii>0){
-            im1 = patchorderindex[ii-1];
-            patchim1=global_scase.patchinfo + im1;
-          }
-          patchi = global_scase.patchinfo + i;
-          if(ii==0||strcmp(patchi->menulabel_base,patchim1->menulabel_base)!=0){
-            int nsubmenus;
-
-            nsubmenus = nsubpatchmenus_b[iloadsubpatchmenu_b];
-            if(nsubmenus>1){
-              GLUTADDSUBMENU(patchi->menulabel_base,loadsubpatchmenu_b[iloadsubpatchmenu_b]);
-            }
-            else if(nsubmenus==1){
-              char menulabel[1024];
-              int patch_load_state;
-
-              PatchLoadState(patchi, &patch_load_state);
-              strcpy(menulabel, "");
-              if(patch_load_state==1)strcat(menulabel, "#");
-              if(patch_load_state==2)strcat(menulabel, "*");
-              strcat(menulabel, patchi->label.longlabel);
-              if(patchi->compression_type == COMPRESSED_ZLIB){
-                strcat(menulabel, "(ZLIB)");
-              }
-              glutAddMenuEntry(menulabel,-i-10);
-            }
-            iloadsubpatchmenu_b++;
-          }
-        }
-      }
-//*** these same lines also appear above (except for nmeshes>1 line)
-      glutAddMenuEntry("-",MENU_DUMMY3);
-
-      if(nboundaryslicedups>0){
-        GLUTADDSUBMENU("Duplicate boundary slices",duplicateboundaryslicemenu);
-      }
-      glutAddMenuEntry("Settings...", MENU_BOUNDARY_SETTINGS);
-      glutAddMenuEntry("Unload",UNLOAD_ALL);
+      glutAddMenuEntry("-",      MENU_PATCH_DUMMY);
+      glutAddMenuEntry("Unload", MENU_PATCH_UNLOAD);
     }
 
 /* --------------------------------load iso menu -------------------------- */

@@ -2544,6 +2544,74 @@ void GetSkyImageTexture(void){
   NewMemory((void **)&global_scase.sky_texture->file, (strlen(buffer) + 1) * sizeof(char));
   strcpy(global_scase.sky_texture->file, buffer);
 }
+
+/* ------------------ ComparePatchMenuInfo ------------------------ */
+
+int ComparePatchMenuInfo(const void *arg1, const void *arg2){
+  patchmenudata *x, *y;
+
+  x = (patchmenudata *)arg1;
+  y = (patchmenudata *)arg2;
+  if(x->skip==y->skip)return strcmp(x->quantity, y->quantity);
+  if(x->skip == 1)return 1;
+  if(y->skip == 1)return -1;
+  return 0;
+}
+
+/* ------------------ HaveStructures ------------------------ */
+
+int HaveStructures(char *label){
+  for(int i = 0; i < global_scase.npatchinfo; i++){
+    char label2[255], *ext;
+
+    patchmenudata *pmi = patchmenuinfo + i;
+    if(pmi->isgeom == 1)continue;
+    strcpy(label2, pmi->quantity);
+    ext = strchr(label2, '(');
+    if(ext != NULL)ext[0] = 0;
+    if(strcmp(label, label2) == 0)return 1;
+  }
+  return 0;
+}
+
+/* ------------------ InitPatchMenuInfo ------------------------ */
+
+void InitPatchMenuInfo(void){
+  if(global_scase.npatchinfo==0)return;
+  NewMemory((void **)&patchmenuinfo, global_scase.npatchinfo * sizeof(patchmenudata));
+  for(int i = 0;i < global_scase.npatchinfo;i++){
+    patchmenudata *pmi;
+    patchdata *pi;
+
+    pmi = patchmenuinfo + i;
+    pi = global_scase.patchinfo + i;
+    strcpy(pmi->quantity, pi->label.longlabel);
+    pmi->index = i;
+    pmi->loaded = 0;
+    pmi->skip = 0;
+    pmi->isgeom = 0;
+    if(pi->patch_filetype == PATCH_GEOMETRY_BOUNDARY)pmi->isgeom = 1;
+  }
+  // reject geometry quanties if there is a structure bf with the same quantity
+  for(int i = 0; i < global_scase.npatchinfo; i++){
+    patchmenudata *pmi = patchmenuinfo + i;
+    if(pmi->isgeom == 1 && HaveStructures(pmi->quantity) == 1)pmi->skip = 1;
+  }
+  qsort(patchmenuinfo, global_scase.npatchinfo, sizeof(patchmenudata), ComparePatchMenuInfo);
+  npatchmenuinfo = 1;
+  for(int i = 1;i < global_scase.npatchinfo;i++){
+    patchmenudata *pmi;
+
+    pmi = patchmenuinfo + i;
+    if(pmi->skip == 1)break; // rejected quantieis are at end of list so can stop
+    if(strcmp(pmi->quantity, patchmenuinfo[npatchmenuinfo - 1].quantity) != 0){
+      memcpy(patchmenuinfo + npatchmenuinfo, pmi, sizeof(patchmenudata));
+      npatchmenuinfo++;
+    }
+  }
+  ResizeMemory((void **)&patchmenuinfo, npatchmenuinfo*sizeof(patchmenudata));
+}
+
 /* ------------------ ReadSMV_Configure ------------------------ */
 
 /// @brief Finish setting global variables after an SMV file has been parsed.
@@ -2572,6 +2640,8 @@ int ReadSMV_Configure(){
   START_TIMER(timer_readsmv);
 
   PRINTF("  wrapping up\n");
+
+  InitPatchMenuInfo();
 
  // set results directory
   if(global_scase.npartinfo > 0 && global_scase.results_dir == NULL){
@@ -3439,7 +3509,14 @@ int ReadIni2(const char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i %i %i %i %i %i", vbt,vbt+1,vbt+2,vbt+3,vbt+4,vbt+5,vbt+6, &show_mirror_boundary, &show_mirror_boundary);
       show_all_interior_patch_data = vbt[INTERIORwall];
-      hide_all_interior_patch_data = 1 - show_all_interior_patch_data;
+      if(AreBoundaryFilesLoaded()==1){
+        if(show_all_interior_patch_data == 1){
+          ShowBoundaryMenu(SHOW_INTERIOR_WALL_MENU);
+        }
+        else{
+          ShowBoundaryMenu(HIDE_INTERIOR_WALL_MENU);
+        }
+      }
       continue;
     }
     if(MatchINI(buffer, "GEOMBOUNDARYPROPS")==1){
@@ -5124,9 +5201,9 @@ int ReadIni2(const char *inifile, int localfile){
     }
     if(MatchINI(buffer, "SHOWBLOCKS") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i", &visBlocks_ini, &solid_state_ini, &outline_state_ini);
+      sscanf(buffer, "%i %i %i", &visBlocks, &solid_state, &outline_state);
       update_showblock_ini = 1;
-      continue;
+      ShowInternalBlockages();
     }
     if(MatchINI(buffer, "SHOWSENSORS") == 1){
       fgets(buffer, 255, stream);
@@ -8004,9 +8081,18 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "GEOMDOMAIN\n");
   fprintf(fileout, " %i %i\n", showgeom_inside_domain, showgeom_outside_domain);
   fprintf(fileout, "GEOMSHOW\n");
-  fprintf(fileout, " %i %i %i %i %i %i %f %f %i %i %f %f %f\n",
-     0, 1, show_faces_shaded, show_faces_outline, smooth_geom_normal,
-     geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors, show_cface_normals, geom_pointsize, geom_dz_offset, geom_norm_offset);
+  if(boundary_loaded == 1){
+    fprintf(fileout, " %i %i %i %i %i %i %f %f %i %i %f %f %f\n",
+       0, 1, show_faces_shaded_save, show_faces_outline_save, smooth_geom_normal,
+       geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors,
+       show_cface_normals, geom_pointsize, geom_dz_offset, geom_norm_offset);
+  }
+  else{
+    fprintf(fileout, " %i %i %i %i %i %i %f %f %i %i %f %f %f\n",
+       0, 1, show_faces_shaded, show_faces_outline, smooth_geom_normal,
+       geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors,
+       show_cface_normals, geom_pointsize, geom_dz_offset, geom_norm_offset);
+  }
   fprintf(fileout, " %i %i %i %i\n", 0, 0, 0, 0);
 
   int hide_scene_old;
@@ -8066,7 +8152,12 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWBLOCKLABEL\n");
   fprintf(fileout, " %i\n", visMeshlabel);
   fprintf(fileout, "SHOWBLOCKS\n");
-  fprintf(fileout, " %i %i %i\n", visBlocks, solid_state, outline_state);
+  if(boundary_loaded == 1){
+    fprintf(fileout, " %i %i %i\n", visBlocks_save, solid_state_save, outline_state_save);
+  }
+  else{
+    fprintf(fileout, " %i %i %i\n", visBlocks, solid_state, outline_state);
+  }
   fprintf(fileout, "SHOWBOUNDS\n");
   fprintf(fileout, " %i %i\n", bounds_each_mesh, show_bound_diffs);
   fprintf(fileout, "SHOWCADOPAQUE\n");

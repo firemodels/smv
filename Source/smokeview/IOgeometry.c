@@ -2674,9 +2674,23 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     if(force_bound_update == 1 || current_script_command != NULL)bound_update = 1;
     if(patchi->boundary == 1){
       if(bound_update==1||patch_bounds_defined==0 || BuildGbndFile(BOUND_PATCH) == 1){
+        int set_valmin_save, set_valmax_save;
+        float qmin_save, qmax_save;
+
+        // Preserve user bounds when recomputing geometry boundary bounds.
+        GLUIGetMinMax(BOUND_PATCH, patchi->label.shortlabel, &set_valmin_save, &qmin_save, &set_valmax_save, &qmax_save);
         GetGlobalPatchBounds(1,DONOT_SET_MINMAX_FLAG,patchi->label.shortlabel);
         SetLoadedPatchBounds(NULL, 0);
         GLUIPatchBoundsCPP_CB(BOUND_DONTUPDATE_COLORS);
+        if(set_valmin_save == BOUND_SET_MIN){
+          SetPatchMin(set_valmin_save, qmin_save, patchi->label.shortlabel);
+        }
+        if(set_valmax_save == BOUND_SET_MAX){
+          SetPatchMax(set_valmax_save, qmax_save, patchi->label.shortlabel);
+        }
+        if(set_valmin_save == BOUND_SET_MIN || set_valmax_save == BOUND_SET_MAX){
+          UpdateAllBoundaryColors(0);
+        }
       }
     }
     else{
@@ -3855,7 +3869,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   GLUIGetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
 
   float rvals[3];
-  float valmin, valmax;
+  float valmin=0.0, valmax=1.0;
   if(sd!=NULL){
     valmin = sd->valmin_slice;
     valmax = sd->valmax_slice;
@@ -3866,18 +3880,23 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   }
 
   if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
+  vals = patchi->geom_vals + patchi->geom_vals_static_offset[patchi->geom_itime];
+  cvals = patchi->cbuffer;
   if(geom_type==GEOM_STATIC){
-    vals = patchi->geom_vals + patchi->geom_vals_static_offset[patchi->geom_itime];
-    cvals = patchi->cbuffer;
     ivals = patchi->geom_ival_static;
   }
   else{
     ivals = patchi->geom_ival_dynamic;
   }
-  // draw surfaces
+
+  //-----------------------------------------------------------------
+  //*** draw surfaces
+  //-----------------------------------------------------------------
 
   if(
-    (patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_shaded == 1)||
+    (
+    vis_boundary_type[INTERIORwall] == 1 &&
+    patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_shaded == 1)||
     (patchi->patch_filetype == PATCH_GEOMETRY_SLICE &&(
      show_slice_shaded[IN_CUTCELL_GLUI]==1||
      show_slice_shaded[IN_SOLID_GLUI]==1||
@@ -4018,7 +4037,9 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
             if(insolid == IN_GAS     && show_slice_shaded[IN_GAS_GLUI] == 0)continue;
           }
           else if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
-            if(show_boundary_shaded == 0)continue;
+            if(show_boundary_shaded == 0
+            || vis_boundary_type[INTERIORwall] == 0
+            )continue;
           }
 
           if(sd==NULL||sd->cell_center==1){
@@ -4080,10 +4101,15 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
     }
   }
 
-  // draw lines
+  //-----------------------------------------------------------------
+  //*** draw lines
+  //-----------------------------------------------------------------
 
   if(
-    (patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_outline == 1)||
+    (
+      vis_boundary_type[INTERIORwall] == 1 &&
+      patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY &&
+      show_boundary_outline == 1)||
     (patchi->patch_filetype == PATCH_GEOMETRY_SLICE &&(
      show_slice_outlines[IN_CUTCELL_GLUI]==1||
      show_slice_outlines[IN_SOLID_GLUI]==1||
@@ -4160,7 +4186,10 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
               draw_foreground=0;
             }
           }
-          if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_outline == 1){
+          if(
+             vis_boundary_type[INTERIORwall] == 1 &&
+             patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY &&
+             show_boundary_outline == 1){
             int insolid, insolid_glui = -1;
 
             insolid = trianglei->insolid & 3;
@@ -4191,7 +4220,12 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
           }
           else{
             if(sd==NULL||sd->cell_center==1){
-              color0 = rgb_patch+4*ivals[j];
+              int ival;
+              float rval;
+
+              rval = GEOMTEXTURE2(GEOMVAL(j), ttmin, ttmax);
+              ival = CLAMP(rval*255.0, 0, 255);
+              color0 = rgb_patch+4*ival;
               color1 = color0;
               color2 = color0;
             }
@@ -4229,10 +4263,15 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
     }
   }
 
-  // draw points
+  //-----------------------------------------------------------------
+  //*** draw points
+  //-----------------------------------------------------------------
 
   if(
-    (patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_points == 1)||
+    (
+      vis_boundary_type[INTERIORwall] == 1 &&
+      patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY &&
+      show_boundary_points == 1)||
     (patchi->patch_filetype == PATCH_GEOMETRY_SLICE &&(
      show_slice_points[IN_CUTCELL_GLUI]==1||
      show_slice_points[IN_SOLID_GLUI]==1||
@@ -4294,7 +4333,9 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
             draw_foreground=0;
           }
         }
-        if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_points == 1){
+        if(
+           vis_boundary_type[INTERIORwall] == 1 &&
+           patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_points == 1){
             if(show_boundary_shaded==1){
               draw_foreground=1;
             }
@@ -4306,10 +4347,12 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
           glColor4fv(foregroundcolor);
         }
         else{
-          int color_index;
+          int ival;
+          float rval;
 
-          color_index = ivals[j];
-          color = rgb_patch + 4 * color_index;
+          rval = GEOMTEXTURE2(GEOMVAL(j), ttmin, ttmax);
+          ival = CLAMP(rval*255.0, 0, 255);
+          color = rgb_patch+4*ival;
           glColor3fv(color);
         }
 

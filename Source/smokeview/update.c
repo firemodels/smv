@@ -1455,12 +1455,10 @@ int GetPlotStateSub(int choice){
         if(vslicei->display==0||vslicei->vslicefile_labelindex!=slicefile_labelindex)continue;
         return DYNAMIC_PLOTS;
       }
-      for(i=0; i<global_scase.npatchinfo; i++){
-        patchdata *patchi;
-
-        patchi = global_scase.patchinfo + i;
-        if(patchi->loaded == 0)continue;
-        if(patchi->display == 1){
+      if(GetBoundaryDisplay()==1){
+        for(i=0; i<global_scase.npatchinfo; i++){
+          patchdata *patchi = global_scase.patchinfo + i;
+          if(patchi->loaded == 0)continue;
           if(patchi->boundary == 1 && patchi->shortlabel_index == iboundarytype)return DYNAMIC_PLOTS;
           if(patchi->boundary == 0 && patchi->shortlabel_index == slicefile_labelindex)return DYNAMIC_PLOTS;
         }
@@ -2456,13 +2454,8 @@ void UpdateDisplay(void){
   }
   if(update_ini_boundary_type==1){
     update_ini_boundary_type = 0;
-    ShowBoundaryMenu(INTERIOR_WALL_MENU);
+    show_all_interior_patch_data = 1 - show_all_interior_patch_data;
     ShowBoundaryMenu(INI_EXTERIORwallmenu);
-  }
-  if(update_boundary_loaded == 1){ // a hack, shouldn't be necessary
-    update_boundary_loaded = 0;
-    ShowBoundaryMenu(INTERIOR_WALL_MENU);
-    ShowBoundaryMenu(INTERIOR_WALL_MENU);
   }
   if(update_use_soot_multiplier == 1){
     update_use_soot_multiplier = 0;

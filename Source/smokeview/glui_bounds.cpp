@@ -2570,9 +2570,6 @@ GLUI_Panel *PANEL_addremovemesh = NULL;
 GLUI_Panel *PANEL_boundary_temp_threshold=NULL;
 GLUI_Panel *PANEL_boundary_exterior_data = NULL;
 GLUI_Panel *PANEL_boundary_interior_data = NULL;
-#ifdef pp_BNDF_DEBUG
-GLUI_Panel *PANEL_boundary_patch_debug=NULL;
-#endif
 GLUI_Panel *PANEL_slice_buttonsA = NULL;
 GLUI_Panel *PANEL_boundary_outline_type = NULL;
 GLUI_Panel *PANEL_iso1 = NULL;
@@ -2689,14 +2686,10 @@ GLUI_Checkbox *CHECKBOX_show_boundary_outline=NULL;
 GLUI_Checkbox *CHECKBOX_show_all_exterior_patch_data = NULL;
 GLUI_Checkbox *CHECKBOX_hide_all_exterior_patch_data = NULL;
 GLUI_Checkbox *CHECKBOX_show_all_interior_patch_data = NULL;
-GLUI_Checkbox *CHECKBOX_hide_all_interior_patch_data = NULL;
 GLUI_Checkbox *CHECKBOX_show_exterior_walls[7];
 GLUI_Checkbox *CHECKBOX_show_mesh_geom[256];
 GLUI_Checkbox *CHECKBOX_show_mesh_data[256];
 
-#ifdef pp_BNDF_DEBUG
-GLUI_Checkbox *CHECKBOX_patch_debug[NPATCHES_DEBUG];
-#endif
 GLUI_Checkbox *CHECKBOX_use_partload_threads = NULL;
 GLUI_Checkbox *CHECKBOX_partfast = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_shaded = NULL;
@@ -2904,9 +2897,10 @@ extern "C" void UpdateShowExtPatch(int show_option, int hide_option){
 
 /* ------------------ UpdateShowIntPatch ------------------------ */
 
-extern "C" void UpdateShowIntPatch(int show_option, int hide_option){
-  if(CHECKBOX_show_all_interior_patch_data != NULL)CHECKBOX_show_all_interior_patch_data->set_int_val(show_option);
-  if(CHECKBOX_hide_all_interior_patch_data != NULL)CHECKBOX_hide_all_interior_patch_data->set_int_val(hide_option);
+extern "C" void UpdateShowIntPatch(int show_option){
+  if(CHECKBOX_show_all_interior_patch_data != NULL){
+    CHECKBOX_show_all_interior_patch_data->set_int_val(show_option);
+  }
 }
 
 /* ------------------ UpdateColorbarSelectionIndex ------------------------ */
@@ -3759,14 +3753,12 @@ extern "C" void BoundBoundCB(int var){
     updatemenu = 1;
     break;
   case SHOW_ALL_INTERIOR_PATCH_DATA:
-    hide_all_interior_patch_data = 1 - hide_all_interior_patch_data;
-    show_all_interior_patch_data = 1 - hide_all_interior_patch_data;
-    ShowBoundaryMenu(INTERIOR_WALL_MENU);
-    break;
-  case HIDE_ALL_INTERIOR_PATCH_DATA:
-    show_all_interior_patch_data = 1 - show_all_interior_patch_data;
-    hide_all_interior_patch_data = 1 - show_all_interior_patch_data;
-    ShowBoundaryMenu(INTERIOR_WALL_MENU);
+    if(glui_show_all_interior_patch_data==1){
+      ShowBoundaryMenu(SHOW_INTERIOR_WALL_MENU);
+    }
+    else{
+      ShowBoundaryMenu(HIDE_INTERIOR_WALL_MENU);
+    }
     break;
   case SHOW_ALL_EXTERIOR_PATCH_DATA:
     if(show_all_exterior_patch_data==1){
@@ -3946,7 +3938,6 @@ extern "C" void BoundBoundCB(int var){
     break;
   case FILE_RELOAD:
     if(global_scase.npatchinfo>0){
-//      BoundBoundCB(FILE_UPDATE);
       for(i = 0; i < global_scase.npatchinfo; i++){
         patchdata *patchi;
 
@@ -3957,6 +3948,12 @@ extern "C" void BoundBoundCB(int var){
           ReadBoundary(i,UNLOAD,&errorcode);
           ReadBoundary(i,LOAD,&errorcode);
         }
+      }
+      if(show_boundaryfiles_interior == 1){
+        ShowBoundaryMenu(SHOW_INTERIOR_WALL_MENU);
+      }
+      else{
+        ShowBoundaryMenu(HIDE_INTERIOR_WALL_MENU);
       }
     }
     break;
@@ -4702,35 +4699,6 @@ void AddMeshCheckbox(int icol,int nm, GLUI_Panel *PANEL, GLUI_Checkbox **CHECKBO
   }
 }
 
-#ifdef pp_BNDF_DEBUG
-#define SHOW_ALL_PATCHES 0
-#define HIDE_ALL_PATCHES 1
-/* ------------------ BoundDebugCB ------------------------ */
-
-void BoundDebugCB(int var){
-  int i;
-
-  switch(var){
-    case SHOW_ALL_PATCHES:
-      for(i=0; i<NPATCHES_DEBUG; i++){
-        bndf_vis_patch[i] = 1;
-      }
-      break;
-    case HIDE_ALL_PATCHES:
-      for(i=0; i<NPATCHES_DEBUG; i++){
-        bndf_vis_patch[i] = 0;
-      }
-      break;
-    default:
-      assert(FFALSE);
-      break;
-  }
-  for(i=0; i<NPATCHES_DEBUG; i++){
-    CHECKBOX_patch_debug[i]->set_int_val(bndf_vis_patch[i]);
-  }
-}
-#endif
-
 /* ------------------ GLUIBoundsSetup ------------------------ */
 
 extern "C" void GLUIBoundsSetup(int main_window){
@@ -4918,10 +4886,6 @@ extern "C" void GLUIBoundsSetup(int main_window){
     TOGGLE_ROLLOUT(subboundprocinfo, nsubboundprocinfo, ROLLOUT_outputpatchdata, BOUNDARY_OUTPUT_ROLLOUT, glui_bounds);
 
     glui_bounds->add_checkbox_to_panel(ROLLOUT_outputpatchdata, "Output data to file", &output_patchdata);
-#ifdef pp_BNDF_DEBUG
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_outputpatchdata, "Output patch", &glui_output_patch);
-    glui_bounds->add_spinner_to_panel(ROLLOUT_outputpatchdata, "patch index", GLUI_SPINNER_INT, &glui_output_ipatch);
-#endif
 
     PANEL_outputpatchdata = glui_bounds->add_panel_to_panel(ROLLOUT_outputpatchdata, "", GLUI_PANEL_NONE);
 
@@ -4985,29 +4949,9 @@ extern "C" void GLUIBoundsSetup(int main_window){
     CHECKBOX_show_exterior_walls[UPwall] = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, "upper wall", vis_boundary_type + UPwall, SHOW_EXTERIOR_PATCH_DATA, BoundBoundCB);
 
     PANEL_boundary_interior_data = glui_bounds->add_panel_to_panel(ROLLOUT_boundary_settings, "interior data");
-    CHECKBOX_show_all_interior_patch_data = glui_bounds->add_checkbox_to_panel(PANEL_boundary_interior_data, "Show all", &hide_all_interior_patch_data, SHOW_ALL_INTERIOR_PATCH_DATA, BoundBoundCB);
-    glui_bounds->add_column_to_panel(PANEL_boundary_interior_data, false);
-    CHECKBOX_hide_all_interior_patch_data = glui_bounds->add_checkbox_to_panel(PANEL_boundary_interior_data, "Hide all", &show_all_interior_patch_data, HIDE_ALL_INTERIOR_PATCH_DATA, BoundBoundCB);
+    CHECKBOX_show_all_interior_patch_data = glui_bounds->add_checkbox_to_panel(PANEL_boundary_interior_data, "Show all", &glui_show_all_interior_patch_data, SHOW_ALL_INTERIOR_PATCH_DATA, BoundBoundCB);
 
     glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, "output patch info when loading", &outout_patch_faces);
-#ifdef pp_BNDF_DEBUG
-    PANEL_boundary_patch_debug = glui_bounds->add_panel_to_panel(ROLLOUT_boundary_settings, "debug settings");
-    glui_bounds->add_checkbox_to_panel(PANEL_boundary_patch_debug, "draw 1", &bf_patch1);
-    glui_bounds->add_checkbox_to_panel(PANEL_boundary_patch_debug, "draw 2", &bf_patch2);
-    glui_bounds->add_checkbox_to_panel(PANEL_boundary_patch_debug, "draw 3", &bf_patch3);
-    glui_bounds->add_separator_to_panel(PANEL_boundary_patch_debug);
-
-    for(i = 0; i < NPATCHES_DEBUG; i++){
-      char vislabel[50];
-
-      bndf_vis_patch[i] = 1;
-      sprintf(vislabel, "patch %i", i+1);
-      CHECKBOX_patch_debug[i] = glui_bounds->add_checkbox_to_panel(PANEL_boundary_patch_debug, vislabel, bndf_vis_patch+i);
-
-    }
-    glui_bounds->add_button_to_panel(PANEL_boundary_patch_debug, "Show all patches", SHOW_ALL_PATCHES, BoundDebugCB);
-    glui_bounds->add_button_to_panel(PANEL_boundary_patch_debug, "Hide all patches", HIDE_ALL_PATCHES, BoundDebugCB);
-#endif
 
     if(nboundaryslicedups > 0){
       ROLLOUT_boundary_duplicates = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, "Duplicates", false, BOUNDARY_DUPLICATE_ROLLOUT, SubBoundRolloutCB);

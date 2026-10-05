@@ -158,13 +158,6 @@ SVEXTERN int SVDECL(slice_plot_bound_option, 1);
 
 SVEXTERN int SVDECL(update_viewpoint_list, 0), SVDECL(update_camera_label, 0);
 
-#ifdef pp_BNDF_DEBUG
-SVEXTERN int SVDECL(bf_patch1, 0), SVDECL(bf_patch2, 1), SVDECL(bf_patch3, 1);
-#define NPATCHES_DEBUG 18
-SVEXTERN int bndf_vis_patch[NPATCHES_DEBUG];
-SVEXTERN int SVDECL(glui_output_patch, 0), SVDECL(glui_output_ipatch, 0);
-#endif
-
 #ifdef pp_GLUT_DEBUG
 #ifdef INMAIN
 #ifdef _WIN32
@@ -539,6 +532,8 @@ SVEXTERN int SVDECL(*plotz_list, NULL);
 SVEXTERN int SVDECL(show_3dsmoke, 1);
 SVEXTERN int SVDECL(show_plot3dfiles, 1), SVDECL(show_isofiles,1);
 SVEXTERN int SVDECL(show_boundaryfiles, 1);
+SVEXTERN int SVDECL(show_boundaryfiles_interior, 1);
+SVEXTERN int SVDECL(show_boundaryfiles_exterior, 1);
 
 SVEXTERN int SVDECL(clip_rotate, 0);
 SVEXTERN char SVDECL(*file_smokesensors, NULL);
@@ -689,9 +684,8 @@ SVEXTERN float SVDECL(patchout_zmin,1.0), SVDECL(patchout_zmax,-1.0);
 SVEXTERN int SVDECL(showpatch_both,0);
 SVEXTERN int SVDECL(show_all_exterior_patch_data, 0);
 SVEXTERN int SVDECL(hide_all_exterior_patch_data, 0);
-SVEXTERN int SVDECL(show_all_interior_patch_data, 0);
-SVEXTERN int SVDECL(hide_all_interior_patch_data, 1);
-SVEXTERN int SVDECL(update_boundary_loaded, 0);
+SVEXTERN int SVDECL(show_all_interior_patch_data, 1);
+SVEXTERN int SVDECL(glui_show_all_interior_patch_data, 1);
 SVEXTERN int SVDECL(show_triangle_count,0);
 SVEXTERN int SVDECL(triangle_count ,0);
 SVEXTERN int SVDECL(n_geom_triangles,0);
@@ -805,8 +799,8 @@ SVEXTERN int SVDECL(show_iso_shaded,1);
 SVEXTERN int SVDECL(show_iso_outline,0);
 SVEXTERN int SVDECL(show_iso_points,0);
 
-SVEXTERN int SVDECL(show_faces_shaded, 1);
-SVEXTERN int SVDECL(show_faces_outline, 0);
+SVEXTERN int SVDECL(show_faces_shaded, 1), SVDECL(show_faces_outline, 0);
+SVEXTERN int SVDECL(show_faces_shaded_save, 1), SVDECL(show_faces_outline_save, 0);
 SVEXTERN int SVDECL(show_geom_verts, 0);
 SVEXTERN int SVDECL(show_cface_normals, 0);
 
@@ -1147,6 +1141,27 @@ SVEXTERN char SVDECL(*camera_label,NULL);
 SVEXTERN char SVDECL(*colorbar_label,NULL);
 SVEXTERN char SVDECL(*colorbar_filename, NULL);
 
+// boundary file
+// #define INTERIORwall 0
+// #define FRONTwall    1
+// #define BACKwall     2
+// #define LEFTwall     3
+// #define RIGHTwall    4
+// #define UPwall       5
+// #define DOWNwall     6
+// vis_boundary_type[INTERIORwall]
+// show_all_exterior_patch_data = 1;
+// hide_all_exterior_patch_data = 0;
+
+// immersed
+// show_faces_shaded
+// show_faces_outline
+
+// structured
+// solid_state
+// outline_state
+// visBlocks
+
 SVEXTERN int vis_boundary_type[7], SVDECL(update_ini_boundary_type,0);
 SVEXTERN int SVDECL(show_mirror_boundary,0), SVDECL(show_open_boundary, 0);
 SVEXTERN int SVDECL(n_mirrorvents,0), SVDECL(n_openvents,0);
@@ -1402,7 +1417,7 @@ SVEXTERN vslicedata SVDECL(*vd_shown,NULL);
 SVEXTERN int SVDECL(showall_slices,1);
 SVEXTERN float zterrain_min;
 SVEXTERN char smv_githash[256], smv_gitdate[256];
-SVEXTERN int SVDECL(visMeshlabel, 1);
+SVEXTERN int SVDECL(visMeshlabel, 0);
 SVEXTERN int SVDECL(visOpenVents,1),SVDECL(visDummyVents,1),SVDECL(visCircularVents,VENT_CIRCLE);
 SVEXTERN int SVDECL(visOpenVentsAsOutline,0);
 SVEXTERN int SVDECL(visParticles,1), SVDECL(visZone,0);
@@ -1412,7 +1427,11 @@ SVEXTERN int SVDECL(hide_internal_blockages, 0);
 
 SVEXTERN int SVDECL(outline_color_flag,0);
 SVEXTERN int visBlocks,                SVDECL(solid_state,-1),      SVDECL(outline_state,-1);
+SVEXTERN int visBlocks_save,           SVDECL(solid_state_save,-1), SVDECL(outline_state_save,-1);
 SVEXTERN int SVDECL(visBlocks_ini,-1), SVDECL(solid_state_ini, -1), SVDECL(outline_state_ini, -1);
+#define OBSTGEOM_SAVE    1
+#define OBSTGEOM_RESTORE 0
+SVEXTERN int SVDECL(obstgeom_state, -1);
 SVEXTERN int SVDECL(update_showblock_ini, 0);
 
 SVEXTERN int SVDECL(visTransparentBlockage,0);
@@ -1700,6 +1719,7 @@ SVEXTERN char SVDECL(*script_dir_path,NULL);
 SVEXTERN int SVDECL(nscriptinfo,0);
 SVEXTERN scriptfiledata SVDECL(*script_recording,NULL);
 SVEXTERN int SVDECL(runscript,0), SVDECL(noexit,0);
+SVEXTERN int SVDECL(runscript_firsttime, 1);
 SVEXTERN int SVDECL(serial_override, 0);
 SVEXTERN int SVDECL(runhtmlscript, 0);
 #ifdef INMAIN
@@ -1994,7 +2014,8 @@ SVEXTERN int SVDECL(buffertype,DOUBLE_BUFFER);
 SVEXTERN int SVDECL(opengl_finalized,0);
 SVEXTERN int SVDECL(restart_time,0);
 SVEXTERN int SVDECL(*isosubmenus,NULL), nisosubmenus;
-SVEXTERN int SVDECL(*loadpatchsubmenus,NULL), nloadpatchsubmenus;
+SVEXTERN patchmenudata SVDECL(*patchmenuinfo,NULL);
+SVEXTERN int SVDECL(npatchmenuinfo, 0);
 SVEXTERN char SVDECL(**patchlabellist,NULL);
 SVEXTERN int SVDECL(*patchlabellist_index,NULL);
 SVEXTERN int SVDECL(*isoindex,NULL);

@@ -277,6 +277,12 @@ EXTERNCPP void UpdateIndexColors(void);
 EXTERNCPP void UpdateSelectBlocks(void);
 EXTERNCPP void UpdateSelectFaces(void);
 
+//*** menus.c headers
+
+EXTERNCPP void HideImmersedMenu(void);
+EXTERNCPP void HideInternalBlockages(void);
+EXTERNCPP void ShowInternalBlockages(void);
+
 //*** getdatabounds.c headers
 
 EXTERNCPP void AdjustPart5Chops(void);
@@ -344,7 +350,8 @@ EXTERNCPP void GetZoneColors(const float *t, int nt, unsigned char *it,
 
 //*** IOboundary.c headers
 
-EXTERNCPP void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *valmin, float *valmax);
+EXTERNCPP int AreBoundaryFilesLoaded(void);
+EXTERNCPP void ComputeLoadedPatchHist(char *label, histogramdata * *histptr, float *valmin, float *valmax);
 EXTERNCPP void DrawBoundaryFrame(int flag);
 EXTERNCPP int  GetBoundaryType(const patchdata *patchi);
 EXTERNCPP float *GetPatchXYZ(const meshdata *meshi);
@@ -618,6 +625,7 @@ EXTERNCPP void DialogMenu(int value);
 EXTERNCPP void FontMenu(int value);
 EXTERNCPP void FrameRateMenu(int var);
 EXTERNCPP void GeometryMenu(int var);
+EXTERNCPP int GetBoundaryDisplay(void);
 EXTERNCPP void GetFileSizes(void);
 EXTERNCPP  int GetInternalFaceShow(void);
 EXTERNCPP  int GetNumActiveDevices(void);
@@ -664,7 +672,6 @@ EXTERNCPP void ShowBoundaryMenu(int value);
 EXTERNCPP void ShowDevicesMenu(int value);
 EXTERNCPP void ShowHideMenu(int val);
 EXTERNCPP void ShowHideSliceMenu(int var);
-EXTERNCPP void ShowInternalBlockages(void);
 EXTERNCPP void ShowObjectsMenu(int var);
 EXTERNCPP void ShowVSliceMenu(int value);
 EXTERNCPP void ScriptMenu(int var);
