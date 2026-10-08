@@ -1,0 +1,27 @@
+// put rendered files in specified directory
+
+RENDERDIR
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+
+UNLOADALL
+
+// render 3D smoke files
+
+UNLOADALL
+LOADINIFILE
+ plume_s3d2.ini
+LOADFILE
+ plume_s3d2_1_1.s3d
+SETTIMEVAL
+ 1.05
+RENDERONCE
+ plume_s3d2_smoke_01
+SETTIMEVAL
+ 10.0
+RENDERONCE
+ plume_s3d2_smoke_10
+SETTIMEVAL
+ 30.0
+RENDERONCE
+ plume_s3d2_smoke_30
+

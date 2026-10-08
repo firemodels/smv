@@ -1061,8 +1061,8 @@ ways. Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
 
 \section{3D Smoke}
 
-Figure \ref{figsmoketest} presents images verifying the display of 3D smoke and fire
-(heat release rate per unit volume or HRRPUV). A series of 3D smoke images are drawn
+Figure \ref{figsmoketest} shows images verifying the display of 3D smoke and fire
+(heat release rate per unit volume or HRRPUV). Three 3D smoke images are drawn
 at \SI{1}{s}, \SI{10}{s} and \SI{30}{s}.  The images contain semi-transparent slices
 derived from both soot density and HRRPUV data.
 
@@ -1078,6 +1078,29 @@ derived from both soot density and HRRPUV data.
 [A test showing 3D smoke drawn at \SI{1}{s}, \SI{10}{s} and \SI{30}{s}]
 {A test showing 3D smoke drawn at \SI{1}{s}, \SI{10}{s} and \SI{30}{s}.}
 \label{figsmoketest}%
+\end{figure}
+
+Figure \ref{figsmokeversion} shows images verifying the FDS
+{\tt \&DUMP SMOKE3D\_VERSION}\ keyword.
+Images in the top row were generated using {\tt SMOKE3D\_VERSION=1}.
+Images in the bottom row were generated using {\tt SMOKE3D\_VERSION=2}.
+The top and bottom sets of images should be the same.
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{ccc}
+ \includegraphics[height=\figheightD]{SCRIPT_FIGURES/plume_s3d1_smoke_01}&
+ \includegraphics[height=\figheightD]{SCRIPT_FIGURES/plume_s3d1_smoke_10}&
+ \includegraphics[height=\figheightD]{SCRIPT_FIGURES/plume_s3d1_smoke_30}\\
+ \includegraphics[height=\figheightD]{SCRIPT_FIGURES/plume_s3d2_smoke_01}&
+ \includegraphics[height=\figheightD]{SCRIPT_FIGURES/plume_s3d2_smoke_10}&
+ \includegraphics[height=\figheightD]{SCRIPT_FIGURES/plume_s3d2_smoke_30}
+\end{tabular}
+\end{center}
+\caption
+[A test comparing 3D smoke version 1 and 2 format outputs at \SI{1}{s}, \SI{10}{s} and \SI{30}{s}]
+{A test comparing 3D smoke version 1 and 2 format outputs at \SI{1}{s}, \SI{10}{s} and \SI{30}{s}}
+\label{figsmokeversion}%
 \end{figure}
 
 \clearpage
