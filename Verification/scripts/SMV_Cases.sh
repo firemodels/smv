@@ -28,10 +28,12 @@ $QFDS -d Visualization obst_test1.fds
 $QFDS -p 4 -d Visualization obst_test4.fds
 $QFDS -d Visualization part_color.fds
 $QFDS -d Visualization plume5c.fds
-$QFDS -d Visualization plumeiso.fds
-$QFDS -d Visualization plume_average.fds
-$QFDS -p 8 -d Visualization plumeiso8.fds
 $QFDS -d Visualization plume5c_bounddef.fds
+$QFDS -d Visualization plumeiso.fds
+$QFDS -p 8 -d Visualization plumeiso8.fds
+$QFDS -d Visualization plume_average.fds
+$QFDS -d Visualization plume_s3d1.fds
+$QFDS -d Visualization plume_s3d2.fds
 $QFDS -d Visualization script_test.fds
 $QFDS -d Visualization sillytexture.fds
 $QFDS -d Visualization slicemask.fds
