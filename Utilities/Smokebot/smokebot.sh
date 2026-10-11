@@ -157,7 +157,7 @@ compile_cfast()
     # Build CFAST
     echo "building cfast"
     cd $cfastrepo/Build/CFAST/intel_linux
-    rm -f cfast8_linux
+    rm -f cfast8_linux cfast7_linux
     make --makefile ../makefile clean &> /dev/null
     ./make_cfast.sh >> $OUTPUT_DIR/compile_cfast.log 2>&1
 }
@@ -187,15 +187,14 @@ check_compile_cfast()
 {
    # Check for errors in CFAST compilation
    cd $cfastrepo/Build/CFAST/intel_linux
-   if [ -e "cfast8_linux" ]
-   then
-      stage2_build_cfast=true
-   else
+   if [[ ! -e "cfast8_linux" ]] && [[ ! -e cfast7_linux ]]; then
       echo "Errors from Stage 2 - build CFAST:" >> $ERROR_LOG
       echo "CFAST failed to compile"            >> $ERROR_LOG
       cat $OUTPUT_DIR/compile_cfast.log         >> $ERROR_LOG
       echo ""                                   >> $ERROR_LOG
       THIS_CFAST_FAILED=1
+   else
+      stage2_build_cfast=true
    fi
 }
 
@@ -1153,6 +1152,7 @@ if [[ "$CLONE_REPO_BRANCH" != "" ]]; then
   pid_fig=$!
   ./update_repos.sh -K smv  -B $CLONE_REPO_BRANCH >  $OUTPUT_DIR/stage1_update_repos 2>&1 &
   pid_$smv=$!
+
   wait $pid_cfast
   wait $pid_fds
   wait $pid_fig
