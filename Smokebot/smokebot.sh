@@ -1145,13 +1145,13 @@ if [[ "$CLONE_REPO_BRANCH" != "" ]]; then
   echo Cloning repos
   cd smokebotdir
 
-  ./setup_repos.sh -K cfast -B $CLONE_REPO_BRANCH  > $OUTPUT_DIR/stage1_clone_repos 2>&1 &
+  ./setup_repos.sh -K cfast -B $CLONE_REPO_BRANCH  > $OUTPUT_DIR/stage1_clone_repos  2>&1 &
   pid_cfast=$!
-  ./setup_repos.sh -K fds   -B $CLONE_REPO_BRANCH >> $OUTPUT_DIR/stage1_clone_repos 2>&1 &
+  ./setup_repos.sh -K fds   -B $CLONE_REPO_BRANCH >> $OUTPUT_DIR/stage1_clone_repos  2>&1 &
   pid_fds=$!
-  ./setup_repos.sh -K fig   -B $CLONE_REPO_BRANCH >> $OUTPUT_DIR/stage1_clone_repos 2>&1 &
+  ./setup_repos.sh -K fig   -B $CLONE_REPO_BRANCH >> $OUTPUT_DIR/stage1_clone_repos  2>&1 &
   pid_fig=$!
-  ./setup_repos.sh -K smv   -B $CLONE_REPO_BRANCH >> $OUTPUT_DIR/stage1_clone_repos 2>&1 &
+  ./update_repos.sh -K smv  -B $CLONE_REPO_BRANCH >  $OUTPUT_DIR/stage1_update_repos 2>&1 &
   pid_$smv=$!
   wait $pid_cfast
   wait $pid_fds

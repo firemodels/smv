@@ -2,9 +2,11 @@
 CUR=`pwd`
 allrepos="bot cad cfast cor exp fds fig out radcal smv test_bundles"
 updaterepos=$allrepos
+single_repo=
 otherrepos="webpages wikis"
 BRANCH=master
 CHECKOUT_MASTER=
+branchname=
 PAUSE=10
 
 function usage {
@@ -12,7 +14,9 @@ echo "Update the repos $allrepos if they exist"
 echo ""
 echo "Options:"
 echo "-b - update only bot repo"
+echo "-B b - checkout branch named b"
 echo "-h - display this message"
+echo "-K xyz - update only repo named xyz"
 echo "-m - checkout master branch before updating"
 echo "-w - update only webpages and wikis repos"
 exit
@@ -28,14 +32,20 @@ else
    exit
 fi
 
-while getopts 'bhmw' OPTION
+while getopts 'bB:hK:mw' OPTION
 do
 case $OPTION  in
   b)
    updaterepos=bot
    ;;
+  B)
+   branchname="$OPTARG";
+   ;;
   h)
    usage;
+   ;;
+  K)
+   single_repo="$OPTARG";
    ;;
   m)
    CHECKOUT_MASTER=1
@@ -46,6 +56,11 @@ case $OPTION  in
 esac
 done
 shift $(($OPTIND-1))
+
+if [ "$single_repo" != "" ]; then
+  updaterepos="$single_repo"
+  otherrepos="$single_repo"
+fi
 
 UPDATE_REPO ()
 {
@@ -91,6 +106,9 @@ UPDATE_REPO ()
      git submodule foreach git remote update
      git submodule foreach git merge origin/master
   fi
+  if [ "$branchname" != "" ]; then
+    git checkout -f -B "$branchname"
+  fi
 }
 
 UPDATE_REPO2 ()
@@ -117,6 +135,9 @@ UPDATE_REPO2 ()
   git fetch origin
   git merge origin/$BRANCH
   git status -uno
+  if [ "$branchname" != "" ]; then
+    git checkout -f -B "$branchname"
+  fi
 }
 
 if [ "$WEBWIKI_ONLY" == "" ]; then

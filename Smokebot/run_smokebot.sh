@@ -19,9 +19,9 @@ echo "-G rootdir - specify github root directory"
 echo "-h - display this output"
 echo "-k - kill smokebot if it is running"
 if [ "$EMAIL" != "" ]; then
-  echo "-m email_address - [default: $EMAIL]"
+  echo "-m email_address - email results to email_address [default: $EMAIL]"
 else
-  echo "-m email_address"
+  echo "-m email_address - email results to email_address"
 fi
 echo "-M - make movies"
 echo "-o - specify GH_OWNER when uploading manuals. [default: $GH_OWNER]"
