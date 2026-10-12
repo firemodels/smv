@@ -96,11 +96,17 @@ FOPT=
 CPUS_PER_TASK=
 
 REPOROOT=
-case "$PWD" in
-    */smv/*)
-        REPOROOT="$(echo "$PWD" | sed 's|/smv/.*||; s|.*/||')"
-        ;;
-esac
+if [ -d ../../../smv ]; then
+  cd ../../..
+  REPOROOT=`pwd`
+fi
+if [[ "$REPOROOT" == "" ]] && [[ -d ../../smv ]]; then
+  cd ../..
+  REPOROOT=`pwd`
+fi
+if [ "$REPOROOT" != "" ]; then
+  REPOROOT="${REPOROOT##*/}"
+fi
 
 WEB_ROOT=/opt/www/html
 if [ ! -d $WEB_ROOT ]; then

@@ -1045,7 +1045,7 @@ case $OPTION in
    FDSCACHEDIR="$OPTARG"
    ;;
   G)
-   REPOROOT=$HOME/"$OPTARG"
+   export REPOROOT=$HOME/"$OPTARG"
    ;;
   m)
    mailTo="$OPTARG"
@@ -1076,6 +1076,11 @@ esac
 done
 shift $(($OPTIND-1))
 
+if [ "$REPOROOT" == "" ]; then
+  echo "***error: root directory not defined"
+  exit
+fi
+
 CPUS_PER_TASK="-T $CPUS_PER_TASK_ARG"
 
 if [ "$FDSCACHEDIR" != "" ]; then
@@ -1091,17 +1096,7 @@ fi
 
 #*** make sure smokebot is running in the right directory
 
-if [ -e run_smokebot.sh ]; then
-  if [ "$REPOROOT" == "" ]; then
-    cd ../..
-    REPOROOT=`pwd`
-    if [ ! -e $REPOROOT/smv ]; then
-      echo "***error: REPOROOT=$REPOROOT not valid, does not contain repor directories"
-      exit
-    fi
-    cd $smokebotdir
-  fi
-else
+if [ ! -e run_smokebot.sh ]; then
   echo "***error: smokebot not running in the smv/Smokebot directory"
   echo "          Aborting smokebot"
   exit 1
