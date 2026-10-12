@@ -1,9 +1,7 @@
 #!/bin/bash
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 CURDIR=`pwd`
-cd $SCRIPTDIR/../../../bot
-BOTREPO=`pwd`
-cd $CURDIR
+BOTREPO=$REPOROOT/bot
 
 function usage {
 echo "Create repos used by cfast, fds and/or smokview"

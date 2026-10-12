@@ -23,11 +23,11 @@ KEYWORDS_NOSOURCE=$OUTPUT/${NAME_PREFIX}keywords_nosource.txt
 rm -f $OUTPUT/${KEYWORDTYPE}*keywords*txt
 
 # SMV UG directory
-tex_dir=../../smv/Manuals/SMV_User_Guide/
+tex_dir=$REPOROOT/smv/Manuals/SMV_User_Guide/
 # smv source directory
-source_dir=../../smv/Source/smokeview
+source_dir=$REPOROOT/smv/Source/smokeview
 # shared source directory
-shared_dir=../../smv/Source/shared
+shared_dir=$REPOROOT/smv/Source/shared
 
 if [ "$KEYWORDTYPE" == "ssf" ]; then
   # generate list of script keywords found in IOscript.c

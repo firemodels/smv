@@ -1,9 +1,7 @@
 #!/bin/bash
 
 CURDIR=`pwd`
-cd ../../smv/Manuals
-MANDIR=`pwd`
-cd $CURDIR
+MANDIR=$REPOROOT/smv/Manuals
 
 TARHOME=$HOME/.smokebot/pubs
 if [ ! -e $HOME/.smokebot ]; then

@@ -1419,7 +1419,7 @@ pid_cfast=$!
 #*** stage 2 - build smokeview ustilities
 
 cd $smokebotdir
-./make_smvapps.sh $REPOROOT &
+./make_smvapps.sh  &
 pid_smvapps=$!
 
 RUN_CASES=
