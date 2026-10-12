@@ -3,11 +3,15 @@
 set -e
 
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-BOTREPO="$( cd "$SCRIPTDIR/.." && pwd )"
+CURDIR=`pwd`
+cd $SCRIPTDIR/../../../bot
+BOTREPO=`pwd`
+cd $CURDIR
 FMROOT="$( cd "$BOTREPO/.." && pwd )"
 MODE=${1:-}
 if [[ "$MODE" != reset ]]; then
   source "$BOTREPO/Bundlebot/release/config.sh"
+
 fi
 
 STATUS=0
