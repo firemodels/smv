@@ -1095,6 +1095,10 @@ if [ -e run_smokebot.sh ]; then
   if [ "$REPOROOT" == "" ]; then
     cd ../..
     REPOROOT=`pwd`
+    if [ ! -e $REPOROOT/smv ]; then
+      echo "***error: REPOROOT=$REPOROOT not valid, does not contain repor directories"
+      exit
+    fi
     cd $smokebotdir
   fi
 else

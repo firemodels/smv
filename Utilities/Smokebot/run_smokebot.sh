@@ -94,7 +94,13 @@ WEB_DIR=
 USE_BOT_QFDS=
 FOPT=
 CPUS_PER_TASK=
+
 REPOROOT=
+case "$PWD" in
+    */smv/*)
+        REPOROOT="$(echo "$PWD" | sed 's|/smv/.*||; s|.*/||')"
+        ;;
+esac
 
 WEB_ROOT=/opt/www/html
 if [ ! -d $WEB_ROOT ]; then
