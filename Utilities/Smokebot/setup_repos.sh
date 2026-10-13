@@ -87,16 +87,8 @@ repos=
 eraserepos=
 FORCECLONE=
 DISABLEPUSH=1
-FMROOT=
 WIKIWEB=
 branchname=
-if [ -e ../.gitbot ]; then
-   cd ../..
-   FMROOT=`pwd`
-else
-   echo "***Error: this script must be run from the bot/Scripts directory"
-   exit
-fi
 
 while getopts '3abB:cCDefhK:sw' OPTION
 do
@@ -151,7 +143,7 @@ if [ "$CONFIG_REPOS" != "" ]; then
   source $BOTREPO/Bundlebot/release/config.sh
 fi
 
-cd $FMROOT/bot
+cd $REPOROOT/bot
 GITHEADER=`git remote -v | grep origin | head -1 | awk  '{print $2}' | awk -F ':' '{print $1}'`
 if [ "$GITHEADER" == "git@github.com" ]; then
    GITHEADER="git@github.com:" 
@@ -168,9 +160,9 @@ if [ "$eraserepos" == "" ]; then
     echo "You are cloning the repos: $repos"
   fi
   if [ "$WIKIWEB" == "1" ]; then
-     echo "from git@github.com:firemodels into the directory: $FMROOT"
+     echo "from git@github.com:firemodels into the directory: $REPOROOT"
   else
-     echo "from $GITHEADER$GITUSER into the directory: $FMROOT"
+     echo "from $GITHEADER$GITUSER into the directory: $REPOROOT"
   fi
   if [ "$FORCECLONE" == "" ]; then
     echo ""
@@ -186,7 +178,7 @@ do
   repo_out=$repo
   WIKIWEB=
 
-  cd $FMROOT
+  cd $REPOROOT
 
   echo "----------------------------------------------"
   if [ "$repo" == "fds.wiki" ]; then
@@ -197,7 +189,7 @@ do
      repo_out=webpages
      WIKIWEB=1
   fi
-  repo_dir=$FMROOT/$repo_out
+  repo_dir=$REPOROOT/$repo_out
   if [ "$eraserepos" == "" ]; then
     if [ -e $repo_dir ]; then
        echo "   For repo $repo, the directory $repo_dir already exists"
@@ -216,7 +208,7 @@ do
     fi
   fi
   if [ "$WIKIWEB" == "1" ]; then
-     cd $FMROOT
+     cd $REPOROOT
      git clone ${GITHEADER}firemodels/$repo.git $repo_out
      if [ ! -d $repo_out ]; then
         echo "***error: clone of $repo.git to $repo_out failed"

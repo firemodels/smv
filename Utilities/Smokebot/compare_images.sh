@@ -56,10 +56,10 @@ if [ "$BASEDIR" == "Firebot" ]; then
   BOT_TYPE=firebot
   BOT_TITLE=Firebot
   PROG=fds
-  REFERENCE_DIR=../../fig/fds/Reference_Figures
+  REFERENCE_DIR=$REPOROOT/fig/fds/Reference_Figures
   NEW_DIR=$SUMMARY_DIR/images
 
-  MANDIR=../../fds/Manuals
+  MANDIR=$REPOROOT/fds/Manuals
   mkdir -p $SUMMARY_DIR/images/user
   cp $MANDIR/FDS_User_Guide/SCRIPT_FIGURES/*.png $SUMMARY_DIR/images/user/. 
   
@@ -68,11 +68,11 @@ if [ "$BASEDIR" == "Firebot" ]; then
 fi
 if [ "$BASEDIR" == "Smokebot" ]; then
   INREPO=1
-  SUMMARY_DIR=../../smv/Manuals/SMV_Summary
+  SUMMARY_DIR=$REPOROOT/smv/Manuals/SMV_Summary
   BOT_TYPE=smokebot
   BOT_TITLE=Smokebot
   PROG=smv
-  REFERENCE_DIR=../../fig/smv/Reference_Figures/Default
+  REFERENCE_DIR=$REPOROOT/fig/smv/Reference_Figures/Default
   NEW_DIR=$SUMMARY_DIR/images/
 fi
 
@@ -192,19 +192,8 @@ fi
 
 if [ "$INREPO" != "" ]; then
   cd $CURDIR
-  REPO=../..
-  cd $REPO
-  REPO=`pwd`
-
-  cd $CURDIR
-  FDS_REPO=../../fds
-  cd $FDS_REPO
-  FDS_REPO=`pwd`
-
-  cd $CURDIR
-  SMV_REPO=../../smv
-  cd $SMV_REPO
-  SMV_REPO=`pwd`
+  FDS_REPO=$REPOROOT/fds
+  SMV_REPO=$REPOROOT/smv
   PNGINFO=$SMV_REPO/Build/pnginfo/intel_linux/pnginfo_linux
 fi
 
@@ -215,12 +204,11 @@ HTML_DIFF=$SUMMARY_DIR/index.html
 #*** setup revision strings
 
 if [ "$INREPO" != "" ]; then
-  cd $CURDIR/../../fds
+  cd $REPOROOT/fds
   FDS_REVISION=`git describe --abbrev=7 --long --dirty`
   FDS_BRANCH=`git branch --show-current`
 
-  cd $CURDIR/../../fig
-  FIGREPO=`pwd`
+  FIGREPO=$REPOROOT/fig
   FIG_REVISION=`git describe --abbrev=7 --long --dirty`
   FIG_BRANCH=`git branch --show-current`
 
@@ -243,7 +231,7 @@ if [ "$INREPO" != "" ]; then
     FIG_VER_SMV_REVISION=`head -1 $FIG_VER_SMV_REVISION_FILE`
   fi
 
-  cd $CURDIR/../../smv
+  cd $$REPOROOT/smv
   SMV_REVISION=`git describe --abbrev=7 --long --dirty`
   SMV_BRANCH=`git branch --show-current`
 fi

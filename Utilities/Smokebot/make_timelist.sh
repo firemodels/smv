@@ -10,7 +10,7 @@ tempfile=/tmp/filelist.$$
 # http://www.unixtimestamp.com/
 BASETIMESTAMP=1451624400
 CURDIR=`pwd`
-cd ../../smv
+cd $REPOROOT/smv
 while getopts 's' OPTION
 do
 case $OPTION  in

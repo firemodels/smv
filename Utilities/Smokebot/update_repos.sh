@@ -22,15 +22,7 @@ echo "-w - update only webpages and wikis repos"
 exit
 }
 
-FMROOT=
 WEBWIKI_ONLY=
-if [ -e ../.gitbot ]; then
-   cd ../..
-   FMROOT=`pwd`
-else
-   echo "***error: this script must be run from the bot/Scripts directory"
-   exit
-fi
 
 while getopts 'bB:hK:mw' OPTION
 do
@@ -65,7 +57,7 @@ fi
 UPDATE_REPO ()
 {
   local repo=$1
-  repodir=$FMROOT/$repo
+  repodir=$REPOROOT/$repo
   echo pausing $PAUSE s
   sleep $PAUSE
 
@@ -114,7 +106,7 @@ UPDATE_REPO ()
 UPDATE_REPO2 ()
 {
   local repo=$1
-  repodir=$FMROOT/$repo
+  repodir=$REPOROOT/$repo
   echo pausing $PAUSE s
   sleep $PAUSE
 
@@ -156,3 +148,4 @@ fi
 echo update complete
 
 cd $CURDIR
+
