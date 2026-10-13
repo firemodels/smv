@@ -1045,7 +1045,7 @@ case $OPTION in
    FDSCACHEDIR="$OPTARG"
    ;;
   G)
-   export REPOROOT=$HOME/"$OPTARG"
+   export REPOROOT="$OPTARG"
    ;;
   m)
    mailTo="$OPTARG"
@@ -1078,6 +1078,11 @@ shift $(($OPTIND-1))
 
 if [ "$REPOROOT" == "" ]; then
   echo "***error: root directory not defined"
+  echo "          use -G reporoot_path to specify directory containing repos"
+  exit
+fi
+if [ ! -d $REPOROOT ]; then
+  echo "***error: repo root directory $REPOROOT doe not exist"
   exit
 fi
 

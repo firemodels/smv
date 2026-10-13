@@ -74,13 +74,6 @@ else
   exit
 fi
 
-cd ../..
-GITROOT=`pwd`
-cd $CURDIR
-if [ "$FIREMODELS" == "" ]; then
-  export FIREMODELS=$GITROOT
-fi
-
 #*** define initial values
 
 SIZE=
@@ -96,16 +89,13 @@ FOPT=
 CPUS_PER_TASK=
 
 REPOROOT=
-if [ -d ../../../smv ]; then
-  cd ../../..
-  REPOROOT=`pwd`
-fi
-if [[ "$REPOROOT" == "" ]] && [[ -d ../../smv ]]; then
+if [[ -d ../../smv ]]; then
   cd ../..
   REPOROOT=`pwd`
 fi
-if [ "$REPOROOT" != "" ]; then
-  REPOROOT="${REPOROOT##*/}"
+if [[ "$REPOROOT" == "" ]] && [[ -d ../../../smv ]]; then
+  cd ../../..
+  REPOROOT=`pwd`
 fi
 
 WEB_ROOT=/opt/www/html
@@ -185,17 +175,31 @@ esac
 done
 shift $(($OPTIND-1))
 
+if [ "$REPOROOT" == "" ]; then
+  echo "***error: root directory not defined"
+  echo "          use -G reporoot_path to specify directory containing repos"
+  exit
+else
+  if [ ! -d $REPOROOT ]; then
+    echo "***error repo root directory $REPOROOT does not exist"
+    exit
+  fi
+fi
+REPOROOTOPT="-G $REPOROOT"
+
 if [ "$WEB_DIR" == "" ]; then
-  WEB_DIR=`basename $GITROOT`
+  WEB_DIR=`basename $REPOROOT`
   EXT="${WEB_DIR##*_}"
   if [ "$EXT" != "" ]; then
     WEB_DIR=$EXT
   fi
   WEB_DIR=`whoami`/$WEB_DIR
 fi
+
 if [ "$WEB_ROOT" == "" ]; then
   WEB_DIR=
 fi
+
 
 # sync fds and smv repos with the the repos used in the last successful firebot run
 
@@ -257,14 +261,6 @@ if [ "$KILL_SMOKEBOT" == "1" ]; then
   exit
 fi
 
-if [ "$REPOROOT" != "" ]; then
-  if [ ! -d $HOME/$REPOROOT ]; then
-    echo "***error repo root directory $HOME/$REPOROOT does not exist"
-    exit
-  fi
-  REPOROOT="-G $REPOROOT"
-fi
-
 #*** make sure smokebot is not already running
 
 if [ "$FORCE" == "" ]; then
@@ -288,7 +284,7 @@ fi
 #*** run smokebot
 
 touch $smokebot_pid
-./smokebot.sh $SIZE $CPuS_PER_TASK $CLONE_REPOS $REPOROOT $FOPT $FORCECLONE $WEB_DIR $WEB_ROOT $QUEUE $UPLOAD $EMAIL $MOVIE "$@"
+./smokebot.sh $SIZE $CPuS_PER_TASK $CLONE_REPOS $REPOROOTOPT $FOPT $FORCECLONE $WEB_DIR $WEB_ROOT $QUEUE $UPLOAD $EMAIL $MOVIE "$@"
 if [ -e $smokebot_pid ]; then
   rm $smokebot_pid
 fi
