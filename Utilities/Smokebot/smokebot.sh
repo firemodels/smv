@@ -799,7 +799,8 @@ email_build_status()
   echo "----------------------------------------------"      > $TIME_LOG
   echo "host: $hostname"                                    >> $TIME_LOG
   echo "OS: Linux"                                          >> $TIME_LOG
-  echo "repo: $REPOROOT"                                    >> $TIME_LOG
+  echo "smokebot: $smokebotdir"                             >> $TIME_LOG
+  echo "repo root: $REPOROOT"                               >> $TIME_LOG
   echo "queue: $QUEUE"                                      >> $TIME_LOG
   echo "cpus per task: $CPUS_PER_TASK_ARG"                  >> $TIME_LOG
   if [ "$ICC_VERSION" != "" ]; then
