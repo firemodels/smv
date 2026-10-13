@@ -284,6 +284,7 @@ fi
 #*** run smokebot
 
 touch $smokebot_pid
+cd $CURDIR
 ./smokebot.sh $SIZE $CPuS_PER_TASK $CLONE_REPOS $REPOROOTOPT $FOPT $FORCECLONE $WEB_DIR $WEB_ROOT $QUEUE $UPLOAD $EMAIL $MOVIE "$@"
 if [ -e $smokebot_pid ]; then
   rm $smokebot_pid
