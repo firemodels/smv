@@ -32,7 +32,6 @@
 #include "IOobjects.h"
 #include "IOscript.h"
 
-#include "translate.h"
 #include "file_util.h"
 #include "datadefs.h"
 #include "readimage.h"
