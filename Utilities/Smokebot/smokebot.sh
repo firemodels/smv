@@ -1535,16 +1535,13 @@ if [[ "$build_man_pics" == "1" ]] ; then
    echo Making guides
 
    echo "   user"
-   make_guide SMV_User_Guide                $smvrepo/Manuals/SMV_User_Guide                SMV_User_Guide &
-   pid_smv_ug=$!
+   make_guide SMV_User_Guide                $smvrepo/Manuals/SMV_User_Guide                SMV_User_Guide
 
    echo "   technical"
-   make_guide SMV_Technical_Reference_Guide $smvrepo/Manuals/SMV_Technical_Reference_Guide SMV_Technical_Reference_Guide &
-   pid_smv_tg=$!
+   make_guide SMV_Technical_Reference_Guide $smvrepo/Manuals/SMV_Technical_Reference_Guide SMV_Technical_Reference_Guide
 
    echo "   verification"
    make_guide SMV_Verification_Guide        $smvrepo/Manuals/SMV_Verification_Guide        SMV_Verification_Guide
-   pid_smv_vg=$!
 
    DATE=`date +"%b %d, %Y - %r"`
 

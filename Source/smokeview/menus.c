@@ -9725,7 +9725,7 @@ if(opengl_finalized == 0)return;
       glutAddMenuEntry("   IDs", MENU_HVAC_SHOW_DUCT_IDS);
     }
     if(global_scase.hvaccoll.nhvaccomponents > 0){
-      GLUTADDSUBMENU(_(  "   Components"), showcomponentmenu);
+      GLUTADDSUBMENU("   Components", showcomponentmenu);
     }
     glutAddMenuEntry("Nodes", MENU_HVAC_SHOW_NODE_IGNORE);
     if(glui_hvac->show_node_labels == 1){

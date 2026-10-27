@@ -6,7 +6,6 @@
 #include "glui.h"
 #endif
 #include "datadefs.h"
-#include "translate.h"
 #include "csphere.h"
 #include "smokeviewdefs.h"
 #include "isobox.h"
