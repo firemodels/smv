@@ -7,7 +7,6 @@ add_library(smv STATIC
     string_util.c
     threader.c
     histogram.c
-    translate.c
     csphere.c
     md5.c
     sha1.c

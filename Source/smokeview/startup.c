@@ -274,12 +274,7 @@ int SetupCase(char *filename){
     return 0;
   }
   glui_defined = 1;
-  char *smv_bindir = GetSmvRootDir();
-  InitTranslate(smv_bindir, tr_name);
   InitDefaultCameras();
-
-  FREEMEMORY(smv_bindir);
-  PRINT_TIMER(timer_start, "InitTranslate");
 
   if(global_scase.tourcoll.ntourinfo==0)SetupTour();
 #ifdef pp_GLUT_DEBUG

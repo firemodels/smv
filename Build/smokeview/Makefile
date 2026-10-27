@@ -53,7 +53,7 @@ csrc = callbacks.c camera.c color2rgb.c colorbars.c colorbar_defs.c colortable.c
        readimage.c  readlabel.c readobject.c readslice.c  readsmoke.c  readsmvfile.c readsmv.c \
        readtour.c renderimage.c  scontour2d.c sha1.c sha256.c shaders.c showscene.c skybox.c \
        smokeview.c smv_geometry.c startup.c stdio_buffer.c stdio_m.c string_util.c threader.c  \
-       translate.c unit.c update.c viewports.c  
+       unit.c update.c viewports.c
 
 cppsrc = glui_bounds.cpp  glui_clip.cpp glui_colorbar.cpp glui_display.cpp glui_geometry.cpp glui_motion.cpp \
          glui_objects.cpp glui_shooter.cpp glui_smoke.cpp glui_stereo.cpp glui_tour.cpp glui_trainer.cpp
@@ -83,7 +83,7 @@ incs = compress.h scontour2d.h csphere.h datadefs.h dirent_win.h file_util.h glu
        glui_motion.h glui_smoke.h glui_tour.h histogram.h infoheader.h interp.h isobox.h \
        IOobjects.h IOscript.h lint.h dmalloc.h options.h options_common.h \
        pragmas.h smokeheaders.h smokeviewdefs.h smokeviewvars.h \
-       stdio_buffer.h stdio_m.h string_util.h structures.h translate.h threader.h viewports.h command_args.h
+       stdio_buffer.h stdio_m.h string_util.h structures.h threader.h viewports.h command_args.h
 
 ifeq ($(ICON),icon)
 obj += resource.o
