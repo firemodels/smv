@@ -252,7 +252,6 @@ cd $GITROOT/smv/Verification
 scripts/SMV_Cases.sh
 scripts/RESTART_Cases.sh
 cd $GITROOT/smv/Verification
-scripts/SMV_DIFF_Cases.sh
 cd $CURDIDR
 
 # generate geometry images
