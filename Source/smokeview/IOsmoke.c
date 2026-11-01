@@ -2167,7 +2167,6 @@ int UncompressSmoke3D(smoke3ddata *smoke3di){
 
   iframe_local = smoke3di->ismoke3d_time;
   countin = smoke3di->nchars_compressed_smoke[iframe_local];
-  countout=smoke3di->nchars_uncompressed;
 
   unsigned char *buffer_in;
     buffer_in = smoke3di->smokeframe_comp_list[iframe_local];

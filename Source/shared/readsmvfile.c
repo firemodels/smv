@@ -3598,7 +3598,6 @@ void ParseSMOKE3DCount(smv_case *scase){
 
 int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer, int *nn_smoke3d_in, int *ioffset_in, int *ismoke3dcount_in, int *ismoke3d_in){
   size_t len;
-  size_t lenbuffer;
   int filetype = C_GENERATED;
   int blocknumber;
   char buffer2[256];
@@ -3647,7 +3646,6 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
   }
   bufferptr = TrimFrontBack(buffer);
   len = strlen(buffer);
-  lenbuffer = len;
   {
     smoke3ddata *smoke3di;
     int i;

@@ -278,7 +278,6 @@ void DrawOnlyThreshold(const meshdata *meshi){
 
   patch_times = meshi->patch_times;
   xyzpatch = meshi->xyzpatch_threshold;
-  patchi = global_scase.patchinfo+meshi->patchfilenum;
   assert(meshi->cpatchval_iframe!=NULL);
   patchi = global_scase.patchinfo+meshi->patchfilenum;
 
@@ -2045,7 +2044,6 @@ void DrawBoundaryTexture(const meshdata *meshi){
       nrow=pfi->nrow;
       ncol=pfi->ncol;
       xyzpatchcopy = xyzpatch + 3* pfi->start;
-      patchvals = meshi->patchval_iframe;
       patchvals  = meshi->patchval_iframe + pfi->start;
       cpatchvals = NULL;
       assert(patchvals != NULL || cpatchvals != NULL);
@@ -2123,7 +2121,6 @@ void DrawBoundaryTexture(const meshdata *meshi){
       nrow=pfi->nrow;
       ncol=pfi->ncol;
       xyzpatchcopy = xyzpatch + 3* pfi->start;
-      patchvals = meshi->patchval_iframe;
       patchvals  = meshi->patchval_iframe + pfi->start;
       cpatchvals = NULL;
       for(irow=0; irow<nrow-1; irow++){
@@ -2491,7 +2488,6 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
 
   patch_times=meshi->patch_times;
   xyzpatch = GetPatchXYZ(meshi);
-  patchi=global_scase.patchinfo+meshi->patchfilenum;
   assert(meshi->cpatchval_iframe!=NULL);
   patchi = global_scase.patchinfo + meshi->patchfilenum;
 

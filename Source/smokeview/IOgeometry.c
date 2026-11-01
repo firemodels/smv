@@ -2116,8 +2116,6 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int load_flag, int ntim
   int count;
   float time;
   int iframe, frame_start, frame_stop;
-  char *ext=NULL;
-  unsigned char *cvals;
 
   //***format
   // 1
@@ -2133,10 +2131,8 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int load_flag, int ntim
   FILE_m *stream;
   int count_read;
 
-  cvals = (unsigned char *)vals;
   *error = 1;
   if(filename==NULL)return 0;
-  ext = strrchr(filename, '.');
   stream = fopen_b(filename, NULL, 0, "rb");
   file_size = GetFileSizeSMV(filename);
   if(stream == NULL){
@@ -2273,8 +2269,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   }
   if(patchi->skip == 1)return 0;
 
-  char *ext = NULL;
-  ext = strrchr(patchi->file, '.');
   if(time_value != NULL && flag==1){
     NewMemory((void **)&geom_offsets, MAX_FRAMES * sizeof(int));
     geom_offset_flag = BUILD_GEOM_OFFSETS;
@@ -3717,7 +3711,7 @@ void DrawGeomVData(vslicedata *vd){
 #define GEOMTEXTURE2(geomval, vmin, vmax) ( CLAMP( (geomval-vmin)/(vmax-vmin),0.0,1.0) )
 void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   int i;
-  unsigned char *ivals, *cvals;
+  unsigned char *ivals;
   int is_ccell = 0;
   float *vals=NULL;
 
@@ -3741,7 +3735,6 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
 
   if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
   vals = patchi->geom_vals + patchi->geom_vals_static_offset[patchi->geom_itime];
-  cvals = patchi->cbuffer;
   if(geom_type==GEOM_STATIC){
     ivals = patchi->geom_ival_static;
   }
