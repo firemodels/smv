@@ -131,17 +131,17 @@ xcopy /E /I /H /Q SMV6 "%SMV6%"     > Nul
 echo        copy complete
 
 echo *** Removing previous Smokeview entries from the system and user path.
-call "%SMV6%\set_path.exe" -u -m -b -r "firemodels\SMV6" >Nul
-call "%SMV6%\set_path.exe" -s -m -b -r "firemodels\SMV6" >Nul
+call "%SMV6%\set_path.bat" -u -m -b -r "firemodels\SMV6" >Nul
+call "%SMV6%\set_path.bat" -s -m -b -r "firemodels\SMV6" >Nul
 
 echo *** Setting up PATH variable.
 
 if NOT "%option_install%" == "1" goto skip_systempath
-  call "%SMV6%\set_path.exe" -s -m -f "%SMV6%"     > Nul
+  call "%SMV6%\set_path.bat" -s -m -f "%SMV6%"     > Nul
   goto after_setpath
 :skip_systempath
 
-call "%SMV6%\set_path.exe" -u -m -f "%SMV6%"     > Nul
+call "%SMV6%\set_path.bat" -u -m -f "%SMV6%"     > Nul
 :after_setpath
 
 :: ------------- file association -------------

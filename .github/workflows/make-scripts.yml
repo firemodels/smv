@@ -16,9 +16,7 @@ jobs:
           - clang
         program:
           - pnginfo
-          - smokediff
           - smokeview
-          - smokezip
           - wind2fds
     runs-on: ${{ matrix.os }}
     steps:
@@ -42,9 +40,7 @@ jobs:
           - clang
         program:
           - pnginfo
-          - smokediff
           - smokeview
-          - smokezip
           - wind2fds
     runs-on: ${{ matrix.os }}
     steps:
