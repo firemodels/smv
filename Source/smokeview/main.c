@@ -75,7 +75,6 @@ void Usage(int option){
     PRINTF("%s\n", " -startframe n  - start rendering at frame n");
     PRINTF("%s\n", " -stereo        - activate stereo mode");
     PRINTF("%s\n", " -timings       - show timings");
-    PRINTF("%s\n", " -trirates      - show triangle display rates");
     PRINTF("%s\n", " -x0 val - horizontal screen coordinate in pixels where smokeview window is place at startup");
     PRINTF("%s\n", " -y0 val - vertical screen coordinate in pixels where smokeview window is place at startup");
     PRINTF("%s\n", " -X0 val - horizontal screen coordinate in pixels where dialog windows are placed when opened");
@@ -316,9 +315,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
     if(args->timings){
       show_timings = 1;
-    }
-    if(args->trirates){
-      show_trirates = 1;
     }
     if(args->load_ini != NULL){
       load_ini = args->load_ini;

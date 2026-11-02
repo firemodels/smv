@@ -2076,16 +2076,16 @@ unsigned char *GetHashSHA256(char *file){
 
 void UsageCommon(int option){
   if(option == HELP_SUMMARY){
-    PRINTF("  -help      - display help summary\n");
-    PRINTF("  -help_all  - display all help info\n");
-    PRINTF("  -version   - display version information\n");
+    PRINTF(" -help      - display help summary\n");
+    PRINTF(" -help_all  - display all help info\n");
+    PRINTF(" -version   - display version information\n");
   }
   if(option == HELP_ALL){
-    PRINTF("  -md5       - display an md5 hash when -version is invoked\n");
-    PRINTF("  -sha1      - display a sha1 hash when -version is invoked\n");
-    PRINTF("  -sha256    - display a sha256 hash when -version is invoked\n");
-    PRINTF("  -hash_all  - display all hashes when -version option is invoked\n");
-    PRINTF("  -hash_none - do not display any hashes  when -version is invoked\n");
+    PRINTF(" -md5       - display an md5 hash when -version is invoked\n");
+    PRINTF(" -sha1      - display a sha1 hash when -version is invoked\n");
+    PRINTF(" -sha256    - display a sha256 hash when -version is invoked\n");
+    PRINTF(" -hash_all  - display all hashes when -version option is invoked\n");
+    PRINTF(" -hash_none - do not display any hashes  when -version is invoked\n");
   }
 }
 

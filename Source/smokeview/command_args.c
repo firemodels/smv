@@ -118,9 +118,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     else if(strcmp(argv[i], "-big") == 0){
       args.big = true;
     }
-    else if(strcmp(argv[i], "-trirates") == 0){
-      args.trirates = true;
-    }
     else if(strcmp(argv[i], "-timings") == 0){
       args.timings = true;
     }
