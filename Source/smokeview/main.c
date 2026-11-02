@@ -33,11 +33,10 @@ void Usage(int option){
 
   PRINTF("\nsmokeview [options] casename\n");
   PRINTF("%s - %s\n\n", githash, __DATE__);
-  PRINTF("%s\n\n", "Visualize fire/smoke flow simulations.");
+  PRINTF("%s\n\n", "Visualize fire/smoke flow simulations specified by casename.smv.");
   PRINTF("options:\n");
-  PRINTF("%s\n", " casename       - project id (file names without the extension)");
   PRINTF("%s\n", " -bindir dir    - specify location of smokeview bin directory");
-  PRINTF("%s\n", " -ini           - output smokeview parameter values to smokeview.ini");
+  PRINTF("%s\n", " -load_ini inifile - load the specified ini file (before casename.ini) at startup");
   PRINTF("%s\n", " -runscript     - run the script file casename.ssf");
   UsageCommon(HELP_SUMMARY);
   if(option==HELP_ALL){
@@ -54,9 +53,9 @@ void Usage(int option){
     PRINTF("%s\n", "                  don't compute blanking arrays");
     PRINTF("%s\n", " -full          - full startup - check if files exist");
     PRINTF("%s\n", " -geominfo      - output information about geometry triangles");
-    PRINTF("%s\n", " -info            generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info");
+    PRINTF("%s\n", " -info          - generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info");
+    PRINTF("%s\n", " -ini           - output smokeview parameter values to smokeview.ini");
     PRINTF("%s\n", " -large         - take some shortcuts when reading in large geometry cases");
-    PRINTF("%s\n", " -load_ini path - load settings from the specified INI file at startup");
     PRINTF("%s\n", " -load_co2      - load 3D smoke of type co2 at startup ");
     PRINTF("%s\n", " -load_hrrpuv   - load 3D smoke of type hrrpuv at startup ");
     PRINTF("%s\n", " -load_soot     - load 3D smoke of type soot at startup ");
