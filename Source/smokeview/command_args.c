@@ -106,12 +106,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     else if(strcmp(argv[i], "-no_graphics") == 0){
       args.no_graphics = true;
     }
-    else if(strcmp(argv[i], "-update_slice") == 0){
-      args.update_slice = true;
-    }
-    else if(strcmp(argv[i], "-update") == 0){
-      args.update = true;
-    }
     else if(strcmp(argv[i], "-nogpu") == 0){
       args.nogpu = true;
     }
@@ -123,9 +117,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     }
     else if(strcmp(argv[i], "-info") == 0){
       args.info = true;
-    }
-    else if(strcmp(argv[i], "-sizes") == 0){
-      args.sizes = true;
     }
     else if(strcmp(argv[i], "-stereo") == 0){
       args.stereo = true;
@@ -186,27 +177,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
         strcpy(args.ini_to, local_ini_to);
       }
     } 
-    else if(strcmp(argv[i], "-update_ini") == 0){
-      // As per convert_ini, but in-place
-      args.update_ini = true;
-      char *local_ini_from = NULL, *local_ini_to = NULL;
-
-      if(++i < argc){
-        local_ini_from = argv[i];
-      }
-      else{
-        *error = CLE_NO_INI_ARGS;
-        return args;
-      }
-      local_ini_to = local_ini_from;
-      if(local_ini_from != NULL){
-        NewMemory((void **)&args.ini_from, strlen(local_ini_from) + 1);
-        strcpy(args.ini_from, local_ini_from);
-
-        NewMemory((void **)&args.ini_to, strlen(local_ini_to) + 1);
-        strcpy(args.ini_to, local_ini_to);
-      }
-    }
     else if(strcmp(argv[i], "-isotest") == 0){
       args.isotest = true;
     }

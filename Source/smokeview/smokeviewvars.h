@@ -454,7 +454,6 @@ SVEXTERN float SVDECL(customview_azimuth, 0.0), SVDECL(customview_elevation, 0.0
 SVEXTERN int SVDECL(use_customview, 0);
 SVEXTERN screendata SVDECL(*screenglobal, NULL);
 
-SVEXTERN int SVDECL(update_filesizes, 0);
 SVEXTERN int SVDECL(smoke3d_black, 0);
 SVEXTERN int SVDECL(smoke3d_skip_all, 1);
 SVEXTERN int SVDECL(smoke3d_skip_horiz, 1);
@@ -541,7 +540,6 @@ SVEXTERN int SVDECL(nwindrosez_checkboxes, 0);
 SVEXTERN float startup_time;
 SVEXTERN int SVDECL(alt_ctrl_key_state, KEY_NONE);
 
-SVEXTERN int SVDECL(update_slice, 0);
 SVEXTERN int SVDECL(slice_bounds_defined, 0), SVDECL(patch_bounds_defined, 0);
 SVEXTERN int SVDECL(*windrosez_showhide, NULL), SVDECL(nwindrosez_showhide,0), SVDECL(update_windrose_showhide,0);
 

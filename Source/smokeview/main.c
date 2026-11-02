@@ -77,16 +77,12 @@ void Usage(int option){
     PRINTF("%s\n", " -htmlscript scriptfile - run the script file scriptfile without using the video card");
     PRINTF("%s\n", " -runhtmlscript - run the script file casename.ssf without using the video card");
     PRINTF("%s\n", "     the -htmlscript and -runhtmlscript keywords are used to generate JSON files");
-    PRINTF("%s\n", " -sizes         - output files sizes then exit");
     PRINTF("%s\n", " -skipframe n   - render every n frames");
     PRINTF("%s\n", " -smoke3d       - only show 3D smoke");
     PRINTF("%s\n", " -startframe n  - start rendering at frame n");
     PRINTF("%s\n", " -stereo        - activate stereo mode");
     PRINTF("%s\n", " -timings       - show timings");
     PRINTF("%s\n", " -trirates      - show triangle display rates");
-    PRINTF("%s\n", " -update_slice  - calculate slice file parameters");
-    PRINTF("%s\n", " -update        - equivalent to -update_bounds and -update_slice");
-    PRINTF("%s\n", " -update_ini case.ini - update case.ini to the current format");
     PRINTF("%s\n", " -x0 val - horizontal screen coordinate in pixels where smokeview window is place at startup");
     PRINTF("%s\n", " -y0 val - vertical screen coordinate in pixels where smokeview window is place at startup");
     PRINTF("%s\n", " -X0 val - horizontal screen coordinate in pixels where dialog windows are placed when opened");
@@ -327,15 +323,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     if(args->large_case){
       large_case = 1;
     }
-    if(args->update_slice){
-      use_graphics = 0;
-      update_slice = 1;
-    }
-    if(args->update){
-        use_graphics = 0;
-        update_slice = 1;
-        update_bounds = 1;
-    }
     if(args->nogpu){
       disable_gpu = 1;
     }
@@ -347,10 +334,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
     if(args->info){
       generate_info_from_commandline = 1;
-      use_graphics = 0;
-    }
-    if(args->sizes){
-      update_filesizes = 1;
       use_graphics = 0;
     }
     if(args->stereo){
@@ -382,16 +365,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
 
         NewMemory((void **)&ini_to, strlen(args->ini_to) + 1);
         strcpy(ini_to, args->ini_to);
-        convert_ini = 1;
-      }
-    }
-    if(args->update_ini){
-      if(args->ini_from != NULL){
-        NewMemory((void **)&ini_from, strlen(args->ini_from) + 1);
-        strcpy(ini_from, args->ini_from);
-
-        NewMemory((void **)&ini_to, strlen(args->ini_from) + 1);
-        strcpy(ini_to, args->ini_from);
         convert_ini = 1;
       }
     }

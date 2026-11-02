@@ -2619,10 +2619,6 @@ int ReadSMV_Configure(){
 
   INIT_PRINT_TIMER(total_wrapup_time);
   update_colorbar_orig = 1;
-  if(update_filesizes==1){
-    GetFileSizes();
-    SMV_EXIT(0);
-  }
 
   START_TIMER(wrapup_time);
   STOP_TIMER(global_scase.processing_time);
@@ -2847,7 +2843,6 @@ int ReadSMV_Configure(){
 
   GetSliceParmInfo(&sliceparminfo);
   PRINT_TIMER(timer_readsmv, "GetSliceParmInfo");
-  if(update_slice==1)return 3;
 
   GenerateSliceMenu(generate_info_from_commandline);
   PRINT_TIMER(timer_readsmv, "GenerateSliceMenu");
