@@ -80,7 +80,6 @@ void Usage(int option){
     PRINTF("%s\n", " -y0 val - vertical screen coordinate in pixels where smokeview window is place at startup");
     PRINTF("%s\n", " -X0 val - horizontal screen coordinate in pixels where dialog windows are placed when opened");
     PRINTF("%s\n", " -Y0 val - vertical screen coordinate in pixels where dialog windows are placed when opened");
-    PRINTF("%s\n", " -volrender     - generate images of volume rendered smoke and fire");
     UsageCommon(HELP_ALL);
   }
 }

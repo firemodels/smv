@@ -78,9 +78,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     else if(strcmp(argv[i], "-ng_ini") == 0){
       args.ng_ini = true;
     }
-    else if(strcmp(argv[i], "-volrender") == 0){
-      args.volrender = true;
-    }
     else if(strcmp(argv[i], "-version") == 0 || strcmp(argv[i], "-v") == 0){
       args.print_version = true;
     }
@@ -253,9 +250,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
         *error = CLE_ARGUMENT_EXPECTED;
         return args;
       }
-    }
-    else if(strcmp(argv[i], "-volrender") == 0){
-      args.volrender = true;
     }
     else if(strcmp(argv[i], "-script") == 0){
       ++i;

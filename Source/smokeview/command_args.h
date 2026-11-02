@@ -11,8 +11,6 @@ typedef struct CommandlineArgs {
   bool ini;
   /// @brief non-graphics version of -ini
   bool ng_ini;
-  /// @brief generate images of volume rendered smoke and fire
-  bool volrender;
   /// @brief Either -version or -v was set, so print the version of smokeview
   /// and exit.
   bool print_version;
