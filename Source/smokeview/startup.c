@@ -427,9 +427,6 @@ void InitStartupDirs(void){
   FREEMEMORY(colorbars_user_dir);
 
   if(verbose_output==1)PRINTF("Scratch directory: %s\n", smokeview_scratchdir);
-  char *smokeviewini_filename = GetSystemIniPath();
-  if(verbose_output==1)PRINTF("    smokeview.ini: %s\n", smokeviewini_filename);
-  FREEMEMORY(smokeviewini_filename);
   FREEMEMORY(smokeview_scratchdir);
 
 #ifdef pp_OSX

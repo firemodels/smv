@@ -1588,18 +1588,6 @@ char *GetUserConfigSubPath(const char *subdir){
   return CombinePaths(config_dir,subdir);
 }
 
-/* ------------------ GetSystemIniPath ------------------------ */
-
-char *GetSystemIniPath(){
-  return GetSmvRootSubPath("smokeview.ini");
-}
-
-/* ------------------ GetUserIniPath ------------------------ */
-
-char *GetUserIniPath(){
-  return GetUserConfigSubPath("smokeview.ini");
-}
-
 /* ------------------ GetUserColorbarDirPath ------------------------ */
 
 char *GetUserColorbarDirPath(){

@@ -106,7 +106,6 @@ void LoadBoundaryMenu2(int var);
 #define MENU_WRITE_CASEINI      3
 #define MENU_READSVO            4
 #define MENU_CONFIG_SETTINGS    5
-#define MENU_REVERT_WRITEINI    6
 
 #define MENU_DUMMY2 -1
 
@@ -2695,9 +2694,6 @@ void SmokeviewIniMenu(int value){
   case MENU_READINI:
     ReadIni(NULL);
     UpdateRGBColors(colorbar_select_index);
-    break;
-  case MENU_REVERT_WRITEINI:
-    ReadBinIni();
     break;
   case MENU_WRITE_SMOKEVIEWINI:
     WriteIni(GLOBAL_INI,NULL);
@@ -12171,10 +12167,8 @@ if(opengl_finalized == 0)return;
         n_inifiles++;
       }
     }
-    char *global_ini_path = GetSystemIniPath();
-    char *user_ini_path = GetUserIniPath();
     char *caseini_filename = CasePathCaseIni(&global_scase);
-    if(n_inifiles>0||FILE_EXISTS(user_ini_path)==YES||FILE_EXISTS(caseini_filename)==YES||FILE_EXISTS(global_ini_path)==YES){
+    if(n_inifiles>0||FILE_EXISTS(caseini_filename)==YES){
       if(n_inifiles==0){
         glutAddMenuEntry("Read ini file",MENU_READINI);
       }
@@ -12183,8 +12177,6 @@ if(opengl_finalized == 0)return;
       }
     }
     FREEMEMORY(caseini_filename);
-    FREEMEMORY(global_ini_path);
-    FREEMEMORY(user_ini_path);
    }
 
     {
@@ -12203,7 +12195,6 @@ if(opengl_finalized == 0)return;
       glutAddMenuEntry("Read .svo files",MENU_READSVO);
     }
     glutAddMenuEntry("Save settings to smokeview.ini", MENU_WRITE_SMOKEVIEWINI);
-    glutAddMenuEntry("Revert settings to installation defaults", MENU_REVERT_WRITEINI);
     glutAddMenuEntry("Settings...", MENU_CONFIG_SETTINGS);
 
     CREATEMENU(reloadmenu,ReloadMenu);

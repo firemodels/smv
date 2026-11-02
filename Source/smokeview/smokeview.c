@@ -193,15 +193,6 @@ void DisplayVersionInfo(char *progname, common_opts *opts){
   if(smv_bindir){
     PRINTF("Root directory   : %s\n", smv_bindir);
   }
-  char *global_ini_path = GetSystemIniPath();
-  if(global_ini_path != NULL && FileExistsOrig(global_ini_path) == 1){
-    PRINTF("Global ini       : %s\n", global_ini_path);
-  }
-  else{
-    PRINTF("Global ini       : not found\n");
-  }
-  FREEMEMORY(global_ini_path);
-
   char fullini_filename[256];
   strcpy(fullini_filename, "");
   char *smokeview_scratchdir = GetUserConfigDir();

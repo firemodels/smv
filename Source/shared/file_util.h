@@ -269,21 +269,7 @@ EXTERNCPP char *GetHomeDir(void);
  * (including hitting the maximum buffer size).
  */
 EXTERNCPP char *GetUserConfigSubPath(const char *subdir);
-/**
- * @brief Get the path to the smokeview configuration file in the root directory
- * (i.e. the install directory).
- *
- * @return The path to the configuration file, allocated with NEWMEMORY.
- */
-EXTERNCPP char *GetSystemIniPath();
-/**
- * @brief Get the path to the smokeview configuration file in the user's config
- * directory. This is usually $HOME/.smokeview/smokeview.ini.
- *
- * @return The path allocated with NEWMEMORY.
- */
 EXTERNCPP char *GetScratchFilename(char *file);
-EXTERNCPP char *GetUserIniPath();
 EXTERNCPP char *GetUserColorbarDirPath();
 EXTERNCPP char *GetSmokeviewHtmlPath();
 EXTERNCPP void PrintTime(const char *tag, int line, float *timer,
