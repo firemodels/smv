@@ -1380,16 +1380,9 @@ void UpdateMeshCoords(void){
   global_scase.ybar = FDS2SMV_Y(global_scase.ybar);
   global_scase.zbar = FDS2SMV_Z(global_scase.zbar);
 
-  float outline_offset;
-  outline_offset = (global_scase.meshescoll.meshinfo->zplt_fds[1] - global_scase.meshescoll.meshinfo->zplt_fds[0]) / 10.0;
-  if(global_scase.is_terrain_case==1){
-    geom_dz_offset = outline_offset;
-    geom_norm_offset = 0.0;
-  }
-  else{
-    geom_dz_offset = 0.0;
-    geom_norm_offset = outline_offset;
-  }
+  // Match the bundled GEOMSHOW defaults independently of mesh spacing.
+  geom_dz_offset = 0.0;
+  geom_norm_offset = 0.01;
   GetBoxCorners(global_scase.xbar, global_scase.ybar, global_scase.zbar);
 
   for(i=0; i<global_scase.meshescoll.nmeshes; i++){

@@ -1484,9 +1484,9 @@ void InitVars(void){
 
   FontMenu(fontindex);
 
-  direction_color[0]=39.0/255.0;
-  direction_color[1]=64.0/255.0;
-  direction_color[2]=139.0/255.0;
+  direction_color[0]=0.152941;
+  direction_color[1]=0.250980;
+  direction_color[2]=0.545098;
   direction_color[3]=1.0;
   direction_color_ptr=GetColorPtr(&global_scase, direction_color);
 

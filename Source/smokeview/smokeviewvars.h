@@ -619,7 +619,7 @@ SVEXTERN int SVDECL(show_texture_1dimage, 0);
 SVEXTERN float SVDECL(geom_vert_exag, 1.0);
 SVEXTERN float SVDECL(geom_vecfactor, .030);
 SVEXTERN int SVDECL(geom_ivecfactor, 30);
-SVEXTERN float SVDECL(geom_norm_offset,0.0);
+SVEXTERN float SVDECL(geom_norm_offset,0.01);
 SVEXTERN float SVDECL(geom_dz_offset,0.0);
 SVEXTERN int SVDECL(iso_outline_ioffset, 1);
 SVEXTERN float SVDECL(iso_outline_offset, 0.001);
@@ -1108,7 +1108,7 @@ SVEXTERN float rgb_cad[MAXRGB][4];
 
 //keep comment until changes are merged
 //SVEXTERN float SVDECL(iso_transparency,30.5/255.0), SVDECL(*iso_colors,NULL), SVDECL(*iso_colorsbw,NULL);
-SVEXTERN float SVDECL(iso_transparency, 0.1196078), SVDECL(*iso_colors,NULL), SVDECL(*iso_colorsbw,NULL);
+SVEXTERN float SVDECL(iso_transparency, 0.119608), SVDECL(*iso_colors,NULL), SVDECL(*iso_colorsbw,NULL);
 SVEXTERN int glui_iso_colors[4], SVDECL(glui_iso_level,1), glui_iso_transparency;
 
 SVEXTERN float SVDECL(*rgb_ini,NULL);
@@ -1418,7 +1418,7 @@ SVEXTERN int SVDECL(showall_slices,1);
 SVEXTERN float zterrain_min;
 SVEXTERN char smv_githash[256], smv_gitdate[256];
 SVEXTERN int SVDECL(visMeshlabel, 0);
-SVEXTERN int SVDECL(visOpenVents,1),SVDECL(visDummyVents,1),SVDECL(visCircularVents,VENT_CIRCLE);
+SVEXTERN int SVDECL(visOpenVents,0),SVDECL(visDummyVents,1),SVDECL(visCircularVents,VENT_CIRCLE);
 SVEXTERN int SVDECL(visOpenVentsAsOutline,0);
 SVEXTERN int SVDECL(visParticles,1), SVDECL(visZone,0);
 
@@ -2050,18 +2050,18 @@ SVEXTERN int SVDECL(show_mesh_labels, 0);
 #ifdef INMAIN
   SVEXTERN float rgb_baseBASE[MAXRGB][4]=
 {
-  {0.000000, 0.000000, 1.000000},
-  {0.000000, 0.281732, 0.959493},
-  {0.000000, 0.540640, 0.841254},
-  {0.000000, 0.755749, 0.654861},
-  {0.000000, 0.909632, 0.415416},
-  {0.000000, 0.989821, 0.142316},
-  {0.142316, 0.989821, 0.000000},
-  {0.415416, 0.909632, 0.000000},
-  {0.654861, 0.755749, 0.000000},
-  {0.841254, 0.540640, 0.000000},
-  {0.959493, 0.281732, 0.000000},
-  {1.000000, 0.000000, 0.000000}
+  {0.000000, 0.000000, 0.000000},
+  {0.089844, 0.089844, 0.089844},
+  {0.179688, 0.179688, 0.179688},
+  {0.269531, 0.269531, 0.269531},
+  {0.359375, 0.359375, 0.359375},
+  {0.449219, 0.449219, 0.449219},
+  {0.542969, 0.542969, 0.542969},
+  {0.632812, 0.632812, 0.632812},
+  {0.722656, 0.722656, 0.722656},
+  {0.812500, 0.812500, 0.812500},
+  {0.902344, 0.902344, 0.902344},
+  {0.996094, 0.996094, 0.996094}
 };
   SVEXTERN float bw_baseBASE[MAXRGB][4]={
   {1,            1,                1},
