@@ -20,12 +20,6 @@ const char *CLE_Message(enum CommandLineError cle, char *message){
   case CLE_OK:
     return NULL;
     break;
-  case CLE_MULTIPLE_LANG:
-    return "***error: -lang defined multiple times";
-    break;
-  case CLE_NO_LANG:
-    return "***error: -lang must be given an argument";
-    break;
   case CLE_NO_LOAD_INI_ARG:
     return "***error: -load_ini must be given an INI file path";
   case CLE_MULTIPLE_INPUTS:
@@ -132,23 +126,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     }
     else if(strcmp(argv[i], "-timings") == 0){
       args.timings = true;
-    }
-    else if(strcmp(argv[i], "-lang") == 0){
-      // The next argument is a language name
-      ++i;
-      if(i < argc){
-        if(args.lang != NULL){
-          *error = CLE_MULTIPLE_LANG;
-          return args;
-        }
-        // Why the additional 48 bytes?
-        NewMemory((void **)&args.lang, strlen(argv[i]) + 48 + 1);
-        strcpy(args.lang, argv[i]);
-      }
-      else{
-        *error = CLE_NO_LANG;
-        return args;
-      }
     }
     else if(strcmp(argv[i], "-convert_ini") == 0){
       args.convert_ini = true;
@@ -271,9 +248,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     else if(strcmp(argv[i], "-runscript") == 0){
       args.runscript = true;
     }
-    else if(strcmp(argv[i], "-runhtmlscript") == 0){
-      args.runhtmlscript = true;
-    }
     else if(strcmp(argv[i], "-scriptrenderdir") == 0){
       i++;
       if(i < argc){
@@ -332,17 +306,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
         *error = CLE_ARGUMENT_EXPECTED;
         void SMV_EXIT(int error);
         SMV_EXIT(1);
-        return args;
-      }
-    }
-    else if(strcmp(argv[i], "-htmlscript") == 0){
-      ++i;
-      if(i < argc){
-        NewMemory((void **)&args.htmlscript, strlen(argv[i]) + 1);
-        strcpy(args.htmlscript, argv[i]);
-      }
-      else{
-        *error = CLE_ARGUMENT_EXPECTED;
         return args;
       }
     }

@@ -78,11 +78,8 @@ typedef struct CommandlineArgs {
   bool runscript;
   bool render_overwrite;
   bool checkscript;
-  bool runhtmlscript;
   /// @brief Run the SSF script at this path
   char *script;
-  /// @brief Run the HTML script at this path
-  char *htmlscript;
   /// @brief set directory containing script rendered images (override directory
   /// specified by RENDERDIR script keyword)
   char *scriptrenderdir;
@@ -103,9 +100,6 @@ typedef struct CommandlineArgs {
   char *input_file;
   char *bindir;
   char *casedir;
-  /// @brief language code e.g., de, es, fr, for German, Spanish, French or
-  /// Italian
-  char *lang;
   /// @brief Load settings from this INI file at startup.
   char *load_ini;
   char *ini_from;
@@ -118,8 +112,6 @@ typedef struct CommandlineArgs {
 } CommandlineArgs;
 
 enum CommandLineError {
-  CLE_MULTIPLE_LANG,
-  CLE_NO_LANG,
   CLE_NO_SSF_ARGS,
   CLE_NO_INI_ARGS,
   CLE_NO_LOAD_INI_ARG,

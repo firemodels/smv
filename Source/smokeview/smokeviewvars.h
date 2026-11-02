@@ -1719,7 +1719,6 @@ SVEXTERN scriptfiledata SVDECL(*script_recording,NULL);
 SVEXTERN int SVDECL(runscript,0), SVDECL(noexit,0);
 SVEXTERN int SVDECL(runscript_firsttime, 1);
 SVEXTERN int SVDECL(serial_override, 0);
-SVEXTERN int SVDECL(runhtmlscript, 0);
 #ifdef INMAIN
 SVEXTERN float slice_xyz[3]={0.0,0.0,0.0}, slice_dxyz[3] = {0.0, 0.0, 0.0};
 #else

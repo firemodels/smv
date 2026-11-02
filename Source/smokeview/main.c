@@ -58,7 +58,6 @@ void Usage(int option){
     PRINTF("%s\n", " -full          - full startup - check if files exist");
     PRINTF("%s\n", " -geominfo      - output information about geometry triangles");
     PRINTF("%s\n", " -info            generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info");
-    PRINTF("%s\n", " -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian");
     PRINTF("%s\n", " -large         - take some shortcuts when reading in large geometry cases");
     PRINTF("%s\n", " -load_ini path - load settings from the specified INI file at startup");
     PRINTF("%s\n", " -load_co2      - load 3D smoke of type co2 at startup ");
@@ -74,9 +73,6 @@ void Usage(int option){
     PRINTF("%s\n", "                  (override directory specified by RENDERDIR script keyword)");
     PRINTF("%s\n", " -setup         - only show geometry");
     PRINTF("%s\n", " -script scriptfile - run the script file scriptfile");
-    PRINTF("%s\n", " -htmlscript scriptfile - run the script file scriptfile without using the video card");
-    PRINTF("%s\n", " -runhtmlscript - run the script file casename.ssf without using the video card");
-    PRINTF("%s\n", "     the -htmlscript and -runhtmlscript keywords are used to generate JSON files");
     PRINTF("%s\n", " -skipframe n   - render every n frames");
     PRINTF("%s\n", " -smoke3d       - only show 3D smoke");
     PRINTF("%s\n", " -startframe n  - start rendering at frame n");
@@ -350,11 +346,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     if(args->trirates){
       show_trirates = 1;
     }
-    if(args->lang != NULL){
-        FREEMEMORY(tr_name);
-        NewMemory((void **)&tr_name, strlen(args->lang)+1);
-        strcpy(tr_name, args->lang);
-    }
     if(args->load_ini != NULL){
       load_ini = args->load_ini;
     }
@@ -453,11 +444,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
       from_commandline = 1;
       SetRunScriptVal(1);
     }
-    if(args->runhtmlscript){
-      from_commandline = 1;
-      use_graphics = 0;
-      runhtmlscript = 1;
-    }
     if(args->scriptrenderdir != NULL){
       int nrenderdir = strlen(args->scriptrenderdir);
       if(nrenderdir>0){
@@ -473,38 +459,21 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
       from_commandline = 1;
       render_startframe0 = args->startframe;
     }
-    if(args->script!=NULL||args->htmlscript!=NULL){
+    if(args->script!=NULL){
       char scriptbuffer[MAX_SCRIPT_FILENAME_BUFFER];
       scriptfiledata *sfd;
 
-      bool is_htmlscript = args->htmlscript!=NULL;
-      if(is_htmlscript){
-        use_graphics = 0;
-        runhtmlscript = 1;
-      }
       from_commandline = 1;
-      if(args->script != NULL){
-        if(strlen(args->script) < MAX_SCRIPT_FILENAME_BUFFER){
-          strcpy(scriptbuffer, args->script);
-        }
-        else{
-          fprintf(stderr, "*** Error: script filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
-          SMV_EXIT(1);
-        }
-      } else{
-        if(strlen(args->htmlscript) < MAX_SCRIPT_FILENAME_BUFFER){
-          strcpy(scriptbuffer, args->htmlscript);
-        }
-        else{
-          fprintf(stderr, "*** Error: htmlscript filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
-          SMV_EXIT(1);
-        }
+      if(strlen(args->script) < MAX_SCRIPT_FILENAME_BUFFER){
+        strcpy(scriptbuffer, args->script);
+      }
+      else{
+        fprintf(stderr, "*** Error: script filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
+        SMV_EXIT(1);
       }
       sfd = InsertScriptFile(scriptbuffer);
       if(sfd != NULL)default_script = sfd;
-      if(!is_htmlscript){
       SetRunScriptVal(1);
-      }
     }
     if(args->noexit){
       noexit = 1;
@@ -674,16 +643,9 @@ int main(int argc, char **argv){
     ReadIni(ini_from);
     PRINT_TIMER(timer_read_ini, "ReadIni");
   }
-  if(runhtmlscript==1){
-    DoScriptHtml();
-  }
 
   STOP_TIMER(startup_time);
   PRINTF("\n");
-  if(runhtmlscript==1){
-    PRINTF("Time: %.1f s\n", startup_time);
-    return 0;
-  }
   PRINTF("Startup time: %.1f s\n", startup_time);
 
   GluiPostRedisplayOn();

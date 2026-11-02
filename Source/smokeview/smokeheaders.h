@@ -159,7 +159,6 @@ EXTERNCPP void GLUIHideTrainer(void);
 
 EXTERNCPP void ClearBuffers(int mode);
 EXTERNCPP void DisplayCB(void);
-EXTERNCPP void DoScriptHtml(void);
 EXTERNCPP void ForceIdle(void);
 EXTERNCPP int  GetGridIndex(float x, int dir, float *plotxyz, int nplotxyz);
 EXTERNCPP int  HandleColorbarIndex(int colorbar_index);
