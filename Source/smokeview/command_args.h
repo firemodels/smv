@@ -114,6 +114,8 @@ typedef struct CommandlineArgs {
   /// @brief language code e.g., de, es, fr, for German, Spanish, French or
   /// Italian
   char *lang;
+  /// @brief Load settings from this INI file at startup.
+  char *load_ini;
   char *ini_from;
   char *ini_to;
   /// @brief initial screen coordinates
@@ -128,6 +130,7 @@ enum CommandLineError {
   CLE_NO_LANG,
   CLE_NO_SSF_ARGS,
   CLE_NO_INI_ARGS,
+  CLE_NO_LOAD_INI_ARG,
   CLE_MULTIPLE_INPUTS,
   CLE_OK,
   CLE_ARGUMENT_EXPECTED,

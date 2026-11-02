@@ -60,6 +60,7 @@ void Usage(int option){
     PRINTF("%s\n", " -info            generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info");
     PRINTF("%s\n", " -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian");
     PRINTF("%s\n", " -large         - take some shortcuts when reading in large geometry cases");
+    PRINTF("%s\n", " -load_ini path - load settings from the specified INI file at startup");
     PRINTF("%s\n", " -load_co2      - load 3D smoke of type co2 at startup ");
     PRINTF("%s\n", " -load_hrrpuv   - load 3D smoke of type hrrpuv at startup ");
     PRINTF("%s\n", " -load_soot     - load 3D smoke of type soot at startup ");
@@ -370,6 +371,9 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
         FREEMEMORY(tr_name);
         NewMemory((void **)&tr_name, strlen(args->lang)+1);
         strcpy(tr_name, args->lang);
+    }
+    if(args->load_ini != NULL){
+      load_ini = args->load_ini;
     }
     if(args->convert_ini){
       if(args->ini_from != NULL&&args->ini_to != NULL){

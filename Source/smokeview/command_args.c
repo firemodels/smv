@@ -26,6 +26,8 @@ const char *CLE_Message(enum CommandLineError cle, char *message){
   case CLE_NO_LANG:
     return "***error: -lang must be given an argument";
     break;
+  case CLE_NO_LOAD_INI_ARG:
+    return "***error: -load_ini must be given an INI file path";
   case CLE_MULTIPLE_INPUTS:
     return "***error: multiple input files found";
   case CLE_UNKNOWN_ARGUMENT:
@@ -61,6 +63,23 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     if(IsCommonOption(argv[i])==1)continue;
     if(strcmp(argv[i], "-ini") == 0){
       args.ini = true;
+    }
+    else if(strcmp(argv[i], "-load_ini") == 0){
+      i++;
+      if(i >= argc || argv[i][0] == '\0' || argv[i][0] == '-'){
+        *error = CLE_NO_LOAD_INI_ARG;
+        return args;
+      }
+      FREEMEMORY(args.load_ini);
+      NewMemory((void **)&args.load_ini, strlen(argv[i]) + 1);
+      strcpy(args.load_ini, argv[i]);
+      for(char *c = args.load_ini; *c != '\0'; c++){
+#ifdef _WIN32
+        if(*c == '/')*c = '\\';
+#else
+        if(*c == '\\')*c = '/';
+#endif
+      }
     }
     else if(strcmp(argv[i], "-ng_ini") == 0){
       args.ng_ini = true;

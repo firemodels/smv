@@ -263,7 +263,8 @@ int SetupCase(char *filename){
 
   CheckMemory;
   readini_output = 0;
-  ReadIni(NULL);
+  ReadIni(load_ini);
+  FREEMEMORY(load_ini);
   readini_output = 1;
 
   UpdateRGBColors(colorbar_select_index);
