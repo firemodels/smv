@@ -2070,12 +2070,6 @@ void UpdateShowScene(void){
     ZoomMenu(UPDATE_PROJECTION);
     END_SHOW_UPDATE(force_isometric);
   }
-  if(convert_ini == 1){
-    SHOW_UPDATE(convert_ini);
-    WriteIni(SCRIPT_INI, ini_to);
-    SMV_EXIT(0);
-    END_SHOW_UPDATE(convert_ini);
-  }
   INIT_PRINT_TIMER(timer_updateshow);
   UpdateShow();
   PRINT_TIMER(timer_updateshow, "UpdateShow");

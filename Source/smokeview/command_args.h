@@ -45,7 +45,6 @@ typedef struct CommandlineArgs {
   bool trirates;
   /// @brief show timings
   bool timings;
-  bool convert_ini;
   bool isotest;
   /// @brief only show 3D smoke
   bool smoke3d;
@@ -77,7 +76,6 @@ typedef struct CommandlineArgs {
   /// @brief Run the default SSF script, i.e. CHID.ssf
   bool runscript;
   bool render_overwrite;
-  bool checkscript;
   /// @brief Run the SSF script at this path
   char *script;
   /// @brief set directory containing script rendered images (override directory
@@ -102,8 +100,6 @@ typedef struct CommandlineArgs {
   char *casedir;
   /// @brief Load settings from this INI file at startup.
   char *load_ini;
-  char *ini_from;
-  char *ini_to;
   /// @brief initial screen coordinates
   bool have_x0, have_y0;
   int x0, y0;
@@ -113,7 +109,6 @@ typedef struct CommandlineArgs {
 
 enum CommandLineError {
   CLE_NO_SSF_ARGS,
-  CLE_NO_INI_ARGS,
   CLE_NO_LOAD_INI_ARG,
   CLE_MULTIPLE_INPUTS,
   CLE_OK,

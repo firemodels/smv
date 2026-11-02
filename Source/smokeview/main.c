@@ -48,9 +48,6 @@ void Usage(int option){
 #endif
     PRINTF("%s\n", " -big           - hide scene and data when moving scene or selecting menus");
     PRINTF("%s\n", " -casedir dir   - specify location of case (if different than current directory)");
-    PRINTF("%s\n", " -checkscript file.ssf  - check the script file file.ssf for errors");
-    PRINTF("%s\n", " -convert_ini case1.ini case2.ini - update case1.ini to the current format");
-    PRINTF("%s\n", "                  and save the results into case2.ini");
     PRINTF("%s\n", " -demo          - use demonstrator mode of Smokeview");
     PRINTF("%s\n", " -encode_png v  - encode png's with fds and smv repo revisions if v=1, do not encode if v=0");
     PRINTF("%s\n", " -fast          - assume slice files exist in order to reduce startup time,");
@@ -122,28 +119,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
   char *filename_local = NULL;
 
   CheckMemory;
-  if(args->checkscript){
-    int error_code;
-
-    int CheckScript(char *file);
-    error_code = CheckScript(args->script);
-    switch(error_code){
-    case 0:
-      fprintf(stderr, "***no errors detected in %s\n", args->script);
-      break;
-    case 1:
-      fprintf(stderr, "***error: unable to open script file %s\n", args->script);
-      break;
-    case 2:
-      fprintf(stderr, "***errors detected in script file %s\n", args->script);
-      break;
-    default:
-      assert(FFALSE);
-      break;
-    }
-    void SMV_EXIT(int error);
-    SMV_EXIT(0);
-  }
   if(args->have_x0){
     use_commandline_origin = 1;
     screenX0 = args->x0;
@@ -348,16 +323,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
     if(args->load_ini != NULL){
       load_ini = args->load_ini;
-    }
-    if(args->convert_ini){
-      if(args->ini_from != NULL&&args->ini_to != NULL){
-        NewMemory((void **)&ini_from, strlen(args->ini_from) + 1);
-        strcpy(ini_from, args->ini_from);
-
-        NewMemory((void **)&ini_to, strlen(args->ini_to) + 1);
-        strcpy(ini_to, args->ini_to);
-        convert_ini = 1;
-      }
     }
     if(args->isotest){
       isotest = 1;
@@ -638,11 +603,6 @@ int main(int argc, char **argv){
 
   return_code= SetupCase(smv_filename);
   if(return_code!=0)return 1;
-  if(convert_ini==1){
-    INIT_PRINT_TIMER(timer_read_ini);
-    ReadIni(ini_from);
-    PRINT_TIMER(timer_read_ini, "ReadIni");
-  }
 
   STOP_TIMER(startup_time);
   PRINTF("\n");

@@ -127,33 +127,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     else if(strcmp(argv[i], "-timings") == 0){
       args.timings = true;
     }
-    else if(strcmp(argv[i], "-convert_ini") == 0){
-      args.convert_ini = true;
-      // The next two arguments are the from and to paths for ini conversion.
-      char *local_ini_from = NULL, *local_ini_to = NULL;
-
-      if(++i < argc){
-        local_ini_from = argv[i];
-      }
-      else{
-        *error = CLE_NO_INI_ARGS;
-        return args;
-      }
-      if(++i < argc){
-        local_ini_to = argv[i];
-      }
-      else{
-        *error = CLE_NO_INI_ARGS;
-        return args;
-      }
-      if(local_ini_from != NULL && local_ini_to != NULL){
-        NewMemory((void **)&args.ini_from, strlen(local_ini_from) + 1);
-        strcpy(args.ini_from, local_ini_from);
-
-        NewMemory((void **)&args.ini_to, strlen(local_ini_to) + 1);
-        strcpy(args.ini_to, local_ini_to);
-      }
-    } 
     else if(strcmp(argv[i], "-isotest") == 0){
       args.isotest = true;
     }
@@ -292,20 +265,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
       }
       else{
         *error = CLE_ARGUMENT_EXPECTED;
-        return args;
-      }
-    }
-    else if(strcmp(argv[i], "-checkscript") == 0){
-      ++i;
-      if(i < argc){
-        NewMemory((void **)&args.script, strlen(argv[i]) + 1);
-        strcpy(args.script, argv[i]);
-        args.checkscript = true;
-      }
-      else{
-        *error = CLE_ARGUMENT_EXPECTED;
-        void SMV_EXIT(int error);
-        SMV_EXIT(1);
         return args;
       }
     }
