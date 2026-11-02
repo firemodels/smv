@@ -2084,8 +2084,6 @@ void UsageCommon(int option){
     PRINTF(" -md5       - display an md5 hash when -version is invoked\n");
     PRINTF(" -sha1      - display a sha1 hash when -version is invoked\n");
     PRINTF(" -sha256    - display a sha256 hash when -version is invoked\n");
-    PRINTF(" -hash_all  - display all hashes when -version option is invoked\n");
-    PRINTF(" -hash_none - do not display any hashes  when -version is invoked\n");
   }
 }
 
@@ -2098,8 +2096,6 @@ int IsCommonOption(char *argi){
   if(STRCMP("-sha256", argi)==0)return 1;
   if(STRCMP("-sha1", argi)==0)return 1;
   if(STRCMP("-md5", argi)==0)return 1;
-  if(STRCMP("-hash_all", argi)==0)return 1;
- if(STRCMP("-hash_none", argi)==0)return 1;
   return 0;
 }
 
@@ -2146,14 +2142,6 @@ common_opts ParseCommonOptions(int argc, char **argv){
       opts.hash_option = HASH_MD5;
       continue;
     }
-    if(STRCMP("-hash_all", argi)==0){
-      opts.hash_option = HASH_ALL;
-      continue;
-    }
-    if(STRCMP("-hash_none", argi)==0){
-      opts.hash_option = HASH_NONE;
-      continue;
-    }
   }
   return opts;
 }
@@ -2179,21 +2167,21 @@ void PRINTversion(char *progname, int option){
   PRINTF("Sanitize checks  : enabled\n");
 #endif
 
-  if(option==HASH_MD5||option==HASH_ALL){
+  if(option==HASH_MD5){
     unsigned char *hash = NULL;
 
     hash = GetHashMD5(progfullpath);
     if(hash!=NULL)PRINTF("Checksum(MD5)    : %s\n", hash);
     FREEMEMORY(hash);
   }
-  if(option==HASH_SHA1||option==HASH_ALL){
+  if(option==HASH_SHA1){
     unsigned char *hash = NULL;
 
     hash = GetHashSHA1(progfullpath);
     if(hash!=NULL)PRINTF("Checksum(SHA1)   : %s\n", hash);
     FREEMEMORY(hash);
   }
-  if(option==HASH_SHA256||option==HASH_ALL){
+  if(option==HASH_SHA256){
     unsigned char *hash = NULL;
 
     hash = GetHashSHA256(progfullpath);
