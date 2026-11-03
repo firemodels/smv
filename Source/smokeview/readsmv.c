@@ -7016,8 +7016,22 @@ static int ReadIni2(const char *inifile){
 /* ------------------ ReadIni ------------------------ */
 
 int ReadIni(char *inifile){
-  // Read case settings, followed by any explicitly specified settings file.
+  static int read_startup_ini = 1;
+
+  // Read global startup settings, then case settings and explicit overrides.
   global_scase.ntickinfo=global_scase.ntickinfo_smv;
+
+  if(read_startup_ini == 1){
+    char *smokeviewini_filename = GetSmokeviewIniPath();
+
+    read_startup_ini = 0;
+    if(smokeviewini_filename != NULL){
+      int return_code = ReadIni2(smokeviewini_filename);
+
+      FREEMEMORY(smokeviewini_filename);
+      if(return_code == 2)return 2;
+    }
+  }
 
   // Read "${fdsprefix}.ini" from the current directory
   char *caseini_filename = CasePathCaseIni(&global_scase);
