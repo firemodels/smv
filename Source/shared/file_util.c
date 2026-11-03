@@ -1335,6 +1335,74 @@ char *CombinePaths(const char *path_a, const char *path_b){
   return path_out;
 }
 
+/* ------------------ GetSmokeviewIniPathFromFile ------------------------ */
+
+// location is allocated by the caller and released here.
+static char *GetSmokeviewIniPathFromFile(char *location, const char *relative_path){
+  char *separator, *candidate, *fullpath, *result;
+  char *p;
+
+  if(location == NULL)return NULL;
+  for(p = location; *p != '\0'; p++){
+    if(*p == '/' || *p == '\\')*p = dirseparator[0];
+  }
+  separator = strrchr(location, dirseparator[0]);
+  if(separator == NULL){
+    FREEMEMORY(location);
+    return NULL;
+  }
+  separator[1] = '\0';
+  candidate = CombinePaths(location, relative_path);
+  FREEMEMORY(location);
+#ifdef _WIN32
+  fullpath = _fullpath(NULL, candidate, 0);
+#else
+  fullpath = realpath(candidate, NULL);
+#endif
+  FREEMEMORY(candidate);
+  if(fullpath == NULL)return NULL;
+  if(FileExistsOrig(fullpath) == NO){
+    free(fullpath);
+    return NULL;
+  }
+  if(NEWMEMORY(result, strlen(fullpath) + 1) == 0){
+    free(fullpath);
+    return NULL;
+  }
+  strcpy(result, fullpath);
+  free(fullpath);
+  return result;
+}
+
+/* ------------------ GetSmokeviewIniPathBin ------------------------ */
+
+char *GetSmokeviewIniPathBin(void){
+  return GetSmokeviewIniPathFromFile(GetBinPath(), "smokeview.ini");
+}
+
+/* ------------------ GetSmokeviewIniPathSrc ------------------------ */
+
+char *GetSmokeviewIniPathSrc(void){
+  char *location;
+
+  if(NEWMEMORY(location, sizeof(__FILE__)) == 0)return NULL;
+  strcpy(location, __FILE__);
+#ifdef _WIN32
+  return GetSmokeviewIniPathFromFile(location, "..\\..\\Build\\for_bundle\\smokeview.ini");
+#else
+  return GetSmokeviewIniPathFromFile(location, "../../Build/for_bundle/smokeview.ini");
+#endif
+}
+
+/* ------------------ GetSmokeviewIniPath ------------------------ */
+
+char *GetSmokeviewIniPath(void){
+  char *path = GetSmokeviewIniPathBin();
+
+  if(path != NULL)return path;
+  return GetSmokeviewIniPathSrc();
+}
+
 /* ------------------ GetBinPath ------------------------ */
 #ifdef _WIN32
 char *GetBinPath(){
