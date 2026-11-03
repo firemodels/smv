@@ -36,7 +36,7 @@ void Usage(int option){
   PRINTF("%s\n\n", "Visualize fire/smoke flow simulations specified by casename.smv.");
   PRINTF("options:\n");
   PRINTF("%s\n", " -bindir dir    - specify location of smokeview bin directory");
-  PRINTF("%s\n", " -load_ini inifile - load the specified ini file (before casename.ini) at startup");
+  PRINTF("%s\n", " -load_ini inifile - load the specified ini file (after casename.ini) at startup");
   PRINTF("%s\n", " -runscript     - run the script file casename.ssf");
   UsageCommon(HELP_SUMMARY);
   if(option==HELP_ALL){
