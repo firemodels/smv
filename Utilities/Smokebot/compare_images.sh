@@ -209,6 +209,7 @@ if [ "$INREPO" != "" ]; then
   FDS_BRANCH=`git branch --show-current`
 
   FIGREPO=$REPOROOT/fig
+  cd "$FIGREPO" || exit 1
   FIG_REVISION=`git describe --abbrev=7 --long --dirty`
   FIG_BRANCH=`git branch --show-current`
 
@@ -231,7 +232,7 @@ if [ "$INREPO" != "" ]; then
     FIG_VER_SMV_REVISION=`head -1 $FIG_VER_SMV_REVISION_FILE`
   fi
 
-  cd $$REPOROOT/smv
+  cd "$REPOROOT/smv" || exit 1
   SMV_REVISION=`git describe --abbrev=7 --long --dirty`
   SMV_BRANCH=`git branch --show-current`
 fi

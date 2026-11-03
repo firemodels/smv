@@ -20,8 +20,8 @@ done
 if [ "$BUILDLIBS" != "" ]; then
   if [ -d $SMV_LIBDIR ]; then
     cd $SMV_LIBDIR
-    ./make_LIBS.sh $*
+    ./make_LIBS.sh "$@"
   else
-    echo "***error: directory $LIBDIR does not exist"
+    echo "***error: directory $SMV_LIBDIR does not exist"
   fi
 fi
