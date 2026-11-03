@@ -176,11 +176,15 @@ void DisplayVersionInfo(char *progname, common_opts *opts){
   if(global_scase.fds_version!=NULL){
     PRINTF("FDS Build        : %s\n",global_scase.fds_version);
   }
+  char *smv_bindir = GetSmvRootDir();
+  if(smv_bindir){
+    PRINTF("Root directory   : %s\n", smv_bindir);
+  }
   char *smv_progname = GetBinPath();
 #ifdef _DEBUG
-  PRINTF("Smokeview        : %s(debug)\n",smv_progname);
+  PRINTF("Smokeview exe    : %s(debug)\n",smv_progname);
 #else
-  PRINTF("Smokeview        : %s\n",smv_progname);
+  PRINTF("Smokeview exe    : %s\n",smv_progname);
 #endif
   FREEMEMORY(smv_progname);
   if(verbose_output == 1){
@@ -189,19 +193,6 @@ void DisplayVersionInfo(char *progname, common_opts *opts){
 #endif
     if(global_scase.texturedir!=NULL)PRINTF("Texture directory: %s\n",global_scase.texturedir);
   }
-  char *smv_bindir = GetSmvRootDir();
-  if(smv_bindir){
-    PRINTF("Root directory   : %s\n", smv_bindir);
-  }
-  char *global_ini_path = GetSystemIniPath();
-  if(global_ini_path != NULL && FileExistsOrig(global_ini_path) == 1){
-    PRINTF("Global ini       : %s\n", global_ini_path);
-  }
-  else{
-    PRINTF("Global ini       : not found\n");
-  }
-  FREEMEMORY(global_ini_path);
-
   char fullini_filename[256];
   strcpy(fullini_filename, "");
   char *smokeview_scratchdir = GetUserConfigDir();
@@ -222,6 +213,16 @@ void DisplayVersionInfo(char *progname, common_opts *opts){
   }
   FREEMEMORY(caseini_filename);
   FREEMEMORY(smokeview_scratchdir);
+
+  char *globalini_filename = GetSmokeviewIniPath();
+  if(globalini_filename != NULL){
+    PRINTF("Smokeview ini    : %s\n", globalini_filename);
+  }
+  else{
+    PRINTF("Smokeview ini    : not found\n");
+  }
+  FREEMEMORY(globalini_filename);
+
   if(smv_filename != NULL || opts->show_version == 0){
     if(strlen(fullini_filename) > 0){
       PRINTF("Casename ini     : %s\n", fullini_filename);

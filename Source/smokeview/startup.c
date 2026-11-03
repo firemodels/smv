@@ -263,7 +263,8 @@ int SetupCase(char *filename){
 
   CheckMemory;
   readini_output = 0;
-  ReadIni(NULL);
+  ReadIni(load_ini);
+  FREEMEMORY(load_ini);
   readini_output = 1;
 
   UpdateRGBColors(colorbar_select_index);
@@ -427,9 +428,6 @@ void InitStartupDirs(void){
   FREEMEMORY(colorbars_user_dir);
 
   if(verbose_output==1)PRINTF("Scratch directory: %s\n", smokeview_scratchdir);
-  char *smokeviewini_filename = GetSystemIniPath();
-  if(verbose_output==1)PRINTF("    smokeview.ini: %s\n", smokeviewini_filename);
-  FREEMEMORY(smokeviewini_filename);
   FREEMEMORY(smokeview_scratchdir);
 
 #ifdef pp_OSX
@@ -1486,9 +1484,9 @@ void InitVars(void){
 
   FontMenu(fontindex);
 
-  direction_color[0]=39.0/255.0;
-  direction_color[1]=64.0/255.0;
-  direction_color[2]=139.0/255.0;
+  direction_color[0]=0.152941;
+  direction_color[1]=0.250980;
+  direction_color[2]=0.545098;
   direction_color[3]=1.0;
   direction_color_ptr=GetColorPtr(&global_scase, direction_color);
 

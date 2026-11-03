@@ -159,7 +159,6 @@ EXTERNCPP void GLUIHideTrainer(void);
 
 EXTERNCPP void ClearBuffers(int mode);
 EXTERNCPP void DisplayCB(void);
-EXTERNCPP void DoScriptHtml(void);
 EXTERNCPP void ForceIdle(void);
 EXTERNCPP int  GetGridIndex(float x, int dir, float *plotxyz, int nplotxyz);
 EXTERNCPP int  HandleColorbarIndex(int colorbar_index);
@@ -713,7 +712,6 @@ EXTERNCPP void GetBoxSkyCorners(void);
 EXTERNCPP void GetSliceParmInfo(sliceparmdata *sp);
 EXTERNCPP void InitCellMeshInfo(void);
 EXTERNCPP FILE_SIZE ReadAllCSVFiles(int flag);
-EXTERNCPP int  ReadBinIni(void);
 EXTERNCPP int  ReadIni(char *inifile);
 EXTERNCPP int  ReadSMV(bufferstreamdata *stream);
 EXTERNCPP void SetBoundBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);

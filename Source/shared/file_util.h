@@ -205,6 +205,16 @@ EXTERNCPP int IsFileNewer(char *file1, char *file2);
  */
 EXTERNCPP char *GetBinPath();
 /**
+ * @brief Find smokeview.ini beside the executable, then in the source tree's
+ * Build/for_bundle directory relative to file_util.c's __FILE__ path.
+ * @return An allocated absolute path, or NULL if neither location contains it.
+ * The caller must release the returned string with FREEMEMORY.
+ */
+EXTERNCPP char *GetSmokeviewIniPath(void);
+/** @brief Find smokeview.ini beside the executable.
+ * @return An allocated absolute path to free with FREEMEMORY, or NULL.
+ */
+/**
  * @brief Get the SMV root directory. This is the root directory where ancillary
  * files such as textures, object definitions, and global configurations files
  * are stored.
@@ -269,21 +279,7 @@ EXTERNCPP char *GetHomeDir(void);
  * (including hitting the maximum buffer size).
  */
 EXTERNCPP char *GetUserConfigSubPath(const char *subdir);
-/**
- * @brief Get the path to the smokeview configuration file in the root directory
- * (i.e. the install directory).
- *
- * @return The path to the configuration file, allocated with NEWMEMORY.
- */
-EXTERNCPP char *GetSystemIniPath();
-/**
- * @brief Get the path to the smokeview configuration file in the user's config
- * directory. This is usually $HOME/.smokeview/smokeview.ini.
- *
- * @return The path allocated with NEWMEMORY.
- */
 EXTERNCPP char *GetScratchFilename(char *file);
-EXTERNCPP char *GetUserIniPath();
 EXTERNCPP char *GetUserColorbarDirPath();
 EXTERNCPP char *GetSmokeviewHtmlPath();
 EXTERNCPP void PrintTime(const char *tag, int line, float *timer,

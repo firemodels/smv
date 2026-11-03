@@ -4074,38 +4074,6 @@ void DoScript(void){
   }
 }
 
-/* ------------------ DoScriptHtml ------------------------ */
-
-void DoScriptHtml(void){
-  int i;
-  int error_code;
-
-  error_code = CompileScript(default_script->file);
-  switch(error_code){
-  case 0:
-    StartScript();
-    break;
-  case 1:
-    fprintf(stderr, "*** Error: unable to open script file");
-    if(default_script->file != NULL)fprintf(stderr, ": %s", default_script->file);
-    fprintf(stderr, "\n");
-  case 2:
-    break;
-  default:
-    assert(FFALSE);
-    break;
-  }
-  for(i=0; i<nscriptinfo; i++){
-    scriptdata *scripti;
-
-    scripti = scriptinfo + i;
-    if(scripti->need_graphics==1){
-      printf("***warning: script command, %s, requires graphics\n", scripti->command_label);
-      continue;
-    }
-    RunScriptCommand(scripti);
-  }
-}
 
 /* ------------------ IdleDisplay ------------------------ */
 

@@ -11,8 +11,6 @@ typedef struct CommandlineArgs {
   bool ini;
   /// @brief non-graphics version of -ini
   bool ng_ini;
-  /// @brief generate images of volume rendered smoke and fire
-  bool volrender;
   /// @brief Either -version or -v was set, so print the version of smokeview
   /// and exit.
   bool print_version;
@@ -25,16 +23,12 @@ typedef struct CommandlineArgs {
   bool encode_png;
   bool encode_png_commandline;
   bool no_graphics;
-  /// @brief calculate slice file parameters
-  bool update_slice;
   bool nogpu;
   /// @brief use demonstrator mode of Smokeview"
   bool demo;
   /// @brief generate casename.slcf and casename.viewpoint files containing
   /// slice file and viewpiont info
   bool info;
-  /// @brief output files sizes then exit
-  bool sizes;
   /// @brief activate stereo mode
   bool stereo;
   /// @brief hide scene and data when moving scene or selecting menus
@@ -45,13 +39,8 @@ typedef struct CommandlineArgs {
   /// @brief On Mac, turn on 2x scene scaling
   bool x2;
 #endif
-  /// @brief show frame rates
-  bool trirates;
   /// @brief show timings
   bool timings;
-  bool convert_ini;
-  /// @brief update case.ini to the current format
-  bool update_ini;
   bool isotest;
   /// @brief only show 3D smoke
   bool smoke3d;
@@ -83,12 +72,8 @@ typedef struct CommandlineArgs {
   /// @brief Run the default SSF script, i.e. CHID.ssf
   bool runscript;
   bool render_overwrite;
-  bool checkscript;
-  bool runhtmlscript;
   /// @brief Run the SSF script at this path
   char *script;
-  /// @brief Run the HTML script at this path
-  char *htmlscript;
   /// @brief set directory containing script rendered images (override directory
   /// specified by RENDERDIR script keyword)
   char *scriptrenderdir;
@@ -104,18 +89,13 @@ typedef struct CommandlineArgs {
   /// @brief only show geometry
   bool setup;
   bool threads_defined;
-  /// @brief equivalent to -update_bounds and -update_slice
-  bool update;
   int threads;
   char *prog;
   char *input_file;
   char *bindir;
   char *casedir;
-  /// @brief language code e.g., de, es, fr, for German, Spanish, French or
-  /// Italian
-  char *lang;
-  char *ini_from;
-  char *ini_to;
+  /// @brief Load settings from this INI file at startup.
+  char *load_ini;
   /// @brief initial screen coordinates
   bool have_x0, have_y0;
   int x0, y0;
@@ -124,10 +104,8 @@ typedef struct CommandlineArgs {
 } CommandlineArgs;
 
 enum CommandLineError {
-  CLE_MULTIPLE_LANG,
-  CLE_NO_LANG,
   CLE_NO_SSF_ARGS,
-  CLE_NO_INI_ARGS,
+  CLE_NO_LOAD_INI_ARG,
   CLE_MULTIPLE_INPUTS,
   CLE_OK,
   CLE_ARGUMENT_EXPECTED,

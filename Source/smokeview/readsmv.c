@@ -1380,16 +1380,9 @@ void UpdateMeshCoords(void){
   global_scase.ybar = FDS2SMV_Y(global_scase.ybar);
   global_scase.zbar = FDS2SMV_Z(global_scase.zbar);
 
-  float outline_offset;
-  outline_offset = (global_scase.meshescoll.meshinfo->zplt_fds[1] - global_scase.meshescoll.meshinfo->zplt_fds[0]) / 10.0;
-  if(global_scase.is_terrain_case==1){
-    geom_dz_offset = outline_offset;
-    geom_norm_offset = 0.0;
-  }
-  else{
-    geom_dz_offset = 0.0;
-    geom_norm_offset = outline_offset;
-  }
+  // Match the bundled GEOMSHOW defaults independently of mesh spacing.
+  geom_dz_offset = 0.0;
+  geom_norm_offset = 0.01;
   GetBoxCorners(global_scase.xbar, global_scase.ybar, global_scase.zbar);
 
   for(i=0; i<global_scase.meshescoll.nmeshes; i++){
@@ -2626,10 +2619,6 @@ int ReadSMV_Configure(){
 
   INIT_PRINT_TIMER(total_wrapup_time);
   update_colorbar_orig = 1;
-  if(update_filesizes==1){
-    GetFileSizes();
-    SMV_EXIT(0);
-  }
 
   START_TIMER(wrapup_time);
   STOP_TIMER(global_scase.processing_time);
@@ -2854,7 +2843,6 @@ int ReadSMV_Configure(){
 
   GetSliceParmInfo(&sliceparminfo);
   PRINT_TIMER(timer_readsmv, "GetSliceParmInfo");
-  if(update_slice==1)return 3;
 
   GenerateSliceMenu(generate_info_from_commandline);
   PRINT_TIMER(timer_readsmv, "GenerateSliceMenu");
@@ -3373,7 +3361,7 @@ void SetSliceMax(int set_valmax, float valmax, char *buffer2){
 
 /* ------------------ ReadIni2 ------------------------ */
 
-int ReadIni2(const char *inifile, int localfile){
+static int ReadIni2(const char *inifile){
   int i;
   FILE *stream;
   int have_tours=0, have_tour7=0;
@@ -3395,13 +3383,8 @@ int ReadIni2(const char *inifile, int localfile){
   FREEMEMORY(unitclasses_ini);
   nunitclasses_ini = 0;
 
-  if(localfile == 1){
-    UpdateINIList();
-  }
-
-  if(localfile == 1){
-    update_selectedtour_index = 0;
-  }
+  UpdateINIList();
+  update_selectedtour_index = 0;
 
   /* find number of each kind of file */
 
@@ -3905,7 +3888,7 @@ int ReadIni2(const char *inifile, int localfile){
       sscanf(buffer," %i %i %i %f %i %i",    &nr_windrose, &ntheta_windrose, &scale_windrose, &rad_windrose, &scale_increment_windrose, &scale_max_windrose);
       nr_windrose              = ABS(nr_windrose);
       ntheta_windrose          = ABS(ntheta_windrose);
-      if(localfile==1)radius_windrose          = ABS(rad_windrose);
+      radius_windrose          = ABS(rad_windrose);
       scale_windrose           = CLAMP(scale_windrose,0,1);
       scale_increment_windrose = CLAMP(scale_increment_windrose, 1, 50);
       scale_max_windrose       = CLAMP(scale_max_windrose, 0, 100);
@@ -4339,11 +4322,9 @@ int ReadIni2(const char *inifile, int localfile){
       continue;
     }
     if(MatchINI(buffer, "SHOWSLICEINOBST") == 1){
-      if((localfile==0&&global_scase.solid_ht3d==0)||localfile==1){
-        fgets(buffer, 255, stream);
-        sscanf(buffer, "%i", &global_scase.show_slice_in_obst);
-        global_scase.show_slice_in_obst=CLAMP(global_scase.show_slice_in_obst,0,2);
-      }
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &global_scase.show_slice_in_obst);
+      global_scase.show_slice_in_obst=CLAMP(global_scase.show_slice_in_obst,0,2);
       continue;
     }
     if(MatchINI(buffer, "SKIPEMBEDSLICE") == 1){
@@ -6395,8 +6376,6 @@ int ReadIni2(const char *inifile, int localfile){
         continue;
       }
 
-      if(localfile!=1)continue;
-
 // ---------------------------------------------------------------------------------------------------------
 //   keywords below are 'local', only in the casename.ini file
 // ---------------------------------------------------------------------------------------------------------
@@ -7034,46 +7013,25 @@ int ReadIni2(const char *inifile, int localfile){
   return 0;
 }
 
-/* ------------------ ReadBinIni ------------------------ */
-
-int ReadBinIni(void){
-  char *smokeviewini = GetSystemIniPath();
-  //*** read in config files if they exist
-  // smokeview.ini ini in install directory
-  int returnval = 0;
-  if(smokeviewini!=NULL){
-    returnval = ReadIni2(smokeviewini, 0);
-  }
-  FREEMEMORY(smokeviewini);
-  return returnval;
-}
-
 /* ------------------ ReadIni ------------------------ */
 
 int ReadIni(char *inifile){
-  // There are 3 places to retrieve configuration files:
-  //
-  //   1. A file named smokeview.ini in the installation directory
-  //   2. A file named casename.ini in the current directory where casename
-  //      is the name of the case specified by the CHID parameter in the input file
-  //   3. A file named casename.ini in $HOME/.smokeview if the current directory
-  //      is not writable
+  static int read_startup_ini = 1;
 
+  // Read global startup settings, then case settings and explicit overrides.
   global_scase.ntickinfo=global_scase.ntickinfo_smv;
 
-  // Read "smokeview.ini" from bin dir
-  char *global_ini = GetSystemIniPath();
-  if(global_ini!=NULL){
-    int returnval;
+  if(read_startup_ini == 1){
+    char *smokeviewini_filename = GetSmokeviewIniPath();
 
-    returnval = ReadIni2(global_ini, 0);
-    if(returnval==2)return 2;
-    if(returnval == 0 && readini_output==1){
-      if(verbose_output==1)PRINTF("- complete\n");
+    read_startup_ini = 0;
+    if(smokeviewini_filename != NULL){
+      int return_code = ReadIni2(smokeviewini_filename);
+
+      FREEMEMORY(smokeviewini_filename);
+      if(return_code == 2)return 2;
     }
-    UpdateTerrainOptions();
   }
-  FREEMEMORY(global_ini);
 
   // Read "${fdsprefix}.ini" from the current directory
   char *caseini_filename = CasePathCaseIni(&global_scase);
@@ -7081,14 +7039,14 @@ int ReadIni(char *inifile){
     int returnval;
     char localdir[10];
 
-    returnval = ReadIni2(caseini_filename, 1);
+    returnval = ReadIni2(caseini_filename);
 
     // if directory is not writable then look for another ini file in the scratch directory
     strcpy(localdir, ".");
     if(Writable(localdir)==0){
       // Read "${fdsprefix}.ini" from the scratch directory
       char *scratch_ini_filename = GetUserConfigSubPath(caseini_filename);
-      returnval = ReadIni2(scratch_ini_filename, 1);
+      returnval = ReadIni2(scratch_ini_filename);
       FREEMEMORY(scratch_ini_filename);
     }
     if(returnval == 2){
@@ -7105,7 +7063,7 @@ int ReadIni(char *inifile){
   if(inifile!=NULL){
     int return_code;
 
-    return_code = ReadIni2(inifile,1);
+    return_code = ReadIni2(inifile);
     if(return_code == 0 && readini_output==1){
       if(verbose_output==1)PRINTF("- complete\n");
     }

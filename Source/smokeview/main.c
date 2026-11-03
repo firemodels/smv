@@ -33,11 +33,10 @@ void Usage(int option){
 
   PRINTF("\nsmokeview [options] casename\n");
   PRINTF("%s - %s\n\n", githash, __DATE__);
-  PRINTF("%s\n\n", "Visualize fire/smoke flow simulations.");
+  PRINTF("%s\n\n", "Visualize fire/smoke flow simulations specified by casename.smv.");
   PRINTF("options:\n");
-  PRINTF("%s\n", " casename       - project id (file names without the extension)");
   PRINTF("%s\n", " -bindir dir    - specify location of smokeview bin directory");
-  PRINTF("%s\n", " -ini           - output smokeview parameter values to smokeview.ini");
+  PRINTF("%s\n", " -load_ini inifile - load the specified ini file (after casename.ini) at startup");
   PRINTF("%s\n", " -runscript     - run the script file casename.ssf");
   UsageCommon(HELP_SUMMARY);
   if(option==HELP_ALL){
@@ -48,17 +47,14 @@ void Usage(int option){
 #endif
     PRINTF("%s\n", " -big           - hide scene and data when moving scene or selecting menus");
     PRINTF("%s\n", " -casedir dir   - specify location of case (if different than current directory)");
-    PRINTF("%s\n", " -checkscript file.ssf  - check the script file file.ssf for errors");
-    PRINTF("%s\n", " -convert_ini case1.ini case2.ini - update case1.ini to the current format");
-    PRINTF("%s\n", "                  and save the results into case2.ini");
     PRINTF("%s\n", " -demo          - use demonstrator mode of Smokeview");
     PRINTF("%s\n", " -encode_png v  - encode png's with fds and smv repo revisions if v=1, do not encode if v=0");
     PRINTF("%s\n", " -fast          - assume slice files exist in order to reduce startup time,");
     PRINTF("%s\n", "                  don't compute blanking arrays");
     PRINTF("%s\n", " -full          - full startup - check if files exist");
     PRINTF("%s\n", " -geominfo      - output information about geometry triangles");
-    PRINTF("%s\n", " -info            generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info");
-    PRINTF("%s\n", " -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian");
+    PRINTF("%s\n", " -info          - generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info");
+    PRINTF("%s\n", " -ini           - output smokeview parameter values to smokeview.ini");
     PRINTF("%s\n", " -large         - take some shortcuts when reading in large geometry cases");
     PRINTF("%s\n", " -load_co2      - load 3D smoke of type co2 at startup ");
     PRINTF("%s\n", " -load_hrrpuv   - load 3D smoke of type hrrpuv at startup ");
@@ -73,24 +69,15 @@ void Usage(int option){
     PRINTF("%s\n", "                  (override directory specified by RENDERDIR script keyword)");
     PRINTF("%s\n", " -setup         - only show geometry");
     PRINTF("%s\n", " -script scriptfile - run the script file scriptfile");
-    PRINTF("%s\n", " -htmlscript scriptfile - run the script file scriptfile without using the video card");
-    PRINTF("%s\n", " -runhtmlscript - run the script file casename.ssf without using the video card");
-    PRINTF("%s\n", "     the -htmlscript and -runhtmlscript keywords are used to generate JSON files");
-    PRINTF("%s\n", " -sizes         - output files sizes then exit");
     PRINTF("%s\n", " -skipframe n   - render every n frames");
     PRINTF("%s\n", " -smoke3d       - only show 3D smoke");
     PRINTF("%s\n", " -startframe n  - start rendering at frame n");
     PRINTF("%s\n", " -stereo        - activate stereo mode");
     PRINTF("%s\n", " -timings       - show timings");
-    PRINTF("%s\n", " -trirates      - show triangle display rates");
-    PRINTF("%s\n", " -update_slice  - calculate slice file parameters");
-    PRINTF("%s\n", " -update        - equivalent to -update_bounds and -update_slice");
-    PRINTF("%s\n", " -update_ini case.ini - update case.ini to the current format");
     PRINTF("%s\n", " -x0 val - horizontal screen coordinate in pixels where smokeview window is place at startup");
     PRINTF("%s\n", " -y0 val - vertical screen coordinate in pixels where smokeview window is place at startup");
     PRINTF("%s\n", " -X0 val - horizontal screen coordinate in pixels where dialog windows are placed when opened");
     PRINTF("%s\n", " -Y0 val - vertical screen coordinate in pixels where dialog windows are placed when opened");
-    PRINTF("%s\n", " -volrender     - generate images of volume rendered smoke and fire");
     UsageCommon(HELP_ALL);
   }
 }
@@ -129,28 +116,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
   char *filename_local = NULL;
 
   CheckMemory;
-  if(args->checkscript){
-    int error_code;
-
-    int CheckScript(char *file);
-    error_code = CheckScript(args->script);
-    switch(error_code){
-    case 0:
-      fprintf(stderr, "***no errors detected in %s\n", args->script);
-      break;
-    case 1:
-      fprintf(stderr, "***error: unable to open script file %s\n", args->script);
-      break;
-    case 2:
-      fprintf(stderr, "***errors detected in script file %s\n", args->script);
-      break;
-    default:
-      assert(FFALSE);
-      break;
-    }
-    void SMV_EXIT(int error);
-    SMV_EXIT(0);
-  }
   if(args->have_x0){
     use_commandline_origin = 1;
     screenX0 = args->x0;
@@ -326,15 +291,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     if(args->large_case){
       large_case = 1;
     }
-    if(args->update_slice){
-      use_graphics = 0;
-      update_slice = 1;
-    }
-    if(args->update){
-        use_graphics = 0;
-        update_slice = 1;
-        update_bounds = 1;
-    }
     if(args->nogpu){
       disable_gpu = 1;
     }
@@ -348,10 +304,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
       generate_info_from_commandline = 1;
       use_graphics = 0;
     }
-    if(args->sizes){
-      update_filesizes = 1;
-      use_graphics = 0;
-    }
     if(args->stereo){
       stereoactive = 1;
       stereotype = STEREO_TIME;
@@ -363,33 +315,8 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     if(args->timings){
       show_timings = 1;
     }
-    if(args->trirates){
-      show_trirates = 1;
-    }
-    if(args->lang != NULL){
-        FREEMEMORY(tr_name);
-        NewMemory((void **)&tr_name, strlen(args->lang)+1);
-        strcpy(tr_name, args->lang);
-    }
-    if(args->convert_ini){
-      if(args->ini_from != NULL&&args->ini_to != NULL){
-        NewMemory((void **)&ini_from, strlen(args->ini_from) + 1);
-        strcpy(ini_from, args->ini_from);
-
-        NewMemory((void **)&ini_to, strlen(args->ini_to) + 1);
-        strcpy(ini_to, args->ini_to);
-        convert_ini = 1;
-      }
-    }
-    if(args->update_ini){
-      if(args->ini_from != NULL){
-        NewMemory((void **)&ini_from, strlen(args->ini_from) + 1);
-        strcpy(ini_from, args->ini_from);
-
-        NewMemory((void **)&ini_to, strlen(args->ini_from) + 1);
-        strcpy(ini_to, args->ini_from);
-        convert_ini = 1;
-      }
+    if(args->load_ini != NULL){
+      load_ini = args->load_ini;
     }
     if(args->isotest){
       isotest = 1;
@@ -476,11 +403,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
       from_commandline = 1;
       SetRunScriptVal(1);
     }
-    if(args->runhtmlscript){
-      from_commandline = 1;
-      use_graphics = 0;
-      runhtmlscript = 1;
-    }
     if(args->scriptrenderdir != NULL){
       int nrenderdir = strlen(args->scriptrenderdir);
       if(nrenderdir>0){
@@ -496,38 +418,21 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
       from_commandline = 1;
       render_startframe0 = args->startframe;
     }
-    if(args->script!=NULL||args->htmlscript!=NULL){
+    if(args->script!=NULL){
       char scriptbuffer[MAX_SCRIPT_FILENAME_BUFFER];
       scriptfiledata *sfd;
 
-      bool is_htmlscript = args->htmlscript!=NULL;
-      if(is_htmlscript){
-        use_graphics = 0;
-        runhtmlscript = 1;
-      }
       from_commandline = 1;
-      if(args->script != NULL){
-        if(strlen(args->script) < MAX_SCRIPT_FILENAME_BUFFER){
-          strcpy(scriptbuffer, args->script);
-        }
-        else{
-          fprintf(stderr, "*** Error: script filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
-          SMV_EXIT(1);
-        }
-      } else{
-        if(strlen(args->htmlscript) < MAX_SCRIPT_FILENAME_BUFFER){
-          strcpy(scriptbuffer, args->htmlscript);
-        }
-        else{
-          fprintf(stderr, "*** Error: htmlscript filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
-          SMV_EXIT(1);
-        }
+      if(strlen(args->script) < MAX_SCRIPT_FILENAME_BUFFER){
+        strcpy(scriptbuffer, args->script);
+      }
+      else{
+        fprintf(stderr, "*** Error: script filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
+        SMV_EXIT(1);
       }
       sfd = InsertScriptFile(scriptbuffer);
       if(sfd != NULL)default_script = sfd;
-      if(!is_htmlscript){
       SetRunScriptVal(1);
-      }
     }
     if(args->noexit){
       noexit = 1;
@@ -692,21 +597,9 @@ int main(int argc, char **argv){
 
   return_code= SetupCase(smv_filename);
   if(return_code!=0)return 1;
-  if(convert_ini==1){
-    INIT_PRINT_TIMER(timer_read_ini);
-    ReadIni(ini_from);
-    PRINT_TIMER(timer_read_ini, "ReadIni");
-  }
-  if(runhtmlscript==1){
-    DoScriptHtml();
-  }
 
   STOP_TIMER(startup_time);
   PRINTF("\n");
-  if(runhtmlscript==1){
-    PRINTF("Time: %.1f s\n", startup_time);
-    return 0;
-  }
   PRINTF("Startup time: %.1f s\n", startup_time);
 
   GluiPostRedisplayOn();

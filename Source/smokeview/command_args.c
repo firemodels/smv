@@ -20,12 +20,8 @@ const char *CLE_Message(enum CommandLineError cle, char *message){
   case CLE_OK:
     return NULL;
     break;
-  case CLE_MULTIPLE_LANG:
-    return "***error: -lang defined multiple times";
-    break;
-  case CLE_NO_LANG:
-    return "***error: -lang must be given an argument";
-    break;
+  case CLE_NO_LOAD_INI_ARG:
+    return "***error: -load_ini must be given an INI file path";
   case CLE_MULTIPLE_INPUTS:
     return "***error: multiple input files found";
   case CLE_UNKNOWN_ARGUMENT:
@@ -62,11 +58,25 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     if(strcmp(argv[i], "-ini") == 0){
       args.ini = true;
     }
+    else if(strcmp(argv[i], "-load_ini") == 0){
+      i++;
+      if(i >= argc || argv[i][0] == '\0' || argv[i][0] == '-'){
+        *error = CLE_NO_LOAD_INI_ARG;
+        return args;
+      }
+      FREEMEMORY(args.load_ini);
+      NewMemory((void **)&args.load_ini, strlen(argv[i]) + 1);
+      strcpy(args.load_ini, argv[i]);
+      for(char *c = args.load_ini; *c != '\0'; c++){
+#ifdef _WIN32
+        if(*c == '/')*c = '\\';
+#else
+        if(*c == '\\')*c = '/';
+#endif
+      }
+    }
     else if(strcmp(argv[i], "-ng_ini") == 0){
       args.ng_ini = true;
-    }
-    else if(strcmp(argv[i], "-volrender") == 0){
-      args.volrender = true;
     }
     else if(strcmp(argv[i], "-version") == 0 || strcmp(argv[i], "-v") == 0){
       args.print_version = true;
@@ -87,12 +97,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     else if(strcmp(argv[i], "-no_graphics") == 0){
       args.no_graphics = true;
     }
-    else if(strcmp(argv[i], "-update_slice") == 0){
-      args.update_slice = true;
-    }
-    else if(strcmp(argv[i], "-update") == 0){
-      args.update = true;
-    }
     else if(strcmp(argv[i], "-nogpu") == 0){
       args.nogpu = true;
     }
@@ -105,9 +109,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     else if(strcmp(argv[i], "-info") == 0){
       args.info = true;
     }
-    else if(strcmp(argv[i], "-sizes") == 0){
-      args.sizes = true;
-    }
     else if(strcmp(argv[i], "-stereo") == 0){
       args.stereo = true;
     }
@@ -117,76 +118,8 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     else if(strcmp(argv[i], "-big") == 0){
       args.big = true;
     }
-    else if(strcmp(argv[i], "-trirates") == 0){
-      args.trirates = true;
-    }
     else if(strcmp(argv[i], "-timings") == 0){
       args.timings = true;
-    }
-    else if(strcmp(argv[i], "-lang") == 0){
-      // The next argument is a language name
-      ++i;
-      if(i < argc){
-        if(args.lang != NULL){
-          *error = CLE_MULTIPLE_LANG;
-          return args;
-        }
-        // Why the additional 48 bytes?
-        NewMemory((void **)&args.lang, strlen(argv[i]) + 48 + 1);
-        strcpy(args.lang, argv[i]);
-      }
-      else{
-        *error = CLE_NO_LANG;
-        return args;
-      }
-    }
-    else if(strcmp(argv[i], "-convert_ini") == 0){
-      args.convert_ini = true;
-      // The next two arguments are the from and to paths for ini conversion.
-      char *local_ini_from = NULL, *local_ini_to = NULL;
-
-      if(++i < argc){
-        local_ini_from = argv[i];
-      }
-      else{
-        *error = CLE_NO_INI_ARGS;
-        return args;
-      }
-      if(++i < argc){
-        local_ini_to = argv[i];
-      }
-      else{
-        *error = CLE_NO_INI_ARGS;
-        return args;
-      }
-      if(local_ini_from != NULL && local_ini_to != NULL){
-        NewMemory((void **)&args.ini_from, strlen(local_ini_from) + 1);
-        strcpy(args.ini_from, local_ini_from);
-
-        NewMemory((void **)&args.ini_to, strlen(local_ini_to) + 1);
-        strcpy(args.ini_to, local_ini_to);
-      }
-    } 
-    else if(strcmp(argv[i], "-update_ini") == 0){
-      // As per convert_ini, but in-place
-      args.update_ini = true;
-      char *local_ini_from = NULL, *local_ini_to = NULL;
-
-      if(++i < argc){
-        local_ini_from = argv[i];
-      }
-      else{
-        *error = CLE_NO_INI_ARGS;
-        return args;
-      }
-      local_ini_to = local_ini_from;
-      if(local_ini_from != NULL){
-        NewMemory((void **)&args.ini_from, strlen(local_ini_from) + 1);
-        strcpy(args.ini_from, local_ini_from);
-
-        NewMemory((void **)&args.ini_to, strlen(local_ini_to) + 1);
-        strcpy(args.ini_to, local_ini_to);
-      }
     }
     else if(strcmp(argv[i], "-isotest") == 0){
       args.isotest = true;
@@ -282,9 +215,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     else if(strcmp(argv[i], "-runscript") == 0){
       args.runscript = true;
     }
-    else if(strcmp(argv[i], "-runhtmlscript") == 0){
-      args.runhtmlscript = true;
-    }
     else if(strcmp(argv[i], "-scriptrenderdir") == 0){
       i++;
       if(i < argc){
@@ -318,39 +248,11 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
         return args;
       }
     }
-    else if(strcmp(argv[i], "-volrender") == 0){
-      args.volrender = true;
-    }
     else if(strcmp(argv[i], "-script") == 0){
       ++i;
       if(i < argc){
         NewMemory((void **)&args.script, strlen(argv[i]) + 1);
         strcpy(args.script, argv[i]);
-      }
-      else{
-        *error = CLE_ARGUMENT_EXPECTED;
-        return args;
-      }
-    }
-    else if(strcmp(argv[i], "-checkscript") == 0){
-      ++i;
-      if(i < argc){
-        NewMemory((void **)&args.script, strlen(argv[i]) + 1);
-        strcpy(args.script, argv[i]);
-        args.checkscript = true;
-      }
-      else{
-        *error = CLE_ARGUMENT_EXPECTED;
-        void SMV_EXIT(int error);
-        SMV_EXIT(1);
-        return args;
-      }
-    }
-    else if(strcmp(argv[i], "-htmlscript") == 0){
-      ++i;
-      if(i < argc){
-        NewMemory((void **)&args.htmlscript, strlen(argv[i]) + 1);
-        strcpy(args.htmlscript, argv[i]);
       }
       else{
         *error = CLE_ARGUMENT_EXPECTED;

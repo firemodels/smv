@@ -56,11 +56,9 @@ typedef struct {
 
 #endif
 
-#define HASH_NONE   0
 #define HASH_MD5    1
 #define HASH_SHA1   2
 #define HASH_SHA256 3
-#define HASH_ALL    4
 #define HELP_SUMMARY 1
 #define HELP_ALL 2
 
