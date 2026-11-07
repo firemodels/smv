@@ -11,8 +11,8 @@ export COMPILER2=$INTEL_ICPP
 PLATFORM=""
 GLTYPE=COCOA
 GLUT=glut
-FOREC_g=
-FOREC_i=
+FORCE_g=
+FORCE_i=
 target=all
 while getopts 'CfgGhiILl:t:TX' OPTION
 do

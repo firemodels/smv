@@ -1,5 +1,4 @@
 #!/bin/bash
-CUR=`pwd`
 allrepos="bot cad cfast cor exp fds fig out radcal smv test_bundles"
 updaterepos=$allrepos
 single_repo=
@@ -146,6 +145,3 @@ else
   done
 fi
 echo update complete
-
-cd $CURDIR
-
