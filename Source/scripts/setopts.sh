@@ -90,6 +90,10 @@ if [ "`uname`" == "Darwin" ]; then
     PLATFORM="$PLATFORM -D pp_OSX_LOWRES"
   fi
 fi
+if [ "$COMPILER" = "clang" ] && [ -n "$SMV_LIB_ARCH" ]; then
+  COMPILER="clang -arch $SMV_LIB_ARCH"
+  COMPILER2="clang++ -arch $SMV_LIB_ARCH"
+fi
 export COMPILER
 export COMPILER2
 export PLATFORM
