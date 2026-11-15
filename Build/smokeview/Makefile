@@ -363,7 +363,7 @@ endif
 
 # ------------- gnu_osx_db ----------------
 
-gnu_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-deprecated-declarations$(CFLAGS_COM)
+gnu_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-deprecated-declarations $(CFLAGS_COM)
 gnu_osx_db : CC        = ${COMPILER}
 gnu_osx_db : CPP       = ${COMPILER2}
 gnu_osx_db : exe       = smokeview_osx_db
