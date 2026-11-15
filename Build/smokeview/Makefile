@@ -8,6 +8,7 @@ LIB_DIR = $(BUILD_DIR)/LIBS
 FREEGLUT_DIR=../../../../libs/freeglut
 
 SMV_TESTFLAG =
+CHECK_SOURCE_REPORT ?= checksource_linux.txt
 
 # Intel compiler definitions
 include ../../scripts/intel_compiler.mak
@@ -330,14 +331,14 @@ gnu_linux_check : $(src)
 
 linux_osx_check : CFLAGS    =
 linux_osx_check : $(linux_osx_chk)
-	$(CLANGSUMMARY) smokeview.summary
+	$(CLANGSUMMARY) $(CHECK_SOURCE_REPORT)
 
 # ------------- win_check ----------------
 
 win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB
 win_check : INC += $(WININC)
 win_check : $(win_chk)
-	$(CLANGWINSUMMARY) smokeview.summary
+	$(CLANGWINSUMMARY) checksource_win.txt
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   OSX   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV

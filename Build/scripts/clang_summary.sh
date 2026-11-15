@@ -22,19 +22,26 @@ echo ""
 for file in *.chk; do
   nfiles=$((nfiles+1))
   if [ -s $file ]; then
-    nwarnings=`tail -1 $file | awk '{print $1}'`
-    total_warnings=$((total_warnings+nwarnings))
-    nwarnfiles=$((nwarnfiles+1))
-    echo $file: $nwarnings  warnings >> $OUTFILE
-    if [ "$nwarnings" != "0" ]; then
-      echo $file: $nwarnings warnings
+    nwarnings=$(awk '/^[0-9]+ warnings? generated\.$/ { count = $1 } END { print count + 0 }' "$file")
+    if [ "$nwarnings" -gt 0 ]; then
+      total_warnings=$((total_warnings+nwarnings))
+      nwarnfiles=$((nwarnfiles+1))
+      {
+        if [ "$nwarnfiles" -gt 1 ]; then
+          printf '%s\n' '--------------------'
+        fi
+        printf '%s\n' "${file%.chk}"
+        cat "$file"
+        printf '\n'
+      } >> "$OUTFILE"
+      echo "$file: $nwarnings warnings"
     fi
   fi
 done
 echo
 if [ "$total_warnings" == "0" ]; then
-  echo $nfiles files scanned, no warnings were found
+  echo "$nfiles files scanned, no warnings were found" | tee -a "$OUTFILE"
 else
-  echo $nfiles files scanned, $nwarnfiles files have $total_warnings warnings
+  echo "$nfiles files scanned, $nwarnfiles files have $total_warnings warnings" | tee -a "$OUTFILE"
 fi
 
