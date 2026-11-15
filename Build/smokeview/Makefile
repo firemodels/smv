@@ -332,6 +332,8 @@ gnu_linux_check : $(src)
 linux_osx_check : CFLAGS    =
 linux_osx_check : $(linux_osx_chk)
 	$(CLANGSUMMARY) $(CHECK_SOURCE_REPORT)
+	@clang --version
+	@clang --version >> $(CHECK_SOURCE_REPORT)
 
 # ------------- win_check ----------------
 
@@ -339,6 +341,8 @@ win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB
 win_check : INC += $(WININC)
 win_check : $(win_chk)
 	$(CLANGWINSUMMARY) checksource_win.txt
+	@clang --version
+	@clang --version >> checksource_win.txt
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   OSX   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
