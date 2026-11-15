@@ -195,23 +195,23 @@ gnu_osx_db : $(obj)
 
 # ------------- clang osx db ----------------
 
-clang_osx_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
+clang_osx_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH))
 clang_osx_db : LFLAGS    = -L $(LIB_DIR)/clang_osx $(PNG_LIBS) $(SYSTEM_LIBS)
 clang_osx_db : CC        = clang
 clang_osx_db : exe       = pnginfo_osx_db
 
 clang_osx_db : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+	$(CC) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH)) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- clang osx ----------------
 
-clang_osx : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
+clang_osx : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH))
 clang_osx : LFLAGS    = -L $(LIB_DIR)/clang_osx $(PNG_LIBS) $(SYSTEM_LIBS)
 clang_osx : CC        = clang
 clang_osx : exe       = pnginfo_osx
 
 clang_osx : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+	$(CC) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH)) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- intel linux ----------------
 

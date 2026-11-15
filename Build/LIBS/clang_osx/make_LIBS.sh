@@ -1,6 +1,6 @@
 #!/bin/bash
 # Pin the Apple Silicon build to arm64, including from a Rosetta shell.
-if [ "$(sysctl -n hw.optional.arm64 2>/dev/null)" = "1" ]; then
+if [ "$SMV_OSX_ARCH" = "arm64" ] || /usr/bin/arch -arm64 /usr/bin/true 2>/dev/null; then
   export SMV_LIB_ARCH=arm64
   export CMAKE_OSX_ARCHITECTURES=arm64
 fi

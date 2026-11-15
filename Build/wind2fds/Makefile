@@ -179,21 +179,21 @@ gnu_osx_db : $(obj)
 
 # ------------- clang osx ----------------
 
-clang_osx : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO)
+clang_osx : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH))
 clang_osx : CC        = clang
 clang_osx : exe       = wind2fds_osx
 
 clang_osx : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj)
+	$(CC) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH)) -o $(bin)/$(exe) $(obj)
 
 # ------------- gnu osx db ----------------
 
-clang_osx_db : CFLAGS    = -O0 -m64 -Wall $(GITINFO) $(GNU_COMPINFO)
+clang_osx_db : CFLAGS    = -O0 -m64 -Wall $(GITINFO) $(GNU_COMPINFO) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH))
 clang_osx_db : CC        = clang
 clang_osx_db : exe       = wind2fds_osx_db
 
 clang_osx_db : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj)
+	$(CC) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH)) -o $(bin)/$(exe) $(obj)
 
 #-------------- Clean Target to remove Object and Module files -----------
 

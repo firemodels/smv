@@ -383,23 +383,23 @@ gnu_osx : $(obj)
 
 # ------------- clang_osx_db ----------------
 
-clang_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -fsanitize=thread -pthread -Wall -Wno-deprecated-declarations $(CFLAGS_COM)
+clang_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -fsanitize=thread -pthread -Wall -Wno-deprecated-declarations $(CFLAGS_COM) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH))
 clang_osx_db : CC        = ${COMPILER}
 clang_osx_db : CPP       = ${COMPILER2}
 clang_osx_db : exe       = smokeview_osx_db
 
 clang_osx_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -fsanitize=thread -pthread -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX)
+	$(CPP) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH)) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -fsanitize=thread -pthread -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX)
 
 # ------------- clang_osx ----------------
 
-clang_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-deprecated-declarations $(CFLAGS_COM)
+clang_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-deprecated-declarations $(CFLAGS_COM) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH))
 clang_osx : CC        = ${COMPILER}
 clang_osx : CPP       = ${COMPILER2}
 clang_osx : exe       = smokeview_osx
 
 clang_osx : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX)
+	$(CPP) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH)) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX)
 
 #-------------- Clean Target to remove Object -----------
 

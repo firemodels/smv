@@ -184,23 +184,23 @@ gnu_osx_db : $(obj)
 
 # ------------- clang osx ----------------
 
-clang_osx : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG) -Wno-unknown-pragmas
+clang_osx : CFLAGS    = -O0 -m64 $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG) -Wno-unknown-pragmas $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH))
 clang_osx : LFLAGS    = -m64
 clang_osx : CC        = clang
 clang_osx : exe       = fds2fed_osx
 
 clang_osx : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+	$(CC) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH)) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- gnu osx db ----------------
 
-clang_osx_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
+clang_osx_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH))
 clang_osx_db : LFLAGS    = -m64
 clang_osx_db : CC        = clang
 clang_osx_db : exe       = fds2fed_osx_db
 
 clang_osx_db : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+	$(CC) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH)) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 
 # ------------- intel linux ----------------
