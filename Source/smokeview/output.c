@@ -66,8 +66,8 @@ void OutputAxisLabels(void){
 
 /* ------------------ OutputSText3 ------------------------ */
 
-void OutputSText3(float x, float y, float z, char *string){
-  char *c;
+void OutputSText3(float x, float y, float z, const char *string){
+  const char *c;
   float u[3]={0.0,0.0,1.0},v[3];
   float axis[3],angle,theta;
   float quateye[4],quatz[4],rot[16];
@@ -138,8 +138,8 @@ void Output3Val(float x, float y, float z, float val){
 
 /* ------------------ Output3Text ------------------------ */
 
-void Output3Text(float *color, float x, float y, float z, char *string){
-  char *c;
+void Output3Text(float *color, float x, float y, float z, const char *string){
+  const char *c;
 
   if(string==NULL)return;
   glColor3fv(color);
