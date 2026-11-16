@@ -120,6 +120,16 @@ clang_win : exe       = fds2fed_win.exe
 clang_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(SMV_LIBS_CLANG)
 
+# ------------- clang win debug ----------------
+
+clang_win_db : CFLAGS    = /Od /Z7 -D _DEBUG -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
+clang_win_db : LFLAGS    = -m64
+clang_win_db : CC        = clang-cl
+clang_win_db : exe       = fds2fed_win_db.exe
+
+clang_win_db : $(objwin)
+	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(SMV_LIBS_CLANG) /link /DEBUG
+
 # ------------- gnu linux ----------------
 
 clang_linux : CFLAGS    = -O0 -m64 -D PTW32_STATIC_LIB $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)

@@ -124,6 +124,17 @@ clang_win : exe       = part2iso_win.exe
 clang_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_CLANG)
 
+# ------------- clang win debug ----------------
+
+clang_win_db : INC_DIR   += -I $(SOURCE_DIR)/pthreads
+clang_win_db : CFLAGS    = /Od /Z7 -D _DEBUG -m64  -D PTW32_STATIC_LIB -D BGDWIN32 -D GLEW_STATIC $(SMV_TESTFLAG)
+clang_win_db : LFLAGS    = -m64
+clang_win_db : CC        = clang-cl
+clang_win_db : exe       = part2iso_win_db.exe
+
+clang_win_db : $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_CLANG) /link /DEBUG
+
 
 # ------------- gnu linux ----------------
 
