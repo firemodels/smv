@@ -1611,7 +1611,7 @@ extern "C" void GLUILabelsCB(int var){
 
 /* ------------------ GLUISetLabelControls ------------------------ */
 
-extern "C" void GLUISetLabelControls(){
+extern "C" void GLUISetLabelControls(void){
 
   if(CHECKBOX_LB_visLabels!=NULL)CHECKBOX_LB_visLabels->set_int_val(visLabels);
   if(CHECKBOX_visUSERticks!=NULL)CHECKBOX_visUSERticks->set_int_val(visUSERticks);

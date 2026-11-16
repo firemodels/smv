@@ -7739,7 +7739,7 @@ int CompareSubSliceMenu(const void *arg1, const void *arg2){
 
 /* ------------------ InitSubSliceMenuInfo ------------------------ */
 
-void InitSubSliceMenuInfo(){
+void InitSubSliceMenuInfo(void){
   int i;
 
   if(global_scase.slicecoll.nsliceinfo == 0 || subslicemenuinfo != NULL)return;
@@ -7803,7 +7803,7 @@ void InitSubSliceMenuInfo(){
 
 /* ------------------ InitSubVectorSliceMenuInfo ------------------------ */
 
-void InitSubVectorSliceMenuInfo(){
+void InitSubVectorSliceMenuInfo(void){
   int i;
 
   if(global_scase.slicecoll.nmultivsliceinfo == 0 || subvectorslicemenuinfo != NULL)return;

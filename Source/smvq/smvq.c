@@ -28,7 +28,7 @@ int ReadSMV_Init(smv_case *scase);
 int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream);
 void ReadSMVDynamic(smv_case *scase, char *file);
 void ReadSMVOrig(smv_case *scase, char *smvfile);
-smv_case *CreateScase();
+smv_case *CreateScase(void);
 
 /// @brief Given a file path, get the filename excluding the final extension.
 /// This allocates a new copy which can be deallocated with free().

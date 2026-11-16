@@ -576,7 +576,7 @@ int GifStart(const char *path) {
 /// @brief Finalise a GIF which was started with GifStart and close the
 /// associated file.
 /// @return zero on success, non-zero on failure
-int GifEnd() {
+int GifEnd(void) {
   gdImageGifAnimEnd(out);
   fclose(out);
   making_movie = 0;
@@ -624,7 +624,7 @@ int GifAddFrame(int delay) {
 /// long.
 /// @return zero on success, non-zero on failure
 
-int GifAddFrameSpec() {
+int GifAddFrameSpec(void) {
   // Should add the current frame? True by default.
   bool render = true;
   // How long should this frame be? Set the default based on framerate.

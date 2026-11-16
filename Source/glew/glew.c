@@ -8897,361 +8897,361 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
   NULL
 };
-static GLboolean _glewInit_GL_VERSION_1_2 ();
-static GLboolean _glewInit_GL_VERSION_1_3 ();
-static GLboolean _glewInit_GL_VERSION_1_4 ();
-static GLboolean _glewInit_GL_VERSION_1_5 ();
-static GLboolean _glewInit_GL_VERSION_2_0 ();
-static GLboolean _glewInit_GL_VERSION_2_1 ();
-static GLboolean _glewInit_GL_VERSION_3_0 ();
-static GLboolean _glewInit_GL_VERSION_3_1 ();
-static GLboolean _glewInit_GL_VERSION_3_2 ();
-static GLboolean _glewInit_GL_VERSION_3_3 ();
-static GLboolean _glewInit_GL_VERSION_4_0 ();
-static GLboolean _glewInit_GL_VERSION_4_5 ();
-static GLboolean _glewInit_GL_VERSION_4_6 ();
-static GLboolean _glewInit_GL_3DFX_tbuffer ();
-static GLboolean _glewInit_GL_AMD_debug_output ();
-static GLboolean _glewInit_GL_AMD_draw_buffers_blend ();
-static GLboolean _glewInit_GL_AMD_framebuffer_sample_positions ();
-static GLboolean _glewInit_GL_AMD_interleaved_elements ();
-static GLboolean _glewInit_GL_AMD_multi_draw_indirect ();
-static GLboolean _glewInit_GL_AMD_name_gen_delete ();
-static GLboolean _glewInit_GL_AMD_occlusion_query_event ();
-static GLboolean _glewInit_GL_AMD_performance_monitor ();
-static GLboolean _glewInit_GL_AMD_sample_positions ();
-static GLboolean _glewInit_GL_AMD_sparse_texture ();
-static GLboolean _glewInit_GL_AMD_stencil_operation_extended ();
-static GLboolean _glewInit_GL_AMD_vertex_shader_tessellator ();
-static GLboolean _glewInit_GL_ANGLE_framebuffer_blit ();
-static GLboolean _glewInit_GL_ANGLE_framebuffer_multisample ();
-static GLboolean _glewInit_GL_ANGLE_instanced_arrays ();
-static GLboolean _glewInit_GL_ANGLE_timer_query ();
-static GLboolean _glewInit_GL_ANGLE_translated_shader_source ();
-static GLboolean _glewInit_GL_APPLE_copy_texture_levels ();
-static GLboolean _glewInit_GL_APPLE_element_array ();
-static GLboolean _glewInit_GL_APPLE_fence ();
-static GLboolean _glewInit_GL_APPLE_flush_buffer_range ();
-static GLboolean _glewInit_GL_APPLE_framebuffer_multisample ();
-static GLboolean _glewInit_GL_APPLE_object_purgeable ();
-static GLboolean _glewInit_GL_APPLE_sync ();
-static GLboolean _glewInit_GL_APPLE_texture_range ();
-static GLboolean _glewInit_GL_APPLE_vertex_array_object ();
-static GLboolean _glewInit_GL_APPLE_vertex_array_range ();
-static GLboolean _glewInit_GL_APPLE_vertex_program_evaluators ();
-static GLboolean _glewInit_GL_ARB_ES2_compatibility ();
-static GLboolean _glewInit_GL_ARB_ES3_1_compatibility ();
-static GLboolean _glewInit_GL_ARB_ES3_2_compatibility ();
-static GLboolean _glewInit_GL_ARB_base_instance ();
-static GLboolean _glewInit_GL_ARB_bindless_texture ();
-static GLboolean _glewInit_GL_ARB_blend_func_extended ();
-static GLboolean _glewInit_GL_ARB_buffer_storage ();
-static GLboolean _glewInit_GL_ARB_cl_event ();
-static GLboolean _glewInit_GL_ARB_clear_buffer_object ();
-static GLboolean _glewInit_GL_ARB_clear_texture ();
-static GLboolean _glewInit_GL_ARB_clip_control ();
-static GLboolean _glewInit_GL_ARB_color_buffer_float ();
-static GLboolean _glewInit_GL_ARB_compute_shader ();
-static GLboolean _glewInit_GL_ARB_compute_variable_group_size ();
-static GLboolean _glewInit_GL_ARB_copy_buffer ();
-static GLboolean _glewInit_GL_ARB_copy_image ();
-static GLboolean _glewInit_GL_ARB_debug_output ();
-static GLboolean _glewInit_GL_ARB_direct_state_access ();
-static GLboolean _glewInit_GL_ARB_draw_buffers ();
-static GLboolean _glewInit_GL_ARB_draw_buffers_blend ();
-static GLboolean _glewInit_GL_ARB_draw_elements_base_vertex ();
-static GLboolean _glewInit_GL_ARB_draw_indirect ();
-static GLboolean _glewInit_GL_ARB_framebuffer_no_attachments ();
-static GLboolean _glewInit_GL_ARB_framebuffer_object ();
-static GLboolean _glewInit_GL_ARB_geometry_shader4 ();
-static GLboolean _glewInit_GL_ARB_get_program_binary ();
-static GLboolean _glewInit_GL_ARB_get_texture_sub_image ();
-static GLboolean _glewInit_GL_ARB_gl_spirv ();
-static GLboolean _glewInit_GL_ARB_gpu_shader_fp64 ();
-static GLboolean _glewInit_GL_ARB_gpu_shader_int64 ();
-static GLboolean _glewInit_GL_ARB_imaging ();
-static GLboolean _glewInit_GL_ARB_indirect_parameters ();
-static GLboolean _glewInit_GL_ARB_instanced_arrays ();
-static GLboolean _glewInit_GL_ARB_internalformat_query ();
-static GLboolean _glewInit_GL_ARB_internalformat_query2 ();
-static GLboolean _glewInit_GL_ARB_invalidate_subdata ();
-static GLboolean _glewInit_GL_ARB_map_buffer_range ();
-static GLboolean _glewInit_GL_ARB_matrix_palette ();
-static GLboolean _glewInit_GL_ARB_multi_bind ();
-static GLboolean _glewInit_GL_ARB_multi_draw_indirect ();
-static GLboolean _glewInit_GL_ARB_multisample ();
-static GLboolean _glewInit_GL_ARB_multitexture ();
-static GLboolean _glewInit_GL_ARB_occlusion_query ();
-static GLboolean _glewInit_GL_ARB_parallel_shader_compile ();
-static GLboolean _glewInit_GL_ARB_point_parameters ();
-static GLboolean _glewInit_GL_ARB_polygon_offset_clamp ();
-static GLboolean _glewInit_GL_ARB_program_interface_query ();
-static GLboolean _glewInit_GL_ARB_provoking_vertex ();
-static GLboolean _glewInit_GL_ARB_robustness ();
-static GLboolean _glewInit_GL_ARB_sample_locations ();
-static GLboolean _glewInit_GL_ARB_sample_shading ();
-static GLboolean _glewInit_GL_ARB_sampler_objects ();
-static GLboolean _glewInit_GL_ARB_separate_shader_objects ();
-static GLboolean _glewInit_GL_ARB_shader_atomic_counters ();
-static GLboolean _glewInit_GL_ARB_shader_image_load_store ();
-static GLboolean _glewInit_GL_ARB_shader_objects ();
-static GLboolean _glewInit_GL_ARB_shader_storage_buffer_object ();
-static GLboolean _glewInit_GL_ARB_shader_subroutine ();
-static GLboolean _glewInit_GL_ARB_shading_language_include ();
-static GLboolean _glewInit_GL_ARB_sparse_buffer ();
-static GLboolean _glewInit_GL_ARB_sparse_texture ();
-static GLboolean _glewInit_GL_ARB_sync ();
-static GLboolean _glewInit_GL_ARB_tessellation_shader ();
-static GLboolean _glewInit_GL_ARB_texture_barrier ();
-static GLboolean _glewInit_GL_ARB_texture_buffer_object ();
-static GLboolean _glewInit_GL_ARB_texture_buffer_range ();
-static GLboolean _glewInit_GL_ARB_texture_compression ();
-static GLboolean _glewInit_GL_ARB_texture_multisample ();
-static GLboolean _glewInit_GL_ARB_texture_storage ();
-static GLboolean _glewInit_GL_ARB_texture_storage_multisample ();
-static GLboolean _glewInit_GL_ARB_texture_view ();
-static GLboolean _glewInit_GL_ARB_timer_query ();
-static GLboolean _glewInit_GL_ARB_transform_feedback2 ();
-static GLboolean _glewInit_GL_ARB_transform_feedback3 ();
-static GLboolean _glewInit_GL_ARB_transform_feedback_instanced ();
-static GLboolean _glewInit_GL_ARB_transpose_matrix ();
-static GLboolean _glewInit_GL_ARB_uniform_buffer_object ();
-static GLboolean _glewInit_GL_ARB_vertex_array_object ();
-static GLboolean _glewInit_GL_ARB_vertex_attrib_64bit ();
-static GLboolean _glewInit_GL_ARB_vertex_attrib_binding ();
-static GLboolean _glewInit_GL_ARB_vertex_blend ();
-static GLboolean _glewInit_GL_ARB_vertex_buffer_object ();
-static GLboolean _glewInit_GL_ARB_vertex_program ();
-static GLboolean _glewInit_GL_ARB_vertex_shader ();
-static GLboolean _glewInit_GL_ARB_vertex_type_2_10_10_10_rev ();
-static GLboolean _glewInit_GL_ARB_viewport_array ();
-static GLboolean _glewInit_GL_ARB_window_pos ();
-static GLboolean _glewInit_GL_ATI_draw_buffers ();
-static GLboolean _glewInit_GL_ATI_element_array ();
-static GLboolean _glewInit_GL_ATI_envmap_bumpmap ();
-static GLboolean _glewInit_GL_ATI_fragment_shader ();
-static GLboolean _glewInit_GL_ATI_map_object_buffer ();
-static GLboolean _glewInit_GL_ATI_pn_triangles ();
-static GLboolean _glewInit_GL_ATI_separate_stencil ();
-static GLboolean _glewInit_GL_ATI_vertex_array_object ();
-static GLboolean _glewInit_GL_ATI_vertex_attrib_array_object ();
-static GLboolean _glewInit_GL_ATI_vertex_streams ();
-static GLboolean _glewInit_GL_EXT_base_instance ();
-static GLboolean _glewInit_GL_EXT_bindable_uniform ();
-static GLboolean _glewInit_GL_EXT_blend_color ();
-static GLboolean _glewInit_GL_EXT_blend_equation_separate ();
-static GLboolean _glewInit_GL_EXT_blend_func_extended ();
-static GLboolean _glewInit_GL_EXT_blend_func_separate ();
-static GLboolean _glewInit_GL_EXT_blend_minmax ();
-static GLboolean _glewInit_GL_EXT_buffer_storage ();
-static GLboolean _glewInit_GL_EXT_clear_texture ();
-static GLboolean _glewInit_GL_EXT_color_subtable ();
-static GLboolean _glewInit_GL_EXT_compiled_vertex_array ();
-static GLboolean _glewInit_GL_EXT_convolution ();
-static GLboolean _glewInit_GL_EXT_coordinate_frame ();
-static GLboolean _glewInit_GL_EXT_copy_image ();
-static GLboolean _glewInit_GL_EXT_copy_texture ();
-static GLboolean _glewInit_GL_EXT_cull_vertex ();
-static GLboolean _glewInit_GL_EXT_debug_label ();
-static GLboolean _glewInit_GL_EXT_debug_marker ();
-static GLboolean _glewInit_GL_EXT_depth_bounds_test ();
-static GLboolean _glewInit_GL_EXT_direct_state_access ();
-static GLboolean _glewInit_GL_EXT_discard_framebuffer ();
-static GLboolean _glewInit_GL_EXT_draw_buffers ();
-static GLboolean _glewInit_GL_EXT_draw_buffers2 ();
-static GLboolean _glewInit_GL_EXT_draw_buffers_indexed ();
-static GLboolean _glewInit_GL_EXT_draw_elements_base_vertex ();
-static GLboolean _glewInit_GL_EXT_draw_instanced ();
-static GLboolean _glewInit_GL_EXT_draw_range_elements ();
-static GLboolean _glewInit_GL_EXT_external_buffer ();
-static GLboolean _glewInit_GL_EXT_fog_coord ();
-static GLboolean _glewInit_GL_EXT_fragment_lighting ();
-static GLboolean _glewInit_GL_EXT_framebuffer_blit ();
-static GLboolean _glewInit_GL_EXT_framebuffer_multisample ();
-static GLboolean _glewInit_GL_EXT_framebuffer_object ();
-static GLboolean _glewInit_GL_EXT_geometry_shader4 ();
-static GLboolean _glewInit_GL_EXT_gpu_program_parameters ();
-static GLboolean _glewInit_GL_EXT_gpu_shader4 ();
-static GLboolean _glewInit_GL_EXT_histogram ();
-static GLboolean _glewInit_GL_EXT_index_func ();
-static GLboolean _glewInit_GL_EXT_index_material ();
-static GLboolean _glewInit_GL_EXT_instanced_arrays ();
-static GLboolean _glewInit_GL_EXT_light_texture ();
-static GLboolean _glewInit_GL_EXT_map_buffer_range ();
-static GLboolean _glewInit_GL_EXT_memory_object ();
-static GLboolean _glewInit_GL_EXT_memory_object_fd ();
-static GLboolean _glewInit_GL_EXT_memory_object_win32 ();
-static GLboolean _glewInit_GL_EXT_multi_draw_arrays ();
-static GLboolean _glewInit_GL_EXT_multi_draw_indirect ();
-static GLboolean _glewInit_GL_EXT_multisample ();
-static GLboolean _glewInit_GL_EXT_multisampled_render_to_texture ();
-static GLboolean _glewInit_GL_EXT_multiview_draw_buffers ();
-static GLboolean _glewInit_GL_EXT_paletted_texture ();
-static GLboolean _glewInit_GL_EXT_pixel_transform ();
-static GLboolean _glewInit_GL_EXT_point_parameters ();
-static GLboolean _glewInit_GL_EXT_polygon_offset ();
-static GLboolean _glewInit_GL_EXT_polygon_offset_clamp ();
-static GLboolean _glewInit_GL_EXT_provoking_vertex ();
-static GLboolean _glewInit_GL_EXT_raster_multisample ();
-static GLboolean _glewInit_GL_EXT_scene_marker ();
-static GLboolean _glewInit_GL_EXT_secondary_color ();
-static GLboolean _glewInit_GL_EXT_semaphore ();
-static GLboolean _glewInit_GL_EXT_semaphore_fd ();
-static GLboolean _glewInit_GL_EXT_semaphore_win32 ();
-static GLboolean _glewInit_GL_EXT_separate_shader_objects ();
-static GLboolean _glewInit_GL_EXT_shader_image_load_store ();
-static GLboolean _glewInit_GL_EXT_shader_pixel_local_storage2 ();
-static GLboolean _glewInit_GL_EXT_sparse_texture ();
-static GLboolean _glewInit_GL_EXT_stencil_two_side ();
-static GLboolean _glewInit_GL_EXT_subtexture ();
-static GLboolean _glewInit_GL_EXT_texture3D ();
-static GLboolean _glewInit_GL_EXT_texture_array ();
-static GLboolean _glewInit_GL_EXT_texture_buffer_object ();
-static GLboolean _glewInit_GL_EXT_texture_integer ();
-static GLboolean _glewInit_GL_EXT_texture_object ();
-static GLboolean _glewInit_GL_EXT_texture_perturb_normal ();
-static GLboolean _glewInit_GL_EXT_texture_storage ();
-static GLboolean _glewInit_GL_EXT_texture_view ();
-static GLboolean _glewInit_GL_EXT_timer_query ();
-static GLboolean _glewInit_GL_EXT_transform_feedback ();
-static GLboolean _glewInit_GL_EXT_vertex_array ();
-static GLboolean _glewInit_GL_EXT_vertex_array_setXXX ();
-static GLboolean _glewInit_GL_EXT_vertex_attrib_64bit ();
-static GLboolean _glewInit_GL_EXT_vertex_shader ();
-static GLboolean _glewInit_GL_EXT_vertex_weighting ();
-static GLboolean _glewInit_GL_EXT_win32_keyed_mutex ();
-static GLboolean _glewInit_GL_EXT_window_rectangles ();
-static GLboolean _glewInit_GL_EXT_x11_sync_object ();
-static GLboolean _glewInit_GL_GREMEDY_frame_terminator ();
-static GLboolean _glewInit_GL_GREMEDY_string_marker ();
-static GLboolean _glewInit_GL_HP_image_transform ();
-static GLboolean _glewInit_GL_IBM_multimode_draw_arrays ();
-static GLboolean _glewInit_GL_IBM_vertex_array_lists ();
-static GLboolean _glewInit_GL_INTEL_map_texture ();
-static GLboolean _glewInit_GL_INTEL_parallel_arrays ();
-static GLboolean _glewInit_GL_INTEL_performance_query ();
-static GLboolean _glewInit_GL_INTEL_texture_scissor ();
-static GLboolean _glewInit_GL_KHR_blend_equation_advanced ();
-static GLboolean _glewInit_GL_KHR_debug ();
-static GLboolean _glewInit_GL_KHR_parallel_shader_compile ();
-static GLboolean _glewInit_GL_KHR_robustness ();
-static GLboolean _glewInit_GL_KTX_buffer_region ();
-static GLboolean _glewInit_GL_MESA_resize_buffers ();
-static GLboolean _glewInit_GL_MESA_window_pos ();
-static GLboolean _glewInit_GL_NVX_conditional_render ();
-static GLboolean _glewInit_GL_NVX_linked_gpu_multicast ();
-static GLboolean _glewInit_GL_NV_3dvision_settings ();
-static GLboolean _glewInit_GL_NV_bindless_multi_draw_indirect ();
-static GLboolean _glewInit_GL_NV_bindless_multi_draw_indirect_count ();
-static GLboolean _glewInit_GL_NV_bindless_texture ();
-static GLboolean _glewInit_GL_NV_blend_equation_advanced ();
-static GLboolean _glewInit_GL_NV_clip_space_w_scaling ();
-static GLboolean _glewInit_GL_NV_command_list ();
-static GLboolean _glewInit_GL_NV_conditional_render ();
-static GLboolean _glewInit_GL_NV_conservative_raster ();
-static GLboolean _glewInit_GL_NV_conservative_raster_dilate ();
-static GLboolean _glewInit_GL_NV_conservative_raster_pre_snap_triangles ();
-static GLboolean _glewInit_GL_NV_copy_buffer ();
-static GLboolean _glewInit_GL_NV_copy_image ();
-static GLboolean _glewInit_GL_NV_depth_buffer_float ();
-static GLboolean _glewInit_GL_NV_draw_buffers ();
-static GLboolean _glewInit_GL_NV_draw_instanced ();
-static GLboolean _glewInit_GL_NV_draw_texture ();
-static GLboolean _glewInit_GL_NV_draw_vulkan_image ();
-static GLboolean _glewInit_GL_NV_evaluators ();
-static GLboolean _glewInit_GL_NV_explicit_multisample ();
-static GLboolean _glewInit_GL_NV_fence ();
-static GLboolean _glewInit_GL_NV_fragment_coverage_to_color ();
-static GLboolean _glewInit_GL_NV_fragment_program ();
-static GLboolean _glewInit_GL_NV_framebuffer_blit ();
-static GLboolean _glewInit_GL_NV_framebuffer_multisample ();
-static GLboolean _glewInit_GL_NV_framebuffer_multisample_coverage ();
-static GLboolean _glewInit_GL_NV_geometry_program4 ();
-static GLboolean _glewInit_GL_NV_gpu_multicast ();
-static GLboolean _glewInit_GL_NV_gpu_program4 ();
-static GLboolean _glewInit_GL_NV_gpu_shader5 ();
-static GLboolean _glewInit_GL_NV_half_float ();
-static GLboolean _glewInit_GL_NV_instanced_arrays ();
-static GLboolean _glewInit_GL_NV_internalformat_sample_query ();
-static GLboolean _glewInit_GL_NV_non_square_matrices ();
-static GLboolean _glewInit_GL_NV_occlusion_query ();
-static GLboolean _glewInit_GL_NV_parameter_buffer_object ();
-static GLboolean _glewInit_GL_NV_path_rendering ();
-static GLboolean _glewInit_GL_NV_pixel_data_range ();
-static GLboolean _glewInit_GL_NV_point_sprite ();
-static GLboolean _glewInit_GL_NV_polygon_mode ();
-static GLboolean _glewInit_GL_NV_present_video ();
-static GLboolean _glewInit_GL_NV_primitive_restart ();
-static GLboolean _glewInit_GL_NV_register_combiners ();
-static GLboolean _glewInit_GL_NV_register_combiners2 ();
-static GLboolean _glewInit_GL_NV_sample_locations ();
-static GLboolean _glewInit_GL_NV_shader_buffer_load ();
-static GLboolean _glewInit_GL_NV_texture_array ();
-static GLboolean _glewInit_GL_NV_texture_barrier ();
-static GLboolean _glewInit_GL_NV_texture_multisample ();
-static GLboolean _glewInit_GL_NV_transform_feedback ();
-static GLboolean _glewInit_GL_NV_transform_feedback2 ();
-static GLboolean _glewInit_GL_NV_vdpau_interop ();
-static GLboolean _glewInit_GL_NV_vertex_array_range ();
-static GLboolean _glewInit_GL_NV_vertex_attrib_integer_64bit ();
-static GLboolean _glewInit_GL_NV_vertex_buffer_unified_memory ();
-static GLboolean _glewInit_GL_NV_vertex_program ();
-static GLboolean _glewInit_GL_NV_video_capture ();
-static GLboolean _glewInit_GL_NV_viewport_array ();
-static GLboolean _glewInit_GL_NV_viewport_swizzle ();
-static GLboolean _glewInit_GL_OVR_multiview ();
-static GLboolean _glewInit_GL_OVR_multiview_multisampled_render_to_texture ();
-static GLboolean _glewInit_GL_QCOM_alpha_test ();
-static GLboolean _glewInit_GL_QCOM_driver_control ();
-static GLboolean _glewInit_GL_QCOM_extended_get ();
-static GLboolean _glewInit_GL_QCOM_extended_get2 ();
-static GLboolean _glewInit_GL_QCOM_framebuffer_foveated ();
-static GLboolean _glewInit_GL_QCOM_shader_framebuffer_fetch_noncoherent ();
-static GLboolean _glewInit_GL_QCOM_tiled_rendering ();
-static GLboolean _glewInit_GL_REGAL_ES1_0_compatibility ();
-static GLboolean _glewInit_GL_REGAL_ES1_1_compatibility ();
-static GLboolean _glewInit_GL_REGAL_error_string ();
-static GLboolean _glewInit_GL_REGAL_extension_query ();
-static GLboolean _glewInit_GL_REGAL_log ();
-static GLboolean _glewInit_GL_REGAL_proc_address ();
-static GLboolean _glewInit_GL_SGIS_detail_texture ();
-static GLboolean _glewInit_GL_SGIS_fog_function ();
-static GLboolean _glewInit_GL_SGIS_multisample ();
-static GLboolean _glewInit_GL_SGIS_multitexture ();
-static GLboolean _glewInit_GL_SGIS_shared_multisample ();
-static GLboolean _glewInit_GL_SGIS_sharpen_texture ();
-static GLboolean _glewInit_GL_SGIS_texture4D ();
-static GLboolean _glewInit_GL_SGIS_texture_filter4 ();
-static GLboolean _glewInit_GL_SGIX_async ();
-static GLboolean _glewInit_GL_SGIX_datapipe ();
-static GLboolean _glewInit_GL_SGIX_flush_raster ();
-static GLboolean _glewInit_GL_SGIX_fog_layers ();
-static GLboolean _glewInit_GL_SGIX_fog_texture ();
-static GLboolean _glewInit_GL_SGIX_fragment_specular_lighting ();
-static GLboolean _glewInit_GL_SGIX_framezoom ();
-static GLboolean _glewInit_GL_SGIX_igloo_interface ();
-static GLboolean _glewInit_GL_SGIX_mpeg1 ();
-static GLboolean _glewInit_GL_SGIX_nonlinear_lighting_pervertex ();
-static GLboolean _glewInit_GL_SGIX_pixel_texture ();
-static GLboolean _glewInit_GL_SGIX_polynomial_ffd ();
-static GLboolean _glewInit_GL_SGIX_quad_mesh ();
-static GLboolean _glewInit_GL_SGIX_reference_plane ();
-static GLboolean _glewInit_GL_SGIX_sprite ();
-static GLboolean _glewInit_GL_SGIX_tag_sample_buffer ();
-static GLboolean _glewInit_GL_SGIX_vector_ops ();
-static GLboolean _glewInit_GL_SGIX_vertex_array_object ();
-static GLboolean _glewInit_GL_SGI_color_table ();
-static GLboolean _glewInit_GL_SGI_fft ();
-static GLboolean _glewInit_GL_SUNX_constant_data ();
-static GLboolean _glewInit_GL_SUN_global_alpha ();
-static GLboolean _glewInit_GL_SUN_read_video_pixels ();
-static GLboolean _glewInit_GL_SUN_triangle_list ();
-static GLboolean _glewInit_GL_SUN_vertex ();
-static GLboolean _glewInit_GL_WIN_swap_hint ();
+static GLboolean _glewInit_GL_VERSION_1_2 (void);
+static GLboolean _glewInit_GL_VERSION_1_3 (void);
+static GLboolean _glewInit_GL_VERSION_1_4 (void);
+static GLboolean _glewInit_GL_VERSION_1_5 (void);
+static GLboolean _glewInit_GL_VERSION_2_0 (void);
+static GLboolean _glewInit_GL_VERSION_2_1 (void);
+static GLboolean _glewInit_GL_VERSION_3_0 (void);
+static GLboolean _glewInit_GL_VERSION_3_1 (void);
+static GLboolean _glewInit_GL_VERSION_3_2 (void);
+static GLboolean _glewInit_GL_VERSION_3_3 (void);
+static GLboolean _glewInit_GL_VERSION_4_0 (void);
+static GLboolean _glewInit_GL_VERSION_4_5 (void);
+static GLboolean _glewInit_GL_VERSION_4_6 (void);
+static GLboolean _glewInit_GL_3DFX_tbuffer (void);
+static GLboolean _glewInit_GL_AMD_debug_output (void);
+static GLboolean _glewInit_GL_AMD_draw_buffers_blend (void);
+static GLboolean _glewInit_GL_AMD_framebuffer_sample_positions (void);
+static GLboolean _glewInit_GL_AMD_interleaved_elements (void);
+static GLboolean _glewInit_GL_AMD_multi_draw_indirect (void);
+static GLboolean _glewInit_GL_AMD_name_gen_delete (void);
+static GLboolean _glewInit_GL_AMD_occlusion_query_event (void);
+static GLboolean _glewInit_GL_AMD_performance_monitor (void);
+static GLboolean _glewInit_GL_AMD_sample_positions (void);
+static GLboolean _glewInit_GL_AMD_sparse_texture (void);
+static GLboolean _glewInit_GL_AMD_stencil_operation_extended (void);
+static GLboolean _glewInit_GL_AMD_vertex_shader_tessellator (void);
+static GLboolean _glewInit_GL_ANGLE_framebuffer_blit (void);
+static GLboolean _glewInit_GL_ANGLE_framebuffer_multisample (void);
+static GLboolean _glewInit_GL_ANGLE_instanced_arrays (void);
+static GLboolean _glewInit_GL_ANGLE_timer_query (void);
+static GLboolean _glewInit_GL_ANGLE_translated_shader_source (void);
+static GLboolean _glewInit_GL_APPLE_copy_texture_levels (void);
+static GLboolean _glewInit_GL_APPLE_element_array (void);
+static GLboolean _glewInit_GL_APPLE_fence (void);
+static GLboolean _glewInit_GL_APPLE_flush_buffer_range (void);
+static GLboolean _glewInit_GL_APPLE_framebuffer_multisample (void);
+static GLboolean _glewInit_GL_APPLE_object_purgeable (void);
+static GLboolean _glewInit_GL_APPLE_sync (void);
+static GLboolean _glewInit_GL_APPLE_texture_range (void);
+static GLboolean _glewInit_GL_APPLE_vertex_array_object (void);
+static GLboolean _glewInit_GL_APPLE_vertex_array_range (void);
+static GLboolean _glewInit_GL_APPLE_vertex_program_evaluators (void);
+static GLboolean _glewInit_GL_ARB_ES2_compatibility (void);
+static GLboolean _glewInit_GL_ARB_ES3_1_compatibility (void);
+static GLboolean _glewInit_GL_ARB_ES3_2_compatibility (void);
+static GLboolean _glewInit_GL_ARB_base_instance (void);
+static GLboolean _glewInit_GL_ARB_bindless_texture (void);
+static GLboolean _glewInit_GL_ARB_blend_func_extended (void);
+static GLboolean _glewInit_GL_ARB_buffer_storage (void);
+static GLboolean _glewInit_GL_ARB_cl_event (void);
+static GLboolean _glewInit_GL_ARB_clear_buffer_object (void);
+static GLboolean _glewInit_GL_ARB_clear_texture (void);
+static GLboolean _glewInit_GL_ARB_clip_control (void);
+static GLboolean _glewInit_GL_ARB_color_buffer_float (void);
+static GLboolean _glewInit_GL_ARB_compute_shader (void);
+static GLboolean _glewInit_GL_ARB_compute_variable_group_size (void);
+static GLboolean _glewInit_GL_ARB_copy_buffer (void);
+static GLboolean _glewInit_GL_ARB_copy_image (void);
+static GLboolean _glewInit_GL_ARB_debug_output (void);
+static GLboolean _glewInit_GL_ARB_direct_state_access (void);
+static GLboolean _glewInit_GL_ARB_draw_buffers (void);
+static GLboolean _glewInit_GL_ARB_draw_buffers_blend (void);
+static GLboolean _glewInit_GL_ARB_draw_elements_base_vertex (void);
+static GLboolean _glewInit_GL_ARB_draw_indirect (void);
+static GLboolean _glewInit_GL_ARB_framebuffer_no_attachments (void);
+static GLboolean _glewInit_GL_ARB_framebuffer_object (void);
+static GLboolean _glewInit_GL_ARB_geometry_shader4 (void);
+static GLboolean _glewInit_GL_ARB_get_program_binary (void);
+static GLboolean _glewInit_GL_ARB_get_texture_sub_image (void);
+static GLboolean _glewInit_GL_ARB_gl_spirv (void);
+static GLboolean _glewInit_GL_ARB_gpu_shader_fp64 (void);
+static GLboolean _glewInit_GL_ARB_gpu_shader_int64 (void);
+static GLboolean _glewInit_GL_ARB_imaging (void);
+static GLboolean _glewInit_GL_ARB_indirect_parameters (void);
+static GLboolean _glewInit_GL_ARB_instanced_arrays (void);
+static GLboolean _glewInit_GL_ARB_internalformat_query (void);
+static GLboolean _glewInit_GL_ARB_internalformat_query2 (void);
+static GLboolean _glewInit_GL_ARB_invalidate_subdata (void);
+static GLboolean _glewInit_GL_ARB_map_buffer_range (void);
+static GLboolean _glewInit_GL_ARB_matrix_palette (void);
+static GLboolean _glewInit_GL_ARB_multi_bind (void);
+static GLboolean _glewInit_GL_ARB_multi_draw_indirect (void);
+static GLboolean _glewInit_GL_ARB_multisample (void);
+static GLboolean _glewInit_GL_ARB_multitexture (void);
+static GLboolean _glewInit_GL_ARB_occlusion_query (void);
+static GLboolean _glewInit_GL_ARB_parallel_shader_compile (void);
+static GLboolean _glewInit_GL_ARB_point_parameters (void);
+static GLboolean _glewInit_GL_ARB_polygon_offset_clamp (void);
+static GLboolean _glewInit_GL_ARB_program_interface_query (void);
+static GLboolean _glewInit_GL_ARB_provoking_vertex (void);
+static GLboolean _glewInit_GL_ARB_robustness (void);
+static GLboolean _glewInit_GL_ARB_sample_locations (void);
+static GLboolean _glewInit_GL_ARB_sample_shading (void);
+static GLboolean _glewInit_GL_ARB_sampler_objects (void);
+static GLboolean _glewInit_GL_ARB_separate_shader_objects (void);
+static GLboolean _glewInit_GL_ARB_shader_atomic_counters (void);
+static GLboolean _glewInit_GL_ARB_shader_image_load_store (void);
+static GLboolean _glewInit_GL_ARB_shader_objects (void);
+static GLboolean _glewInit_GL_ARB_shader_storage_buffer_object (void);
+static GLboolean _glewInit_GL_ARB_shader_subroutine (void);
+static GLboolean _glewInit_GL_ARB_shading_language_include (void);
+static GLboolean _glewInit_GL_ARB_sparse_buffer (void);
+static GLboolean _glewInit_GL_ARB_sparse_texture (void);
+static GLboolean _glewInit_GL_ARB_sync (void);
+static GLboolean _glewInit_GL_ARB_tessellation_shader (void);
+static GLboolean _glewInit_GL_ARB_texture_barrier (void);
+static GLboolean _glewInit_GL_ARB_texture_buffer_object (void);
+static GLboolean _glewInit_GL_ARB_texture_buffer_range (void);
+static GLboolean _glewInit_GL_ARB_texture_compression (void);
+static GLboolean _glewInit_GL_ARB_texture_multisample (void);
+static GLboolean _glewInit_GL_ARB_texture_storage (void);
+static GLboolean _glewInit_GL_ARB_texture_storage_multisample (void);
+static GLboolean _glewInit_GL_ARB_texture_view (void);
+static GLboolean _glewInit_GL_ARB_timer_query (void);
+static GLboolean _glewInit_GL_ARB_transform_feedback2 (void);
+static GLboolean _glewInit_GL_ARB_transform_feedback3 (void);
+static GLboolean _glewInit_GL_ARB_transform_feedback_instanced (void);
+static GLboolean _glewInit_GL_ARB_transpose_matrix (void);
+static GLboolean _glewInit_GL_ARB_uniform_buffer_object (void);
+static GLboolean _glewInit_GL_ARB_vertex_array_object (void);
+static GLboolean _glewInit_GL_ARB_vertex_attrib_64bit (void);
+static GLboolean _glewInit_GL_ARB_vertex_attrib_binding (void);
+static GLboolean _glewInit_GL_ARB_vertex_blend (void);
+static GLboolean _glewInit_GL_ARB_vertex_buffer_object (void);
+static GLboolean _glewInit_GL_ARB_vertex_program (void);
+static GLboolean _glewInit_GL_ARB_vertex_shader (void);
+static GLboolean _glewInit_GL_ARB_vertex_type_2_10_10_10_rev (void);
+static GLboolean _glewInit_GL_ARB_viewport_array (void);
+static GLboolean _glewInit_GL_ARB_window_pos (void);
+static GLboolean _glewInit_GL_ATI_draw_buffers (void);
+static GLboolean _glewInit_GL_ATI_element_array (void);
+static GLboolean _glewInit_GL_ATI_envmap_bumpmap (void);
+static GLboolean _glewInit_GL_ATI_fragment_shader (void);
+static GLboolean _glewInit_GL_ATI_map_object_buffer (void);
+static GLboolean _glewInit_GL_ATI_pn_triangles (void);
+static GLboolean _glewInit_GL_ATI_separate_stencil (void);
+static GLboolean _glewInit_GL_ATI_vertex_array_object (void);
+static GLboolean _glewInit_GL_ATI_vertex_attrib_array_object (void);
+static GLboolean _glewInit_GL_ATI_vertex_streams (void);
+static GLboolean _glewInit_GL_EXT_base_instance (void);
+static GLboolean _glewInit_GL_EXT_bindable_uniform (void);
+static GLboolean _glewInit_GL_EXT_blend_color (void);
+static GLboolean _glewInit_GL_EXT_blend_equation_separate (void);
+static GLboolean _glewInit_GL_EXT_blend_func_extended (void);
+static GLboolean _glewInit_GL_EXT_blend_func_separate (void);
+static GLboolean _glewInit_GL_EXT_blend_minmax (void);
+static GLboolean _glewInit_GL_EXT_buffer_storage (void);
+static GLboolean _glewInit_GL_EXT_clear_texture (void);
+static GLboolean _glewInit_GL_EXT_color_subtable (void);
+static GLboolean _glewInit_GL_EXT_compiled_vertex_array (void);
+static GLboolean _glewInit_GL_EXT_convolution (void);
+static GLboolean _glewInit_GL_EXT_coordinate_frame (void);
+static GLboolean _glewInit_GL_EXT_copy_image (void);
+static GLboolean _glewInit_GL_EXT_copy_texture (void);
+static GLboolean _glewInit_GL_EXT_cull_vertex (void);
+static GLboolean _glewInit_GL_EXT_debug_label (void);
+static GLboolean _glewInit_GL_EXT_debug_marker (void);
+static GLboolean _glewInit_GL_EXT_depth_bounds_test (void);
+static GLboolean _glewInit_GL_EXT_direct_state_access (void);
+static GLboolean _glewInit_GL_EXT_discard_framebuffer (void);
+static GLboolean _glewInit_GL_EXT_draw_buffers (void);
+static GLboolean _glewInit_GL_EXT_draw_buffers2 (void);
+static GLboolean _glewInit_GL_EXT_draw_buffers_indexed (void);
+static GLboolean _glewInit_GL_EXT_draw_elements_base_vertex (void);
+static GLboolean _glewInit_GL_EXT_draw_instanced (void);
+static GLboolean _glewInit_GL_EXT_draw_range_elements (void);
+static GLboolean _glewInit_GL_EXT_external_buffer (void);
+static GLboolean _glewInit_GL_EXT_fog_coord (void);
+static GLboolean _glewInit_GL_EXT_fragment_lighting (void);
+static GLboolean _glewInit_GL_EXT_framebuffer_blit (void);
+static GLboolean _glewInit_GL_EXT_framebuffer_multisample (void);
+static GLboolean _glewInit_GL_EXT_framebuffer_object (void);
+static GLboolean _glewInit_GL_EXT_geometry_shader4 (void);
+static GLboolean _glewInit_GL_EXT_gpu_program_parameters (void);
+static GLboolean _glewInit_GL_EXT_gpu_shader4 (void);
+static GLboolean _glewInit_GL_EXT_histogram (void);
+static GLboolean _glewInit_GL_EXT_index_func (void);
+static GLboolean _glewInit_GL_EXT_index_material (void);
+static GLboolean _glewInit_GL_EXT_instanced_arrays (void);
+static GLboolean _glewInit_GL_EXT_light_texture (void);
+static GLboolean _glewInit_GL_EXT_map_buffer_range (void);
+static GLboolean _glewInit_GL_EXT_memory_object (void);
+static GLboolean _glewInit_GL_EXT_memory_object_fd (void);
+static GLboolean _glewInit_GL_EXT_memory_object_win32 (void);
+static GLboolean _glewInit_GL_EXT_multi_draw_arrays (void);
+static GLboolean _glewInit_GL_EXT_multi_draw_indirect (void);
+static GLboolean _glewInit_GL_EXT_multisample (void);
+static GLboolean _glewInit_GL_EXT_multisampled_render_to_texture (void);
+static GLboolean _glewInit_GL_EXT_multiview_draw_buffers (void);
+static GLboolean _glewInit_GL_EXT_paletted_texture (void);
+static GLboolean _glewInit_GL_EXT_pixel_transform (void);
+static GLboolean _glewInit_GL_EXT_point_parameters (void);
+static GLboolean _glewInit_GL_EXT_polygon_offset (void);
+static GLboolean _glewInit_GL_EXT_polygon_offset_clamp (void);
+static GLboolean _glewInit_GL_EXT_provoking_vertex (void);
+static GLboolean _glewInit_GL_EXT_raster_multisample (void);
+static GLboolean _glewInit_GL_EXT_scene_marker (void);
+static GLboolean _glewInit_GL_EXT_secondary_color (void);
+static GLboolean _glewInit_GL_EXT_semaphore (void);
+static GLboolean _glewInit_GL_EXT_semaphore_fd (void);
+static GLboolean _glewInit_GL_EXT_semaphore_win32 (void);
+static GLboolean _glewInit_GL_EXT_separate_shader_objects (void);
+static GLboolean _glewInit_GL_EXT_shader_image_load_store (void);
+static GLboolean _glewInit_GL_EXT_shader_pixel_local_storage2 (void);
+static GLboolean _glewInit_GL_EXT_sparse_texture (void);
+static GLboolean _glewInit_GL_EXT_stencil_two_side (void);
+static GLboolean _glewInit_GL_EXT_subtexture (void);
+static GLboolean _glewInit_GL_EXT_texture3D (void);
+static GLboolean _glewInit_GL_EXT_texture_array (void);
+static GLboolean _glewInit_GL_EXT_texture_buffer_object (void);
+static GLboolean _glewInit_GL_EXT_texture_integer (void);
+static GLboolean _glewInit_GL_EXT_texture_object (void);
+static GLboolean _glewInit_GL_EXT_texture_perturb_normal (void);
+static GLboolean _glewInit_GL_EXT_texture_storage (void);
+static GLboolean _glewInit_GL_EXT_texture_view (void);
+static GLboolean _glewInit_GL_EXT_timer_query (void);
+static GLboolean _glewInit_GL_EXT_transform_feedback (void);
+static GLboolean _glewInit_GL_EXT_vertex_array (void);
+static GLboolean _glewInit_GL_EXT_vertex_array_setXXX (void);
+static GLboolean _glewInit_GL_EXT_vertex_attrib_64bit (void);
+static GLboolean _glewInit_GL_EXT_vertex_shader (void);
+static GLboolean _glewInit_GL_EXT_vertex_weighting (void);
+static GLboolean _glewInit_GL_EXT_win32_keyed_mutex (void);
+static GLboolean _glewInit_GL_EXT_window_rectangles (void);
+static GLboolean _glewInit_GL_EXT_x11_sync_object (void);
+static GLboolean _glewInit_GL_GREMEDY_frame_terminator (void);
+static GLboolean _glewInit_GL_GREMEDY_string_marker (void);
+static GLboolean _glewInit_GL_HP_image_transform (void);
+static GLboolean _glewInit_GL_IBM_multimode_draw_arrays (void);
+static GLboolean _glewInit_GL_IBM_vertex_array_lists (void);
+static GLboolean _glewInit_GL_INTEL_map_texture (void);
+static GLboolean _glewInit_GL_INTEL_parallel_arrays (void);
+static GLboolean _glewInit_GL_INTEL_performance_query (void);
+static GLboolean _glewInit_GL_INTEL_texture_scissor (void);
+static GLboolean _glewInit_GL_KHR_blend_equation_advanced (void);
+static GLboolean _glewInit_GL_KHR_debug (void);
+static GLboolean _glewInit_GL_KHR_parallel_shader_compile (void);
+static GLboolean _glewInit_GL_KHR_robustness (void);
+static GLboolean _glewInit_GL_KTX_buffer_region (void);
+static GLboolean _glewInit_GL_MESA_resize_buffers (void);
+static GLboolean _glewInit_GL_MESA_window_pos (void);
+static GLboolean _glewInit_GL_NVX_conditional_render (void);
+static GLboolean _glewInit_GL_NVX_linked_gpu_multicast (void);
+static GLboolean _glewInit_GL_NV_3dvision_settings (void);
+static GLboolean _glewInit_GL_NV_bindless_multi_draw_indirect (void);
+static GLboolean _glewInit_GL_NV_bindless_multi_draw_indirect_count (void);
+static GLboolean _glewInit_GL_NV_bindless_texture (void);
+static GLboolean _glewInit_GL_NV_blend_equation_advanced (void);
+static GLboolean _glewInit_GL_NV_clip_space_w_scaling (void);
+static GLboolean _glewInit_GL_NV_command_list (void);
+static GLboolean _glewInit_GL_NV_conditional_render (void);
+static GLboolean _glewInit_GL_NV_conservative_raster (void);
+static GLboolean _glewInit_GL_NV_conservative_raster_dilate (void);
+static GLboolean _glewInit_GL_NV_conservative_raster_pre_snap_triangles (void);
+static GLboolean _glewInit_GL_NV_copy_buffer (void);
+static GLboolean _glewInit_GL_NV_copy_image (void);
+static GLboolean _glewInit_GL_NV_depth_buffer_float (void);
+static GLboolean _glewInit_GL_NV_draw_buffers (void);
+static GLboolean _glewInit_GL_NV_draw_instanced (void);
+static GLboolean _glewInit_GL_NV_draw_texture (void);
+static GLboolean _glewInit_GL_NV_draw_vulkan_image (void);
+static GLboolean _glewInit_GL_NV_evaluators (void);
+static GLboolean _glewInit_GL_NV_explicit_multisample (void);
+static GLboolean _glewInit_GL_NV_fence (void);
+static GLboolean _glewInit_GL_NV_fragment_coverage_to_color (void);
+static GLboolean _glewInit_GL_NV_fragment_program (void);
+static GLboolean _glewInit_GL_NV_framebuffer_blit (void);
+static GLboolean _glewInit_GL_NV_framebuffer_multisample (void);
+static GLboolean _glewInit_GL_NV_framebuffer_multisample_coverage (void);
+static GLboolean _glewInit_GL_NV_geometry_program4 (void);
+static GLboolean _glewInit_GL_NV_gpu_multicast (void);
+static GLboolean _glewInit_GL_NV_gpu_program4 (void);
+static GLboolean _glewInit_GL_NV_gpu_shader5 (void);
+static GLboolean _glewInit_GL_NV_half_float (void);
+static GLboolean _glewInit_GL_NV_instanced_arrays (void);
+static GLboolean _glewInit_GL_NV_internalformat_sample_query (void);
+static GLboolean _glewInit_GL_NV_non_square_matrices (void);
+static GLboolean _glewInit_GL_NV_occlusion_query (void);
+static GLboolean _glewInit_GL_NV_parameter_buffer_object (void);
+static GLboolean _glewInit_GL_NV_path_rendering (void);
+static GLboolean _glewInit_GL_NV_pixel_data_range (void);
+static GLboolean _glewInit_GL_NV_point_sprite (void);
+static GLboolean _glewInit_GL_NV_polygon_mode (void);
+static GLboolean _glewInit_GL_NV_present_video (void);
+static GLboolean _glewInit_GL_NV_primitive_restart (void);
+static GLboolean _glewInit_GL_NV_register_combiners (void);
+static GLboolean _glewInit_GL_NV_register_combiners2 (void);
+static GLboolean _glewInit_GL_NV_sample_locations (void);
+static GLboolean _glewInit_GL_NV_shader_buffer_load (void);
+static GLboolean _glewInit_GL_NV_texture_array (void);
+static GLboolean _glewInit_GL_NV_texture_barrier (void);
+static GLboolean _glewInit_GL_NV_texture_multisample (void);
+static GLboolean _glewInit_GL_NV_transform_feedback (void);
+static GLboolean _glewInit_GL_NV_transform_feedback2 (void);
+static GLboolean _glewInit_GL_NV_vdpau_interop (void);
+static GLboolean _glewInit_GL_NV_vertex_array_range (void);
+static GLboolean _glewInit_GL_NV_vertex_attrib_integer_64bit (void);
+static GLboolean _glewInit_GL_NV_vertex_buffer_unified_memory (void);
+static GLboolean _glewInit_GL_NV_vertex_program (void);
+static GLboolean _glewInit_GL_NV_video_capture (void);
+static GLboolean _glewInit_GL_NV_viewport_array (void);
+static GLboolean _glewInit_GL_NV_viewport_swizzle (void);
+static GLboolean _glewInit_GL_OVR_multiview (void);
+static GLboolean _glewInit_GL_OVR_multiview_multisampled_render_to_texture (void);
+static GLboolean _glewInit_GL_QCOM_alpha_test (void);
+static GLboolean _glewInit_GL_QCOM_driver_control (void);
+static GLboolean _glewInit_GL_QCOM_extended_get (void);
+static GLboolean _glewInit_GL_QCOM_extended_get2 (void);
+static GLboolean _glewInit_GL_QCOM_framebuffer_foveated (void);
+static GLboolean _glewInit_GL_QCOM_shader_framebuffer_fetch_noncoherent (void);
+static GLboolean _glewInit_GL_QCOM_tiled_rendering (void);
+static GLboolean _glewInit_GL_REGAL_ES1_0_compatibility (void);
+static GLboolean _glewInit_GL_REGAL_ES1_1_compatibility (void);
+static GLboolean _glewInit_GL_REGAL_error_string (void);
+static GLboolean _glewInit_GL_REGAL_extension_query (void);
+static GLboolean _glewInit_GL_REGAL_log (void);
+static GLboolean _glewInit_GL_REGAL_proc_address (void);
+static GLboolean _glewInit_GL_SGIS_detail_texture (void);
+static GLboolean _glewInit_GL_SGIS_fog_function (void);
+static GLboolean _glewInit_GL_SGIS_multisample (void);
+static GLboolean _glewInit_GL_SGIS_multitexture (void);
+static GLboolean _glewInit_GL_SGIS_shared_multisample (void);
+static GLboolean _glewInit_GL_SGIS_sharpen_texture (void);
+static GLboolean _glewInit_GL_SGIS_texture4D (void);
+static GLboolean _glewInit_GL_SGIS_texture_filter4 (void);
+static GLboolean _glewInit_GL_SGIX_async (void);
+static GLboolean _glewInit_GL_SGIX_datapipe (void);
+static GLboolean _glewInit_GL_SGIX_flush_raster (void);
+static GLboolean _glewInit_GL_SGIX_fog_layers (void);
+static GLboolean _glewInit_GL_SGIX_fog_texture (void);
+static GLboolean _glewInit_GL_SGIX_fragment_specular_lighting (void);
+static GLboolean _glewInit_GL_SGIX_framezoom (void);
+static GLboolean _glewInit_GL_SGIX_igloo_interface (void);
+static GLboolean _glewInit_GL_SGIX_mpeg1 (void);
+static GLboolean _glewInit_GL_SGIX_nonlinear_lighting_pervertex (void);
+static GLboolean _glewInit_GL_SGIX_pixel_texture (void);
+static GLboolean _glewInit_GL_SGIX_polynomial_ffd (void);
+static GLboolean _glewInit_GL_SGIX_quad_mesh (void);
+static GLboolean _glewInit_GL_SGIX_reference_plane (void);
+static GLboolean _glewInit_GL_SGIX_sprite (void);
+static GLboolean _glewInit_GL_SGIX_tag_sample_buffer (void);
+static GLboolean _glewInit_GL_SGIX_vector_ops (void);
+static GLboolean _glewInit_GL_SGIX_vertex_array_object (void);
+static GLboolean _glewInit_GL_SGI_color_table (void);
+static GLboolean _glewInit_GL_SGI_fft (void);
+static GLboolean _glewInit_GL_SUNX_constant_data (void);
+static GLboolean _glewInit_GL_SUN_global_alpha (void);
+static GLboolean _glewInit_GL_SUN_read_video_pixels (void);
+static GLboolean _glewInit_GL_SUN_triangle_list (void);
+static GLboolean _glewInit_GL_SUN_vertex (void);
+static GLboolean _glewInit_GL_WIN_swap_hint (void);
 
 #ifdef GL_VERSION_1_2
 
-static GLboolean _glewInit_GL_VERSION_1_2 ()
+static GLboolean _glewInit_GL_VERSION_1_2 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9267,7 +9267,7 @@ static GLboolean _glewInit_GL_VERSION_1_2 ()
 
 #ifdef GL_VERSION_1_3
 
-static GLboolean _glewInit_GL_VERSION_1_3 ()
+static GLboolean _glewInit_GL_VERSION_1_3 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9325,7 +9325,7 @@ static GLboolean _glewInit_GL_VERSION_1_3 ()
 
 #ifdef GL_VERSION_1_4
 
-static GLboolean _glewInit_GL_VERSION_1_4 ()
+static GLboolean _glewInit_GL_VERSION_1_4 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9384,7 +9384,7 @@ static GLboolean _glewInit_GL_VERSION_1_4 ()
 
 #ifdef GL_VERSION_1_5
 
-static GLboolean _glewInit_GL_VERSION_1_5 ()
+static GLboolean _glewInit_GL_VERSION_1_5 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9415,7 +9415,7 @@ static GLboolean _glewInit_GL_VERSION_1_5 ()
 
 #ifdef GL_VERSION_2_0
 
-static GLboolean _glewInit_GL_VERSION_2_0 ()
+static GLboolean _glewInit_GL_VERSION_2_0 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9520,7 +9520,7 @@ static GLboolean _glewInit_GL_VERSION_2_0 ()
 
 #ifdef GL_VERSION_2_1
 
-static GLboolean _glewInit_GL_VERSION_2_1 ()
+static GLboolean _glewInit_GL_VERSION_2_1 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9538,7 +9538,7 @@ static GLboolean _glewInit_GL_VERSION_2_1 ()
 
 #ifdef GL_VERSION_3_0
 
-static GLboolean _glewInit_GL_VERSION_3_0 ()
+static GLboolean _glewInit_GL_VERSION_3_0 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9610,7 +9610,7 @@ static GLboolean _glewInit_GL_VERSION_3_0 ()
 
 #ifdef GL_VERSION_3_1
 
-static GLboolean _glewInit_GL_VERSION_3_1 ()
+static GLboolean _glewInit_GL_VERSION_3_1 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9628,7 +9628,7 @@ static GLboolean _glewInit_GL_VERSION_3_1 ()
 
 #ifdef GL_VERSION_3_2
 
-static GLboolean _glewInit_GL_VERSION_3_2 ()
+static GLboolean _glewInit_GL_VERSION_3_2 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9648,7 +9648,7 @@ static GLboolean _glewInit_GL_VERSION_3_2 ()
 
 #ifdef GL_VERSION_3_3
 
-static GLboolean _glewInit_GL_VERSION_3_3 ()
+static GLboolean _glewInit_GL_VERSION_3_3 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9661,7 +9661,7 @@ static GLboolean _glewInit_GL_VERSION_3_3 ()
 
 #ifdef GL_VERSION_4_0
 
-static GLboolean _glewInit_GL_VERSION_4_0 ()
+static GLboolean _glewInit_GL_VERSION_4_0 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9678,7 +9678,7 @@ static GLboolean _glewInit_GL_VERSION_4_0 ()
 
 #ifdef GL_VERSION_4_5
 
-static GLboolean _glewInit_GL_VERSION_4_5 ()
+static GLboolean _glewInit_GL_VERSION_4_5 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9694,7 +9694,7 @@ static GLboolean _glewInit_GL_VERSION_4_5 ()
 
 #ifdef GL_VERSION_4_6
 
-static GLboolean _glewInit_GL_VERSION_4_6 ()
+static GLboolean _glewInit_GL_VERSION_4_6 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9709,7 +9709,7 @@ static GLboolean _glewInit_GL_VERSION_4_6 ()
 
 #ifdef GL_3DFX_tbuffer
 
-static GLboolean _glewInit_GL_3DFX_tbuffer ()
+static GLboolean _glewInit_GL_3DFX_tbuffer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9722,7 +9722,7 @@ static GLboolean _glewInit_GL_3DFX_tbuffer ()
 
 #ifdef GL_AMD_debug_output
 
-static GLboolean _glewInit_GL_AMD_debug_output ()
+static GLboolean _glewInit_GL_AMD_debug_output (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9738,7 +9738,7 @@ static GLboolean _glewInit_GL_AMD_debug_output ()
 
 #ifdef GL_AMD_draw_buffers_blend
 
-static GLboolean _glewInit_GL_AMD_draw_buffers_blend ()
+static GLboolean _glewInit_GL_AMD_draw_buffers_blend (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9754,7 +9754,7 @@ static GLboolean _glewInit_GL_AMD_draw_buffers_blend ()
 
 #ifdef GL_AMD_framebuffer_sample_positions
 
-static GLboolean _glewInit_GL_AMD_framebuffer_sample_positions ()
+static GLboolean _glewInit_GL_AMD_framebuffer_sample_positions (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9770,7 +9770,7 @@ static GLboolean _glewInit_GL_AMD_framebuffer_sample_positions ()
 
 #ifdef GL_AMD_interleaved_elements
 
-static GLboolean _glewInit_GL_AMD_interleaved_elements ()
+static GLboolean _glewInit_GL_AMD_interleaved_elements (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9783,7 +9783,7 @@ static GLboolean _glewInit_GL_AMD_interleaved_elements ()
 
 #ifdef GL_AMD_multi_draw_indirect
 
-static GLboolean _glewInit_GL_AMD_multi_draw_indirect ()
+static GLboolean _glewInit_GL_AMD_multi_draw_indirect (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9797,7 +9797,7 @@ static GLboolean _glewInit_GL_AMD_multi_draw_indirect ()
 
 #ifdef GL_AMD_name_gen_delete
 
-static GLboolean _glewInit_GL_AMD_name_gen_delete ()
+static GLboolean _glewInit_GL_AMD_name_gen_delete (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9812,7 +9812,7 @@ static GLboolean _glewInit_GL_AMD_name_gen_delete ()
 
 #ifdef GL_AMD_occlusion_query_event
 
-static GLboolean _glewInit_GL_AMD_occlusion_query_event ()
+static GLboolean _glewInit_GL_AMD_occlusion_query_event (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9825,7 +9825,7 @@ static GLboolean _glewInit_GL_AMD_occlusion_query_event ()
 
 #ifdef GL_AMD_performance_monitor
 
-static GLboolean _glewInit_GL_AMD_performance_monitor ()
+static GLboolean _glewInit_GL_AMD_performance_monitor (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9848,7 +9848,7 @@ static GLboolean _glewInit_GL_AMD_performance_monitor ()
 
 #ifdef GL_AMD_sample_positions
 
-static GLboolean _glewInit_GL_AMD_sample_positions ()
+static GLboolean _glewInit_GL_AMD_sample_positions (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9861,7 +9861,7 @@ static GLboolean _glewInit_GL_AMD_sample_positions ()
 
 #ifdef GL_AMD_sparse_texture
 
-static GLboolean _glewInit_GL_AMD_sparse_texture ()
+static GLboolean _glewInit_GL_AMD_sparse_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9875,7 +9875,7 @@ static GLboolean _glewInit_GL_AMD_sparse_texture ()
 
 #ifdef GL_AMD_stencil_operation_extended
 
-static GLboolean _glewInit_GL_AMD_stencil_operation_extended ()
+static GLboolean _glewInit_GL_AMD_stencil_operation_extended (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9888,7 +9888,7 @@ static GLboolean _glewInit_GL_AMD_stencil_operation_extended ()
 
 #ifdef GL_AMD_vertex_shader_tessellator
 
-static GLboolean _glewInit_GL_AMD_vertex_shader_tessellator ()
+static GLboolean _glewInit_GL_AMD_vertex_shader_tessellator (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9902,7 +9902,7 @@ static GLboolean _glewInit_GL_AMD_vertex_shader_tessellator ()
 
 #ifdef GL_ANGLE_framebuffer_blit
 
-static GLboolean _glewInit_GL_ANGLE_framebuffer_blit ()
+static GLboolean _glewInit_GL_ANGLE_framebuffer_blit (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9915,7 +9915,7 @@ static GLboolean _glewInit_GL_ANGLE_framebuffer_blit ()
 
 #ifdef GL_ANGLE_framebuffer_multisample
 
-static GLboolean _glewInit_GL_ANGLE_framebuffer_multisample ()
+static GLboolean _glewInit_GL_ANGLE_framebuffer_multisample (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9928,7 +9928,7 @@ static GLboolean _glewInit_GL_ANGLE_framebuffer_multisample ()
 
 #ifdef GL_ANGLE_instanced_arrays
 
-static GLboolean _glewInit_GL_ANGLE_instanced_arrays ()
+static GLboolean _glewInit_GL_ANGLE_instanced_arrays (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9943,7 +9943,7 @@ static GLboolean _glewInit_GL_ANGLE_instanced_arrays ()
 
 #ifdef GL_ANGLE_timer_query
 
-static GLboolean _glewInit_GL_ANGLE_timer_query ()
+static GLboolean _glewInit_GL_ANGLE_timer_query (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9966,7 +9966,7 @@ static GLboolean _glewInit_GL_ANGLE_timer_query ()
 
 #ifdef GL_ANGLE_translated_shader_source
 
-static GLboolean _glewInit_GL_ANGLE_translated_shader_source ()
+static GLboolean _glewInit_GL_ANGLE_translated_shader_source (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9979,7 +9979,7 @@ static GLboolean _glewInit_GL_ANGLE_translated_shader_source ()
 
 #ifdef GL_APPLE_copy_texture_levels
 
-static GLboolean _glewInit_GL_APPLE_copy_texture_levels ()
+static GLboolean _glewInit_GL_APPLE_copy_texture_levels (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -9992,7 +9992,7 @@ static GLboolean _glewInit_GL_APPLE_copy_texture_levels ()
 
 #ifdef GL_APPLE_element_array
 
-static GLboolean _glewInit_GL_APPLE_element_array ()
+static GLboolean _glewInit_GL_APPLE_element_array (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10009,7 +10009,7 @@ static GLboolean _glewInit_GL_APPLE_element_array ()
 
 #ifdef GL_APPLE_fence
 
-static GLboolean _glewInit_GL_APPLE_fence ()
+static GLboolean _glewInit_GL_APPLE_fence (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10029,7 +10029,7 @@ static GLboolean _glewInit_GL_APPLE_fence ()
 
 #ifdef GL_APPLE_flush_buffer_range
 
-static GLboolean _glewInit_GL_APPLE_flush_buffer_range ()
+static GLboolean _glewInit_GL_APPLE_flush_buffer_range (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10043,7 +10043,7 @@ static GLboolean _glewInit_GL_APPLE_flush_buffer_range ()
 
 #ifdef GL_APPLE_framebuffer_multisample
 
-static GLboolean _glewInit_GL_APPLE_framebuffer_multisample ()
+static GLboolean _glewInit_GL_APPLE_framebuffer_multisample (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10057,7 +10057,7 @@ static GLboolean _glewInit_GL_APPLE_framebuffer_multisample ()
 
 #ifdef GL_APPLE_object_purgeable
 
-static GLboolean _glewInit_GL_APPLE_object_purgeable ()
+static GLboolean _glewInit_GL_APPLE_object_purgeable (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10072,7 +10072,7 @@ static GLboolean _glewInit_GL_APPLE_object_purgeable ()
 
 #ifdef GL_APPLE_sync
 
-static GLboolean _glewInit_GL_APPLE_sync ()
+static GLboolean _glewInit_GL_APPLE_sync (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10091,7 +10091,7 @@ static GLboolean _glewInit_GL_APPLE_sync ()
 
 #ifdef GL_APPLE_texture_range
 
-static GLboolean _glewInit_GL_APPLE_texture_range ()
+static GLboolean _glewInit_GL_APPLE_texture_range (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10105,7 +10105,7 @@ static GLboolean _glewInit_GL_APPLE_texture_range ()
 
 #ifdef GL_APPLE_vertex_array_object
 
-static GLboolean _glewInit_GL_APPLE_vertex_array_object ()
+static GLboolean _glewInit_GL_APPLE_vertex_array_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10121,7 +10121,7 @@ static GLboolean _glewInit_GL_APPLE_vertex_array_object ()
 
 #ifdef GL_APPLE_vertex_array_range
 
-static GLboolean _glewInit_GL_APPLE_vertex_array_range ()
+static GLboolean _glewInit_GL_APPLE_vertex_array_range (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10136,7 +10136,7 @@ static GLboolean _glewInit_GL_APPLE_vertex_array_range ()
 
 #ifdef GL_APPLE_vertex_program_evaluators
 
-static GLboolean _glewInit_GL_APPLE_vertex_program_evaluators ()
+static GLboolean _glewInit_GL_APPLE_vertex_program_evaluators (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10155,7 +10155,7 @@ static GLboolean _glewInit_GL_APPLE_vertex_program_evaluators ()
 
 #ifdef GL_ARB_ES2_compatibility
 
-static GLboolean _glewInit_GL_ARB_ES2_compatibility ()
+static GLboolean _glewInit_GL_ARB_ES2_compatibility (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10172,7 +10172,7 @@ static GLboolean _glewInit_GL_ARB_ES2_compatibility ()
 
 #ifdef GL_ARB_ES3_1_compatibility
 
-static GLboolean _glewInit_GL_ARB_ES3_1_compatibility ()
+static GLboolean _glewInit_GL_ARB_ES3_1_compatibility (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10185,7 +10185,7 @@ static GLboolean _glewInit_GL_ARB_ES3_1_compatibility ()
 
 #ifdef GL_ARB_ES3_2_compatibility
 
-static GLboolean _glewInit_GL_ARB_ES3_2_compatibility ()
+static GLboolean _glewInit_GL_ARB_ES3_2_compatibility (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10198,7 +10198,7 @@ static GLboolean _glewInit_GL_ARB_ES3_2_compatibility ()
 
 #ifdef GL_ARB_base_instance
 
-static GLboolean _glewInit_GL_ARB_base_instance ()
+static GLboolean _glewInit_GL_ARB_base_instance (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10213,7 +10213,7 @@ static GLboolean _glewInit_GL_ARB_base_instance ()
 
 #ifdef GL_ARB_bindless_texture
 
-static GLboolean _glewInit_GL_ARB_bindless_texture ()
+static GLboolean _glewInit_GL_ARB_bindless_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10241,7 +10241,7 @@ static GLboolean _glewInit_GL_ARB_bindless_texture ()
 
 #ifdef GL_ARB_blend_func_extended
 
-static GLboolean _glewInit_GL_ARB_blend_func_extended ()
+static GLboolean _glewInit_GL_ARB_blend_func_extended (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10255,7 +10255,7 @@ static GLboolean _glewInit_GL_ARB_blend_func_extended ()
 
 #ifdef GL_ARB_buffer_storage
 
-static GLboolean _glewInit_GL_ARB_buffer_storage ()
+static GLboolean _glewInit_GL_ARB_buffer_storage (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10268,7 +10268,7 @@ static GLboolean _glewInit_GL_ARB_buffer_storage ()
 
 #ifdef GL_ARB_cl_event
 
-static GLboolean _glewInit_GL_ARB_cl_event ()
+static GLboolean _glewInit_GL_ARB_cl_event (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10281,7 +10281,7 @@ static GLboolean _glewInit_GL_ARB_cl_event ()
 
 #ifdef GL_ARB_clear_buffer_object
 
-static GLboolean _glewInit_GL_ARB_clear_buffer_object ()
+static GLboolean _glewInit_GL_ARB_clear_buffer_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10297,7 +10297,7 @@ static GLboolean _glewInit_GL_ARB_clear_buffer_object ()
 
 #ifdef GL_ARB_clear_texture
 
-static GLboolean _glewInit_GL_ARB_clear_texture ()
+static GLboolean _glewInit_GL_ARB_clear_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10311,7 +10311,7 @@ static GLboolean _glewInit_GL_ARB_clear_texture ()
 
 #ifdef GL_ARB_clip_control
 
-static GLboolean _glewInit_GL_ARB_clip_control ()
+static GLboolean _glewInit_GL_ARB_clip_control (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10324,7 +10324,7 @@ static GLboolean _glewInit_GL_ARB_clip_control ()
 
 #ifdef GL_ARB_color_buffer_float
 
-static GLboolean _glewInit_GL_ARB_color_buffer_float ()
+static GLboolean _glewInit_GL_ARB_color_buffer_float (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10337,7 +10337,7 @@ static GLboolean _glewInit_GL_ARB_color_buffer_float ()
 
 #ifdef GL_ARB_compute_shader
 
-static GLboolean _glewInit_GL_ARB_compute_shader ()
+static GLboolean _glewInit_GL_ARB_compute_shader (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10351,7 +10351,7 @@ static GLboolean _glewInit_GL_ARB_compute_shader ()
 
 #ifdef GL_ARB_compute_variable_group_size
 
-static GLboolean _glewInit_GL_ARB_compute_variable_group_size ()
+static GLboolean _glewInit_GL_ARB_compute_variable_group_size (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10364,7 +10364,7 @@ static GLboolean _glewInit_GL_ARB_compute_variable_group_size ()
 
 #ifdef GL_ARB_copy_buffer
 
-static GLboolean _glewInit_GL_ARB_copy_buffer ()
+static GLboolean _glewInit_GL_ARB_copy_buffer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10377,7 +10377,7 @@ static GLboolean _glewInit_GL_ARB_copy_buffer ()
 
 #ifdef GL_ARB_copy_image
 
-static GLboolean _glewInit_GL_ARB_copy_image ()
+static GLboolean _glewInit_GL_ARB_copy_image (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10390,7 +10390,7 @@ static GLboolean _glewInit_GL_ARB_copy_image ()
 
 #ifdef GL_ARB_debug_output
 
-static GLboolean _glewInit_GL_ARB_debug_output ()
+static GLboolean _glewInit_GL_ARB_debug_output (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10406,7 +10406,7 @@ static GLboolean _glewInit_GL_ARB_debug_output ()
 
 #ifdef GL_ARB_direct_state_access
 
-static GLboolean _glewInit_GL_ARB_direct_state_access ()
+static GLboolean _glewInit_GL_ARB_direct_state_access (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10515,7 +10515,7 @@ static GLboolean _glewInit_GL_ARB_direct_state_access ()
 
 #ifdef GL_ARB_draw_buffers
 
-static GLboolean _glewInit_GL_ARB_draw_buffers ()
+static GLboolean _glewInit_GL_ARB_draw_buffers (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10528,7 +10528,7 @@ static GLboolean _glewInit_GL_ARB_draw_buffers ()
 
 #ifdef GL_ARB_draw_buffers_blend
 
-static GLboolean _glewInit_GL_ARB_draw_buffers_blend ()
+static GLboolean _glewInit_GL_ARB_draw_buffers_blend (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10544,7 +10544,7 @@ static GLboolean _glewInit_GL_ARB_draw_buffers_blend ()
 
 #ifdef GL_ARB_draw_elements_base_vertex
 
-static GLboolean _glewInit_GL_ARB_draw_elements_base_vertex ()
+static GLboolean _glewInit_GL_ARB_draw_elements_base_vertex (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10560,7 +10560,7 @@ static GLboolean _glewInit_GL_ARB_draw_elements_base_vertex ()
 
 #ifdef GL_ARB_draw_indirect
 
-static GLboolean _glewInit_GL_ARB_draw_indirect ()
+static GLboolean _glewInit_GL_ARB_draw_indirect (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10574,7 +10574,7 @@ static GLboolean _glewInit_GL_ARB_draw_indirect ()
 
 #ifdef GL_ARB_framebuffer_no_attachments
 
-static GLboolean _glewInit_GL_ARB_framebuffer_no_attachments ()
+static GLboolean _glewInit_GL_ARB_framebuffer_no_attachments (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10590,7 +10590,7 @@ static GLboolean _glewInit_GL_ARB_framebuffer_no_attachments ()
 
 #ifdef GL_ARB_framebuffer_object
 
-static GLboolean _glewInit_GL_ARB_framebuffer_object ()
+static GLboolean _glewInit_GL_ARB_framebuffer_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10622,7 +10622,7 @@ static GLboolean _glewInit_GL_ARB_framebuffer_object ()
 
 #ifdef GL_ARB_geometry_shader4
 
-static GLboolean _glewInit_GL_ARB_geometry_shader4 ()
+static GLboolean _glewInit_GL_ARB_geometry_shader4 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10638,7 +10638,7 @@ static GLboolean _glewInit_GL_ARB_geometry_shader4 ()
 
 #ifdef GL_ARB_get_program_binary
 
-static GLboolean _glewInit_GL_ARB_get_program_binary ()
+static GLboolean _glewInit_GL_ARB_get_program_binary (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10653,7 +10653,7 @@ static GLboolean _glewInit_GL_ARB_get_program_binary ()
 
 #ifdef GL_ARB_get_texture_sub_image
 
-static GLboolean _glewInit_GL_ARB_get_texture_sub_image ()
+static GLboolean _glewInit_GL_ARB_get_texture_sub_image (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10667,7 +10667,7 @@ static GLboolean _glewInit_GL_ARB_get_texture_sub_image ()
 
 #ifdef GL_ARB_gl_spirv
 
-static GLboolean _glewInit_GL_ARB_gl_spirv ()
+static GLboolean _glewInit_GL_ARB_gl_spirv (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10680,7 +10680,7 @@ static GLboolean _glewInit_GL_ARB_gl_spirv ()
 
 #ifdef GL_ARB_gpu_shader_fp64
 
-static GLboolean _glewInit_GL_ARB_gpu_shader_fp64 ()
+static GLboolean _glewInit_GL_ARB_gpu_shader_fp64 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10710,7 +10710,7 @@ static GLboolean _glewInit_GL_ARB_gpu_shader_fp64 ()
 
 #ifdef GL_ARB_gpu_shader_int64
 
-static GLboolean _glewInit_GL_ARB_gpu_shader_int64 ()
+static GLboolean _glewInit_GL_ARB_gpu_shader_int64 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10758,7 +10758,7 @@ static GLboolean _glewInit_GL_ARB_gpu_shader_int64 ()
 
 #ifdef GL_ARB_imaging
 
-static GLboolean _glewInit_GL_ARB_imaging ()
+static GLboolean _glewInit_GL_ARB_imaging (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10803,7 +10803,7 @@ static GLboolean _glewInit_GL_ARB_imaging ()
 
 #ifdef GL_ARB_indirect_parameters
 
-static GLboolean _glewInit_GL_ARB_indirect_parameters ()
+static GLboolean _glewInit_GL_ARB_indirect_parameters (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10817,7 +10817,7 @@ static GLboolean _glewInit_GL_ARB_indirect_parameters ()
 
 #ifdef GL_ARB_instanced_arrays
 
-static GLboolean _glewInit_GL_ARB_instanced_arrays ()
+static GLboolean _glewInit_GL_ARB_instanced_arrays (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10832,7 +10832,7 @@ static GLboolean _glewInit_GL_ARB_instanced_arrays ()
 
 #ifdef GL_ARB_internalformat_query
 
-static GLboolean _glewInit_GL_ARB_internalformat_query ()
+static GLboolean _glewInit_GL_ARB_internalformat_query (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10845,7 +10845,7 @@ static GLboolean _glewInit_GL_ARB_internalformat_query ()
 
 #ifdef GL_ARB_internalformat_query2
 
-static GLboolean _glewInit_GL_ARB_internalformat_query2 ()
+static GLboolean _glewInit_GL_ARB_internalformat_query2 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10858,7 +10858,7 @@ static GLboolean _glewInit_GL_ARB_internalformat_query2 ()
 
 #ifdef GL_ARB_invalidate_subdata
 
-static GLboolean _glewInit_GL_ARB_invalidate_subdata ()
+static GLboolean _glewInit_GL_ARB_invalidate_subdata (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10876,7 +10876,7 @@ static GLboolean _glewInit_GL_ARB_invalidate_subdata ()
 
 #ifdef GL_ARB_map_buffer_range
 
-static GLboolean _glewInit_GL_ARB_map_buffer_range ()
+static GLboolean _glewInit_GL_ARB_map_buffer_range (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10890,7 +10890,7 @@ static GLboolean _glewInit_GL_ARB_map_buffer_range ()
 
 #ifdef GL_ARB_matrix_palette
 
-static GLboolean _glewInit_GL_ARB_matrix_palette ()
+static GLboolean _glewInit_GL_ARB_matrix_palette (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10907,7 +10907,7 @@ static GLboolean _glewInit_GL_ARB_matrix_palette ()
 
 #ifdef GL_ARB_multi_bind
 
-static GLboolean _glewInit_GL_ARB_multi_bind ()
+static GLboolean _glewInit_GL_ARB_multi_bind (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10925,7 +10925,7 @@ static GLboolean _glewInit_GL_ARB_multi_bind ()
 
 #ifdef GL_ARB_multi_draw_indirect
 
-static GLboolean _glewInit_GL_ARB_multi_draw_indirect ()
+static GLboolean _glewInit_GL_ARB_multi_draw_indirect (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10939,7 +10939,7 @@ static GLboolean _glewInit_GL_ARB_multi_draw_indirect ()
 
 #ifdef GL_ARB_multisample
 
-static GLboolean _glewInit_GL_ARB_multisample ()
+static GLboolean _glewInit_GL_ARB_multisample (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10952,7 +10952,7 @@ static GLboolean _glewInit_GL_ARB_multisample ()
 
 #ifdef GL_ARB_multitexture
 
-static GLboolean _glewInit_GL_ARB_multitexture ()
+static GLboolean _glewInit_GL_ARB_multitexture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -10998,7 +10998,7 @@ static GLboolean _glewInit_GL_ARB_multitexture ()
 
 #ifdef GL_ARB_occlusion_query
 
-static GLboolean _glewInit_GL_ARB_occlusion_query ()
+static GLboolean _glewInit_GL_ARB_occlusion_query (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11018,7 +11018,7 @@ static GLboolean _glewInit_GL_ARB_occlusion_query ()
 
 #ifdef GL_ARB_parallel_shader_compile
 
-static GLboolean _glewInit_GL_ARB_parallel_shader_compile ()
+static GLboolean _glewInit_GL_ARB_parallel_shader_compile (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11031,7 +11031,7 @@ static GLboolean _glewInit_GL_ARB_parallel_shader_compile ()
 
 #ifdef GL_ARB_point_parameters
 
-static GLboolean _glewInit_GL_ARB_point_parameters ()
+static GLboolean _glewInit_GL_ARB_point_parameters (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11045,7 +11045,7 @@ static GLboolean _glewInit_GL_ARB_point_parameters ()
 
 #ifdef GL_ARB_polygon_offset_clamp
 
-static GLboolean _glewInit_GL_ARB_polygon_offset_clamp ()
+static GLboolean _glewInit_GL_ARB_polygon_offset_clamp (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11058,7 +11058,7 @@ static GLboolean _glewInit_GL_ARB_polygon_offset_clamp ()
 
 #ifdef GL_ARB_program_interface_query
 
-static GLboolean _glewInit_GL_ARB_program_interface_query ()
+static GLboolean _glewInit_GL_ARB_program_interface_query (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11076,7 +11076,7 @@ static GLboolean _glewInit_GL_ARB_program_interface_query ()
 
 #ifdef GL_ARB_provoking_vertex
 
-static GLboolean _glewInit_GL_ARB_provoking_vertex ()
+static GLboolean _glewInit_GL_ARB_provoking_vertex (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11089,7 +11089,7 @@ static GLboolean _glewInit_GL_ARB_provoking_vertex ()
 
 #ifdef GL_ARB_robustness
 
-static GLboolean _glewInit_GL_ARB_robustness ()
+static GLboolean _glewInit_GL_ARB_robustness (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11121,7 +11121,7 @@ static GLboolean _glewInit_GL_ARB_robustness ()
 
 #ifdef GL_ARB_sample_locations
 
-static GLboolean _glewInit_GL_ARB_sample_locations ()
+static GLboolean _glewInit_GL_ARB_sample_locations (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11135,7 +11135,7 @@ static GLboolean _glewInit_GL_ARB_sample_locations ()
 
 #ifdef GL_ARB_sample_shading
 
-static GLboolean _glewInit_GL_ARB_sample_shading ()
+static GLboolean _glewInit_GL_ARB_sample_shading (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11148,7 +11148,7 @@ static GLboolean _glewInit_GL_ARB_sample_shading ()
 
 #ifdef GL_ARB_sampler_objects
 
-static GLboolean _glewInit_GL_ARB_sampler_objects ()
+static GLboolean _glewInit_GL_ARB_sampler_objects (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11174,7 +11174,7 @@ static GLboolean _glewInit_GL_ARB_sampler_objects ()
 
 #ifdef GL_ARB_separate_shader_objects
 
-static GLboolean _glewInit_GL_ARB_separate_shader_objects ()
+static GLboolean _glewInit_GL_ARB_separate_shader_objects (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11246,7 +11246,7 @@ static GLboolean _glewInit_GL_ARB_separate_shader_objects ()
 
 #ifdef GL_ARB_shader_atomic_counters
 
-static GLboolean _glewInit_GL_ARB_shader_atomic_counters ()
+static GLboolean _glewInit_GL_ARB_shader_atomic_counters (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11259,7 +11259,7 @@ static GLboolean _glewInit_GL_ARB_shader_atomic_counters ()
 
 #ifdef GL_ARB_shader_image_load_store
 
-static GLboolean _glewInit_GL_ARB_shader_image_load_store ()
+static GLboolean _glewInit_GL_ARB_shader_image_load_store (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11273,7 +11273,7 @@ static GLboolean _glewInit_GL_ARB_shader_image_load_store ()
 
 #ifdef GL_ARB_shader_objects
 
-static GLboolean _glewInit_GL_ARB_shader_objects ()
+static GLboolean _glewInit_GL_ARB_shader_objects (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11324,7 +11324,7 @@ static GLboolean _glewInit_GL_ARB_shader_objects ()
 
 #ifdef GL_ARB_shader_storage_buffer_object
 
-static GLboolean _glewInit_GL_ARB_shader_storage_buffer_object ()
+static GLboolean _glewInit_GL_ARB_shader_storage_buffer_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11337,7 +11337,7 @@ static GLboolean _glewInit_GL_ARB_shader_storage_buffer_object ()
 
 #ifdef GL_ARB_shader_subroutine
 
-static GLboolean _glewInit_GL_ARB_shader_subroutine ()
+static GLboolean _glewInit_GL_ARB_shader_subroutine (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11357,7 +11357,7 @@ static GLboolean _glewInit_GL_ARB_shader_subroutine ()
 
 #ifdef GL_ARB_shading_language_include
 
-static GLboolean _glewInit_GL_ARB_shading_language_include ()
+static GLboolean _glewInit_GL_ARB_shading_language_include (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11375,7 +11375,7 @@ static GLboolean _glewInit_GL_ARB_shading_language_include ()
 
 #ifdef GL_ARB_sparse_buffer
 
-static GLboolean _glewInit_GL_ARB_sparse_buffer ()
+static GLboolean _glewInit_GL_ARB_sparse_buffer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11388,7 +11388,7 @@ static GLboolean _glewInit_GL_ARB_sparse_buffer ()
 
 #ifdef GL_ARB_sparse_texture
 
-static GLboolean _glewInit_GL_ARB_sparse_texture ()
+static GLboolean _glewInit_GL_ARB_sparse_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11401,7 +11401,7 @@ static GLboolean _glewInit_GL_ARB_sparse_texture ()
 
 #ifdef GL_ARB_sync
 
-static GLboolean _glewInit_GL_ARB_sync ()
+static GLboolean _glewInit_GL_ARB_sync (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11420,7 +11420,7 @@ static GLboolean _glewInit_GL_ARB_sync ()
 
 #ifdef GL_ARB_tessellation_shader
 
-static GLboolean _glewInit_GL_ARB_tessellation_shader ()
+static GLboolean _glewInit_GL_ARB_tessellation_shader (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11434,7 +11434,7 @@ static GLboolean _glewInit_GL_ARB_tessellation_shader ()
 
 #ifdef GL_ARB_texture_barrier
 
-static GLboolean _glewInit_GL_ARB_texture_barrier ()
+static GLboolean _glewInit_GL_ARB_texture_barrier (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11447,7 +11447,7 @@ static GLboolean _glewInit_GL_ARB_texture_barrier ()
 
 #ifdef GL_ARB_texture_buffer_object
 
-static GLboolean _glewInit_GL_ARB_texture_buffer_object ()
+static GLboolean _glewInit_GL_ARB_texture_buffer_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11460,7 +11460,7 @@ static GLboolean _glewInit_GL_ARB_texture_buffer_object ()
 
 #ifdef GL_ARB_texture_buffer_range
 
-static GLboolean _glewInit_GL_ARB_texture_buffer_range ()
+static GLboolean _glewInit_GL_ARB_texture_buffer_range (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11474,7 +11474,7 @@ static GLboolean _glewInit_GL_ARB_texture_buffer_range ()
 
 #ifdef GL_ARB_texture_compression
 
-static GLboolean _glewInit_GL_ARB_texture_compression ()
+static GLboolean _glewInit_GL_ARB_texture_compression (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11493,7 +11493,7 @@ static GLboolean _glewInit_GL_ARB_texture_compression ()
 
 #ifdef GL_ARB_texture_multisample
 
-static GLboolean _glewInit_GL_ARB_texture_multisample ()
+static GLboolean _glewInit_GL_ARB_texture_multisample (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11509,7 +11509,7 @@ static GLboolean _glewInit_GL_ARB_texture_multisample ()
 
 #ifdef GL_ARB_texture_storage
 
-static GLboolean _glewInit_GL_ARB_texture_storage ()
+static GLboolean _glewInit_GL_ARB_texture_storage (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11524,7 +11524,7 @@ static GLboolean _glewInit_GL_ARB_texture_storage ()
 
 #ifdef GL_ARB_texture_storage_multisample
 
-static GLboolean _glewInit_GL_ARB_texture_storage_multisample ()
+static GLboolean _glewInit_GL_ARB_texture_storage_multisample (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11540,7 +11540,7 @@ static GLboolean _glewInit_GL_ARB_texture_storage_multisample ()
 
 #ifdef GL_ARB_texture_view
 
-static GLboolean _glewInit_GL_ARB_texture_view ()
+static GLboolean _glewInit_GL_ARB_texture_view (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11553,7 +11553,7 @@ static GLboolean _glewInit_GL_ARB_texture_view ()
 
 #ifdef GL_ARB_timer_query
 
-static GLboolean _glewInit_GL_ARB_timer_query ()
+static GLboolean _glewInit_GL_ARB_timer_query (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11568,7 +11568,7 @@ static GLboolean _glewInit_GL_ARB_timer_query ()
 
 #ifdef GL_ARB_transform_feedback2
 
-static GLboolean _glewInit_GL_ARB_transform_feedback2 ()
+static GLboolean _glewInit_GL_ARB_transform_feedback2 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11587,7 +11587,7 @@ static GLboolean _glewInit_GL_ARB_transform_feedback2 ()
 
 #ifdef GL_ARB_transform_feedback3
 
-static GLboolean _glewInit_GL_ARB_transform_feedback3 ()
+static GLboolean _glewInit_GL_ARB_transform_feedback3 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11603,7 +11603,7 @@ static GLboolean _glewInit_GL_ARB_transform_feedback3 ()
 
 #ifdef GL_ARB_transform_feedback_instanced
 
-static GLboolean _glewInit_GL_ARB_transform_feedback_instanced ()
+static GLboolean _glewInit_GL_ARB_transform_feedback_instanced (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11617,7 +11617,7 @@ static GLboolean _glewInit_GL_ARB_transform_feedback_instanced ()
 
 #ifdef GL_ARB_transpose_matrix
 
-static GLboolean _glewInit_GL_ARB_transpose_matrix ()
+static GLboolean _glewInit_GL_ARB_transpose_matrix (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11633,7 +11633,7 @@ static GLboolean _glewInit_GL_ARB_transpose_matrix ()
 
 #ifdef GL_ARB_uniform_buffer_object
 
-static GLboolean _glewInit_GL_ARB_uniform_buffer_object ()
+static GLboolean _glewInit_GL_ARB_uniform_buffer_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11655,7 +11655,7 @@ static GLboolean _glewInit_GL_ARB_uniform_buffer_object ()
 
 #ifdef GL_ARB_vertex_array_object
 
-static GLboolean _glewInit_GL_ARB_vertex_array_object ()
+static GLboolean _glewInit_GL_ARB_vertex_array_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11671,7 +11671,7 @@ static GLboolean _glewInit_GL_ARB_vertex_array_object ()
 
 #ifdef GL_ARB_vertex_attrib_64bit
 
-static GLboolean _glewInit_GL_ARB_vertex_attrib_64bit ()
+static GLboolean _glewInit_GL_ARB_vertex_attrib_64bit (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11693,7 +11693,7 @@ static GLboolean _glewInit_GL_ARB_vertex_attrib_64bit ()
 
 #ifdef GL_ARB_vertex_attrib_binding
 
-static GLboolean _glewInit_GL_ARB_vertex_attrib_binding ()
+static GLboolean _glewInit_GL_ARB_vertex_attrib_binding (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11717,7 +11717,7 @@ static GLboolean _glewInit_GL_ARB_vertex_attrib_binding ()
 
 #ifdef GL_ARB_vertex_blend
 
-static GLboolean _glewInit_GL_ARB_vertex_blend ()
+static GLboolean _glewInit_GL_ARB_vertex_blend (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11739,7 +11739,7 @@ static GLboolean _glewInit_GL_ARB_vertex_blend ()
 
 #ifdef GL_ARB_vertex_buffer_object
 
-static GLboolean _glewInit_GL_ARB_vertex_buffer_object ()
+static GLboolean _glewInit_GL_ARB_vertex_buffer_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11762,7 +11762,7 @@ static GLboolean _glewInit_GL_ARB_vertex_buffer_object ()
 
 #ifdef GL_ARB_vertex_program
 
-static GLboolean _glewInit_GL_ARB_vertex_program ()
+static GLboolean _glewInit_GL_ARB_vertex_program (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11836,7 +11836,7 @@ static GLboolean _glewInit_GL_ARB_vertex_program ()
 
 #ifdef GL_ARB_vertex_shader
 
-static GLboolean _glewInit_GL_ARB_vertex_shader ()
+static GLboolean _glewInit_GL_ARB_vertex_shader (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11851,7 +11851,7 @@ static GLboolean _glewInit_GL_ARB_vertex_shader ()
 
 #ifdef GL_ARB_vertex_type_2_10_10_10_rev
 
-static GLboolean _glewInit_GL_ARB_vertex_type_2_10_10_10_rev ()
+static GLboolean _glewInit_GL_ARB_vertex_type_2_10_10_10_rev (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11901,7 +11901,7 @@ static GLboolean _glewInit_GL_ARB_vertex_type_2_10_10_10_rev ()
 
 #ifdef GL_ARB_viewport_array
 
-static GLboolean _glewInit_GL_ARB_viewport_array ()
+static GLboolean _glewInit_GL_ARB_viewport_array (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11923,7 +11923,7 @@ static GLboolean _glewInit_GL_ARB_viewport_array ()
 
 #ifdef GL_ARB_window_pos
 
-static GLboolean _glewInit_GL_ARB_window_pos ()
+static GLboolean _glewInit_GL_ARB_window_pos (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11951,7 +11951,7 @@ static GLboolean _glewInit_GL_ARB_window_pos ()
 
 #ifdef GL_ATI_draw_buffers
 
-static GLboolean _glewInit_GL_ATI_draw_buffers ()
+static GLboolean _glewInit_GL_ATI_draw_buffers (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11964,7 +11964,7 @@ static GLboolean _glewInit_GL_ATI_draw_buffers ()
 
 #ifdef GL_ATI_element_array
 
-static GLboolean _glewInit_GL_ATI_element_array ()
+static GLboolean _glewInit_GL_ATI_element_array (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11979,7 +11979,7 @@ static GLboolean _glewInit_GL_ATI_element_array ()
 
 #ifdef GL_ATI_envmap_bumpmap
 
-static GLboolean _glewInit_GL_ATI_envmap_bumpmap ()
+static GLboolean _glewInit_GL_ATI_envmap_bumpmap (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -11995,7 +11995,7 @@ static GLboolean _glewInit_GL_ATI_envmap_bumpmap ()
 
 #ifdef GL_ATI_fragment_shader
 
-static GLboolean _glewInit_GL_ATI_fragment_shader ()
+static GLboolean _glewInit_GL_ATI_fragment_shader (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12021,7 +12021,7 @@ static GLboolean _glewInit_GL_ATI_fragment_shader ()
 
 #ifdef GL_ATI_map_object_buffer
 
-static GLboolean _glewInit_GL_ATI_map_object_buffer ()
+static GLboolean _glewInit_GL_ATI_map_object_buffer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12035,7 +12035,7 @@ static GLboolean _glewInit_GL_ATI_map_object_buffer ()
 
 #ifdef GL_ATI_pn_triangles
 
-static GLboolean _glewInit_GL_ATI_pn_triangles ()
+static GLboolean _glewInit_GL_ATI_pn_triangles (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12049,7 +12049,7 @@ static GLboolean _glewInit_GL_ATI_pn_triangles ()
 
 #ifdef GL_ATI_separate_stencil
 
-static GLboolean _glewInit_GL_ATI_separate_stencil ()
+static GLboolean _glewInit_GL_ATI_separate_stencil (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12063,7 +12063,7 @@ static GLboolean _glewInit_GL_ATI_separate_stencil ()
 
 #ifdef GL_ATI_vertex_array_object
 
-static GLboolean _glewInit_GL_ATI_vertex_array_object ()
+static GLboolean _glewInit_GL_ATI_vertex_array_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12087,7 +12087,7 @@ static GLboolean _glewInit_GL_ATI_vertex_array_object ()
 
 #ifdef GL_ATI_vertex_attrib_array_object
 
-static GLboolean _glewInit_GL_ATI_vertex_attrib_array_object ()
+static GLboolean _glewInit_GL_ATI_vertex_attrib_array_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12102,7 +12102,7 @@ static GLboolean _glewInit_GL_ATI_vertex_attrib_array_object ()
 
 #ifdef GL_ATI_vertex_streams
 
-static GLboolean _glewInit_GL_ATI_vertex_streams ()
+static GLboolean _glewInit_GL_ATI_vertex_streams (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12159,7 +12159,7 @@ static GLboolean _glewInit_GL_ATI_vertex_streams ()
 
 #ifdef GL_EXT_base_instance
 
-static GLboolean _glewInit_GL_EXT_base_instance ()
+static GLboolean _glewInit_GL_EXT_base_instance (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12174,7 +12174,7 @@ static GLboolean _glewInit_GL_EXT_base_instance ()
 
 #ifdef GL_EXT_bindable_uniform
 
-static GLboolean _glewInit_GL_EXT_bindable_uniform ()
+static GLboolean _glewInit_GL_EXT_bindable_uniform (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12189,7 +12189,7 @@ static GLboolean _glewInit_GL_EXT_bindable_uniform ()
 
 #ifdef GL_EXT_blend_color
 
-static GLboolean _glewInit_GL_EXT_blend_color ()
+static GLboolean _glewInit_GL_EXT_blend_color (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12202,7 +12202,7 @@ static GLboolean _glewInit_GL_EXT_blend_color ()
 
 #ifdef GL_EXT_blend_equation_separate
 
-static GLboolean _glewInit_GL_EXT_blend_equation_separate ()
+static GLboolean _glewInit_GL_EXT_blend_equation_separate (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12215,7 +12215,7 @@ static GLboolean _glewInit_GL_EXT_blend_equation_separate ()
 
 #ifdef GL_EXT_blend_func_extended
 
-static GLboolean _glewInit_GL_EXT_blend_func_extended ()
+static GLboolean _glewInit_GL_EXT_blend_func_extended (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12230,7 +12230,7 @@ static GLboolean _glewInit_GL_EXT_blend_func_extended ()
 
 #ifdef GL_EXT_blend_func_separate
 
-static GLboolean _glewInit_GL_EXT_blend_func_separate ()
+static GLboolean _glewInit_GL_EXT_blend_func_separate (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12243,7 +12243,7 @@ static GLboolean _glewInit_GL_EXT_blend_func_separate ()
 
 #ifdef GL_EXT_blend_minmax
 
-static GLboolean _glewInit_GL_EXT_blend_minmax ()
+static GLboolean _glewInit_GL_EXT_blend_minmax (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12256,7 +12256,7 @@ static GLboolean _glewInit_GL_EXT_blend_minmax ()
 
 #ifdef GL_EXT_buffer_storage
 
-static GLboolean _glewInit_GL_EXT_buffer_storage ()
+static GLboolean _glewInit_GL_EXT_buffer_storage (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12270,7 +12270,7 @@ static GLboolean _glewInit_GL_EXT_buffer_storage ()
 
 #ifdef GL_EXT_clear_texture
 
-static GLboolean _glewInit_GL_EXT_clear_texture ()
+static GLboolean _glewInit_GL_EXT_clear_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12284,7 +12284,7 @@ static GLboolean _glewInit_GL_EXT_clear_texture ()
 
 #ifdef GL_EXT_color_subtable
 
-static GLboolean _glewInit_GL_EXT_color_subtable ()
+static GLboolean _glewInit_GL_EXT_color_subtable (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12298,7 +12298,7 @@ static GLboolean _glewInit_GL_EXT_color_subtable ()
 
 #ifdef GL_EXT_compiled_vertex_array
 
-static GLboolean _glewInit_GL_EXT_compiled_vertex_array ()
+static GLboolean _glewInit_GL_EXT_compiled_vertex_array (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12312,7 +12312,7 @@ static GLboolean _glewInit_GL_EXT_compiled_vertex_array ()
 
 #ifdef GL_EXT_convolution
 
-static GLboolean _glewInit_GL_EXT_convolution ()
+static GLboolean _glewInit_GL_EXT_convolution (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12337,7 +12337,7 @@ static GLboolean _glewInit_GL_EXT_convolution ()
 
 #ifdef GL_EXT_coordinate_frame
 
-static GLboolean _glewInit_GL_EXT_coordinate_frame ()
+static GLboolean _glewInit_GL_EXT_coordinate_frame (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12351,7 +12351,7 @@ static GLboolean _glewInit_GL_EXT_coordinate_frame ()
 
 #ifdef GL_EXT_copy_image
 
-static GLboolean _glewInit_GL_EXT_copy_image ()
+static GLboolean _glewInit_GL_EXT_copy_image (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12364,7 +12364,7 @@ static GLboolean _glewInit_GL_EXT_copy_image ()
 
 #ifdef GL_EXT_copy_texture
 
-static GLboolean _glewInit_GL_EXT_copy_texture ()
+static GLboolean _glewInit_GL_EXT_copy_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12381,7 +12381,7 @@ static GLboolean _glewInit_GL_EXT_copy_texture ()
 
 #ifdef GL_EXT_cull_vertex
 
-static GLboolean _glewInit_GL_EXT_cull_vertex ()
+static GLboolean _glewInit_GL_EXT_cull_vertex (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12395,7 +12395,7 @@ static GLboolean _glewInit_GL_EXT_cull_vertex ()
 
 #ifdef GL_EXT_debug_label
 
-static GLboolean _glewInit_GL_EXT_debug_label ()
+static GLboolean _glewInit_GL_EXT_debug_label (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12409,7 +12409,7 @@ static GLboolean _glewInit_GL_EXT_debug_label ()
 
 #ifdef GL_EXT_debug_marker
 
-static GLboolean _glewInit_GL_EXT_debug_marker ()
+static GLboolean _glewInit_GL_EXT_debug_marker (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12424,7 +12424,7 @@ static GLboolean _glewInit_GL_EXT_debug_marker ()
 
 #ifdef GL_EXT_depth_bounds_test
 
-static GLboolean _glewInit_GL_EXT_depth_bounds_test ()
+static GLboolean _glewInit_GL_EXT_depth_bounds_test (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12437,7 +12437,7 @@ static GLboolean _glewInit_GL_EXT_depth_bounds_test ()
 
 #ifdef GL_EXT_direct_state_access
 
-static GLboolean _glewInit_GL_EXT_direct_state_access ()
+static GLboolean _glewInit_GL_EXT_direct_state_access (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12663,7 +12663,7 @@ static GLboolean _glewInit_GL_EXT_direct_state_access ()
 
 #ifdef GL_EXT_discard_framebuffer
 
-static GLboolean _glewInit_GL_EXT_discard_framebuffer ()
+static GLboolean _glewInit_GL_EXT_discard_framebuffer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12676,7 +12676,7 @@ static GLboolean _glewInit_GL_EXT_discard_framebuffer ()
 
 #ifdef GL_EXT_draw_buffers
 
-static GLboolean _glewInit_GL_EXT_draw_buffers ()
+static GLboolean _glewInit_GL_EXT_draw_buffers (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12689,7 +12689,7 @@ static GLboolean _glewInit_GL_EXT_draw_buffers ()
 
 #ifdef GL_EXT_draw_buffers2
 
-static GLboolean _glewInit_GL_EXT_draw_buffers2 ()
+static GLboolean _glewInit_GL_EXT_draw_buffers2 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12707,7 +12707,7 @@ static GLboolean _glewInit_GL_EXT_draw_buffers2 ()
 
 #ifdef GL_EXT_draw_buffers_indexed
 
-static GLboolean _glewInit_GL_EXT_draw_buffers_indexed ()
+static GLboolean _glewInit_GL_EXT_draw_buffers_indexed (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12727,7 +12727,7 @@ static GLboolean _glewInit_GL_EXT_draw_buffers_indexed ()
 
 #ifdef GL_EXT_draw_elements_base_vertex
 
-static GLboolean _glewInit_GL_EXT_draw_elements_base_vertex ()
+static GLboolean _glewInit_GL_EXT_draw_elements_base_vertex (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12743,7 +12743,7 @@ static GLboolean _glewInit_GL_EXT_draw_elements_base_vertex ()
 
 #ifdef GL_EXT_draw_instanced
 
-static GLboolean _glewInit_GL_EXT_draw_instanced ()
+static GLboolean _glewInit_GL_EXT_draw_instanced (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12757,7 +12757,7 @@ static GLboolean _glewInit_GL_EXT_draw_instanced ()
 
 #ifdef GL_EXT_draw_range_elements
 
-static GLboolean _glewInit_GL_EXT_draw_range_elements ()
+static GLboolean _glewInit_GL_EXT_draw_range_elements (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12770,7 +12770,7 @@ static GLboolean _glewInit_GL_EXT_draw_range_elements ()
 
 #ifdef GL_EXT_external_buffer
 
-static GLboolean _glewInit_GL_EXT_external_buffer ()
+static GLboolean _glewInit_GL_EXT_external_buffer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12784,7 +12784,7 @@ static GLboolean _glewInit_GL_EXT_external_buffer ()
 
 #ifdef GL_EXT_fog_coord
 
-static GLboolean _glewInit_GL_EXT_fog_coord ()
+static GLboolean _glewInit_GL_EXT_fog_coord (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12801,7 +12801,7 @@ static GLboolean _glewInit_GL_EXT_fog_coord ()
 
 #ifdef GL_EXT_fragment_lighting
 
-static GLboolean _glewInit_GL_EXT_fragment_lighting ()
+static GLboolean _glewInit_GL_EXT_fragment_lighting (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12831,7 +12831,7 @@ static GLboolean _glewInit_GL_EXT_fragment_lighting ()
 
 #ifdef GL_EXT_framebuffer_blit
 
-static GLboolean _glewInit_GL_EXT_framebuffer_blit ()
+static GLboolean _glewInit_GL_EXT_framebuffer_blit (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12844,7 +12844,7 @@ static GLboolean _glewInit_GL_EXT_framebuffer_blit ()
 
 #ifdef GL_EXT_framebuffer_multisample
 
-static GLboolean _glewInit_GL_EXT_framebuffer_multisample ()
+static GLboolean _glewInit_GL_EXT_framebuffer_multisample (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12857,7 +12857,7 @@ static GLboolean _glewInit_GL_EXT_framebuffer_multisample ()
 
 #ifdef GL_EXT_framebuffer_object
 
-static GLboolean _glewInit_GL_EXT_framebuffer_object ()
+static GLboolean _glewInit_GL_EXT_framebuffer_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12886,7 +12886,7 @@ static GLboolean _glewInit_GL_EXT_framebuffer_object ()
 
 #ifdef GL_EXT_geometry_shader4
 
-static GLboolean _glewInit_GL_EXT_geometry_shader4 ()
+static GLboolean _glewInit_GL_EXT_geometry_shader4 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12901,7 +12901,7 @@ static GLboolean _glewInit_GL_EXT_geometry_shader4 ()
 
 #ifdef GL_EXT_gpu_program_parameters
 
-static GLboolean _glewInit_GL_EXT_gpu_program_parameters ()
+static GLboolean _glewInit_GL_EXT_gpu_program_parameters (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12915,7 +12915,7 @@ static GLboolean _glewInit_GL_EXT_gpu_program_parameters ()
 
 #ifdef GL_EXT_gpu_shader4
 
-static GLboolean _glewInit_GL_EXT_gpu_shader4 ()
+static GLboolean _glewInit_GL_EXT_gpu_shader4 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12961,7 +12961,7 @@ static GLboolean _glewInit_GL_EXT_gpu_shader4 ()
 
 #ifdef GL_EXT_histogram
 
-static GLboolean _glewInit_GL_EXT_histogram ()
+static GLboolean _glewInit_GL_EXT_histogram (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12983,7 +12983,7 @@ static GLboolean _glewInit_GL_EXT_histogram ()
 
 #ifdef GL_EXT_index_func
 
-static GLboolean _glewInit_GL_EXT_index_func ()
+static GLboolean _glewInit_GL_EXT_index_func (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -12996,7 +12996,7 @@ static GLboolean _glewInit_GL_EXT_index_func ()
 
 #ifdef GL_EXT_index_material
 
-static GLboolean _glewInit_GL_EXT_index_material ()
+static GLboolean _glewInit_GL_EXT_index_material (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13009,7 +13009,7 @@ static GLboolean _glewInit_GL_EXT_index_material ()
 
 #ifdef GL_EXT_instanced_arrays
 
-static GLboolean _glewInit_GL_EXT_instanced_arrays ()
+static GLboolean _glewInit_GL_EXT_instanced_arrays (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13022,7 +13022,7 @@ static GLboolean _glewInit_GL_EXT_instanced_arrays ()
 
 #ifdef GL_EXT_light_texture
 
-static GLboolean _glewInit_GL_EXT_light_texture ()
+static GLboolean _glewInit_GL_EXT_light_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13037,7 +13037,7 @@ static GLboolean _glewInit_GL_EXT_light_texture ()
 
 #ifdef GL_EXT_map_buffer_range
 
-static GLboolean _glewInit_GL_EXT_map_buffer_range ()
+static GLboolean _glewInit_GL_EXT_map_buffer_range (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13051,7 +13051,7 @@ static GLboolean _glewInit_GL_EXT_map_buffer_range ()
 
 #ifdef GL_EXT_memory_object
 
-static GLboolean _glewInit_GL_EXT_memory_object ()
+static GLboolean _glewInit_GL_EXT_memory_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13082,7 +13082,7 @@ static GLboolean _glewInit_GL_EXT_memory_object ()
 
 #ifdef GL_EXT_memory_object_fd
 
-static GLboolean _glewInit_GL_EXT_memory_object_fd ()
+static GLboolean _glewInit_GL_EXT_memory_object_fd (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13095,7 +13095,7 @@ static GLboolean _glewInit_GL_EXT_memory_object_fd ()
 
 #ifdef GL_EXT_memory_object_win32
 
-static GLboolean _glewInit_GL_EXT_memory_object_win32 ()
+static GLboolean _glewInit_GL_EXT_memory_object_win32 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13109,7 +13109,7 @@ static GLboolean _glewInit_GL_EXT_memory_object_win32 ()
 
 #ifdef GL_EXT_multi_draw_arrays
 
-static GLboolean _glewInit_GL_EXT_multi_draw_arrays ()
+static GLboolean _glewInit_GL_EXT_multi_draw_arrays (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13123,7 +13123,7 @@ static GLboolean _glewInit_GL_EXT_multi_draw_arrays ()
 
 #ifdef GL_EXT_multi_draw_indirect
 
-static GLboolean _glewInit_GL_EXT_multi_draw_indirect ()
+static GLboolean _glewInit_GL_EXT_multi_draw_indirect (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13137,7 +13137,7 @@ static GLboolean _glewInit_GL_EXT_multi_draw_indirect ()
 
 #ifdef GL_EXT_multisample
 
-static GLboolean _glewInit_GL_EXT_multisample ()
+static GLboolean _glewInit_GL_EXT_multisample (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13151,7 +13151,7 @@ static GLboolean _glewInit_GL_EXT_multisample ()
 
 #ifdef GL_EXT_multisampled_render_to_texture
 
-static GLboolean _glewInit_GL_EXT_multisampled_render_to_texture ()
+static GLboolean _glewInit_GL_EXT_multisampled_render_to_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13164,7 +13164,7 @@ static GLboolean _glewInit_GL_EXT_multisampled_render_to_texture ()
 
 #ifdef GL_EXT_multiview_draw_buffers
 
-static GLboolean _glewInit_GL_EXT_multiview_draw_buffers ()
+static GLboolean _glewInit_GL_EXT_multiview_draw_buffers (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13179,7 +13179,7 @@ static GLboolean _glewInit_GL_EXT_multiview_draw_buffers ()
 
 #ifdef GL_EXT_paletted_texture
 
-static GLboolean _glewInit_GL_EXT_paletted_texture ()
+static GLboolean _glewInit_GL_EXT_paletted_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13195,7 +13195,7 @@ static GLboolean _glewInit_GL_EXT_paletted_texture ()
 
 #ifdef GL_EXT_pixel_transform
 
-static GLboolean _glewInit_GL_EXT_pixel_transform ()
+static GLboolean _glewInit_GL_EXT_pixel_transform (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13213,7 +13213,7 @@ static GLboolean _glewInit_GL_EXT_pixel_transform ()
 
 #ifdef GL_EXT_point_parameters
 
-static GLboolean _glewInit_GL_EXT_point_parameters ()
+static GLboolean _glewInit_GL_EXT_point_parameters (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13227,7 +13227,7 @@ static GLboolean _glewInit_GL_EXT_point_parameters ()
 
 #ifdef GL_EXT_polygon_offset
 
-static GLboolean _glewInit_GL_EXT_polygon_offset ()
+static GLboolean _glewInit_GL_EXT_polygon_offset (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13240,7 +13240,7 @@ static GLboolean _glewInit_GL_EXT_polygon_offset ()
 
 #ifdef GL_EXT_polygon_offset_clamp
 
-static GLboolean _glewInit_GL_EXT_polygon_offset_clamp ()
+static GLboolean _glewInit_GL_EXT_polygon_offset_clamp (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13253,7 +13253,7 @@ static GLboolean _glewInit_GL_EXT_polygon_offset_clamp ()
 
 #ifdef GL_EXT_provoking_vertex
 
-static GLboolean _glewInit_GL_EXT_provoking_vertex ()
+static GLboolean _glewInit_GL_EXT_provoking_vertex (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13266,7 +13266,7 @@ static GLboolean _glewInit_GL_EXT_provoking_vertex ()
 
 #ifdef GL_EXT_raster_multisample
 
-static GLboolean _glewInit_GL_EXT_raster_multisample ()
+static GLboolean _glewInit_GL_EXT_raster_multisample (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13282,7 +13282,7 @@ static GLboolean _glewInit_GL_EXT_raster_multisample ()
 
 #ifdef GL_EXT_scene_marker
 
-static GLboolean _glewInit_GL_EXT_scene_marker ()
+static GLboolean _glewInit_GL_EXT_scene_marker (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13296,7 +13296,7 @@ static GLboolean _glewInit_GL_EXT_scene_marker ()
 
 #ifdef GL_EXT_secondary_color
 
-static GLboolean _glewInit_GL_EXT_secondary_color ()
+static GLboolean _glewInit_GL_EXT_secondary_color (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13325,7 +13325,7 @@ static GLboolean _glewInit_GL_EXT_secondary_color ()
 
 #ifdef GL_EXT_semaphore
 
-static GLboolean _glewInit_GL_EXT_semaphore ()
+static GLboolean _glewInit_GL_EXT_semaphore (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13344,7 +13344,7 @@ static GLboolean _glewInit_GL_EXT_semaphore ()
 
 #ifdef GL_EXT_semaphore_fd
 
-static GLboolean _glewInit_GL_EXT_semaphore_fd ()
+static GLboolean _glewInit_GL_EXT_semaphore_fd (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13357,7 +13357,7 @@ static GLboolean _glewInit_GL_EXT_semaphore_fd ()
 
 #ifdef GL_EXT_semaphore_win32
 
-static GLboolean _glewInit_GL_EXT_semaphore_win32 ()
+static GLboolean _glewInit_GL_EXT_semaphore_win32 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13371,7 +13371,7 @@ static GLboolean _glewInit_GL_EXT_semaphore_win32 ()
 
 #ifdef GL_EXT_separate_shader_objects
 
-static GLboolean _glewInit_GL_EXT_separate_shader_objects ()
+static GLboolean _glewInit_GL_EXT_separate_shader_objects (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13386,7 +13386,7 @@ static GLboolean _glewInit_GL_EXT_separate_shader_objects ()
 
 #ifdef GL_EXT_shader_image_load_store
 
-static GLboolean _glewInit_GL_EXT_shader_image_load_store ()
+static GLboolean _glewInit_GL_EXT_shader_image_load_store (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13400,7 +13400,7 @@ static GLboolean _glewInit_GL_EXT_shader_image_load_store ()
 
 #ifdef GL_EXT_shader_pixel_local_storage2
 
-static GLboolean _glewInit_GL_EXT_shader_pixel_local_storage2 ()
+static GLboolean _glewInit_GL_EXT_shader_pixel_local_storage2 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13415,7 +13415,7 @@ static GLboolean _glewInit_GL_EXT_shader_pixel_local_storage2 ()
 
 #ifdef GL_EXT_sparse_texture
 
-static GLboolean _glewInit_GL_EXT_sparse_texture ()
+static GLboolean _glewInit_GL_EXT_sparse_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13429,7 +13429,7 @@ static GLboolean _glewInit_GL_EXT_sparse_texture ()
 
 #ifdef GL_EXT_stencil_two_side
 
-static GLboolean _glewInit_GL_EXT_stencil_two_side ()
+static GLboolean _glewInit_GL_EXT_stencil_two_side (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13442,7 +13442,7 @@ static GLboolean _glewInit_GL_EXT_stencil_two_side ()
 
 #ifdef GL_EXT_subtexture
 
-static GLboolean _glewInit_GL_EXT_subtexture ()
+static GLboolean _glewInit_GL_EXT_subtexture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13457,7 +13457,7 @@ static GLboolean _glewInit_GL_EXT_subtexture ()
 
 #ifdef GL_EXT_texture3D
 
-static GLboolean _glewInit_GL_EXT_texture3D ()
+static GLboolean _glewInit_GL_EXT_texture3D (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13470,7 +13470,7 @@ static GLboolean _glewInit_GL_EXT_texture3D ()
 
 #ifdef GL_EXT_texture_array
 
-static GLboolean _glewInit_GL_EXT_texture_array ()
+static GLboolean _glewInit_GL_EXT_texture_array (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13483,7 +13483,7 @@ static GLboolean _glewInit_GL_EXT_texture_array ()
 
 #ifdef GL_EXT_texture_buffer_object
 
-static GLboolean _glewInit_GL_EXT_texture_buffer_object ()
+static GLboolean _glewInit_GL_EXT_texture_buffer_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13496,7 +13496,7 @@ static GLboolean _glewInit_GL_EXT_texture_buffer_object ()
 
 #ifdef GL_EXT_texture_integer
 
-static GLboolean _glewInit_GL_EXT_texture_integer ()
+static GLboolean _glewInit_GL_EXT_texture_integer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13514,7 +13514,7 @@ static GLboolean _glewInit_GL_EXT_texture_integer ()
 
 #ifdef GL_EXT_texture_object
 
-static GLboolean _glewInit_GL_EXT_texture_object ()
+static GLboolean _glewInit_GL_EXT_texture_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13532,7 +13532,7 @@ static GLboolean _glewInit_GL_EXT_texture_object ()
 
 #ifdef GL_EXT_texture_perturb_normal
 
-static GLboolean _glewInit_GL_EXT_texture_perturb_normal ()
+static GLboolean _glewInit_GL_EXT_texture_perturb_normal (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13545,7 +13545,7 @@ static GLboolean _glewInit_GL_EXT_texture_perturb_normal ()
 
 #ifdef GL_EXT_texture_storage
 
-static GLboolean _glewInit_GL_EXT_texture_storage ()
+static GLboolean _glewInit_GL_EXT_texture_storage (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13563,7 +13563,7 @@ static GLboolean _glewInit_GL_EXT_texture_storage ()
 
 #ifdef GL_EXT_texture_view
 
-static GLboolean _glewInit_GL_EXT_texture_view ()
+static GLboolean _glewInit_GL_EXT_texture_view (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13576,7 +13576,7 @@ static GLboolean _glewInit_GL_EXT_texture_view ()
 
 #ifdef GL_EXT_timer_query
 
-static GLboolean _glewInit_GL_EXT_timer_query ()
+static GLboolean _glewInit_GL_EXT_timer_query (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13590,7 +13590,7 @@ static GLboolean _glewInit_GL_EXT_timer_query ()
 
 #ifdef GL_EXT_transform_feedback
 
-static GLboolean _glewInit_GL_EXT_transform_feedback ()
+static GLboolean _glewInit_GL_EXT_transform_feedback (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13609,7 +13609,7 @@ static GLboolean _glewInit_GL_EXT_transform_feedback ()
 
 #ifdef GL_EXT_vertex_array
 
-static GLboolean _glewInit_GL_EXT_vertex_array ()
+static GLboolean _glewInit_GL_EXT_vertex_array (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13629,7 +13629,7 @@ static GLboolean _glewInit_GL_EXT_vertex_array ()
 
 #ifdef GL_EXT_vertex_array_setXXX
 
-static GLboolean _glewInit_GL_EXT_vertex_array_setXXX ()
+static GLboolean _glewInit_GL_EXT_vertex_array_setXXX (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13644,7 +13644,7 @@ static GLboolean _glewInit_GL_EXT_vertex_array_setXXX ()
 
 #ifdef GL_EXT_vertex_attrib_64bit
 
-static GLboolean _glewInit_GL_EXT_vertex_attrib_64bit ()
+static GLboolean _glewInit_GL_EXT_vertex_attrib_64bit (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13667,7 +13667,7 @@ static GLboolean _glewInit_GL_EXT_vertex_attrib_64bit ()
 
 #ifdef GL_EXT_vertex_shader
 
-static GLboolean _glewInit_GL_EXT_vertex_shader ()
+static GLboolean _glewInit_GL_EXT_vertex_shader (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13721,7 +13721,7 @@ static GLboolean _glewInit_GL_EXT_vertex_shader ()
 
 #ifdef GL_EXT_vertex_weighting
 
-static GLboolean _glewInit_GL_EXT_vertex_weighting ()
+static GLboolean _glewInit_GL_EXT_vertex_weighting (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13736,7 +13736,7 @@ static GLboolean _glewInit_GL_EXT_vertex_weighting ()
 
 #ifdef GL_EXT_win32_keyed_mutex
 
-static GLboolean _glewInit_GL_EXT_win32_keyed_mutex ()
+static GLboolean _glewInit_GL_EXT_win32_keyed_mutex (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13750,7 +13750,7 @@ static GLboolean _glewInit_GL_EXT_win32_keyed_mutex ()
 
 #ifdef GL_EXT_window_rectangles
 
-static GLboolean _glewInit_GL_EXT_window_rectangles ()
+static GLboolean _glewInit_GL_EXT_window_rectangles (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13763,7 +13763,7 @@ static GLboolean _glewInit_GL_EXT_window_rectangles ()
 
 #ifdef GL_EXT_x11_sync_object
 
-static GLboolean _glewInit_GL_EXT_x11_sync_object ()
+static GLboolean _glewInit_GL_EXT_x11_sync_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13776,7 +13776,7 @@ static GLboolean _glewInit_GL_EXT_x11_sync_object ()
 
 #ifdef GL_GREMEDY_frame_terminator
 
-static GLboolean _glewInit_GL_GREMEDY_frame_terminator ()
+static GLboolean _glewInit_GL_GREMEDY_frame_terminator (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13789,7 +13789,7 @@ static GLboolean _glewInit_GL_GREMEDY_frame_terminator ()
 
 #ifdef GL_GREMEDY_string_marker
 
-static GLboolean _glewInit_GL_GREMEDY_string_marker ()
+static GLboolean _glewInit_GL_GREMEDY_string_marker (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13802,7 +13802,7 @@ static GLboolean _glewInit_GL_GREMEDY_string_marker ()
 
 #ifdef GL_HP_image_transform
 
-static GLboolean _glewInit_GL_HP_image_transform ()
+static GLboolean _glewInit_GL_HP_image_transform (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13820,7 +13820,7 @@ static GLboolean _glewInit_GL_HP_image_transform ()
 
 #ifdef GL_IBM_multimode_draw_arrays
 
-static GLboolean _glewInit_GL_IBM_multimode_draw_arrays ()
+static GLboolean _glewInit_GL_IBM_multimode_draw_arrays (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13834,7 +13834,7 @@ static GLboolean _glewInit_GL_IBM_multimode_draw_arrays ()
 
 #ifdef GL_IBM_vertex_array_lists
 
-static GLboolean _glewInit_GL_IBM_vertex_array_lists ()
+static GLboolean _glewInit_GL_IBM_vertex_array_lists (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13854,7 +13854,7 @@ static GLboolean _glewInit_GL_IBM_vertex_array_lists ()
 
 #ifdef GL_INTEL_map_texture
 
-static GLboolean _glewInit_GL_INTEL_map_texture ()
+static GLboolean _glewInit_GL_INTEL_map_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13869,7 +13869,7 @@ static GLboolean _glewInit_GL_INTEL_map_texture ()
 
 #ifdef GL_INTEL_parallel_arrays
 
-static GLboolean _glewInit_GL_INTEL_parallel_arrays ()
+static GLboolean _glewInit_GL_INTEL_parallel_arrays (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13885,7 +13885,7 @@ static GLboolean _glewInit_GL_INTEL_parallel_arrays ()
 
 #ifdef GL_INTEL_performance_query
 
-static GLboolean _glewInit_GL_INTEL_performance_query ()
+static GLboolean _glewInit_GL_INTEL_performance_query (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13907,7 +13907,7 @@ static GLboolean _glewInit_GL_INTEL_performance_query ()
 
 #ifdef GL_INTEL_texture_scissor
 
-static GLboolean _glewInit_GL_INTEL_texture_scissor ()
+static GLboolean _glewInit_GL_INTEL_texture_scissor (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13921,7 +13921,7 @@ static GLboolean _glewInit_GL_INTEL_texture_scissor ()
 
 #ifdef GL_KHR_blend_equation_advanced
 
-static GLboolean _glewInit_GL_KHR_blend_equation_advanced ()
+static GLboolean _glewInit_GL_KHR_blend_equation_advanced (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13934,7 +13934,7 @@ static GLboolean _glewInit_GL_KHR_blend_equation_advanced ()
 
 #ifdef GL_KHR_debug
 
-static GLboolean _glewInit_GL_KHR_debug ()
+static GLboolean _glewInit_GL_KHR_debug (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13956,7 +13956,7 @@ static GLboolean _glewInit_GL_KHR_debug ()
 
 #ifdef GL_KHR_parallel_shader_compile
 
-static GLboolean _glewInit_GL_KHR_parallel_shader_compile ()
+static GLboolean _glewInit_GL_KHR_parallel_shader_compile (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13969,7 +13969,7 @@ static GLboolean _glewInit_GL_KHR_parallel_shader_compile ()
 
 #ifdef GL_KHR_robustness
 
-static GLboolean _glewInit_GL_KHR_robustness ()
+static GLboolean _glewInit_GL_KHR_robustness (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -13985,7 +13985,7 @@ static GLboolean _glewInit_GL_KHR_robustness ()
 
 #ifdef GL_KTX_buffer_region
 
-static GLboolean _glewInit_GL_KTX_buffer_region ()
+static GLboolean _glewInit_GL_KTX_buffer_region (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14002,7 +14002,7 @@ static GLboolean _glewInit_GL_KTX_buffer_region ()
 
 #ifdef GL_MESA_resize_buffers
 
-static GLboolean _glewInit_GL_MESA_resize_buffers ()
+static GLboolean _glewInit_GL_MESA_resize_buffers (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14015,7 +14015,7 @@ static GLboolean _glewInit_GL_MESA_resize_buffers ()
 
 #ifdef GL_MESA_window_pos
 
-static GLboolean _glewInit_GL_MESA_window_pos ()
+static GLboolean _glewInit_GL_MESA_window_pos (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14051,7 +14051,7 @@ static GLboolean _glewInit_GL_MESA_window_pos ()
 
 #ifdef GL_NVX_conditional_render
 
-static GLboolean _glewInit_GL_NVX_conditional_render ()
+static GLboolean _glewInit_GL_NVX_conditional_render (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14065,7 +14065,7 @@ static GLboolean _glewInit_GL_NVX_conditional_render ()
 
 #ifdef GL_NVX_linked_gpu_multicast
 
-static GLboolean _glewInit_GL_NVX_linked_gpu_multicast ()
+static GLboolean _glewInit_GL_NVX_linked_gpu_multicast (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14080,7 +14080,7 @@ static GLboolean _glewInit_GL_NVX_linked_gpu_multicast ()
 
 #ifdef GL_NV_3dvision_settings
 
-static GLboolean _glewInit_GL_NV_3dvision_settings ()
+static GLboolean _glewInit_GL_NV_3dvision_settings (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14094,7 +14094,7 @@ static GLboolean _glewInit_GL_NV_3dvision_settings ()
 
 #ifdef GL_NV_bindless_multi_draw_indirect
 
-static GLboolean _glewInit_GL_NV_bindless_multi_draw_indirect ()
+static GLboolean _glewInit_GL_NV_bindless_multi_draw_indirect (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14108,7 +14108,7 @@ static GLboolean _glewInit_GL_NV_bindless_multi_draw_indirect ()
 
 #ifdef GL_NV_bindless_multi_draw_indirect_count
 
-static GLboolean _glewInit_GL_NV_bindless_multi_draw_indirect_count ()
+static GLboolean _glewInit_GL_NV_bindless_multi_draw_indirect_count (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14122,7 +14122,7 @@ static GLboolean _glewInit_GL_NV_bindless_multi_draw_indirect_count ()
 
 #ifdef GL_NV_bindless_texture
 
-static GLboolean _glewInit_GL_NV_bindless_texture ()
+static GLboolean _glewInit_GL_NV_bindless_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14147,7 +14147,7 @@ static GLboolean _glewInit_GL_NV_bindless_texture ()
 
 #ifdef GL_NV_blend_equation_advanced
 
-static GLboolean _glewInit_GL_NV_blend_equation_advanced ()
+static GLboolean _glewInit_GL_NV_blend_equation_advanced (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14161,7 +14161,7 @@ static GLboolean _glewInit_GL_NV_blend_equation_advanced ()
 
 #ifdef GL_NV_clip_space_w_scaling
 
-static GLboolean _glewInit_GL_NV_clip_space_w_scaling ()
+static GLboolean _glewInit_GL_NV_clip_space_w_scaling (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14174,7 +14174,7 @@ static GLboolean _glewInit_GL_NV_clip_space_w_scaling ()
 
 #ifdef GL_NV_command_list
 
-static GLboolean _glewInit_GL_NV_command_list ()
+static GLboolean _glewInit_GL_NV_command_list (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14203,7 +14203,7 @@ static GLboolean _glewInit_GL_NV_command_list ()
 
 #ifdef GL_NV_conditional_render
 
-static GLboolean _glewInit_GL_NV_conditional_render ()
+static GLboolean _glewInit_GL_NV_conditional_render (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14217,7 +14217,7 @@ static GLboolean _glewInit_GL_NV_conditional_render ()
 
 #ifdef GL_NV_conservative_raster
 
-static GLboolean _glewInit_GL_NV_conservative_raster ()
+static GLboolean _glewInit_GL_NV_conservative_raster (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14230,7 +14230,7 @@ static GLboolean _glewInit_GL_NV_conservative_raster ()
 
 #ifdef GL_NV_conservative_raster_dilate
 
-static GLboolean _glewInit_GL_NV_conservative_raster_dilate ()
+static GLboolean _glewInit_GL_NV_conservative_raster_dilate (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14243,7 +14243,7 @@ static GLboolean _glewInit_GL_NV_conservative_raster_dilate ()
 
 #ifdef GL_NV_conservative_raster_pre_snap_triangles
 
-static GLboolean _glewInit_GL_NV_conservative_raster_pre_snap_triangles ()
+static GLboolean _glewInit_GL_NV_conservative_raster_pre_snap_triangles (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14256,7 +14256,7 @@ static GLboolean _glewInit_GL_NV_conservative_raster_pre_snap_triangles ()
 
 #ifdef GL_NV_copy_buffer
 
-static GLboolean _glewInit_GL_NV_copy_buffer ()
+static GLboolean _glewInit_GL_NV_copy_buffer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14269,7 +14269,7 @@ static GLboolean _glewInit_GL_NV_copy_buffer ()
 
 #ifdef GL_NV_copy_image
 
-static GLboolean _glewInit_GL_NV_copy_image ()
+static GLboolean _glewInit_GL_NV_copy_image (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14282,7 +14282,7 @@ static GLboolean _glewInit_GL_NV_copy_image ()
 
 #ifdef GL_NV_depth_buffer_float
 
-static GLboolean _glewInit_GL_NV_depth_buffer_float ()
+static GLboolean _glewInit_GL_NV_depth_buffer_float (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14297,7 +14297,7 @@ static GLboolean _glewInit_GL_NV_depth_buffer_float ()
 
 #ifdef GL_NV_draw_buffers
 
-static GLboolean _glewInit_GL_NV_draw_buffers ()
+static GLboolean _glewInit_GL_NV_draw_buffers (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14310,7 +14310,7 @@ static GLboolean _glewInit_GL_NV_draw_buffers ()
 
 #ifdef GL_NV_draw_instanced
 
-static GLboolean _glewInit_GL_NV_draw_instanced ()
+static GLboolean _glewInit_GL_NV_draw_instanced (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14324,7 +14324,7 @@ static GLboolean _glewInit_GL_NV_draw_instanced ()
 
 #ifdef GL_NV_draw_texture
 
-static GLboolean _glewInit_GL_NV_draw_texture ()
+static GLboolean _glewInit_GL_NV_draw_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14337,7 +14337,7 @@ static GLboolean _glewInit_GL_NV_draw_texture ()
 
 #ifdef GL_NV_draw_vulkan_image
 
-static GLboolean _glewInit_GL_NV_draw_vulkan_image ()
+static GLboolean _glewInit_GL_NV_draw_vulkan_image (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14354,7 +14354,7 @@ static GLboolean _glewInit_GL_NV_draw_vulkan_image ()
 
 #ifdef GL_NV_evaluators
 
-static GLboolean _glewInit_GL_NV_evaluators ()
+static GLboolean _glewInit_GL_NV_evaluators (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14375,7 +14375,7 @@ static GLboolean _glewInit_GL_NV_evaluators ()
 
 #ifdef GL_NV_explicit_multisample
 
-static GLboolean _glewInit_GL_NV_explicit_multisample ()
+static GLboolean _glewInit_GL_NV_explicit_multisample (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14390,7 +14390,7 @@ static GLboolean _glewInit_GL_NV_explicit_multisample ()
 
 #ifdef GL_NV_fence
 
-static GLboolean _glewInit_GL_NV_fence ()
+static GLboolean _glewInit_GL_NV_fence (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14409,7 +14409,7 @@ static GLboolean _glewInit_GL_NV_fence ()
 
 #ifdef GL_NV_fragment_coverage_to_color
 
-static GLboolean _glewInit_GL_NV_fragment_coverage_to_color ()
+static GLboolean _glewInit_GL_NV_fragment_coverage_to_color (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14422,7 +14422,7 @@ static GLboolean _glewInit_GL_NV_fragment_coverage_to_color ()
 
 #ifdef GL_NV_fragment_program
 
-static GLboolean _glewInit_GL_NV_fragment_program ()
+static GLboolean _glewInit_GL_NV_fragment_program (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14440,7 +14440,7 @@ static GLboolean _glewInit_GL_NV_fragment_program ()
 
 #ifdef GL_NV_framebuffer_blit
 
-static GLboolean _glewInit_GL_NV_framebuffer_blit ()
+static GLboolean _glewInit_GL_NV_framebuffer_blit (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14453,7 +14453,7 @@ static GLboolean _glewInit_GL_NV_framebuffer_blit ()
 
 #ifdef GL_NV_framebuffer_multisample
 
-static GLboolean _glewInit_GL_NV_framebuffer_multisample ()
+static GLboolean _glewInit_GL_NV_framebuffer_multisample (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14466,7 +14466,7 @@ static GLboolean _glewInit_GL_NV_framebuffer_multisample ()
 
 #ifdef GL_NV_framebuffer_multisample_coverage
 
-static GLboolean _glewInit_GL_NV_framebuffer_multisample_coverage ()
+static GLboolean _glewInit_GL_NV_framebuffer_multisample_coverage (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14479,7 +14479,7 @@ static GLboolean _glewInit_GL_NV_framebuffer_multisample_coverage ()
 
 #ifdef GL_NV_geometry_program4
 
-static GLboolean _glewInit_GL_NV_geometry_program4 ()
+static GLboolean _glewInit_GL_NV_geometry_program4 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14492,7 +14492,7 @@ static GLboolean _glewInit_GL_NV_geometry_program4 ()
 
 #ifdef GL_NV_gpu_multicast
 
-static GLboolean _glewInit_GL_NV_gpu_multicast ()
+static GLboolean _glewInit_GL_NV_gpu_multicast (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14516,7 +14516,7 @@ static GLboolean _glewInit_GL_NV_gpu_multicast ()
 
 #ifdef GL_NV_gpu_program4
 
-static GLboolean _glewInit_GL_NV_gpu_program4 ()
+static GLboolean _glewInit_GL_NV_gpu_program4 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14540,7 +14540,7 @@ static GLboolean _glewInit_GL_NV_gpu_program4 ()
 
 #ifdef GL_NV_gpu_shader5
 
-static GLboolean _glewInit_GL_NV_gpu_shader5 ()
+static GLboolean _glewInit_GL_NV_gpu_shader5 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14586,7 +14586,7 @@ static GLboolean _glewInit_GL_NV_gpu_shader5 ()
 
 #ifdef GL_NV_half_float
 
-static GLboolean _glewInit_GL_NV_half_float ()
+static GLboolean _glewInit_GL_NV_half_float (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14644,7 +14644,7 @@ static GLboolean _glewInit_GL_NV_half_float ()
 
 #ifdef GL_NV_instanced_arrays
 
-static GLboolean _glewInit_GL_NV_instanced_arrays ()
+static GLboolean _glewInit_GL_NV_instanced_arrays (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14657,7 +14657,7 @@ static GLboolean _glewInit_GL_NV_instanced_arrays ()
 
 #ifdef GL_NV_internalformat_sample_query
 
-static GLboolean _glewInit_GL_NV_internalformat_sample_query ()
+static GLboolean _glewInit_GL_NV_internalformat_sample_query (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14670,7 +14670,7 @@ static GLboolean _glewInit_GL_NV_internalformat_sample_query ()
 
 #ifdef GL_NV_non_square_matrices
 
-static GLboolean _glewInit_GL_NV_non_square_matrices ()
+static GLboolean _glewInit_GL_NV_non_square_matrices (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14688,7 +14688,7 @@ static GLboolean _glewInit_GL_NV_non_square_matrices ()
 
 #ifdef GL_NV_occlusion_query
 
-static GLboolean _glewInit_GL_NV_occlusion_query ()
+static GLboolean _glewInit_GL_NV_occlusion_query (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14707,7 +14707,7 @@ static GLboolean _glewInit_GL_NV_occlusion_query ()
 
 #ifdef GL_NV_parameter_buffer_object
 
-static GLboolean _glewInit_GL_NV_parameter_buffer_object ()
+static GLboolean _glewInit_GL_NV_parameter_buffer_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14722,7 +14722,7 @@ static GLboolean _glewInit_GL_NV_parameter_buffer_object ()
 
 #ifdef GL_NV_path_rendering
 
-static GLboolean _glewInit_GL_NV_path_rendering ()
+static GLboolean _glewInit_GL_NV_path_rendering (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14798,7 +14798,7 @@ static GLboolean _glewInit_GL_NV_path_rendering ()
 
 #ifdef GL_NV_pixel_data_range
 
-static GLboolean _glewInit_GL_NV_pixel_data_range ()
+static GLboolean _glewInit_GL_NV_pixel_data_range (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14812,7 +14812,7 @@ static GLboolean _glewInit_GL_NV_pixel_data_range ()
 
 #ifdef GL_NV_point_sprite
 
-static GLboolean _glewInit_GL_NV_point_sprite ()
+static GLboolean _glewInit_GL_NV_point_sprite (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14826,7 +14826,7 @@ static GLboolean _glewInit_GL_NV_point_sprite ()
 
 #ifdef GL_NV_polygon_mode
 
-static GLboolean _glewInit_GL_NV_polygon_mode ()
+static GLboolean _glewInit_GL_NV_polygon_mode (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14839,7 +14839,7 @@ static GLboolean _glewInit_GL_NV_polygon_mode ()
 
 #ifdef GL_NV_present_video
 
-static GLboolean _glewInit_GL_NV_present_video ()
+static GLboolean _glewInit_GL_NV_present_video (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14857,7 +14857,7 @@ static GLboolean _glewInit_GL_NV_present_video ()
 
 #ifdef GL_NV_primitive_restart
 
-static GLboolean _glewInit_GL_NV_primitive_restart ()
+static GLboolean _glewInit_GL_NV_primitive_restart (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14871,7 +14871,7 @@ static GLboolean _glewInit_GL_NV_primitive_restart ()
 
 #ifdef GL_NV_register_combiners
 
-static GLboolean _glewInit_GL_NV_register_combiners ()
+static GLboolean _glewInit_GL_NV_register_combiners (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14896,7 +14896,7 @@ static GLboolean _glewInit_GL_NV_register_combiners ()
 
 #ifdef GL_NV_register_combiners2
 
-static GLboolean _glewInit_GL_NV_register_combiners2 ()
+static GLboolean _glewInit_GL_NV_register_combiners2 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14910,7 +14910,7 @@ static GLboolean _glewInit_GL_NV_register_combiners2 ()
 
 #ifdef GL_NV_sample_locations
 
-static GLboolean _glewInit_GL_NV_sample_locations ()
+static GLboolean _glewInit_GL_NV_sample_locations (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14924,7 +14924,7 @@ static GLboolean _glewInit_GL_NV_sample_locations ()
 
 #ifdef GL_NV_shader_buffer_load
 
-static GLboolean _glewInit_GL_NV_shader_buffer_load ()
+static GLboolean _glewInit_GL_NV_shader_buffer_load (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14949,7 +14949,7 @@ static GLboolean _glewInit_GL_NV_shader_buffer_load ()
 
 #ifdef GL_NV_texture_array
 
-static GLboolean _glewInit_GL_NV_texture_array ()
+static GLboolean _glewInit_GL_NV_texture_array (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14967,7 +14967,7 @@ static GLboolean _glewInit_GL_NV_texture_array ()
 
 #ifdef GL_NV_texture_barrier
 
-static GLboolean _glewInit_GL_NV_texture_barrier ()
+static GLboolean _glewInit_GL_NV_texture_barrier (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14980,7 +14980,7 @@ static GLboolean _glewInit_GL_NV_texture_barrier ()
 
 #ifdef GL_NV_texture_multisample
 
-static GLboolean _glewInit_GL_NV_texture_multisample ()
+static GLboolean _glewInit_GL_NV_texture_multisample (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -14998,7 +14998,7 @@ static GLboolean _glewInit_GL_NV_texture_multisample ()
 
 #ifdef GL_NV_transform_feedback
 
-static GLboolean _glewInit_GL_NV_transform_feedback ()
+static GLboolean _glewInit_GL_NV_transform_feedback (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15021,7 +15021,7 @@ static GLboolean _glewInit_GL_NV_transform_feedback ()
 
 #ifdef GL_NV_transform_feedback2
 
-static GLboolean _glewInit_GL_NV_transform_feedback2 ()
+static GLboolean _glewInit_GL_NV_transform_feedback2 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15040,7 +15040,7 @@ static GLboolean _glewInit_GL_NV_transform_feedback2 ()
 
 #ifdef GL_NV_vdpau_interop
 
-static GLboolean _glewInit_GL_NV_vdpau_interop ()
+static GLboolean _glewInit_GL_NV_vdpau_interop (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15062,7 +15062,7 @@ static GLboolean _glewInit_GL_NV_vdpau_interop ()
 
 #ifdef GL_NV_vertex_array_range
 
-static GLboolean _glewInit_GL_NV_vertex_array_range ()
+static GLboolean _glewInit_GL_NV_vertex_array_range (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15076,7 +15076,7 @@ static GLboolean _glewInit_GL_NV_vertex_array_range ()
 
 #ifdef GL_NV_vertex_attrib_integer_64bit
 
-static GLboolean _glewInit_GL_NV_vertex_attrib_integer_64bit ()
+static GLboolean _glewInit_GL_NV_vertex_attrib_integer_64bit (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15107,7 +15107,7 @@ static GLboolean _glewInit_GL_NV_vertex_attrib_integer_64bit ()
 
 #ifdef GL_NV_vertex_buffer_unified_memory
 
-static GLboolean _glewInit_GL_NV_vertex_buffer_unified_memory ()
+static GLboolean _glewInit_GL_NV_vertex_buffer_unified_memory (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15131,7 +15131,7 @@ static GLboolean _glewInit_GL_NV_vertex_buffer_unified_memory ()
 
 #ifdef GL_NV_vertex_program
 
-static GLboolean _glewInit_GL_NV_vertex_program ()
+static GLboolean _glewInit_GL_NV_vertex_program (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15207,7 +15207,7 @@ static GLboolean _glewInit_GL_NV_vertex_program ()
 
 #ifdef GL_NV_video_capture
 
-static GLboolean _glewInit_GL_NV_video_capture ()
+static GLboolean _glewInit_GL_NV_video_capture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15231,7 +15231,7 @@ static GLboolean _glewInit_GL_NV_video_capture ()
 
 #ifdef GL_NV_viewport_array
 
-static GLboolean _glewInit_GL_NV_viewport_array ()
+static GLboolean _glewInit_GL_NV_viewport_array (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15255,7 +15255,7 @@ static GLboolean _glewInit_GL_NV_viewport_array ()
 
 #ifdef GL_NV_viewport_swizzle
 
-static GLboolean _glewInit_GL_NV_viewport_swizzle ()
+static GLboolean _glewInit_GL_NV_viewport_swizzle (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15268,7 +15268,7 @@ static GLboolean _glewInit_GL_NV_viewport_swizzle ()
 
 #ifdef GL_OVR_multiview
 
-static GLboolean _glewInit_GL_OVR_multiview ()
+static GLboolean _glewInit_GL_OVR_multiview (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15281,7 +15281,7 @@ static GLboolean _glewInit_GL_OVR_multiview ()
 
 #ifdef GL_OVR_multiview_multisampled_render_to_texture
 
-static GLboolean _glewInit_GL_OVR_multiview_multisampled_render_to_texture ()
+static GLboolean _glewInit_GL_OVR_multiview_multisampled_render_to_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15294,7 +15294,7 @@ static GLboolean _glewInit_GL_OVR_multiview_multisampled_render_to_texture ()
 
 #ifdef GL_QCOM_alpha_test
 
-static GLboolean _glewInit_GL_QCOM_alpha_test ()
+static GLboolean _glewInit_GL_QCOM_alpha_test (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15307,7 +15307,7 @@ static GLboolean _glewInit_GL_QCOM_alpha_test ()
 
 #ifdef GL_QCOM_driver_control
 
-static GLboolean _glewInit_GL_QCOM_driver_control ()
+static GLboolean _glewInit_GL_QCOM_driver_control (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15323,7 +15323,7 @@ static GLboolean _glewInit_GL_QCOM_driver_control ()
 
 #ifdef GL_QCOM_extended_get
 
-static GLboolean _glewInit_GL_QCOM_extended_get ()
+static GLboolean _glewInit_GL_QCOM_extended_get (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15343,7 +15343,7 @@ static GLboolean _glewInit_GL_QCOM_extended_get ()
 
 #ifdef GL_QCOM_extended_get2
 
-static GLboolean _glewInit_GL_QCOM_extended_get2 ()
+static GLboolean _glewInit_GL_QCOM_extended_get2 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15359,7 +15359,7 @@ static GLboolean _glewInit_GL_QCOM_extended_get2 ()
 
 #ifdef GL_QCOM_framebuffer_foveated
 
-static GLboolean _glewInit_GL_QCOM_framebuffer_foveated ()
+static GLboolean _glewInit_GL_QCOM_framebuffer_foveated (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15373,7 +15373,7 @@ static GLboolean _glewInit_GL_QCOM_framebuffer_foveated ()
 
 #ifdef GL_QCOM_shader_framebuffer_fetch_noncoherent
 
-static GLboolean _glewInit_GL_QCOM_shader_framebuffer_fetch_noncoherent ()
+static GLboolean _glewInit_GL_QCOM_shader_framebuffer_fetch_noncoherent (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15386,7 +15386,7 @@ static GLboolean _glewInit_GL_QCOM_shader_framebuffer_fetch_noncoherent ()
 
 #ifdef GL_QCOM_tiled_rendering
 
-static GLboolean _glewInit_GL_QCOM_tiled_rendering ()
+static GLboolean _glewInit_GL_QCOM_tiled_rendering (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15400,7 +15400,7 @@ static GLboolean _glewInit_GL_QCOM_tiled_rendering ()
 
 #ifdef GL_REGAL_ES1_0_compatibility
 
-static GLboolean _glewInit_GL_REGAL_ES1_0_compatibility ()
+static GLboolean _glewInit_GL_REGAL_ES1_0_compatibility (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15443,7 +15443,7 @@ static GLboolean _glewInit_GL_REGAL_ES1_0_compatibility ()
 
 #ifdef GL_REGAL_ES1_1_compatibility
 
-static GLboolean _glewInit_GL_REGAL_ES1_1_compatibility ()
+static GLboolean _glewInit_GL_REGAL_ES1_1_compatibility (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15468,7 +15468,7 @@ static GLboolean _glewInit_GL_REGAL_ES1_1_compatibility ()
 
 #ifdef GL_REGAL_error_string
 
-static GLboolean _glewInit_GL_REGAL_error_string ()
+static GLboolean _glewInit_GL_REGAL_error_string (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15481,7 +15481,7 @@ static GLboolean _glewInit_GL_REGAL_error_string ()
 
 #ifdef GL_REGAL_extension_query
 
-static GLboolean _glewInit_GL_REGAL_extension_query ()
+static GLboolean _glewInit_GL_REGAL_extension_query (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15495,7 +15495,7 @@ static GLboolean _glewInit_GL_REGAL_extension_query ()
 
 #ifdef GL_REGAL_log
 
-static GLboolean _glewInit_GL_REGAL_log ()
+static GLboolean _glewInit_GL_REGAL_log (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15508,7 +15508,7 @@ static GLboolean _glewInit_GL_REGAL_log ()
 
 #ifdef GL_REGAL_proc_address
 
-static GLboolean _glewInit_GL_REGAL_proc_address ()
+static GLboolean _glewInit_GL_REGAL_proc_address (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15521,7 +15521,7 @@ static GLboolean _glewInit_GL_REGAL_proc_address ()
 
 #ifdef GL_SGIS_detail_texture
 
-static GLboolean _glewInit_GL_SGIS_detail_texture ()
+static GLboolean _glewInit_GL_SGIS_detail_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15535,7 +15535,7 @@ static GLboolean _glewInit_GL_SGIS_detail_texture ()
 
 #ifdef GL_SGIS_fog_function
 
-static GLboolean _glewInit_GL_SGIS_fog_function ()
+static GLboolean _glewInit_GL_SGIS_fog_function (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15549,7 +15549,7 @@ static GLboolean _glewInit_GL_SGIS_fog_function ()
 
 #ifdef GL_SGIS_multisample
 
-static GLboolean _glewInit_GL_SGIS_multisample ()
+static GLboolean _glewInit_GL_SGIS_multisample (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15563,7 +15563,7 @@ static GLboolean _glewInit_GL_SGIS_multisample ()
 
 #ifdef GL_SGIS_multitexture
 
-static GLboolean _glewInit_GL_SGIS_multitexture ()
+static GLboolean _glewInit_GL_SGIS_multitexture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15579,7 +15579,7 @@ static GLboolean _glewInit_GL_SGIS_multitexture ()
 
 #ifdef GL_SGIS_shared_multisample
 
-static GLboolean _glewInit_GL_SGIS_shared_multisample ()
+static GLboolean _glewInit_GL_SGIS_shared_multisample (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15592,7 +15592,7 @@ static GLboolean _glewInit_GL_SGIS_shared_multisample ()
 
 #ifdef GL_SGIS_sharpen_texture
 
-static GLboolean _glewInit_GL_SGIS_sharpen_texture ()
+static GLboolean _glewInit_GL_SGIS_sharpen_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15606,7 +15606,7 @@ static GLboolean _glewInit_GL_SGIS_sharpen_texture ()
 
 #ifdef GL_SGIS_texture4D
 
-static GLboolean _glewInit_GL_SGIS_texture4D ()
+static GLboolean _glewInit_GL_SGIS_texture4D (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15620,7 +15620,7 @@ static GLboolean _glewInit_GL_SGIS_texture4D ()
 
 #ifdef GL_SGIS_texture_filter4
 
-static GLboolean _glewInit_GL_SGIS_texture_filter4 ()
+static GLboolean _glewInit_GL_SGIS_texture_filter4 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15634,7 +15634,7 @@ static GLboolean _glewInit_GL_SGIS_texture_filter4 ()
 
 #ifdef GL_SGIX_async
 
-static GLboolean _glewInit_GL_SGIX_async ()
+static GLboolean _glewInit_GL_SGIX_async (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15652,7 +15652,7 @@ static GLboolean _glewInit_GL_SGIX_async ()
 
 #ifdef GL_SGIX_datapipe
 
-static GLboolean _glewInit_GL_SGIX_datapipe ()
+static GLboolean _glewInit_GL_SGIX_datapipe (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15666,7 +15666,7 @@ static GLboolean _glewInit_GL_SGIX_datapipe ()
 
 #ifdef GL_SGIX_flush_raster
 
-static GLboolean _glewInit_GL_SGIX_flush_raster ()
+static GLboolean _glewInit_GL_SGIX_flush_raster (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15679,7 +15679,7 @@ static GLboolean _glewInit_GL_SGIX_flush_raster ()
 
 #ifdef GL_SGIX_fog_layers
 
-static GLboolean _glewInit_GL_SGIX_fog_layers ()
+static GLboolean _glewInit_GL_SGIX_fog_layers (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15693,7 +15693,7 @@ static GLboolean _glewInit_GL_SGIX_fog_layers ()
 
 #ifdef GL_SGIX_fog_texture
 
-static GLboolean _glewInit_GL_SGIX_fog_texture ()
+static GLboolean _glewInit_GL_SGIX_fog_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15706,7 +15706,7 @@ static GLboolean _glewInit_GL_SGIX_fog_texture ()
 
 #ifdef GL_SGIX_fragment_specular_lighting
 
-static GLboolean _glewInit_GL_SGIX_fragment_specular_lighting ()
+static GLboolean _glewInit_GL_SGIX_fragment_specular_lighting (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15735,7 +15735,7 @@ static GLboolean _glewInit_GL_SGIX_fragment_specular_lighting ()
 
 #ifdef GL_SGIX_framezoom
 
-static GLboolean _glewInit_GL_SGIX_framezoom ()
+static GLboolean _glewInit_GL_SGIX_framezoom (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15748,7 +15748,7 @@ static GLboolean _glewInit_GL_SGIX_framezoom ()
 
 #ifdef GL_SGIX_igloo_interface
 
-static GLboolean _glewInit_GL_SGIX_igloo_interface ()
+static GLboolean _glewInit_GL_SGIX_igloo_interface (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15761,7 +15761,7 @@ static GLboolean _glewInit_GL_SGIX_igloo_interface ()
 
 #ifdef GL_SGIX_mpeg1
 
-static GLboolean _glewInit_GL_SGIX_mpeg1 ()
+static GLboolean _glewInit_GL_SGIX_mpeg1 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15784,7 +15784,7 @@ static GLboolean _glewInit_GL_SGIX_mpeg1 ()
 
 #ifdef GL_SGIX_nonlinear_lighting_pervertex
 
-static GLboolean _glewInit_GL_SGIX_nonlinear_lighting_pervertex ()
+static GLboolean _glewInit_GL_SGIX_nonlinear_lighting_pervertex (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15800,7 +15800,7 @@ static GLboolean _glewInit_GL_SGIX_nonlinear_lighting_pervertex ()
 
 #ifdef GL_SGIX_pixel_texture
 
-static GLboolean _glewInit_GL_SGIX_pixel_texture ()
+static GLboolean _glewInit_GL_SGIX_pixel_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15813,7 +15813,7 @@ static GLboolean _glewInit_GL_SGIX_pixel_texture ()
 
 #ifdef GL_SGIX_polynomial_ffd
 
-static GLboolean _glewInit_GL_SGIX_polynomial_ffd ()
+static GLboolean _glewInit_GL_SGIX_polynomial_ffd (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15827,7 +15827,7 @@ static GLboolean _glewInit_GL_SGIX_polynomial_ffd ()
 
 #ifdef GL_SGIX_quad_mesh
 
-static GLboolean _glewInit_GL_SGIX_quad_mesh ()
+static GLboolean _glewInit_GL_SGIX_quad_mesh (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15841,7 +15841,7 @@ static GLboolean _glewInit_GL_SGIX_quad_mesh ()
 
 #ifdef GL_SGIX_reference_plane
 
-static GLboolean _glewInit_GL_SGIX_reference_plane ()
+static GLboolean _glewInit_GL_SGIX_reference_plane (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15854,7 +15854,7 @@ static GLboolean _glewInit_GL_SGIX_reference_plane ()
 
 #ifdef GL_SGIX_sprite
 
-static GLboolean _glewInit_GL_SGIX_sprite ()
+static GLboolean _glewInit_GL_SGIX_sprite (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15870,7 +15870,7 @@ static GLboolean _glewInit_GL_SGIX_sprite ()
 
 #ifdef GL_SGIX_tag_sample_buffer
 
-static GLboolean _glewInit_GL_SGIX_tag_sample_buffer ()
+static GLboolean _glewInit_GL_SGIX_tag_sample_buffer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15883,7 +15883,7 @@ static GLboolean _glewInit_GL_SGIX_tag_sample_buffer ()
 
 #ifdef GL_SGIX_vector_ops
 
-static GLboolean _glewInit_GL_SGIX_vector_ops ()
+static GLboolean _glewInit_GL_SGIX_vector_ops (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15897,7 +15897,7 @@ static GLboolean _glewInit_GL_SGIX_vector_ops ()
 
 #ifdef GL_SGIX_vertex_array_object
 
-static GLboolean _glewInit_GL_SGIX_vertex_array_object ()
+static GLboolean _glewInit_GL_SGIX_vertex_array_object (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15915,7 +15915,7 @@ static GLboolean _glewInit_GL_SGIX_vertex_array_object ()
 
 #ifdef GL_SGI_color_table
 
-static GLboolean _glewInit_GL_SGI_color_table ()
+static GLboolean _glewInit_GL_SGI_color_table (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15934,7 +15934,7 @@ static GLboolean _glewInit_GL_SGI_color_table ()
 
 #ifdef GL_SGI_fft
 
-static GLboolean _glewInit_GL_SGI_fft ()
+static GLboolean _glewInit_GL_SGI_fft (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15953,7 +15953,7 @@ static GLboolean _glewInit_GL_SGI_fft ()
 
 #ifdef GL_SUNX_constant_data
 
-static GLboolean _glewInit_GL_SUNX_constant_data ()
+static GLboolean _glewInit_GL_SUNX_constant_data (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15966,7 +15966,7 @@ static GLboolean _glewInit_GL_SUNX_constant_data ()
 
 #ifdef GL_SUN_global_alpha
 
-static GLboolean _glewInit_GL_SUN_global_alpha ()
+static GLboolean _glewInit_GL_SUN_global_alpha (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15986,7 +15986,7 @@ static GLboolean _glewInit_GL_SUN_global_alpha ()
 
 #ifdef GL_SUN_read_video_pixels
 
-static GLboolean _glewInit_GL_SUN_read_video_pixels ()
+static GLboolean _glewInit_GL_SUN_read_video_pixels (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -15999,7 +15999,7 @@ static GLboolean _glewInit_GL_SUN_read_video_pixels ()
 
 #ifdef GL_SUN_triangle_list
 
-static GLboolean _glewInit_GL_SUN_triangle_list ()
+static GLboolean _glewInit_GL_SUN_triangle_list (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -16018,7 +16018,7 @@ static GLboolean _glewInit_GL_SUN_triangle_list ()
 
 #ifdef GL_SUN_vertex
 
-static GLboolean _glewInit_GL_SUN_vertex ()
+static GLboolean _glewInit_GL_SUN_vertex (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -16070,7 +16070,7 @@ static GLboolean _glewInit_GL_SUN_vertex ()
 
 #ifdef GL_WIN_swap_hint
 
-static GLboolean _glewInit_GL_WIN_swap_hint ()
+static GLboolean _glewInit_GL_WIN_swap_hint (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -16156,7 +16156,7 @@ GLboolean GLEWAPIENTRY glewGetExtension (const char* name)
 typedef const GLubyte* (GLAPIENTRY * PFNGLGETSTRINGPROC) (GLenum name);
 typedef void (GLAPIENTRY * PFNGLGETINTEGERVPROC) (GLenum pname, GLint *params);
 
-static GLenum GLEWAPIENTRY glewContextInit ()
+static GLenum GLEWAPIENTRY glewContextInit (void)
 {
   PFNGLGETSTRINGPROC getString;
   const GLubyte* s;
@@ -17664,7 +17664,7 @@ GLboolean __EGLEW_TIZEN_image_native_buffer = GL_FALSE;
 GLboolean __EGLEW_TIZEN_image_native_surface = GL_FALSE;
 #ifdef EGL_VERSION_1_0
 
-static GLboolean _glewInit_EGL_VERSION_1_0 ()
+static GLboolean _glewInit_EGL_VERSION_1_0 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17699,7 +17699,7 @@ static GLboolean _glewInit_EGL_VERSION_1_0 ()
 
 #ifdef EGL_VERSION_1_1
 
-static GLboolean _glewInit_EGL_VERSION_1_1 ()
+static GLboolean _glewInit_EGL_VERSION_1_1 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17715,7 +17715,7 @@ static GLboolean _glewInit_EGL_VERSION_1_1 ()
 
 #ifdef EGL_VERSION_1_2
 
-static GLboolean _glewInit_EGL_VERSION_1_2 ()
+static GLboolean _glewInit_EGL_VERSION_1_2 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17732,7 +17732,7 @@ static GLboolean _glewInit_EGL_VERSION_1_2 ()
 
 #ifdef EGL_VERSION_1_4
 
-static GLboolean _glewInit_EGL_VERSION_1_4 ()
+static GLboolean _glewInit_EGL_VERSION_1_4 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17745,7 +17745,7 @@ static GLboolean _glewInit_EGL_VERSION_1_4 ()
 
 #ifdef EGL_VERSION_1_5
 
-static GLboolean _glewInit_EGL_VERSION_1_5 ()
+static GLboolean _glewInit_EGL_VERSION_1_5 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17767,7 +17767,7 @@ static GLboolean _glewInit_EGL_VERSION_1_5 ()
 
 #ifdef EGL_ANDROID_blob_cache
 
-static GLboolean _glewInit_EGL_ANDROID_blob_cache ()
+static GLboolean _glewInit_EGL_ANDROID_blob_cache (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17780,7 +17780,7 @@ static GLboolean _glewInit_EGL_ANDROID_blob_cache ()
 
 #ifdef EGL_ANDROID_create_native_client_buffer
 
-static GLboolean _glewInit_EGL_ANDROID_create_native_client_buffer ()
+static GLboolean _glewInit_EGL_ANDROID_create_native_client_buffer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17793,7 +17793,7 @@ static GLboolean _glewInit_EGL_ANDROID_create_native_client_buffer ()
 
 #ifdef EGL_ANDROID_native_fence_sync
 
-static GLboolean _glewInit_EGL_ANDROID_native_fence_sync ()
+static GLboolean _glewInit_EGL_ANDROID_native_fence_sync (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17806,7 +17806,7 @@ static GLboolean _glewInit_EGL_ANDROID_native_fence_sync ()
 
 #ifdef EGL_ANDROID_presentation_time
 
-static GLboolean _glewInit_EGL_ANDROID_presentation_time ()
+static GLboolean _glewInit_EGL_ANDROID_presentation_time (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17819,7 +17819,7 @@ static GLboolean _glewInit_EGL_ANDROID_presentation_time ()
 
 #ifdef EGL_ANGLE_query_surface_pointer
 
-static GLboolean _glewInit_EGL_ANGLE_query_surface_pointer ()
+static GLboolean _glewInit_EGL_ANGLE_query_surface_pointer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17832,7 +17832,7 @@ static GLboolean _glewInit_EGL_ANGLE_query_surface_pointer ()
 
 #ifdef EGL_EXT_device_enumeration
 
-static GLboolean _glewInit_EGL_EXT_device_enumeration ()
+static GLboolean _glewInit_EGL_EXT_device_enumeration (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17845,7 +17845,7 @@ static GLboolean _glewInit_EGL_EXT_device_enumeration ()
 
 #ifdef EGL_EXT_device_query
 
-static GLboolean _glewInit_EGL_EXT_device_query ()
+static GLboolean _glewInit_EGL_EXT_device_query (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17860,7 +17860,7 @@ static GLboolean _glewInit_EGL_EXT_device_query ()
 
 #ifdef EGL_EXT_image_dma_buf_import_modifiers
 
-static GLboolean _glewInit_EGL_EXT_image_dma_buf_import_modifiers ()
+static GLboolean _glewInit_EGL_EXT_image_dma_buf_import_modifiers (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17874,7 +17874,7 @@ static GLboolean _glewInit_EGL_EXT_image_dma_buf_import_modifiers ()
 
 #ifdef EGL_EXT_output_base
 
-static GLboolean _glewInit_EGL_EXT_output_base ()
+static GLboolean _glewInit_EGL_EXT_output_base (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17894,7 +17894,7 @@ static GLboolean _glewInit_EGL_EXT_output_base ()
 
 #ifdef EGL_EXT_platform_base
 
-static GLboolean _glewInit_EGL_EXT_platform_base ()
+static GLboolean _glewInit_EGL_EXT_platform_base (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17909,7 +17909,7 @@ static GLboolean _glewInit_EGL_EXT_platform_base ()
 
 #ifdef EGL_EXT_stream_consumer_egloutput
 
-static GLboolean _glewInit_EGL_EXT_stream_consumer_egloutput ()
+static GLboolean _glewInit_EGL_EXT_stream_consumer_egloutput (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17922,7 +17922,7 @@ static GLboolean _glewInit_EGL_EXT_stream_consumer_egloutput ()
 
 #ifdef EGL_EXT_swap_buffers_with_damage
 
-static GLboolean _glewInit_EGL_EXT_swap_buffers_with_damage ()
+static GLboolean _glewInit_EGL_EXT_swap_buffers_with_damage (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17935,7 +17935,7 @@ static GLboolean _glewInit_EGL_EXT_swap_buffers_with_damage ()
 
 #ifdef EGL_HI_clientpixmap
 
-static GLboolean _glewInit_EGL_HI_clientpixmap ()
+static GLboolean _glewInit_EGL_HI_clientpixmap (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17948,7 +17948,7 @@ static GLboolean _glewInit_EGL_HI_clientpixmap ()
 
 #ifdef EGL_KHR_cl_event2
 
-static GLboolean _glewInit_EGL_KHR_cl_event2 ()
+static GLboolean _glewInit_EGL_KHR_cl_event2 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17961,7 +17961,7 @@ static GLboolean _glewInit_EGL_KHR_cl_event2 ()
 
 #ifdef EGL_KHR_debug
 
-static GLboolean _glewInit_EGL_KHR_debug ()
+static GLboolean _glewInit_EGL_KHR_debug (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17976,7 +17976,7 @@ static GLboolean _glewInit_EGL_KHR_debug ()
 
 #ifdef EGL_KHR_image
 
-static GLboolean _glewInit_EGL_KHR_image ()
+static GLboolean _glewInit_EGL_KHR_image (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -17990,7 +17990,7 @@ static GLboolean _glewInit_EGL_KHR_image ()
 
 #ifdef EGL_KHR_lock_surface
 
-static GLboolean _glewInit_EGL_KHR_lock_surface ()
+static GLboolean _glewInit_EGL_KHR_lock_surface (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18004,7 +18004,7 @@ static GLboolean _glewInit_EGL_KHR_lock_surface ()
 
 #ifdef EGL_KHR_lock_surface3
 
-static GLboolean _glewInit_EGL_KHR_lock_surface3 ()
+static GLboolean _glewInit_EGL_KHR_lock_surface3 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18017,7 +18017,7 @@ static GLboolean _glewInit_EGL_KHR_lock_surface3 ()
 
 #ifdef EGL_KHR_partial_update
 
-static GLboolean _glewInit_EGL_KHR_partial_update ()
+static GLboolean _glewInit_EGL_KHR_partial_update (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18030,7 +18030,7 @@ static GLboolean _glewInit_EGL_KHR_partial_update ()
 
 #ifdef EGL_KHR_reusable_sync
 
-static GLboolean _glewInit_EGL_KHR_reusable_sync ()
+static GLboolean _glewInit_EGL_KHR_reusable_sync (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18047,7 +18047,7 @@ static GLboolean _glewInit_EGL_KHR_reusable_sync ()
 
 #ifdef EGL_KHR_stream
 
-static GLboolean _glewInit_EGL_KHR_stream ()
+static GLboolean _glewInit_EGL_KHR_stream (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18064,7 +18064,7 @@ static GLboolean _glewInit_EGL_KHR_stream ()
 
 #ifdef EGL_KHR_stream_attrib
 
-static GLboolean _glewInit_EGL_KHR_stream_attrib ()
+static GLboolean _glewInit_EGL_KHR_stream_attrib (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18081,7 +18081,7 @@ static GLboolean _glewInit_EGL_KHR_stream_attrib ()
 
 #ifdef EGL_KHR_stream_consumer_gltexture
 
-static GLboolean _glewInit_EGL_KHR_stream_consumer_gltexture ()
+static GLboolean _glewInit_EGL_KHR_stream_consumer_gltexture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18096,7 +18096,7 @@ static GLboolean _glewInit_EGL_KHR_stream_consumer_gltexture ()
 
 #ifdef EGL_KHR_stream_cross_process_fd
 
-static GLboolean _glewInit_EGL_KHR_stream_cross_process_fd ()
+static GLboolean _glewInit_EGL_KHR_stream_cross_process_fd (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18110,7 +18110,7 @@ static GLboolean _glewInit_EGL_KHR_stream_cross_process_fd ()
 
 #ifdef EGL_KHR_stream_fifo
 
-static GLboolean _glewInit_EGL_KHR_stream_fifo ()
+static GLboolean _glewInit_EGL_KHR_stream_fifo (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18123,7 +18123,7 @@ static GLboolean _glewInit_EGL_KHR_stream_fifo ()
 
 #ifdef EGL_KHR_stream_producer_eglsurface
 
-static GLboolean _glewInit_EGL_KHR_stream_producer_eglsurface ()
+static GLboolean _glewInit_EGL_KHR_stream_producer_eglsurface (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18136,7 +18136,7 @@ static GLboolean _glewInit_EGL_KHR_stream_producer_eglsurface ()
 
 #ifdef EGL_KHR_swap_buffers_with_damage
 
-static GLboolean _glewInit_EGL_KHR_swap_buffers_with_damage ()
+static GLboolean _glewInit_EGL_KHR_swap_buffers_with_damage (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18149,7 +18149,7 @@ static GLboolean _glewInit_EGL_KHR_swap_buffers_with_damage ()
 
 #ifdef EGL_KHR_wait_sync
 
-static GLboolean _glewInit_EGL_KHR_wait_sync ()
+static GLboolean _glewInit_EGL_KHR_wait_sync (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18162,7 +18162,7 @@ static GLboolean _glewInit_EGL_KHR_wait_sync ()
 
 #ifdef EGL_MESA_drm_image
 
-static GLboolean _glewInit_EGL_MESA_drm_image ()
+static GLboolean _glewInit_EGL_MESA_drm_image (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18176,7 +18176,7 @@ static GLboolean _glewInit_EGL_MESA_drm_image ()
 
 #ifdef EGL_MESA_image_dma_buf_export
 
-static GLboolean _glewInit_EGL_MESA_image_dma_buf_export ()
+static GLboolean _glewInit_EGL_MESA_image_dma_buf_export (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18190,7 +18190,7 @@ static GLboolean _glewInit_EGL_MESA_image_dma_buf_export ()
 
 #ifdef EGL_NOK_swap_region
 
-static GLboolean _glewInit_EGL_NOK_swap_region ()
+static GLboolean _glewInit_EGL_NOK_swap_region (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18203,7 +18203,7 @@ static GLboolean _glewInit_EGL_NOK_swap_region ()
 
 #ifdef EGL_NOK_swap_region2
 
-static GLboolean _glewInit_EGL_NOK_swap_region2 ()
+static GLboolean _glewInit_EGL_NOK_swap_region2 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18216,7 +18216,7 @@ static GLboolean _glewInit_EGL_NOK_swap_region2 ()
 
 #ifdef EGL_NV_native_query
 
-static GLboolean _glewInit_EGL_NV_native_query ()
+static GLboolean _glewInit_EGL_NV_native_query (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18231,7 +18231,7 @@ static GLboolean _glewInit_EGL_NV_native_query ()
 
 #ifdef EGL_NV_post_sub_buffer
 
-static GLboolean _glewInit_EGL_NV_post_sub_buffer ()
+static GLboolean _glewInit_EGL_NV_post_sub_buffer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18244,7 +18244,7 @@ static GLboolean _glewInit_EGL_NV_post_sub_buffer ()
 
 #ifdef EGL_NV_stream_consumer_gltexture_yuv
 
-static GLboolean _glewInit_EGL_NV_stream_consumer_gltexture_yuv ()
+static GLboolean _glewInit_EGL_NV_stream_consumer_gltexture_yuv (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18257,7 +18257,7 @@ static GLboolean _glewInit_EGL_NV_stream_consumer_gltexture_yuv ()
 
 #ifdef EGL_NV_stream_metadata
 
-static GLboolean _glewInit_EGL_NV_stream_metadata ()
+static GLboolean _glewInit_EGL_NV_stream_metadata (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18272,7 +18272,7 @@ static GLboolean _glewInit_EGL_NV_stream_metadata ()
 
 #ifdef EGL_NV_stream_reset
 
-static GLboolean _glewInit_EGL_NV_stream_reset ()
+static GLboolean _glewInit_EGL_NV_stream_reset (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18285,7 +18285,7 @@ static GLboolean _glewInit_EGL_NV_stream_reset ()
 
 #ifdef EGL_NV_stream_sync
 
-static GLboolean _glewInit_EGL_NV_stream_sync ()
+static GLboolean _glewInit_EGL_NV_stream_sync (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18298,7 +18298,7 @@ static GLboolean _glewInit_EGL_NV_stream_sync ()
 
 #ifdef EGL_NV_sync
 
-static GLboolean _glewInit_EGL_NV_sync ()
+static GLboolean _glewInit_EGL_NV_sync (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -18316,7 +18316,7 @@ static GLboolean _glewInit_EGL_NV_sync ()
 
 #ifdef EGL_NV_system_time
 
-static GLboolean _glewInit_EGL_NV_system_time ()
+static GLboolean _glewInit_EGL_NV_system_time (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19013,7 +19013,7 @@ GLboolean __WGLEW_NV_video_output = GL_FALSE;
 GLboolean __WGLEW_OML_sync_control = GL_FALSE;
 #ifdef WGL_3DL_stereo_control
 
-static GLboolean _glewInit_WGL_3DL_stereo_control ()
+static GLboolean _glewInit_WGL_3DL_stereo_control (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19026,7 +19026,7 @@ static GLboolean _glewInit_WGL_3DL_stereo_control ()
 
 #ifdef WGL_AMD_gpu_association
 
-static GLboolean _glewInit_WGL_AMD_gpu_association ()
+static GLboolean _glewInit_WGL_AMD_gpu_association (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19047,7 +19047,7 @@ static GLboolean _glewInit_WGL_AMD_gpu_association ()
 
 #ifdef WGL_ARB_buffer_region
 
-static GLboolean _glewInit_WGL_ARB_buffer_region ()
+static GLboolean _glewInit_WGL_ARB_buffer_region (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19063,7 +19063,7 @@ static GLboolean _glewInit_WGL_ARB_buffer_region ()
 
 #ifdef WGL_ARB_create_context
 
-static GLboolean _glewInit_WGL_ARB_create_context ()
+static GLboolean _glewInit_WGL_ARB_create_context (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19076,7 +19076,7 @@ static GLboolean _glewInit_WGL_ARB_create_context ()
 
 #ifdef WGL_ARB_extensions_string
 
-static GLboolean _glewInit_WGL_ARB_extensions_string ()
+static GLboolean _glewInit_WGL_ARB_extensions_string (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19089,7 +19089,7 @@ static GLboolean _glewInit_WGL_ARB_extensions_string ()
 
 #ifdef WGL_ARB_make_current_read
 
-static GLboolean _glewInit_WGL_ARB_make_current_read ()
+static GLboolean _glewInit_WGL_ARB_make_current_read (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19103,7 +19103,7 @@ static GLboolean _glewInit_WGL_ARB_make_current_read ()
 
 #ifdef WGL_ARB_pbuffer
 
-static GLboolean _glewInit_WGL_ARB_pbuffer ()
+static GLboolean _glewInit_WGL_ARB_pbuffer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19120,7 +19120,7 @@ static GLboolean _glewInit_WGL_ARB_pbuffer ()
 
 #ifdef WGL_ARB_pixel_format
 
-static GLboolean _glewInit_WGL_ARB_pixel_format ()
+static GLboolean _glewInit_WGL_ARB_pixel_format (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19135,7 +19135,7 @@ static GLboolean _glewInit_WGL_ARB_pixel_format ()
 
 #ifdef WGL_ARB_render_texture
 
-static GLboolean _glewInit_WGL_ARB_render_texture ()
+static GLboolean _glewInit_WGL_ARB_render_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19150,7 +19150,7 @@ static GLboolean _glewInit_WGL_ARB_render_texture ()
 
 #ifdef WGL_EXT_display_color_table
 
-static GLboolean _glewInit_WGL_EXT_display_color_table ()
+static GLboolean _glewInit_WGL_EXT_display_color_table (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19166,7 +19166,7 @@ static GLboolean _glewInit_WGL_EXT_display_color_table ()
 
 #ifdef WGL_EXT_extensions_string
 
-static GLboolean _glewInit_WGL_EXT_extensions_string ()
+static GLboolean _glewInit_WGL_EXT_extensions_string (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19179,7 +19179,7 @@ static GLboolean _glewInit_WGL_EXT_extensions_string ()
 
 #ifdef WGL_EXT_make_current_read
 
-static GLboolean _glewInit_WGL_EXT_make_current_read ()
+static GLboolean _glewInit_WGL_EXT_make_current_read (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19193,7 +19193,7 @@ static GLboolean _glewInit_WGL_EXT_make_current_read ()
 
 #ifdef WGL_EXT_pbuffer
 
-static GLboolean _glewInit_WGL_EXT_pbuffer ()
+static GLboolean _glewInit_WGL_EXT_pbuffer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19210,7 +19210,7 @@ static GLboolean _glewInit_WGL_EXT_pbuffer ()
 
 #ifdef WGL_EXT_pixel_format
 
-static GLboolean _glewInit_WGL_EXT_pixel_format ()
+static GLboolean _glewInit_WGL_EXT_pixel_format (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19225,7 +19225,7 @@ static GLboolean _glewInit_WGL_EXT_pixel_format ()
 
 #ifdef WGL_EXT_swap_control
 
-static GLboolean _glewInit_WGL_EXT_swap_control ()
+static GLboolean _glewInit_WGL_EXT_swap_control (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19239,7 +19239,7 @@ static GLboolean _glewInit_WGL_EXT_swap_control ()
 
 #ifdef WGL_I3D_digital_video_control
 
-static GLboolean _glewInit_WGL_I3D_digital_video_control ()
+static GLboolean _glewInit_WGL_I3D_digital_video_control (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19253,7 +19253,7 @@ static GLboolean _glewInit_WGL_I3D_digital_video_control ()
 
 #ifdef WGL_I3D_gamma
 
-static GLboolean _glewInit_WGL_I3D_gamma ()
+static GLboolean _glewInit_WGL_I3D_gamma (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19269,7 +19269,7 @@ static GLboolean _glewInit_WGL_I3D_gamma ()
 
 #ifdef WGL_I3D_genlock
 
-static GLboolean _glewInit_WGL_I3D_genlock ()
+static GLboolean _glewInit_WGL_I3D_genlock (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19293,7 +19293,7 @@ static GLboolean _glewInit_WGL_I3D_genlock ()
 
 #ifdef WGL_I3D_image_buffer
 
-static GLboolean _glewInit_WGL_I3D_image_buffer ()
+static GLboolean _glewInit_WGL_I3D_image_buffer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19309,7 +19309,7 @@ static GLboolean _glewInit_WGL_I3D_image_buffer ()
 
 #ifdef WGL_I3D_swap_frame_lock
 
-static GLboolean _glewInit_WGL_I3D_swap_frame_lock ()
+static GLboolean _glewInit_WGL_I3D_swap_frame_lock (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19325,7 +19325,7 @@ static GLboolean _glewInit_WGL_I3D_swap_frame_lock ()
 
 #ifdef WGL_I3D_swap_frame_usage
 
-static GLboolean _glewInit_WGL_I3D_swap_frame_usage ()
+static GLboolean _glewInit_WGL_I3D_swap_frame_usage (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19341,7 +19341,7 @@ static GLboolean _glewInit_WGL_I3D_swap_frame_usage ()
 
 #ifdef WGL_NV_DX_interop
 
-static GLboolean _glewInit_WGL_NV_DX_interop ()
+static GLboolean _glewInit_WGL_NV_DX_interop (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19361,7 +19361,7 @@ static GLboolean _glewInit_WGL_NV_DX_interop ()
 
 #ifdef WGL_NV_copy_image
 
-static GLboolean _glewInit_WGL_NV_copy_image ()
+static GLboolean _glewInit_WGL_NV_copy_image (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19374,7 +19374,7 @@ static GLboolean _glewInit_WGL_NV_copy_image ()
 
 #ifdef WGL_NV_delay_before_swap
 
-static GLboolean _glewInit_WGL_NV_delay_before_swap ()
+static GLboolean _glewInit_WGL_NV_delay_before_swap (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19387,7 +19387,7 @@ static GLboolean _glewInit_WGL_NV_delay_before_swap ()
 
 #ifdef WGL_NV_gpu_affinity
 
-static GLboolean _glewInit_WGL_NV_gpu_affinity ()
+static GLboolean _glewInit_WGL_NV_gpu_affinity (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19404,7 +19404,7 @@ static GLboolean _glewInit_WGL_NV_gpu_affinity ()
 
 #ifdef WGL_NV_present_video
 
-static GLboolean _glewInit_WGL_NV_present_video ()
+static GLboolean _glewInit_WGL_NV_present_video (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19419,7 +19419,7 @@ static GLboolean _glewInit_WGL_NV_present_video ()
 
 #ifdef WGL_NV_swap_group
 
-static GLboolean _glewInit_WGL_NV_swap_group ()
+static GLboolean _glewInit_WGL_NV_swap_group (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19437,7 +19437,7 @@ static GLboolean _glewInit_WGL_NV_swap_group ()
 
 #ifdef WGL_NV_vertex_array_range
 
-static GLboolean _glewInit_WGL_NV_vertex_array_range ()
+static GLboolean _glewInit_WGL_NV_vertex_array_range (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19451,7 +19451,7 @@ static GLboolean _glewInit_WGL_NV_vertex_array_range ()
 
 #ifdef WGL_NV_video_capture
 
-static GLboolean _glewInit_WGL_NV_video_capture ()
+static GLboolean _glewInit_WGL_NV_video_capture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19468,7 +19468,7 @@ static GLboolean _glewInit_WGL_NV_video_capture ()
 
 #ifdef WGL_NV_video_output
 
-static GLboolean _glewInit_WGL_NV_video_output ()
+static GLboolean _glewInit_WGL_NV_video_output (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19486,7 +19486,7 @@ static GLboolean _glewInit_WGL_NV_video_output ()
 
 #ifdef WGL_OML_sync_control
 
-static GLboolean _glewInit_WGL_OML_sync_control ()
+static GLboolean _glewInit_WGL_OML_sync_control (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19524,7 +19524,7 @@ GLboolean GLEWAPIENTRY wglewGetExtension (const char* name)
   return _glewSearchExtension(name, start, end);
 }
 
-GLenum GLEWAPIENTRY wglewInit ()
+GLenum GLEWAPIENTRY wglewInit (void)
 {
   GLboolean crippled;
   const GLubyte* extStart;
@@ -19974,7 +19974,7 @@ GLboolean __GLXEW_SUN_get_transparent_index = GL_FALSE;
 GLboolean __GLXEW_SUN_video_resize = GL_FALSE;
 #ifdef GLX_VERSION_1_2
 
-static GLboolean _glewInit_GLX_VERSION_1_2 ()
+static GLboolean _glewInit_GLX_VERSION_1_2 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -19987,7 +19987,7 @@ static GLboolean _glewInit_GLX_VERSION_1_2 ()
 
 #ifdef GLX_VERSION_1_3
 
-static GLboolean _glewInit_GLX_VERSION_1_3 ()
+static GLboolean _glewInit_GLX_VERSION_1_3 (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20016,7 +20016,7 @@ static GLboolean _glewInit_GLX_VERSION_1_3 ()
 
 #ifdef GLX_AMD_gpu_association
 
-static GLboolean _glewInit_GLX_AMD_gpu_association ()
+static GLboolean _glewInit_GLX_AMD_gpu_association (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20037,7 +20037,7 @@ static GLboolean _glewInit_GLX_AMD_gpu_association ()
 
 #ifdef GLX_ARB_create_context
 
-static GLboolean _glewInit_GLX_ARB_create_context ()
+static GLboolean _glewInit_GLX_ARB_create_context (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20050,7 +20050,7 @@ static GLboolean _glewInit_GLX_ARB_create_context ()
 
 #ifdef GLX_ATI_render_texture
 
-static GLboolean _glewInit_GLX_ATI_render_texture ()
+static GLboolean _glewInit_GLX_ATI_render_texture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20065,7 +20065,7 @@ static GLboolean _glewInit_GLX_ATI_render_texture ()
 
 #ifdef GLX_EXT_import_context
 
-static GLboolean _glewInit_GLX_EXT_import_context ()
+static GLboolean _glewInit_GLX_EXT_import_context (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20081,7 +20081,7 @@ static GLboolean _glewInit_GLX_EXT_import_context ()
 
 #ifdef GLX_EXT_swap_control
 
-static GLboolean _glewInit_GLX_EXT_swap_control ()
+static GLboolean _glewInit_GLX_EXT_swap_control (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20094,7 +20094,7 @@ static GLboolean _glewInit_GLX_EXT_swap_control ()
 
 #ifdef GLX_EXT_texture_from_pixmap
 
-static GLboolean _glewInit_GLX_EXT_texture_from_pixmap ()
+static GLboolean _glewInit_GLX_EXT_texture_from_pixmap (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20108,7 +20108,7 @@ static GLboolean _glewInit_GLX_EXT_texture_from_pixmap ()
 
 #ifdef GLX_MESA_agp_offset
 
-static GLboolean _glewInit_GLX_MESA_agp_offset ()
+static GLboolean _glewInit_GLX_MESA_agp_offset (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20121,7 +20121,7 @@ static GLboolean _glewInit_GLX_MESA_agp_offset ()
 
 #ifdef GLX_MESA_copy_sub_buffer
 
-static GLboolean _glewInit_GLX_MESA_copy_sub_buffer ()
+static GLboolean _glewInit_GLX_MESA_copy_sub_buffer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20134,7 +20134,7 @@ static GLboolean _glewInit_GLX_MESA_copy_sub_buffer ()
 
 #ifdef GLX_MESA_pixmap_colormap
 
-static GLboolean _glewInit_GLX_MESA_pixmap_colormap ()
+static GLboolean _glewInit_GLX_MESA_pixmap_colormap (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20147,7 +20147,7 @@ static GLboolean _glewInit_GLX_MESA_pixmap_colormap ()
 
 #ifdef GLX_MESA_query_renderer
 
-static GLboolean _glewInit_GLX_MESA_query_renderer ()
+static GLboolean _glewInit_GLX_MESA_query_renderer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20163,7 +20163,7 @@ static GLboolean _glewInit_GLX_MESA_query_renderer ()
 
 #ifdef GLX_MESA_release_buffers
 
-static GLboolean _glewInit_GLX_MESA_release_buffers ()
+static GLboolean _glewInit_GLX_MESA_release_buffers (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20176,7 +20176,7 @@ static GLboolean _glewInit_GLX_MESA_release_buffers ()
 
 #ifdef GLX_MESA_set_3dfx_mode
 
-static GLboolean _glewInit_GLX_MESA_set_3dfx_mode ()
+static GLboolean _glewInit_GLX_MESA_set_3dfx_mode (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20189,7 +20189,7 @@ static GLboolean _glewInit_GLX_MESA_set_3dfx_mode ()
 
 #ifdef GLX_MESA_swap_control
 
-static GLboolean _glewInit_GLX_MESA_swap_control ()
+static GLboolean _glewInit_GLX_MESA_swap_control (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20203,7 +20203,7 @@ static GLboolean _glewInit_GLX_MESA_swap_control ()
 
 #ifdef GLX_NV_copy_buffer
 
-static GLboolean _glewInit_GLX_NV_copy_buffer ()
+static GLboolean _glewInit_GLX_NV_copy_buffer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20217,7 +20217,7 @@ static GLboolean _glewInit_GLX_NV_copy_buffer ()
 
 #ifdef GLX_NV_copy_image
 
-static GLboolean _glewInit_GLX_NV_copy_image ()
+static GLboolean _glewInit_GLX_NV_copy_image (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20230,7 +20230,7 @@ static GLboolean _glewInit_GLX_NV_copy_image ()
 
 #ifdef GLX_NV_delay_before_swap
 
-static GLboolean _glewInit_GLX_NV_delay_before_swap ()
+static GLboolean _glewInit_GLX_NV_delay_before_swap (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20243,7 +20243,7 @@ static GLboolean _glewInit_GLX_NV_delay_before_swap ()
 
 #ifdef GLX_NV_present_video
 
-static GLboolean _glewInit_GLX_NV_present_video ()
+static GLboolean _glewInit_GLX_NV_present_video (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20257,7 +20257,7 @@ static GLboolean _glewInit_GLX_NV_present_video ()
 
 #ifdef GLX_NV_swap_group
 
-static GLboolean _glewInit_GLX_NV_swap_group ()
+static GLboolean _glewInit_GLX_NV_swap_group (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20275,7 +20275,7 @@ static GLboolean _glewInit_GLX_NV_swap_group ()
 
 #ifdef GLX_NV_vertex_array_range
 
-static GLboolean _glewInit_GLX_NV_vertex_array_range ()
+static GLboolean _glewInit_GLX_NV_vertex_array_range (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20289,7 +20289,7 @@ static GLboolean _glewInit_GLX_NV_vertex_array_range ()
 
 #ifdef GLX_NV_video_capture
 
-static GLboolean _glewInit_GLX_NV_video_capture ()
+static GLboolean _glewInit_GLX_NV_video_capture (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20306,7 +20306,7 @@ static GLboolean _glewInit_GLX_NV_video_capture ()
 
 #ifdef GLX_NV_video_out
 
-static GLboolean _glewInit_GLX_NV_video_out ()
+static GLboolean _glewInit_GLX_NV_video_out (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20324,7 +20324,7 @@ static GLboolean _glewInit_GLX_NV_video_out ()
 
 #ifdef GLX_OML_sync_control
 
-static GLboolean _glewInit_GLX_OML_sync_control ()
+static GLboolean _glewInit_GLX_OML_sync_control (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20341,7 +20341,7 @@ static GLboolean _glewInit_GLX_OML_sync_control ()
 
 #ifdef GLX_SGIX_fbconfig
 
-static GLboolean _glewInit_GLX_SGIX_fbconfig ()
+static GLboolean _glewInit_GLX_SGIX_fbconfig (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20359,7 +20359,7 @@ static GLboolean _glewInit_GLX_SGIX_fbconfig ()
 
 #ifdef GLX_SGIX_hyperpipe
 
-static GLboolean _glewInit_GLX_SGIX_hyperpipe ()
+static GLboolean _glewInit_GLX_SGIX_hyperpipe (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20379,7 +20379,7 @@ static GLboolean _glewInit_GLX_SGIX_hyperpipe ()
 
 #ifdef GLX_SGIX_pbuffer
 
-static GLboolean _glewInit_GLX_SGIX_pbuffer ()
+static GLboolean _glewInit_GLX_SGIX_pbuffer (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20396,7 +20396,7 @@ static GLboolean _glewInit_GLX_SGIX_pbuffer ()
 
 #ifdef GLX_SGIX_swap_barrier
 
-static GLboolean _glewInit_GLX_SGIX_swap_barrier ()
+static GLboolean _glewInit_GLX_SGIX_swap_barrier (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20410,7 +20410,7 @@ static GLboolean _glewInit_GLX_SGIX_swap_barrier ()
 
 #ifdef GLX_SGIX_swap_group
 
-static GLboolean _glewInit_GLX_SGIX_swap_group ()
+static GLboolean _glewInit_GLX_SGIX_swap_group (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20423,7 +20423,7 @@ static GLboolean _glewInit_GLX_SGIX_swap_group ()
 
 #ifdef GLX_SGIX_video_resize
 
-static GLboolean _glewInit_GLX_SGIX_video_resize ()
+static GLboolean _glewInit_GLX_SGIX_video_resize (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20440,7 +20440,7 @@ static GLboolean _glewInit_GLX_SGIX_video_resize ()
 
 #ifdef GLX_SGI_cushion
 
-static GLboolean _glewInit_GLX_SGI_cushion ()
+static GLboolean _glewInit_GLX_SGI_cushion (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20453,7 +20453,7 @@ static GLboolean _glewInit_GLX_SGI_cushion ()
 
 #ifdef GLX_SGI_make_current_read
 
-static GLboolean _glewInit_GLX_SGI_make_current_read ()
+static GLboolean _glewInit_GLX_SGI_make_current_read (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20467,7 +20467,7 @@ static GLboolean _glewInit_GLX_SGI_make_current_read ()
 
 #ifdef GLX_SGI_swap_control
 
-static GLboolean _glewInit_GLX_SGI_swap_control ()
+static GLboolean _glewInit_GLX_SGI_swap_control (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20480,7 +20480,7 @@ static GLboolean _glewInit_GLX_SGI_swap_control ()
 
 #ifdef GLX_SGI_video_sync
 
-static GLboolean _glewInit_GLX_SGI_video_sync ()
+static GLboolean _glewInit_GLX_SGI_video_sync (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20494,7 +20494,7 @@ static GLboolean _glewInit_GLX_SGI_video_sync ()
 
 #ifdef GLX_SUN_get_transparent_index
 
-static GLboolean _glewInit_GLX_SUN_get_transparent_index ()
+static GLboolean _glewInit_GLX_SUN_get_transparent_index (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20507,7 +20507,7 @@ static GLboolean _glewInit_GLX_SUN_get_transparent_index ()
 
 #ifdef GLX_SUN_video_resize
 
-static GLboolean _glewInit_GLX_SUN_video_resize ()
+static GLboolean _glewInit_GLX_SUN_video_resize (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -20533,7 +20533,7 @@ GLboolean glxewGetExtension (const char* name)
   return _glewSearchExtension(name, start, end);
 }
 
-GLenum glxewInit ()
+GLenum glxewInit (void)
 {
   Display* display;
   int major, minor;

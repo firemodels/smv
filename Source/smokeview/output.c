@@ -42,7 +42,7 @@ int GetFontHeight(void){
 
 /* ------------------ OutputAxisLabels ------------------------ */
 
-void OutputAxisLabels(){
+void OutputAxisLabels(void){
   float x, y, z;
   float x0, y0, z0;
 

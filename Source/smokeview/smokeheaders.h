@@ -325,7 +325,7 @@ EXTERNCPP int  GetZoneColor(float t, float tmin, float tmax, int nlevel);
 EXTERNCPP void InitCadColors(void);
 EXTERNCPP void InitRGB(void);
 EXTERNCPP void InitScase(smv_case *scase);
-EXTERNCPP smv_case * CreateScase();
+EXTERNCPP smv_case * CreateScase(void);
 EXTERNCPP void DestroyScase(smv_case *scase);
 EXTERNCPP void MakeColorLabels(char colorlabels[12][11], float colorvalues[12], float tmin_arg, float tmax_arg, int nlevel);
 EXTERNCPP void UpdateAllBoundaryColors(int flag);
@@ -392,7 +392,7 @@ EXTERNCPP void SetupReadAllGeom(void);
 EXTERNCPP void ShowHideSortGeometry(int sort_geom, float *mm);
 EXTERNCPP void UpdateAllGeomTriangles(void);
 EXTERNCPP void UpdateGeomAreas(void);
-EXTERNCPP void UpdateGeomNormals();
+EXTERNCPP void UpdateGeomNormals(void);
 EXTERNCPP void UpdateTriangles(int time_flag, int update);
 
 //*** IOhvac.c headers
@@ -731,8 +731,8 @@ EXTERNCPP void Render(int view_mode);
 EXTERNCPP void RenderFrame(int view_mode);
 // BEGIN Animated GIF API
 EXTERNCPP int  GifStart(const char *path);
-EXTERNCPP int  GifEnd();
-EXTERNCPP int  GifAddFrameSpec();
+EXTERNCPP int  GifEnd(void);
+EXTERNCPP int  GifAddFrameSpec(void);
 // END Animated GIF API
 EXTERNCPP void ResetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
 EXTERNCPP void *SetupFF(void *arg);

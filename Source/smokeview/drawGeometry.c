@@ -2931,7 +2931,7 @@ void UpdateFaceLists(void){
 
 /* ------------------ DrawSelectFaces ------------------------ */
 
-void DrawSelectFaces(){
+void DrawSelectFaces(void){
   int i;
   int color_index=0;
 
@@ -3372,7 +3372,7 @@ void DrawFacesOLD(int option){
 
 /* ------------------ DrawFaces ------------------------ */
 
-void DrawFaces(){
+void DrawFaces(void){
   float *new_color=NULL,*old_color=NULL;
   int **showtimelist_handle, *showtimelist;
   float up_color[4]={0.9,0.9,0.9,1.0};
@@ -3698,7 +3698,7 @@ void SortTransparentFaces(float *mm){
 
 /* ------------------ DrawTransparentFaces ------------------------ */
 
-void DrawTransparentFaces(){
+void DrawTransparentFaces(void){
   float old_color[4]={(float)-1.0,(float)-1.0,(float)-1.0,(float)-1.0};
   float *new_color;
   int **showtimelist_handle, *showtimelist;
@@ -3849,7 +3849,7 @@ void DrawTransparentFaces(){
 
 /* ------------------ AllocateFaces ------------------------ */
 
-void AllocateFaces(){
+void AllocateFaces(void){
   int i;
   int ntotal2=0;
   int abortflag=0;

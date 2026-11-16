@@ -70,7 +70,7 @@ int ShaderCompileStatus(GLuint obj,char *label){
 
 /* ------------------ SetZoneSmokeShaders ------------------------ */
 
-int SetZoneSmokeShaders(){
+int SetZoneSmokeShaders(void){
   GLuint vert_shader, frag_shader;
 
   const GLchar *FragmentShaderSource[]={
@@ -256,7 +256,7 @@ int Set3DSliceShaders(void){
 
 /* ------------------ SetSmokeShaders ------------------------ */
 
-int SetSmokeShaders(){
+int SetSmokeShaders(void){
   GLuint vert_shader, frag_shader;
 
 /* ------------------ FragmentShaderSource ------------------------ */

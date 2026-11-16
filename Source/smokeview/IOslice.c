@@ -2619,7 +2619,7 @@ int GetSliceBoundsIndexFromLabel(char *label){
 
 /* ------------------ UpdateSliceBoundLabels ------------------------ */
 
-void UpdateSliceBoundLabels(){
+void UpdateSliceBoundLabels(void){
   int i;
 
   for(i=0; i<global_scase.slicecoll.nsliceinfo; i++){
@@ -6067,7 +6067,7 @@ int SetupSlice(slicedata *sd){
 
 /* ------------------ DrawSliceFrame ------------------------ */
 
-void DrawSliceFrame(){
+void DrawSliceFrame(void){
   int ii;
   int jjj, nslicemax=0, blend_mode;
   int draw_slice;

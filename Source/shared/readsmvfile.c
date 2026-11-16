@@ -8907,7 +8907,7 @@ void InitScase(smv_case *scase){
 
 /// @brief Create and initalize and a smokeview case (smv_case).
 /// @return An initialized smv_case.
-smv_case *CreateScase(){
+smv_case *CreateScase(void){
   smv_case *scase;
   NewMemory((void **)&scase, sizeof(smv_case));
   memset(scase, 0, sizeof(smv_case));

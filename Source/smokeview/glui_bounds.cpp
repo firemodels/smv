@@ -3005,7 +3005,7 @@ extern "C" void GLUIUpdateColorbarFlip(void){
 
 /* ------------------ GLUISetLabelControls2 ------------------------ */
 
-extern "C" void GLUISetLabelControls2(){
+extern "C" void GLUISetLabelControls2(void){
   if(CHECKBOX_labels_shade!=NULL)CHECKBOX_labels_shade->set_int_val(setbw);
   if(CHECKBOX_labels_shadedata != NULL)CHECKBOX_labels_shadedata->set_int_val(setbwdata);
 }

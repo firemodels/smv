@@ -2524,7 +2524,7 @@ void InitPatchMenuInfo(void){
 /// @brief Finish setting global variables after an SMV file has been parsed.
 /// This should be called after @ref ReadSMV_Parse.
 /// @return zero on success, nonzero on failure.
-int ReadSMV_Configure(){
+int ReadSMV_Configure(void){
   int i;
   float wrapup_time;
   float timer_readsmv;
