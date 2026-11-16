@@ -216,7 +216,7 @@ intel_win : $(objwin)
 # ------------- clang_win_db ----------------
 
 clang_win_db : CFLAGS    = -D _DEBUG $(CFLAG_WIN_COM) \
-                          /clang:-Wall /clang:-Wextra /clang:-Wpedantic /clang:-Wshadow \
+                          /clang:-Wall /clang:-Wextra /clang:-Wpedantic /clang:-Wshadow /clang:-Wno-unused-parameter \
                           /clang:-Wconversion /clang:-Wno-sign-conversion /clang:-Wformat=2 \
                           /clang:-Wno-implicit-int-conversion /clang:-Wno-shorten-64-to-32 \
                           /clang:-Wno-float-conversion /clang:-Wno-implicit-float-conversion /clang:-Wno-implicit-int-float-conversion \
