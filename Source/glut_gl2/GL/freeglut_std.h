@@ -150,7 +150,7 @@
 #   include <EGL/egl.h>
 #   include <GLES/gl.h>
 #   include <GLES2/gl2.h>
-#elif __APPLE__
+#elif defined(__APPLE__)
 /* stop MacOSX GL headers for complaining that OpenGL is deprecated */
 #   ifndef GL_SILENCE_DEPRECATION
 #       define GL_SILENCE_DEPRECATION

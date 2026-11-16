@@ -158,7 +158,7 @@
 // needed to mark that SMV_EXIT never returns, otherwise tools like clang-tidy
 // would find spurious issues.
 #ifndef noreturn
-#  if (__STDC_VERSION__ >= 201112L) && !defined(_WIN32)
+#  if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) && !defined(_WIN32)
      // C11 provides a standard 'noreturn' macro that can be used. Conflicts
      // means this doesn't work well on windows
 #    include <stdnoreturn.h>
