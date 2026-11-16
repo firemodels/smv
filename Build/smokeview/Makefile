@@ -215,7 +215,16 @@ intel_win : $(objwin)
 
 # ------------- clang_win_db ----------------
 
-clang_win_db : CFLAGS    = -D _DEBUG $(CFLAG_WIN_COM)
+clang_win_db : CFLAGS    = -D _DEBUG $(CFLAG_WIN_COM) \
+                          /clang:-Wall /clang:-Wextra /clang:-Wpedantic /clang:-Wshadow \
+                          /clang:-Wconversion /clang:-Wno-sign-conversion /clang:-Wformat=2 \
+                          /clang:-Wno-implicit-int-conversion /clang:-Wno-shorten-64-to-32 \
+                          /clang:-Wno-float-conversion /clang:-Wno-implicit-float-conversion /clang:-Wno-implicit-int-float-conversion \
+                          /clang:-Wcast-qual /clang:-Wcast-align /clang:-Wundef /clang:-Wno-switch-enum \
+                          /clang:-Wnull-dereference /clang:-Winit-self /clang:-Wpointer-arith \
+                          /clang:-Wunreachable-code /clang:-Wwrite-strings /clang:-Wno-language-extension-token
+clang_win_db : C_STANDARD_WIN += /clang:-Wstrict-prototypes /clang: \
+                                  /clang:-Wold-style-definition /clang:-Wbad-function-cast
 clang_win_db : LFLAGS    = $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/clang_win
 clang_win_db : CC        = clang-cl
 clang_win_db : CPP       = clang-cl
