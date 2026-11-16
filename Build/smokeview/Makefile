@@ -271,9 +271,10 @@ intel_linux_db : $(obj)
 
 # ------------- gnu_linux_db ----------------
 
-gnu_linux_db : CFLAGS    = -O0 -ggdb -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion \
+gnu_linux_db : CFLAGS    = -O0 -ggdb -Wall -Wextra -Wpedantic -Wshadow -Wsign-conversion \
                           -Wformat=2 -Wcast-qual -Wcast-align -Wundef -Wswitch-enum -Wnull-dereference \
                           -Winit-self -Wpointer-arith -Wunreachable-code -Wwrite-strings -D_DEBUG \
+			  -Wno-float-conversion \
                           $(CFLAGS_COM)
 gnu_linux_db : C_STANDARD += -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition -Wbad-function-cast
 gnu_linux_db : CC        = gcc
