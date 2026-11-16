@@ -127,7 +127,10 @@
 #endif
 
 #ifndef START_TIMER
-#define START_TIMER(a) a = (float)clock()/(float)CLOCKS_PER_SEC
+#define START_TIMER(a) do {                              \
+  clock_t start_timer_ticks = clock();                   \
+  (a) = (float)start_timer_ticks / (float)CLOCKS_PER_SEC;  \
+} while (0)
 #endif
 
 #ifndef STOP_TIMER
