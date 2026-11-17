@@ -164,9 +164,9 @@ no_target:
 
 # linux and osx clang checks
 .c.chk:
-	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@
+	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@ || { cat $@ >&2; rm -f $@; exit 1; }
 .cpp.chk:
-	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@
+	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@ || { cat $@ >&2; rm -f $@; exit 1; }
 
 # windows clang checks
 .c.winchk:

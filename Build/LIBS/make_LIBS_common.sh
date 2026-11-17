@@ -1,5 +1,17 @@
 #!/bin/bash
 
+BUILD_LIBRARY()
+{
+  local logfile=$1
+  shift
+  if [ "${SMV_LIVE_BUILD_OUTPUT:-}" == "1" ]; then
+    set -o pipefail
+    "$@" 2>&1 | tee "$logfile"
+  else
+    "$@" > "$logfile" 2>&1
+  fi
+}
+
 GET_FREEGLUT_WARNINGS()
 {
   if [ `uname` == "Darwin" ]; then
@@ -54,25 +66,25 @@ source $BUILDDIR/scripts/setopts.sh $OPTS
 # ZLIB
 echo "*** building zlib"
 cd $SRCDIR/zlib131
-./makelib.sh $OPTS >& $LIBDIR/zlib.out &
+BUILD_LIBRARY "$LIBDIR/zlib.out" ./makelib.sh $OPTS &
 pid_zlib=$!
 
 # JPEG
 echo "*** building jpeg"
 cd $SRCDIR/jpeg-9b
-./makelib.sh $OPTS >& $LIBDIR/jpeg.out &
+BUILD_LIBRARY "$LIBDIR/jpeg.out" ./makelib.sh $OPTS &
 pid_jpeg=$!
 
 # PNG
 echo "*** building png"
 cd $SRCDIR/png-1.6.48
-./makelib.sh $OPTS >& $LIBDIR/png.out &
+BUILD_LIBRARY "$LIBDIR/png.out" ./makelib.sh $OPTS &
 pid_png=$!
 
 # GD
 echo "*** building gd"
 cd $SRCDIR/gd-2.3.3
-./makelib.sh $OPTS >& $LIBDIR/gd.out &
+BUILD_LIBRARY "$LIBDIR/gd.out" ./makelib.sh $OPTS &
 pid_gd=$!
 
 # GLUT
@@ -95,7 +107,7 @@ if [ "$GLUT" == "freeglut" ]; then
     else
       cd $BUILDDIR/freeglut/clang_$PLATFORM
     fi
-    ./make_freeglut.sh $OPTS >& $LIBDIR/freeglut.out &
+    BUILD_LIBRARY "$LIBDIR/freeglut.out" ./make_freeglut.sh $OPTS &
     pid_glut=$!
   else
     echo "*** error: the freeglut repo does not exist. Clone the "
@@ -107,7 +119,7 @@ else
   else
     echo "*** building glut"
     cd $SRCDIR/glut-3.7.6
-    ./makelib.sh $OPTS >& $LIBDIR/glut.out &
+    BUILD_LIBRARY "$LIBDIR/glut.out" ./makelib.sh $OPTS &
     pid_glut=$!
   fi
 fi
@@ -118,7 +130,7 @@ if [ "$pid_glut" != "" ]; then
 fi
 echo "*** building glui"
 cd $SRCDIR/glui_v2_1_beta
-./makelib.sh $OPTS >& $LIBDIR/glui.out &
+BUILD_LIBRARY "$LIBDIR/glui.out" ./makelib.sh $OPTS &
 pid_glui=$!
 
 #-------copy files
