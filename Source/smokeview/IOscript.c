@@ -518,7 +518,7 @@ keyworddata *GetScriptKeyword(FILE *stream){
 
   kw = GetScriptKeywordFromLabel(keyword_buffer);
   if(kw == keywordinfo){
-    snprintf(kw->keyword, sizeof(kw->keyword), "%s", keyword_buffer);
+    snprintf(kw->keyword, sizeof(kw->keyword), "%.*s",(int)(sizeof(kw->keyword) - 1), keyword_buffer);
   }
   return kw;
 }
