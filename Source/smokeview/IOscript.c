@@ -294,7 +294,7 @@ void InitKeywords(void){
   InitKeyword("LOADVSLICE",          SCRIPT_LOADVSLICE, 2);
   InitKeyword("LOADVSLICEM",         SCRIPT_LOADVSLICEM, 3);
   InitKeyword("OUTPUTSLICEDATA",     SCRIPT_OUTPUTSLICEDATA, 1);
-  InitKeyword("SETSLICEAVERAGE",     SCRIPT_SETSLICEAVERAGE, 2);
+  InitKeyword("SETSLICEAVERAGE",     SCRIPT_SETSLICEAVERAGE, 1);
   InitKeyword("SETSLICEBOUNDS",      SCRIPT_SETSLICEBOUNDS, 1);
 
 // particle files
