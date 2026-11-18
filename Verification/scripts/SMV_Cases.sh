@@ -62,7 +62,7 @@ $QFDS -d Visualization -p 3 vectorskipz.fds
 $QFDS -d Visualization version.fds
 $QFDS -d Visualization version2.fds
 
-$QFDS -p 8 -d WUI pine_tree.fds
+$QFDS -p 16 -d WUI pine_tree.fds
 $QFDS       -d WUI tree_test2.fds
 $QFDS       -d WUI wind_test1.fds
  
