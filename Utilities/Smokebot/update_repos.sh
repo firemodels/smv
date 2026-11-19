@@ -2,7 +2,7 @@
 allrepos="bot cad cfast cor exp fds fig out radcal smv test_bundles"
 updaterepos=$allrepos
 single_repo=
-otherrepos="webpages wikis"
+otherrepos="webpages wikis smvwiki"
 BRANCH=master
 CHECKOUT_MASTER=
 branchname=
