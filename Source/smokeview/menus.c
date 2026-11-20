@@ -7266,11 +7266,13 @@ int IsBoundaryType(int type){
     int n;
 
     patchi = global_scase.patchinfo + i;
-    for(n = 0; n < patchi->npatches; n++){
-      patchfacedata *pfi;
+    if(patchi->patchfaceinfo != NULL){
+      for(n = 0; n < patchi->npatches; n++){
+        patchfacedata *pfi;
 
-      pfi = patchi->patchfaceinfo + n;
-      if(pfi->type == type)return 1;
+        pfi = patchi->patchfaceinfo + n;
+        if(pfi->type == type)return 1;
+      }
     }
   }
   return 0;
