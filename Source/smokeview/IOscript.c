@@ -294,7 +294,7 @@ void InitKeywords(void){
   InitKeyword("LOADVSLICE",          SCRIPT_LOADVSLICE, 2);
   InitKeyword("LOADVSLICEM",         SCRIPT_LOADVSLICEM, 3);
   InitKeyword("OUTPUTSLICEDATA",     SCRIPT_OUTPUTSLICEDATA, 1);
-  InitKeyword("SETSLICEAVERAGE",     SCRIPT_SETSLICEAVERAGE, 2);
+  InitKeyword("SETSLICEAVERAGE",     SCRIPT_SETSLICEAVERAGE, 1);
   InitKeyword("SETSLICEBOUNDS",      SCRIPT_SETSLICEBOUNDS, 1);
 
 // particle files
@@ -432,7 +432,8 @@ int GetScriptError(keyworddata *kw, keyworddata *kw_last, int nparams){
 
 int CheckScript(char *file){
   FILE *stream = NULL;
-  char *keyword, buffer[1024], were1[32], were2[32];
+  char buffer[1024] = "", were1[32], were2[32];
+  char *keyword = buffer;
   int nparams = 0, return_val, reset;
   keyworddata *kw, *kw_last;
 
@@ -453,7 +454,7 @@ int CheckScript(char *file){
   for(;;){
     char *comment;
 
-    if(fgets(param_buffer, 1024, stream)==NULL){
+    if(fgets(buffer, sizeof(buffer), stream)==NULL){
       if(GetScriptError(kw, kw_last, nparams) == 1){
         fprintf(stderr, "***error: script keyword %s in %s(%i) has the wrong number of data lines\n", kw_last->keyword, file, kw_last->line_number);
         fprintf(stderr, "          %s expected, %s found\n", GetWere(kw_last->nparams, were1), GetWere(nparams, were2));
@@ -463,11 +464,11 @@ int CheckScript(char *file){
       break;
     }
     line_number++;
-    comment = strstr(param_buffer, "//");
-    if(comment==NULL)comment = strstr(param_buffer, "#");
+    comment = strstr(buffer, "//");
+    if(comment==NULL)comment = strstr(buffer, "#");
     if(comment != NULL)comment[0] = 0;
     keyword = TrimFrontBack(buffer);
-    if(strlen(buffer)==0)continue;
+    if(keyword[0]==0)continue;
 
     kw = GetScriptKeywordFromLabel(keyword);
     if(reset == 1){ // an error was found, don't check for more errors until the next keyword
@@ -499,7 +500,8 @@ int CheckScript(char *file){
 /* ------------------ GetScriptKeyword ------------------------ */
 
 keyworddata *GetScriptKeyword(FILE *stream){
-  char *keyword=NULL, keyword_buffer[1024];
+  char keyword_buffer[1024];
+  keyworddata *kw;
 
   for(;;){
     char *comment;
@@ -511,24 +513,14 @@ keyworddata *GetScriptKeyword(FILE *stream){
     if(comment != NULL)comment[0] = 0;
     TrimBack(keyword_buffer);
     if(strlen(keyword_buffer)==0||keyword_buffer[0]==' ')continue;
-    keyword = keyword_buffer;
     break;
   }
 
-  if(keyword==NULL||strlen(keyword)==0){
-    strcpy(keywordinfo->keyword, keyword_buffer);
-    return keywordinfo;
+  kw = GetScriptKeywordFromLabel(keyword_buffer);
+  if(kw == keywordinfo){
+    snprintf(kw->keyword, sizeof(kw->keyword), "%.*s",(int)(sizeof(kw->keyword) - 1), keyword_buffer);
   }
-
-  int i;
-  for(i = 1; i < nkeywordinfo; i++){
-    keyworddata *kwi;
-
-    kwi = keywordinfo + i;
-    if(MatchSSF(kwi->keyword, keyword) == MATCH)return kwi;
-  }
-  strcpy(keywordinfo->keyword, keyword_buffer);
-  return keywordinfo;
+  return kw;
 }
 
 #define SETbuffer \

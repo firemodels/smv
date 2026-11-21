@@ -56,7 +56,7 @@ if NOT x%freeglutdir% == x goto skip_glut
   echo *** building glut
   start "building glut" /WAIT cmd /c "makelib %COMPILER_TYPE%  > %LIBDIR%\glut.out 2>&1"
   echo *** glut build complete
-  timeout /t 1 > Nul
+  powershell -NoProfile -Command "Start-Sleep -Seconds 1"
 :skip_glut
 
 :: freeglut
@@ -135,9 +135,9 @@ exit /b
 ::------------------------------------------------
 set file=%1
 :CONT
-if not exist %LIBDIR%\%file% timeout /t 1 > Nul
+if not exist %LIBDIR%\%file% powershell -NoProfile -Command "Start-Sleep -Seconds 1"
 if not exist %LIBDIR%\%file% exit /b
-timeout /t 1 > Nul
+powershell -NoProfile -Command "Start-Sleep -Seconds 1"
 goto CONT
 
 :eof

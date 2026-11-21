@@ -81,7 +81,7 @@ fdsrepos="cad exp fds fig out smv test_bundles"
 firebotrepos="cad exp fds fig fds-smv out smv test_bundles"
 smvrepos="cfast fds fig smv test_bundles"
 thirdpartyrepos="hypre sundials freeglut"
-wikiwebrepos="fds.wiki fds-smv"
+wikiwebrepos="fds.wiki smv.wiki fds-smv"
 
 repos=
 eraserepos=
@@ -183,6 +183,10 @@ do
   echo "----------------------------------------------"
   if [ "$repo" == "fds.wiki" ]; then
      repo_out=wikis
+     WIKIWEB=1
+  fi
+  if [ "$repo" == "smv.wiki" ]; then
+     repo_out=smvwiki
      WIKIWEB=1
   fi
   if [ "$repo" == "fds-smv" ]; then
