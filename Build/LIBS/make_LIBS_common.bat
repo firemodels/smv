@@ -27,27 +27,27 @@ if %COMPILER_TYPE% == c call %UTILDIR%\Scripts\setup_clang_compilers.bat
 :: ZLIB
 cd %SRCDIR%\zlib131
 echo *** building zlib
-start "building zlib" %build_wait%  cmd /c  "%COMMON%\lib_wrapper zlib %LIBDIR% makelib %COMPILER_TYPE%  > %LIBDIR%\zlib.out 2>&1"
+call :BUILD zlib
       
 :: JPEG
 cd %SRCDIR%\jpeg-9b
 echo *** building jpeg
-start "building jpeg" %build_wait%  cmd /c  "%COMMON%\lib_wrapper jpeg %LIBDIR% makelib %COMPILER_TYPE%  > %LIBDIR%\jpeg.out 2>&1"
+call :BUILD jpeg
 
 :: PNG
 cd %SRCDIR%\png-1.6.48
 echo *** building png
-start "building png" %build_wait%   cmd /c  "%COMMON%\lib_wrapper png  %LIBDIR% makelib %COMPILER_TYPE%  > %LIBDIR%\png.out 2>&1"
+call :BUILD png
 
 :: GD
 cd %SRCDIR%\gd-2.3.3
 echo *** building gd
-start "building gd" %build_wait%    cmd /c  "%COMMON%\lib_wrapper gd   %LIBDIR% makelib %COMPILER_TYPE%  > %LIBDIR%\gd.out 2>&1"
+call :BUILD gd
 
 :: pthreads
 cd %SRCDIR%\pthreads
 echo *** building pthreads
-start "building pthreads" %build_wait%  cmd /c "%COMMON%\lib_wrapper pthreads %LIBDIR% makelib %COMPILER_TYPE%  > %LIBDIR%\pthreads.out 2>&1"
+call :BUILD pthreads
 
 :: GLUT%
 if NOT x%freeglutdir% == x goto skip_glut
@@ -74,7 +74,7 @@ if x%freeglutdir% == x goto skip_freeglut
 :: GLUI
 cd %SRCDIR%\glui_v2_1_beta
 echo *** building glui
-start "building glui" %build_wait%  cmd /c "%COMMON%\lib_wrapper glui %LIBDIR% makelib %COMPILER_TYPE%  %freeglutdir% > %LIBDIR%\glui.out 2>&1"
+call :BUILD glui %freeglutdir%
 
 call :WAIT zlib.running
 echo *** zlib build complete
@@ -140,7 +140,7 @@ exit /b
 ::------------------------------------------------
 :: Mark the job before launching it so :WAIT cannot miss a worker starting up.
 type Nul > "%LIBDIR%\%1.running"
-start "building %1" cmd /d /c call "%COMMON%\lib_wrapper.bat" "%1" "%LIBDIR%" makelib %COMPILER_TYPE% %2 || (
+start "building %1" %build_wait% cmd /d /c call "%COMMON%\lib_wrapper.bat" "%1" "%LIBDIR%" makelib %COMPILER_TYPE% %2 || (
   del "%LIBDIR%\%1.running"
   echo *** warning: could not start %1 build
 )
