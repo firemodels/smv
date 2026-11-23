@@ -6,9 +6,13 @@ For more information, including a links to documentation and software downloads,
 
 Here are some other useful links:
 
+[FDS/Smokeview Downloads](https://github.com/firemodels/fds/releases)
+
 [Smokeview Downloads](https://github.com/firemodels/smv/releases)
 
 [Discussion Forum](https://groups.google.com/forum/#!forum/fds-smv)
+
+[FDS Issues](https://github.com/firemodels/fds/issues)
 
 [Smokeview Issues](https://github.com/firemodels/smv/issues)
 
