@@ -5,7 +5,7 @@ if [ "`uname`" == "Darwin" ] ; then
 fi
 
 curdir=`pwd`
-cd ../../Build
+cd ../../../Build
 
 BUILDDIR=`pwd`
 CONVERTDIR=$BUILDDIR/convert/intel_${platform}

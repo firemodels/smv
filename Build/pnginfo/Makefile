@@ -5,8 +5,8 @@ SOURCE_DIR = ../../../Source
 BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
 
-INC_DIR = -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR)/zlib128 \
-          -I $(SOURCE_DIR)/png-1.6.48 -I $(SOURCE_DIR)/shared  -I $(SOURCE_DIR)/pnginfo
+INC_DIR = -I $(SOURCE_DIR)/LIBS/gd-2.3.3 -I $(SOURCE_DIR)/LIBS/zlib131 \
+          -I $(SOURCE_DIR)/LIBS/png-1.6.48 -I $(SOURCE_DIR)/shared  -I $(SOURCE_DIR)/pnginfo
 
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
@@ -96,7 +96,7 @@ linux_osx_check : $(linux_osx_chk)
 # ------------- win_check ----------------
 
 win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB
-win_check : INC_DIR += -I $(SOURCE_DIR)/pthreads
+win_check : INC_DIR += -I $(SOURCE_DIR)/LIBS/pthreads
 win_check : $(win_chk)
 	$(CLANGWINSUMMARY) pnginfo.summary
 
@@ -104,7 +104,7 @@ win_check : $(win_chk)
 # ------------- intel win db ----------------
 
 intel_win_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -D _CONSOLE -D BGDWIN32 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
-intel_win_db : INC_DIR   += -I $(SOURCE_DIR)/pthreads
+intel_win_db : INC_DIR   += -I $(SOURCE_DIR)/LIBS/pthreads
 intel_win_db : CC        = $(I_CC)
 intel_win_db : exe       = pnginfo_win_db.exe
 
@@ -114,7 +114,7 @@ intel_win_db : $(objwin)
 # ------------- intel win ----------------
 
 intel_win : CFLAGS    = /O2 /nologo -D BGDWIN32 -D PTW32_STATIC_LIB $(GITINFO) $(INTEL_COMPINFO)
-intel_win : INC_DIR   += -I $(SOURCE_DIR)/pthreads
+intel_win : INC_DIR   += -I $(SOURCE_DIR)/LIBS/pthreads
 intel_win : CC        = $(I_CC)
 intel_win : exe       = pnginfo_win.exe
 
@@ -124,7 +124,7 @@ intel_win : $(objwin)
 # ------------- clang win ----------------
 
 clang_win : CFLAGS    = -m64 -D BGDWIN32 -D PTW32_STATIC_LIB
-clang_win : INC_DIR   += -I $(SOURCE_DIR)/pthreads
+clang_win : INC_DIR   += -I $(SOURCE_DIR)/LIBS/pthreads
 clang_win : LFLAGS    = -m64
 clang_win : CC        = clang-cl
 clang_win : exe       = pnginfo_win.exe

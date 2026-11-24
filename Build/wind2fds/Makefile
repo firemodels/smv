@@ -4,7 +4,7 @@
 SOURCE_DIR = ../../../Source/
 BUILD_DIR = $(SOURCE_DIR)/../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
-INC_DIR =  -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/wind2fds
+INC_DIR =  -I $(SOURCE_DIR)/LIBS/zlib131 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/wind2fds
 FILTERC =
 
 # Intel compiler definitions
@@ -43,7 +43,7 @@ CLANGSUMMARY=../../scripts/clang_summary.sh
 CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
 
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur
-main.obj: CFLAGS = -Od /nologo -D pp_WIN_INTEL -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
+main.obj: CFLAGS = -Od /nologo -D pp_WIN_INTEL -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/LIBS/pthreads
 
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\pthreads.lib
@@ -87,13 +87,13 @@ linux_osx_check : $(linux_osx_chk)
 # ------------- win_check ----------------
 
 win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB
-win_check : INC_DIR += -I $(SOURCE_DIR)/pthreads
+win_check : INC_DIR += -I $(SOURCE_DIR)/LIBS/pthreads
 win_check : $(win_chk)
 	$(CLANGWINSUMMARY) wind2fds.summary
 
 # ------------- intel win ----------------
 
-intel_win : CFLAGS    = -Od /nologo -D PTW32_STATIC_LIB $(GITINFO) $(INTEL_COMPINFO) -I $(SOURCE_DIR)/pthreads
+intel_win : CFLAGS    = -Od /nologo -D PTW32_STATIC_LIB $(GITINFO) $(INTEL_COMPINFO) -I $(SOURCE_DIR)/LIBS/pthreads
 intel_win : CC        = $(I_CC)
 intel_win : exe       = wind2fds_win.exe
 
@@ -102,7 +102,7 @@ intel_win : $(objwin)
 
 # ------------- clang win ----------------
 
-clang_win : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
+clang_win : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/LIBS/pthreads
 clang_win : CC        = clang-cl
 clang_win : exe       = wind2fds_win.exe
 

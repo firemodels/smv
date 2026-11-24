@@ -2,7 +2,7 @@
 set compilertype=%1
 set freeglutdir=%2
 setlocal
-call ..\scripts\setopts %compilertype%
+call ..\..\scripts\setopts %compilertype%
 title Building glui library
 git clean -dxf
 

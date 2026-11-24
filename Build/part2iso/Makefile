@@ -3,7 +3,7 @@
 SOURCE_DIR = ../../../Source/
 BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
-INC_DIR =  -I $(SOURCE_DIR)/zlib131 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/part2iso
+INC_DIR =  -I $(SOURCE_DIR)/LIBS/zlib131 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/part2iso
 FILTERC =
 FILTERF =
 
@@ -99,13 +99,13 @@ linux_osx_check : $(linux_osx_chk)
 # ------------- win_check ----------------
 
 win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB
-win_check : INC_DIR += -I $(SOURCE_DIR)/pthreads
+win_check : INC_DIR += -I $(SOURCE_DIR)/LIBS/pthreads
 win_check : $(win_chk)
 	$(CLANGWINSUMMARY) part2iso.summary
 
 # ------------- intel win ----------------
 
-intel_win : INC_DIR   += -I $(SOURCE_DIR)/pthreads
+intel_win : INC_DIR   += -I $(SOURCE_DIR)/LIBS/pthreads
 intel_win : CFLAGS    = -Od /nologo -D PTW32_STATIC_LIB  $(OPT) $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
 intel_win : CC        = $(I_CC)
 intel_win : exe       = part2iso_win.exe
@@ -115,7 +115,7 @@ intel_win : $(objwin)
 
 # ------------- clang win ----------------
 
-clang_win : INC_DIR   += -I $(SOURCE_DIR)/pthreads
+clang_win : INC_DIR   += -I $(SOURCE_DIR)/LIBS/pthreads
 clang_win : CFLAGS    = -m64  -D PTW32_STATIC_LIB -D BGDWIN32 -D GLEW_STATIC $(SMV_TESTFLAG)
 clang_win : LFLAGS    = -m64
 clang_win : CC        = clang-cl
@@ -126,7 +126,7 @@ clang_win : $(objwin)
 
 # ------------- clang win debug ----------------
 
-clang_win_db : INC_DIR   += -I $(SOURCE_DIR)/pthreads
+clang_win_db : INC_DIR   += -I $(SOURCE_DIR)/LIBS/pthreads
 clang_win_db : CFLAGS    = /Od /Z7 -D _DEBUG -m64  -D PTW32_STATIC_LIB -D BGDWIN32 -D GLEW_STATIC $(SMV_TESTFLAG)
 clang_win_db : LFLAGS    = -m64
 clang_win_db : CC        = clang-cl

@@ -53,11 +53,11 @@ fi
 
 LIBDIR=`pwd`
 
-SRCDIR=$LIBDIR/../../../Source
+SRCDIR=$LIBDIR/../../../Source/LIBS
 cd $SRCDIR
 SRCDIR=`pwd`
 
-cd ../Build
+cd ../../Build
 BUILDDIR=`pwd`
 
 OPTS="$*"
