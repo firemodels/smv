@@ -8,7 +8,7 @@ set BUILD=intel_win
 cd %ALLDIR%
 call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 
-set allprogs=fds2fed pnginfo smokediff smokeview smokezip wind2fds
+set allprogs=fds2fed part2iso pnginfo smokeview wind2fds
 
 for %%x in ( %allprogs% ) do ( call :make_prog %%x )
 goto eof

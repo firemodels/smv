@@ -21,7 +21,7 @@ EXTERNCPP labeldata *LabelPrevious(labels_collection *labelscoll,
 EXTERNCPP labeldata *LabelNext(labels_collection *labelscoll, labeldata *label);
 EXTERNCPP void LabelCopy(labeldata *label_to, labeldata *label_from);
 EXTERNCPP void LabelDelete(labeldata *label);
-labels_collection *CreateLabelsCollection();
+labels_collection *CreateLabelsCollection(void);
 EXTERNCPP void InitLabelsCollection(labels_collection *labelscoll);
 EXTERNCPP void FreeLabelsCollection(labels_collection *labelscoll);
 EXTERNCPP void LabelPrint(labels_collection *labelscoll);

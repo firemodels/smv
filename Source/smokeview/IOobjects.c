@@ -5733,7 +5733,6 @@ void SetupDeviceData(void){
   int is_dup;
 
   if(global_scase.devicecoll.ndeviceinfo==0)return; // only setup device data once
-  devices_setup = 1;
   FREEMEMORY(global_scase.devicecoll.vdeviceinfo);
   NewMemory((void **)&global_scase.devicecoll.vdeviceinfo,global_scase.devicecoll.ndeviceinfo*sizeof(vdevicedata));
   FREEMEMORY(global_scase.devicecoll.vdevices_sorted);

@@ -278,7 +278,6 @@ EXTERNCPP void UpdateSelectFaces(void);
 
 //*** menus.c headers
 
-EXTERNCPP void HideImmersedMenu(void);
 EXTERNCPP void HideInternalBlockages(void);
 EXTERNCPP void ShowInternalBlockages(void);
 
@@ -307,9 +306,6 @@ EXTERNCPP void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt
               int nlevel,
               char **patchlabels, float *patchvalues, float *tvals256,
               int *extreme_min, int *extreme_max, int flag);
-EXTERNCPP void GetBoundaryLabels(
-              float tmin, float tmax,
-              char **labels, float *boundaryvaluespatch, float *tvals256, int nlevel);
 EXTERNCPP void GetColorbarLabels(float tmin, float tmax, int nlevel,
               char labels[12][11],float *tlevels256);
 EXTERNCPP void GetPartColors(partdata *parti, int nlevels, int flag);
@@ -329,7 +325,7 @@ EXTERNCPP int  GetZoneColor(float t, float tmin, float tmax, int nlevel);
 EXTERNCPP void InitCadColors(void);
 EXTERNCPP void InitRGB(void);
 EXTERNCPP void InitScase(smv_case *scase);
-EXTERNCPP smv_case * CreateScase();
+EXTERNCPP smv_case * CreateScase(void);
 EXTERNCPP void DestroyScase(smv_case *scase);
 EXTERNCPP void MakeColorLabels(char colorlabels[12][11], float colorvalues[12], float tmin_arg, float tmax_arg, int nlevel);
 EXTERNCPP void UpdateAllBoundaryColors(int flag);
@@ -359,8 +355,6 @@ EXTERNCPP void Global2GLUIBoundaryBounds(const char *key);
 EXTERNCPP void MakeBoundaryMask(patchdata *patchi);
 EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
 EXTERNCPP void SetTimeState(void);
-EXTERNCPP void UncompressBoundaryDataGEOM(patchdata *patchi, int frame_index);
-EXTERNCPP void UncompressBoundaryDataBNDF(meshdata *meshi,int frame_index);
 EXTERNCPP void UpdateBoundaryTypes(void);
 EXTERNCPP void UpdateBoundaryMenuLabels(void);
 EXTERNCPP void UpdateBoundarySliceDups(void);
@@ -387,7 +381,7 @@ EXTERNCPP FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int load_flag
               int *nstatics, int *ndynamics, float *vals, int time_frame, float *time_value,
               int *geom_offsets, int *error);
 EXTERNCPP int  GetGeomDataSize(char *file, int *nvals, int time_frame,
-               int *cvals_offsets, int *cvals_sizes, int *geom_offsets, int *geom_offset_flag,
+               int *geom_offset_flag,
                int *max_buffer_size, int *error);
 EXTERNCPP void GetGeomInfoPtrs(int flag);
 EXTERNCPP int InMesh(float *xyz);
@@ -398,7 +392,7 @@ EXTERNCPP void SetupReadAllGeom(void);
 EXTERNCPP void ShowHideSortGeometry(int sort_geom, float *mm);
 EXTERNCPP void UpdateAllGeomTriangles(void);
 EXTERNCPP void UpdateGeomAreas(void);
-EXTERNCPP void UpdateGeomNormals();
+EXTERNCPP void UpdateGeomNormals(void);
 EXTERNCPP void UpdateTriangles(int time_flag, int update);
 
 //*** IOhvac.c headers
@@ -529,14 +523,12 @@ EXTERNCPP void Slice2Device(void);
 EXTERNCPP void SortSlices(void);
 EXTERNCPP int  TimeAverageData(char *label, float **data_out, float **data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time);
 EXTERNCPP void UpdateAllSliceColors(int slicetype, int *errorcode);
-EXTERNCPP void UpdateAllSliceLabels(int slicetype, int *errorcode);
 EXTERNCPP void UpdateGslicePlanes(void);
 EXTERNCPP void UpdateSliceBoundIndexes(void);
 EXTERNCPP void UpdateSliceBoundLabels(void);
 EXTERNCPP void UpdateSliceBounds(void);
 EXTERNCPP void UpdateSliceContours(int slice_type_index, float line_min, float line_max, int nline_values);
 EXTERNCPP void UpdateSliceDups(sliceparmdata *sp);
-EXTERNCPP void UpdateSliceFilenum(void);
 EXTERNCPP void UpdateSliceMenuShow(sliceparmdata *sp);
 EXTERNCPP void UpdateSliceMenuLabels(sliceparmdata *sp);
 EXTERNCPP void UpdateVectorSkip(int skip);
@@ -562,7 +554,6 @@ EXTERNCPP void MergeSmoke3D(smoke3ddata *smoke3dset);
 EXTERNCPP void *MergeSmoke3DAll(void *arg);
 EXTERNCPP void *UncompressSmoke3DAll(void *arg);
 EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int first_time, int *errorcode);
-EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
 EXTERNCPP void SmokeWrapup(void);
 EXTERNCPP int  UpdateSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void UpdateSmoke3dFileParms(void);
@@ -602,7 +593,6 @@ EXTERNCPP int  HaveTerrainSlice(void);
 EXTERNCPP int  HaveTerrainTexture(int *draw_surfaceptr);
 EXTERNCPP void UpdateTerrain(int allocate_memory);
 EXTERNCPP void UpdateTerrainColors(void);
-EXTERNCPP void UpdateTerrainOptions(void);
 
 //*** IOzone.c headers
 
@@ -695,7 +685,7 @@ EXTERNCPP void DrawLabels(labels_collection *labelscoll);
 EXTERNCPP  int GetFontHeight(void);
 EXTERNCPP float GetStringLength(char *string);
 EXTERNCPP int  GetStringWidth(char *string);
-EXTERNCPP void Output3Text(float *color, float x, float y, float z, char *string);
+EXTERNCPP void Output3Text(float *color, float x, float y, float z, const char *string);
 EXTERNCPP void Output3TextRight(float *color, float x, float y, float z, char *string, float pad_length);
 EXTERNCPP void Output3Val(float x, float y, float z, float val);
 EXTERNCPP void OutputAxisLabels(void);
@@ -706,8 +696,6 @@ EXTERNCPP void ScaleFont3D(void);
 
 //*** readsmv.c headers
 
-EXTERNCPP void *CheckFiles(void *arg);
-EXTERNCPP void *Compress(void *arg);
 EXTERNCPP void GetBoxSkyCorners(void);
 EXTERNCPP void GetSliceParmInfo(sliceparmdata *sp);
 EXTERNCPP void InitCellMeshInfo(void);
@@ -743,8 +731,8 @@ EXTERNCPP void Render(int view_mode);
 EXTERNCPP void RenderFrame(int view_mode);
 // BEGIN Animated GIF API
 EXTERNCPP int  GifStart(const char *path);
-EXTERNCPP int  GifEnd();
-EXTERNCPP int  GifAddFrameSpec();
+EXTERNCPP int  GifEnd(void);
+EXTERNCPP int  GifAddFrameSpec(void);
 // END Animated GIF API
 EXTERNCPP void ResetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
 EXTERNCPP void *SetupFF(void *arg);
@@ -795,7 +783,6 @@ EXTERNCPP void GetScreenMapping(float *xyz0, float *screen_perm);
 EXTERNCPP int  GetTimeInterval(float val, float *array, int n);
 EXTERNCPP int  InExterior(float *xyz);
 EXTERNCPP void InitClip(void);
-EXTERNCPP void InitTetraClipInfo(clipdata *ci,float *v1, float *v2, float *v3, float *v4);
 EXTERNCPP void MatMultMat(float *m1, float *m2, float *m3);
 EXTERNCPP void *MakeIBlank(void *arg);
 EXTERNCPP int  MakeIBlankCarve(void);
@@ -839,7 +826,6 @@ EXTERNCPP float GetUnitVal(const char *unitlabel, float oldval, int ndecimals);
 EXTERNCPP void InitUnitDefs(void);
 EXTERNCPP void InitUnits(void);
 EXTERNCPP void SetUnitVis(void);
-EXTERNCPP void UpdateUnitDefs(void);
 
 //*** update.c headers
 

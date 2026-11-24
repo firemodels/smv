@@ -42,20 +42,17 @@ void *PlayMovie(void *arg){
 /* ------------------ SetupFF ------------------------ */
 
 void *SetupFF(void *arg){
-  int have_ffmpeg_local, have_ffplay_local;
+  int have_ffmpeg_local;
 
 #ifdef _WIN32
   have_ffmpeg_local = HaveProg("ffmpeg -version> Nul 2>Nul");
-  have_ffplay_local = HaveProg("ffplay -version> Nul 2>Nul");
 #else
   have_ffmpeg_local = HaveProg("ffmpeg -version >/dev/null 2>/dev/null");
-  have_ffplay_local = HaveProg("ffplay -version >/dev/null 2>/dev/null");
 #endif
 
   ThreadLock(ffmpeg_threads);
   update_ff = 1;
   have_ffmpeg = have_ffmpeg_local;
-  have_ffplay = have_ffplay_local;
   ThreadUnlock(ffmpeg_threads);
   THREAD_EXIT(ffmpeg_threads);
 }
@@ -579,7 +576,7 @@ int GifStart(const char *path) {
 /// @brief Finalise a GIF which was started with GifStart and close the
 /// associated file.
 /// @return zero on success, non-zero on failure
-int GifEnd() {
+int GifEnd(void) {
   gdImageGifAnimEnd(out);
   fclose(out);
   making_movie = 0;
@@ -627,7 +624,7 @@ int GifAddFrame(int delay) {
 /// long.
 /// @return zero on success, non-zero on failure
 
-int GifAddFrameSpec() {
+int GifAddFrameSpec(void) {
   // Should add the current frame? True by default.
   bool render = true;
   // How long should this frame be? Set the default based on framerate.

@@ -32,8 +32,6 @@ EXTERNCPP char *CasePathSmvOrig(smv_case *scase);
 EXTERNCPP char *CasePathEvent(smv_case *scase);
 // char *ffmpeg_command_filename;
 EXTERNCPP char *CasePathFfmpegCommand(smv_case *scase);
-// char *smvzip_filename;
-EXTERNCPP char *CasePathSmvZip(smv_case *scase);
 // char *sliceinfo_filename;
 EXTERNCPP char *CasePathSliceInfo(smv_case *scase);
 // char *deviceinfo_filename;

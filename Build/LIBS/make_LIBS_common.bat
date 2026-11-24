@@ -1,6 +1,8 @@
 @echo off
 set COMPILER_TYPE=%1
 set freeglutdir=%2
+set build_wait=
+if "%SMV_WAIT_FOR_LIBS%" == "1" set build_wait=/b /wait
 
 set LIBDIR=%CD%
 echo *** Cleaning %CD%
@@ -25,27 +27,27 @@ if %COMPILER_TYPE% == c call %UTILDIR%\Scripts\setup_clang_compilers.bat
 :: ZLIB
 cd %SRCDIR%\zlib131
 echo *** building zlib
-start "building zlib"  cmd /c  "%COMMON%\lib_wrapper zlib %LIBDIR% makelib %COMPILER_TYPE%  > %LIBDIR%\zlib.out 2>&1"
+call :BUILD zlib
       
 :: JPEG
 cd %SRCDIR%\jpeg-9b
 echo *** building jpeg
-start "building jpeg"  cmd /c  "%COMMON%\lib_wrapper jpeg %LIBDIR% makelib %COMPILER_TYPE%  > %LIBDIR%\jpeg.out 2>&1"
+call :BUILD jpeg
 
 :: PNG
 cd %SRCDIR%\png-1.6.48
 echo *** building png
-start "building png"   cmd /c  "%COMMON%\lib_wrapper png  %LIBDIR% makelib %COMPILER_TYPE%  > %LIBDIR%\png.out 2>&1"
+call :BUILD png
 
 :: GD
 cd %SRCDIR%\gd-2.3.3
 echo *** building gd
-start "building gd"    cmd /c  "%COMMON%\lib_wrapper gd   %LIBDIR% makelib %COMPILER_TYPE%  > %LIBDIR%\gd.out 2>&1"
+call :BUILD gd
 
 :: pthreads
 cd %SRCDIR%\pthreads
 echo *** building pthreads
-start "building pthreads"  cmd /c "%COMMON%\lib_wrapper pthreads %LIBDIR% makelib %COMPILER_TYPE%  > %LIBDIR%\pthreads.out 2>&1"
+call :BUILD pthreads
 
 :: GLUT%
 if NOT x%freeglutdir% == x goto skip_glut
@@ -56,7 +58,6 @@ if NOT x%freeglutdir% == x goto skip_glut
   echo *** building glut
   start "building glut" /WAIT cmd /c "makelib %COMPILER_TYPE%  > %LIBDIR%\glut.out 2>&1"
   echo *** glut build complete
-  powershell -NoProfile -Command "Start-Sleep -Seconds 1"
 :skip_glut
 
 :: freeglut
@@ -73,7 +74,7 @@ if x%freeglutdir% == x goto skip_freeglut
 :: GLUI
 cd %SRCDIR%\glui_v2_1_beta
 echo *** building glui
-start "building glui"  cmd /c "%COMMON%\lib_wrapper glui %LIBDIR% makelib %COMPILER_TYPE%  %freeglutdir% > %LIBDIR%\glui.out 2>&1"
+call :BUILD glui %freeglutdir%
 
 call :WAIT zlib.running
 echo *** zlib build complete
@@ -94,6 +95,8 @@ call :WAIT glui.running
 echo *** glui build complete
 
 cd %LIBDIR%
+setlocal
+set "lib_copy_failed="
 
 call :COPY %SRCDIR%\zlib131\libz.lib          %LIBDIR%\zlib.lib
 call :COPY %SRCDIR%\jpeg-9b\libjpeg.lib       %LIBDIR%\jpeg.lib
@@ -111,7 +114,8 @@ call :COPY %FREEGLUTLIBDIR%\freeglut_static.lib %LIBDIR%\freeglut_static.lib
 call :COPY %SRCDIR%\pthreads\libpthreads.lib   %LIBDIR%\pthreads.lib
 call :COPY %SRCDIR%\glui_v2_1_beta\libglui.lib %LIBDIR%\glui.lib
 
-goto eof
+if defined lib_copy_failed exit /b 1
+exit /b 0
 
 ::------------------------------------------------
 :COPY
@@ -121,23 +125,31 @@ set infile=%1
 set outfile=%2
 IF NOT EXIST %infile% goto else1
    echo *** copying %label%
-   copy %infile% %outfile% >Nul
+   copy %infile% %outfile% >Nul || set "lib_copy_failed=1"
    goto endif1
 :else1
    echo.
    echo *** warning: %infile% does not exist
+   set "lib_copy_failed=1"
    echo.
 :endif1
 exit /b
 
 ::------------------------------------------------
+:BUILD
+::------------------------------------------------
+:: Mark the job before launching it so :WAIT cannot miss a worker starting up.
+type Nul > "%LIBDIR%\%1.running"
+start "building %1" %build_wait% cmd /d /c call "%COMMON%\lib_wrapper.bat" "%1" "%LIBDIR%" makelib %COMPILER_TYPE% %2 || (
+  del "%LIBDIR%\%1.running"
+  echo *** warning: could not start %1 build
+)
+exit /b
+
+::------------------------------------------------
 :WAIT
 ::------------------------------------------------
-set file=%1
-:CONT
-if not exist %LIBDIR%\%file% powershell -NoProfile -Command "Start-Sleep -Seconds 1"
-if not exist %LIBDIR%\%file% exit /b
-powershell -NoProfile -Command "Start-Sleep -Seconds 1"
-goto CONT
-
-:eof
+if not exist "%LIBDIR%\%1" exit /b
+:: timeout requires console input, which the GUI redirects.
+powershell.exe -NoProfile -NonInteractive -Command "$marker = Join-Path $env:LIBDIR '%1'; while (Test-Path -LiteralPath $marker) { Start-Sleep -Milliseconds 250 }"
+exit /b

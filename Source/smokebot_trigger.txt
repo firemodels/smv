@@ -1,2 +1,0 @@
-master: dummy text to trigger smokebot 
-test:  dummy text to trigger smokebot

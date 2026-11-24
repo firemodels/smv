@@ -158,14 +158,12 @@ void  UpdatePlot3DColors(plot3ddata *plot3di, int flag, int *errorcode){
   for(nn = 0; nn < numplot3dvars; nn++){
     if(global_scase.nplot3dinfo > 0){
       shortp3label[nn] = plot3di->label[nn].shortlabel;
-      unitp3label[nn] = plot3di->label[nn].unit;
     }
     else{
       char numstring[4];
 
       sprintf(numstring, "%i", nn);
       strcpy(shortp3label[nn], numstring);
-      unitp3label[nn] = blank_global;
     }
     GetPlot3DColors(nn, p3min_all + nn, p3max_all + nn,
                     nrgb_full, global_scase.nrgb - 1, colorlabelp3[nn], colorlabeliso[nn], p3levels[nn], p3levels256[nn],
@@ -328,7 +326,6 @@ FILE_SIZE ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     updatemenu=1;
     PrintMemoryInfo;
     update_times = 1;
-    UpdateUnitDefs();
     return 0;
   }
 
@@ -518,7 +515,6 @@ FILE_SIZE ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   GLUIUpdatePlot3dListIndex();
   PrintMemoryInfo;
   update_times = 1;
-  UpdateUnitDefs();
   ForceIdle();
   STOP_TIMER(total_time);
 

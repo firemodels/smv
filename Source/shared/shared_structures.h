@@ -292,12 +292,10 @@ typedef struct _meshdata {
   struct _meshdata *skip_nabors[6], *nabors[6];
 
   int *ptype;
-  unsigned int *zipoffset, *zipsize;
 
   float *xyzpatch_offset, *xyzpatch_no_offset, *xyzpatch_threshold;
   float *thresholdtime;
 
-  unsigned char *cpatchval_zlib, *cpatchval_iframe_zlib;
   unsigned char *cpatchval, *cpatchval_iframe;
   float *patch_times, *patch_timesi, *patchval;
   float *patchval_iframe;
@@ -431,10 +429,8 @@ typedef struct _partdata {
 
   char *file, *size_file, *reg_file, *bound_file;
   int have_bound_file;
-  int seq_id, autoload, loaded, skipload, request_load, display, reload,
-      finalize;
+  int seq_id, autoload, loaded, skipload, request_load, display, reload, finalize;
   int loadstatus, boundstatus;
-  int compression_type;
   int blocknumber;
   int *timeslist, ntimes, itime;
   FILE_SIZE bound_file_size;
@@ -543,27 +539,18 @@ typedef struct _clipdata {
   float zmin, zmax;
 } clipdata;
 
-/* --------------------------  compdata ------------------------------------ */
-
-typedef struct _compdata {
-  int offset, size;
-} compdata;
-
 /* --------------------------  slicedata ------------------------------------ */
 
 typedef struct _slicedata {
   int seq_id, autoload;
   char *file, *size_file, *bound_file;
   int have_bound_file;
-  char *comp_file, *reg_file;
-  char *geom_file;
+  char *reg_file, *geom_file;
   int finalize;
   int slcf_index;
   char *slicelabel;
   unsigned char *slice_mask;
-  int compression_type;
   int colorbar_autoflip;
-  FILE_SIZE ncompressed;
   int slice_filetype;
   struct _multislicedata *mslice;
   int menu_show;
@@ -583,12 +570,9 @@ typedef struct _slicedata {
   flowlabels label;
   float *qslicedata, *qsliceframe, *times, *qslice;
   unsigned char *times_map;
-  unsigned char *qslicedata_compressed;
-  unsigned char *slicecomplevel;
   unsigned char full_mesh;
   contour *line_contours;
   int nline_contours;
-  compdata *compindex;
   unsigned char *slicelevel;
   char menulabel[128];
   char menulabel2[128];
@@ -1256,7 +1240,7 @@ typedef struct _patchdata {
   int seq_id, autoload;
   char *file,*size_file,*bound_file;
   int have_bound_file;
-  char *comp_file, *reg_file;
+  char *reg_file;
   char *filetype_label;
   geomdata *geominfo;
   int *geom_offsets;
@@ -1265,13 +1249,10 @@ typedef struct _patchdata {
   int ntimes, ntimes_old;
   int patch_filetype, structured;
   int shortlabel_index;
-  int *cvals_offsets, *cvals_sizes;
   unsigned char *cbuffer;
-  int is_compressed;
   int cbuffer_size;
   int boundary;
   int firstshort_patch;
-  int compression_type, compression_type_temp;
   int setvalmin, setvalmax;
   float valmin_patch, valmax_patch;
   float valmin_glui,  valmax_glui;
@@ -1368,7 +1349,7 @@ typedef struct _smoke3ddata {
   int version;
   int seq_id, autoload;
   char *file;
-  char *comp_file, *reg_file;
+  char *reg_file;
   char *smoke_density_file;
 #ifdef pp_SMOKE3D_FORCE
   int dummy;
@@ -1384,7 +1365,6 @@ typedef struct _smoke3ddata {
   int blocknumber;
   int type;
   int is1, is2, js1, js2, ks1, ks2;
-  int compression_type, compression_type_temp;
   flowlabels label;
   char menulabel[128];
   float *times;
@@ -1741,7 +1721,6 @@ typedef struct _smv_cases {
   int ntotal_blockages;
   int hasSensorNorm;
   char *texturedir;
-  int smokediff;
   int have_northangle;
   int usetextures;
   /// @brief SMV file contains DEVICE_ACT entries
@@ -1786,8 +1765,6 @@ typedef struct _smv_cases {
   spherepoints *wui_sphereinfo;
   int solid_ht3d;
   float northangle;
-  int niso_compressed;
-  int have_compressed_files;
   int have_cface_normals;
   int cellcenter_slice_active;
   int auto_terrain;
@@ -1898,7 +1875,6 @@ typedef struct _parse_options {
   int smoke3d_only;
   int setup_only;
   int fast_startup;
-  int lookfor_compressed_files;
   int handle_slice_files;
 } parse_options;
 

@@ -15,10 +15,10 @@ jobs:
           - gnu
           - clang
         program:
+          - fds2fed
+          - part2iso
           - pnginfo
-          - smokediff
           - smokeview
-          - smokezip
           - wind2fds
     runs-on: ${{ matrix.os }}
     steps:
@@ -41,10 +41,10 @@ jobs:
         compiler:
           - clang
         program:
+          - fds2fed
+          - part2iso
           - pnginfo
-          - smokediff
           - smokeview
-          - smokezip
           - wind2fds
     runs-on: ${{ matrix.os }}
     steps:

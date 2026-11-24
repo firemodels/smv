@@ -6,8 +6,6 @@ set GLUT=glut
 set ICON=
 set inc=
 set release=
-set SMV_PROFILEFLAG=
-set SMV_PROFILESTRING=
 set setglut=
 set stopscript=0
 set SANITIZE=0
@@ -66,11 +64,6 @@ goto eof
  if /I "%1" EQU "-sanitize" (
    set valid=1
    set SANITIZE=1
- )
- if /I "%1" EQU "-profile" (
-   set valid=1
-   set SMV_PROFILEFLAG=-pg
-   set SMV_PROFILESTRING=p
  )
  shift
  if %valid% == 0 (

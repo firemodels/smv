@@ -226,7 +226,7 @@ void InitLabelsCollection(labels_collection *labelscoll){
 
 /* ------------------ FreeLabelsCollection ------------------------ */
 
-labels_collection *CreateLabelsCollection(){
+labels_collection *CreateLabelsCollection(void){
   labels_collection *labelscoll;
   NEWMEMORY(labelscoll, sizeof(labels_collection));
   InitLabelsCollection(labelscoll);

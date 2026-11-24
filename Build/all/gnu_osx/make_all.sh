@@ -12,8 +12,7 @@ function build_target() {
 }
 
 build_target fds2fed
+build_target part2iso
 build_target pnginfo
-build_target smokediff
 build_target smokeview
-build_target smokezip
 build_target wind2fds

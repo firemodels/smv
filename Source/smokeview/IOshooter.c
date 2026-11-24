@@ -37,7 +37,6 @@ void IncrementShooterData(shootpointdata *pold, shootpointdata *pnew, float dtst
   // dv/dt = g - |g|(v-v_a)/v_inf
   // dx/dt = v
 
-  shooter_time+=dtstep;
   for(i=0; i<shooter_nparts; i++){
     float dvel[3];
     meshdata *meshpoint;
@@ -123,7 +122,6 @@ void InitShooterData(void){
   shoottimeinfo[0].frame=0;
   shoottimeinfo[0].time=0.0;
   shooter_active=1;
-  shooter_time=0.0;
 }
 
 /* ------------------ SolveShooterData ------------------------ */

@@ -127,7 +127,10 @@
 #endif
 
 #ifndef START_TIMER
-#define START_TIMER(a) a = (float)clock()/(float)CLOCKS_PER_SEC
+#define START_TIMER(a) do {                              \
+  clock_t start_timer_ticks = clock();                   \
+  (a) = (float)start_timer_ticks / (float)CLOCKS_PER_SEC;  \
+} while (0)
 #endif
 
 #ifndef STOP_TIMER
@@ -158,7 +161,7 @@
 // needed to mark that SMV_EXIT never returns, otherwise tools like clang-tidy
 // would find spurious issues.
 #ifndef noreturn
-#  if (__STDC_VERSION__ >= 201112L) && !defined(_WIN32)
+#  if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) && !defined(_WIN32)
      // C11 provides a standard 'noreturn' macro that can be used. Conflicts
      // means this doesn't work well on windows
 #    include <stdnoreturn.h>

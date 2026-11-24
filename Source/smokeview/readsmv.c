@@ -544,7 +544,6 @@ void UpdateBoundInfo(void){
 
       sbi = slicebounds + nslicebounds;
       sbi->shortlabel=slicei->label.shortlabel;
-      if(strcmp(sbi->shortlabel, "TEMP")==0)slicebounds_temp = sbi;
       sbi->dlg_setvalmin=PERCENTILE_MIN;
       sbi->dlg_setvalmax=PERCENTILE_MAX;
       sbi->dlg_valmin=1.0;
@@ -1682,18 +1681,7 @@ void InitCellMeshInfo(void){
   float *xyzminmax, *dxyz;
   float *x, *y, *z;
   meshdata **cellmeshes, *mesh0;
-  if(cellmeshinfo!=NULL){
-    nxyz = cellmeshinfo->nxyz;
-    ntotal = nxyz[0]*nxyz[1]*nxyz[2];
-    for(i=0; i<ntotal; i++){
-      if(cellmeshinfo->cellmeshes[i] == NULL){
-        is_convex = 0;
-        return;
-      }
-    }
-    is_convex = 1;
-    return;
-  }
+  if(cellmeshinfo!=NULL)return;
 
   NewMemory((void **)&cellmeshinfo, sizeof(cellmeshdata));
   xyzminmax = cellmeshinfo->xyzminmax;
@@ -1777,14 +1765,6 @@ void InitCellMeshInfo(void){
       }
     }
   }
-  for(i=0; i<ntotal; i++){
-    if(cellmeshinfo->cellmeshes[i] == NULL){
-      is_convex = 0;
-      return;
-    }
-  }
-  is_convex = 1;
-  return;
 }
 
 /* ------------------ SetupMeshWalls ------------------------ */
@@ -2276,68 +2256,6 @@ void *ReadKeyboard(void *arg){
 }
 #endif
 
-/* ------------------ CheckFiles ------------------------ */
-
-void *CheckFiles(void *arg){
-  int i;
-
-  ThreadLock(checkfiles_threads);
-  global_scase.have_compressed_files = 0;
-  ThreadUnlock(checkfiles_threads);
-  for(i = 0; i < global_scase.npatchinfo; i++){
-    patchdata *patchi;
-    int have_file;
-
-    patchi = global_scase.patchinfo + i;
-    have_file = FileExistsCaseDir(&global_scase, patchi->comp_file);
-    ThreadLock(checkfiles_threads);
-    if(have_file == YES){
-      patchi->compression_type_temp = COMPRESSED_ZLIB;
-      global_scase.have_compressed_files = 1;
-    }
-    ThreadUnlock(checkfiles_threads);
-  }
-  for(i = 0; i < global_scase.smoke3dcoll.nsmoke3dinfo; i++){
-    smoke3ddata *smoke3di;
-    int have_file;
-
-    smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
-    have_file = FileExistsCaseDir(&global_scase, smoke3di->comp_file);
-    ThreadLock(checkfiles_threads);
-    if(have_file == YES){
-      smoke3di->compression_type_temp = COMPRESSED_ZLIB;
-      global_scase.have_compressed_files = 1;
-    }
-    ThreadUnlock(checkfiles_threads);
-  }
-  if(global_scase.have_compressed_files == 0){
-    THREAD_EXIT(checkfiles_threads);
-  }
-  ThreadLock(checkfiles_threads);
-  for(i = 0; i < global_scase.npatchinfo; i++){
-    patchdata *patchi;
-
-    patchi = global_scase.patchinfo + i;
-    if(patchi->compression_type_temp == COMPRESSED_ZLIB){
-      patchi->compression_type = COMPRESSED_ZLIB;
-      patchi->file = patchi->comp_file;
-    }
-  }
-  for(i = 0; i < global_scase.smoke3dcoll.nsmoke3dinfo; i++){
-    smoke3ddata *smoke3di;
-
-    smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
-    if(smoke3di->compression_type_temp == COMPRESSED_ZLIB){
-      smoke3di->file = smoke3di->comp_file;
-      smoke3di->is_zlib = 1;
-      smoke3di->compression_type = COMPRESSED_ZLIB;
-    }
-  }
-  updatemenu = 1;
-  ThreadUnlock(checkfiles_threads);
-  THREAD_EXIT(checkfiles_threads);
-}
-
 /* ------------------ InitMeshBlockages ------------------------ */
 
 void InitMeshBlockages(void){
@@ -2606,7 +2524,7 @@ void InitPatchMenuInfo(void){
 /// @brief Finish setting global variables after an SMV file has been parsed.
 /// This should be called after @ref ReadSMV_Parse.
 /// @return zero on success, nonzero on failure.
-int ReadSMV_Configure(){
+int ReadSMV_Configure(void){
   int i;
   float wrapup_time;
   float timer_readsmv;
@@ -2676,13 +2594,6 @@ int ReadSMV_Configure(){
   FREEMEMORY(camera_last);
   NewMemory((void **)&camera_last,sizeof(cameradata));
 
-  INIT_PRINT_TIMER(fdsrunning_timer);
-  char *stepcsv_filename = CasePathStepCsv(&global_scase);
-  last_size_for_slice = GetFileSizeSMV(stepcsv_filename); // used by IsFDSRunning
-  FREEMEMORY(stepcsv_filename);
-  last_size_for_boundary = last_size_for_slice;
-  PRINT_TIMER(fdsrunning_timer, "filesize_timer");   // if file size changes then assume fds is running
-
   have_obsts = 0;
   for(i=0; i<global_scase.meshescoll.nmeshes; i++){
     meshdata *meshi;
@@ -2694,9 +2605,6 @@ int ReadSMV_Configure(){
     }
   }
 
-  ThreadInit(&checkfiles_threads, n_checkfiles_threads, use_checkfiles_threads, serial_override, CheckFiles);
-  ThreadRun(checkfiles_threads);
-  PRINT_TIMER(timer_readsmv, "CheckFiles");
   CheckMemory;
   UpdateIsoColors();
   PRINT_TIMER(timer_readsmv, "UpdateIsoColors");
@@ -3974,7 +3882,7 @@ static int ReadIni2(const char *inifile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", dc, dc + 1, dc + 2);
       dc[3] = 1.0;
-      direction_color_ptr = GetColorPtr(&global_scase, direction_color);
+      GetColorPtr(&global_scase, direction_color);
       GetSliceParmInfo(&sliceparminfo);
       UpdateSliceMenuShow(&sliceparminfo);
       continue;
@@ -4154,7 +4062,6 @@ static int ReadIni2(const char *inifile){
         treecolor[i] = CLAMP(treecolor[i], 0.0, 1.0);
         treecolor_uc[i] = 255 * treecolor[i];
         treecharcolor[i] = CLAMP(treecharcolor[i], 0.0, 1.0);
-        treecharcolor_uc[i] = 255 * treecharcolor[i];
         trunccolor[i] = CLAMP(trunccolor[i], 0.0, 1.0);
         trunccolor_uc[i] = 255 * trunccolor[i];
       }
@@ -4162,7 +4069,6 @@ static int ReadIni2(const char *inifile){
       treecharcolor[3] = 1.0;
       trunccolor[3] = 1.0;
       treecolor_uc[3] = 255;
-      treecharcolor_uc[3] = 255;
       trunccolor_uc[3] = 255;
       continue;
     }
@@ -5303,8 +5209,6 @@ static int ReadIni2(const char *inifile){
       if(zoomindex<0)zoomindex = ZOOMINDEX_ONE;
       if(zoomindex>MAX_ZOOMS+1)zoomindex = ZOOMINDEX_ONE;
       zooms[zoomindex] = zoom;
-      zoomini = zoom;
-      updatezoomini = 1;
       ZoomMenu(zoomindex);
       continue;
     }

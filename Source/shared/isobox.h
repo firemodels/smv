@@ -49,7 +49,6 @@ typedef struct _isosurface {
   int ncomp_bufferframe, nfull_bufferframe;
   unsigned char *s_norm;
   int cullfaces;
-  int compression_type;
 } isosurface;
 
 typedef struct _sortdata {

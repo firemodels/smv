@@ -117,12 +117,10 @@ void SetViewPoint(int option){
   int rotation_type_save;
   int projection_type_save;
 
-  in_external=0;
   switch(option){
   case RESTORE_EXTERIOR_VIEW_ZOOM:
     break;
   case RESTORE_EXTERIOR_VIEW:
-    in_external=1;
     rotation_type_save = camera_current->rotation_type;
     projection_type_save = camera_current->projection_type;
     CopyCamera(camera_current,camera_external);

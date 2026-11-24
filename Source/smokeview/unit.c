@@ -24,15 +24,6 @@ f_units *GetUnitClass(char *unit){
   return NULL;
 }
 
-/* ------------------ UnitTypeMatch ------------------------ */
-
-int UnitTypeMatch(char *unit, f_units *unit_class){
-
-  if(strlen(unit_class->units->unit)!=strlen(unit))return 1;
-  if(strcmp(unit_class->units->unit,unit)!=0)return 1;
-  return 0;
-}
-
 /* ------------------ IsUnitPresent ------------------------ */
 
 int IsUnitPresent(char *label, char *unit){
@@ -102,92 +93,6 @@ void InitUnitDefs(void){
     nunitclasses=nunitclasses_default;
   }
   CheckMemory;
-}
-
-/* ------------------ UpdateUnitDefs ------------------------ */
-
-void UpdateUnitDefs(void){
-  int i, j;
-
-  if(global_scase.smokediff==0)return;
-  for(i=0; i<nunitclasses; i++){
-    float valmin, valmax, diff_maxmin;
-    int firstslice, firstpatch, firstplot3d, diff_index;
-
-    firstpatch=1;
-    for(j=0; j<global_scase.npatchinfo; j++){
-      patchdata *patchj;
-
-      patchj = global_scase.patchinfo + j;
-      if(patchj->loaded==0||patchj->display==0)continue;
-      if(UnitTypeMatch(patchj->label.unit,unitclasses+i)!=0)continue;
-      if(firstpatch==1){
-        firstpatch=0;
-        valmin=patchj->diff_valmin;
-        valmax=patchj->diff_valmax;
-      }
-      else{
-        if(patchj->diff_valmin<valmin)valmin=patchj->diff_valmin;
-        if(patchj->diff_valmax>valmax)valmax=patchj->diff_valmax;
-      }
-    }
-
-    firstslice=1;
-    for(j=0; j<global_scase.slicecoll.nsliceinfo; j++){
-      slicedata *slicej;
-
-      slicej = global_scase.slicecoll.sliceinfo + j;
-      if(slicej->loaded==0||slicej->display==0)continue;
-      if(UnitTypeMatch(slicej->label.unit,unitclasses+i)!=0)continue;
-      if(firstslice==1){
-        firstslice=0;
-        valmin=slicej->diff_valmin;
-        valmax=slicej->diff_valmax;
-      }
-      else{
-        if(slicej->diff_valmin<valmin)valmin=slicej->diff_valmin;
-        if(slicej->diff_valmax>valmax)valmax=slicej->diff_valmax;
-      }
-    }
-
-    firstplot3d=1;
-    for(j=0; j<global_scase.nplot3dinfo; j++){
-      plot3ddata *plot3dj;
-      int n;
-
-      plot3dj = global_scase.plot3dinfo + j;
-      if(plot3dj->loaded==0||plot3dj->display==0)continue;
-      for(n=0; n<5; n++){
-        if(UnitTypeMatch(plot3dj->label[n].unit,unitclasses+i)!=0)continue;
-        if(firstplot3d==1){
-          firstplot3d=0;
-          valmin=plot3dj->diff_valmin[n];
-          valmax=plot3dj->diff_valmax[n];
-        }
-        else{
-          if(plot3dj->diff_valmin[n]<valmin)valmin=plot3dj->diff_valmin[n];
-          if(plot3dj->diff_valmax[n]>valmax)valmax=plot3dj->diff_valmax[n];
-        }
-      }
-    }
-
-    diff_index=unitclasses[i].diff_index;
-    if(diff_index!=-1&&(firstslice==0||firstpatch==0||firstplot3d==0)){
-      int idiff;
-
-      diff_maxmin=valmax-valmin;
-      if(diff_maxmin!=0.0){
-        unitclasses[i].units[diff_index].scale[0]=100.0/diff_maxmin;
-
-        idiff = diff_maxmin + 0.5;
-        diff_maxmin=idiff;
-        sprintf(unitclasses[i].units[diff_index].rel_val,"%f",diff_maxmin);
-        TrimZeros(unitclasses[i].units[diff_index].rel_val);
-        unitclasses[i].units[diff_index].rel_defined=1;
-      }
-    }
-  }
-
 }
 
 /* ------------------ GetUnitVal ------------------------ */

@@ -10,7 +10,6 @@
 #include "smokeviewvars.h"
 #include "glui_bounds.h"
 #include "histogram.h"
-#include "compress.h"
 #include "IOobjects.h"
 #include "stdio_m.h"
 

@@ -60,7 +60,6 @@ parse_options parse_opts = {
   .smoke3d_only = 0,
   .setup_only = 0,
   .fast_startup = 1,
-  .lookfor_compressed_files = 0,
   .handle_slice_files = 1
 };
 
@@ -1033,15 +1032,12 @@ void InitMesh(meshdata *meshi){
   meshi->offset[YYY] = 0.0;
   meshi->offset[ZZZ] = 0.0;
   meshi->ptype = NULL;
-  meshi->zipoffset = NULL, meshi->zipsize = NULL;
   meshi->xyzpatch_offset = NULL;
   meshi->xyzpatch_no_offset = NULL;
   meshi->xyzpatch_threshold = NULL;
   meshi->patchventcolors = NULL;
   meshi->cpatchval = NULL;
   meshi->cpatchval_iframe = NULL;
-  meshi->cpatchval_iframe_zlib = NULL;
-  meshi->cpatchval_zlib = NULL;
   meshi->patch_times = NULL;
   meshi->patch_times_map = NULL;
   meshi->patchval = NULL;
@@ -3267,14 +3263,12 @@ int ParsePRT5Process(smv_case *scase, bufferstreamdata *stream, char *buffer, in
 
   // parti->hist_file can't be written to, then put it in a world writable temp directory
 
-  parti->compression_type = UNCOMPRESSED;
   if(FileExistsCaseDir(scase, parti->reg_file)==YES){
     parti->file = parti->reg_file;
   }
   else{
     parti->file = NULL;
   }
-  parti->compression_type = UNCOMPRESSED;
   parti->loaded = 0;
   parti->request_load = 0;
   parti->finalize = 0;
@@ -3476,22 +3470,10 @@ int ParseBNDFProcess(smv_case *scase, bufferstreamdata *stream, char *buffer, in
   strcat(patchi->bound_file, ".bnd");
   patchi->have_bound_file = NO;
 
-  NewMemory((void **)&patchi->comp_file, (unsigned int)(len + 4 + 1));
-  STRCPY(patchi->comp_file, bufferptr);
-  STRCAT(patchi->comp_file, ".svz");
-
   NewMemory((void **)&patchi->size_file, (unsigned int)(len+4+1));
   STRCPY(patchi->size_file, bufferptr);
-  //      STRCAT(patchi->size_file,".szz"); when we actully use file check both .sz and .szz extensions
 
-  if(parse_opts.lookfor_compressed_files==1&&FileExistsCaseDir(scase, patchi->comp_file) == YES){
-    patchi->compression_type = COMPRESSED_ZLIB;
-    patchi->file             = patchi->comp_file;
-  }
-  else{
-    patchi->compression_type = UNCOMPRESSED;
-    patchi->file             = patchi->reg_file;
-  }
+  patchi->file             = patchi->reg_file;
   patchi->geominfo = NULL;
   if(patchi->structured==NO){
     int igeom;
@@ -3546,11 +3528,8 @@ int ParseBNDFProcess(smv_case *scase, bufferstreamdata *stream, char *buffer, in
   patchi->geom_vals = NULL;
   patchi->geom_ivals = NULL;
   patchi->geom_nvals = 0;
-  patchi->cvals_offsets = NULL;
-  patchi->cvals_sizes = NULL;
   patchi->cbuffer = NULL;
   patchi->cbuffer_size = 0;
-  patchi->is_compressed = 0;
   patchi->blocknumber = blocknumber;
   patchi->seq_id = nn_patch;
   patchi->autoload = 0;
@@ -3619,7 +3598,6 @@ void ParseSMOKE3DCount(smv_case *scase){
 
 int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer, int *nn_smoke3d_in, int *ioffset_in, int *ismoke3dcount_in, int *ismoke3d_in){
   size_t len;
-  size_t lenbuffer;
   int filetype = C_GENERATED;
   int blocknumber;
   char buffer2[256];
@@ -3668,7 +3646,6 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
   }
   bufferptr = TrimFrontBack(buffer);
   len = strlen(buffer);
-  lenbuffer = len;
   {
     smoke3ddata *smoke3di;
     int i;
@@ -3697,7 +3674,6 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     smoke3di->soot_loaded = 0;
     smoke3di->seq_id = nn_smoke3d;
     smoke3di->autoload = 0;
-    smoke3di->compression_type = COMPRESSED_UNKNOWN;
     smoke3di->file = NULL;
     smoke3di->smokeframe_in = NULL;
     smoke3di->smokeframe_comp_list = NULL;
@@ -3730,19 +3706,7 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     STRCPY(buffer2, bufferptr);
     STRCAT(buffer2, ".svz");
 
-    len = lenbuffer+4;
-    smoke3di->comp_file = SMOKE3DBUFFER(len + 1);
-    STRCPY(smoke3di->comp_file, buffer2);
-
-    if(FileExistsCaseDir(scase, smoke3di->comp_file) == YES){
-      smoke3di->file = smoke3di->comp_file;
-      smoke3di->is_zlib = 1;
-      smoke3di->compression_type = COMPRESSED_ZLIB;
-    }
-    else{
-      smoke3di->file = smoke3di->reg_file;
-      smoke3di->compression_type = COMPRESSED_RLE;
-    }
+    smoke3di->file = smoke3di->reg_file;
 #ifdef pp_SMOKE3D_FORCE
     if(strcmp(smoke3di->file, "dummy.xyz") == 0){
       smoke3di->dummy = 1;
@@ -3857,13 +3821,12 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   int slicegeom = 0;
   int slcf_index = 0;
   char *char_slcf_index;
-  int has_reg, compression_type;
+  int has_reg;
   int ii1 = -1, ii2 = -1, jj1 = -1, jj2 = -1, kk1 = -1, kk2 = -1;
   int blocknumber;
   slicedata *sd;
   size_t len;
   int read_slice_header = 0;
-  char zlib_file[255], rle_file[255];
   int cell_center_flag = -1;
   int fds_dir = -1;
 
@@ -4000,7 +3963,6 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   if(slicegeom==1&&cell_center_flag==1)sd->cell_center = 1;
  // sd->file_size = 0;
   sd->reg_file = NULL;
-  sd->comp_file = NULL;
   sd->slicelabel = NULL;
   sd->cell_center_edge = 0;
   sd->file_size = 0;
@@ -4026,19 +3988,9 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   }
 #endif
 
-  strcpy(zlib_file, bufferptr);
-  strcat(zlib_file, ".svz");
-  strcpy(rle_file, bufferptr);
-  strcat(rle_file, ".rle");
-
   has_reg = NO;
-  compression_type = UNCOMPRESSED;
-  if(parse_opts.lookfor_compressed_files==1){
-    if(FileExistsCaseDir(scase, rle_file)==YES)compression_type  = COMPRESSED_RLE;
-    if(FileExistsCaseDir(scase, zlib_file)==YES)compression_type = COMPRESSED_ZLIB;
-  }
-  if(compression_type==UNCOMPRESSED&&(parse_opts.fast_startup==1||FileExistsCaseDir(scase, bufferptr)==YES))has_reg = YES;
-  if(has_reg==NO&&compression_type==UNCOMPRESSED){
+  if(parse_opts.fast_startup==1||FileExistsCaseDir(scase, bufferptr)==YES)has_reg = YES;
+  if(has_reg==NO){
     scase->slicecoll.nsliceinfo--;
 
     nslicefiles--;
@@ -4064,27 +4016,9 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
     return RETURN_CONTINUE;
   }
 
-  sd->reg_file  = SLICEBUFFER(len + 1);
-  sd->comp_file = SLICEBUFFER(len + 4 + 1);
+  sd->reg_file = SLICEBUFFER(len + 1);
   STRCPY(sd->reg_file, bufferptr);
-
-  sd->compression_type = compression_type;
-  switch(compression_type){
-  case UNCOMPRESSED:
-    sd->file = sd->reg_file;
-    break;
-  case COMPRESSED_ZLIB:
-    STRCPY(sd->comp_file, zlib_file);
-    sd->file = sd->comp_file;
-    break;
-  case COMPRESSED_RLE:
-    STRCPY(sd->comp_file, rle_file);
-    sd->file = sd->comp_file;
-    break;
-  default:
-    assert(FFALSE);
-    break;
-  }
+  sd->file = sd->reg_file;
 
   // read in geometry file name
 
@@ -4197,9 +4131,6 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   sd->loading = 0;
   sd->hist_update = 0;
   sd->qslicedata = NULL;
-  sd->compindex = NULL;
-  sd->slicecomplevel = NULL;
-  sd->qslicedata_compressed = NULL;
   if(sd->is1!=sd->is2&&sd->js1!=sd->js2&&sd->ks1!=sd->ks2){
     sd->slice3d = 1;
   }
@@ -4275,7 +4206,6 @@ void FreeSliceData(smv_case *scase){
       sd = scase->slicecoll.sliceinfo+i;
       FreeLabels(&scase->slicecoll.sliceinfo[i].label);
       FREEMEMORY(sd->reg_file);
-      FREEMEMORY(sd->comp_file);
       FREEMEMORY(sd->size_file);
     }
     FREEMEMORY(scase->sliceorderindex);
@@ -4607,7 +4537,6 @@ int ReadSMV_Init(smv_case *scase){
   }
   FREEMEMORY(scase->terraininfo);
   scase->nterraininfo=0;
-  scase->niso_compressed=0;
   if(scase->sphereinfo==NULL){
     NewMemory((void **)&scase->sphereinfo,sizeof(spherepoints));
     InitSpherePoints(scase->sphereinfo,14);
@@ -4757,7 +4686,6 @@ int ReadSMV_Init(smv_case *scase){
       for(i=0; i<scase->smoke3dcoll.nsmoke3dinfo; i++){
         smoke3di = scase->smoke3dcoll.smoke3dinfo + i;
         FreeSmoke3D(scase, smoke3di);
-        FREEMEMORY(smoke3di->comp_file);
         FREEMEMORY(smoke3di->reg_file);
       }
       FREEMEMORY(scase->smoke3dcoll.smoke3dinfo);
@@ -4785,7 +4713,6 @@ int ReadSMV_Init(smv_case *scase){
       patchi = scase->patchinfo + i;
       FreeLabels(&patchi->label);
       FREEMEMORY(patchi->reg_file);
-      FREEMEMORY(patchi->comp_file);
       FREEMEMORY(patchi->size_file);
     }
     FREEMEMORY(scase->patchinfo);
@@ -5064,10 +4991,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
     }
     if(MatchSMV(buffer,"PROP") == 1){
       scase->propcoll.npropinfo++;
-      continue;
-    }
-    if(MatchSMV(buffer,"SMOKEDIFF") == 1){
-      scase->smokediff=1;
       continue;
     }
     if(MatchSMV(buffer,"ALBEDO") == 1){
@@ -5590,7 +5513,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
       patchi = scase->patchinfo + i;
       patchi->reg_file=NULL;
-      patchi->comp_file=NULL;
       patchi->file=NULL;
       patchi->size_file=NULL;
     }
@@ -8985,7 +8907,7 @@ void InitScase(smv_case *scase){
 
 /// @brief Create and initalize and a smokeview case (smv_case).
 /// @return An initialized smv_case.
-smv_case *CreateScase(){
+smv_case *CreateScase(void){
   smv_case *scase;
   NewMemory((void **)&scase, sizeof(smv_case));
   memset(scase, 0, sizeof(smv_case));

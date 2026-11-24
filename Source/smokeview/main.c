@@ -117,11 +117,9 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
 
   CheckMemory;
   if(args->have_x0){
-    use_commandline_origin = 1;
     screenX0 = args->x0;
   }
   if(args->have_y0){
-    use_commandline_origin = 1;
     screenY0 = args->y0;
   }
   if(args->have_X0){
@@ -374,14 +372,12 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
     if(args->fast){
       parse_opts.fast_startup = 1;
-      parse_opts.lookfor_compressed_files = 0;
     }
     if(args->render_overwrite){
       render_overwrite_commandline = 1;
     }
     if(args->full){
       parse_opts.fast_startup = 0;
-      parse_opts.lookfor_compressed_files = 1;
     }
     if(args->blank){
       global_scase.iblank_set_on_commandline = 1;

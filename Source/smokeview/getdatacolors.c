@@ -156,32 +156,6 @@ void UpdateAllBoundaryColors(int flag){
   FREEMEMORY(list);
 }
 
-/* ------------------ GetBoundaryLabels ------------------------ */
-
-void GetBoundaryLabels(
-              float local_tmin, float local_tmax,
-              char **boundarylabels, float *boundaryvalues, float *tvals256, int nlevel){
-  int n;
-  float factor, tval, range;
-
-  range = local_tmax - local_tmin;
-  factor = range/(nlevel-2);
-  for(n=1; n<nlevel-2; n++){
-    tval = local_tmin + (n-1)*factor;
-    Num2String(&boundarylabels[n][0],tval);
-    boundaryvalues[n] = tval;
-  }
-  tval = local_tmin + (nlevel-3)*factor;
-  for(n=0; n<256; n++){
-    tvals256[n] = (local_tmin*(255-n) + n*local_tmax)/255.;
-  }
-  Num2String(&boundarylabels[nlevel-2][0],tval);
-  boundaryvalues[nlevel-2] = tval;
-  tval = local_tmax;
-  Num2String(&boundarylabels[nlevel-1][0],tval);
-  boundaryvalues[nlevel-1] = tval;
-}
-
 /* ------------------ UpdatePart5Extremes ------------------------ */
 
 void UpdatePart5Extremes(void){
@@ -1007,12 +981,6 @@ void UpdateRGBColors(int colorbar_index){
   InitCadColors();
   InitRGB();
   nrgb_full = MAXRGB;
-  for(n=0; n<nrgb_full; n++){
-    rgb_trans[4*n]=0.0;
-    rgb_trans[4*n+1]=0.0;
-    rgb_trans[4*n+2]=0.0;
-    rgb_trans[4*n+3]=(float)n/(float)(nrgb_full-1);
-  }
   if(colorbars.colorbarinfo!=NULL){
     unsigned char *alpha_rgb;
     colorbardata *cbi;
@@ -1166,9 +1134,6 @@ void UpdateRGBColors(int colorbar_index){
     global_scase.rgb[n][3]=transparent_level_local;
   }
   rgb_white=global_scase.nrgb;
-  rgb_yellow=global_scase.nrgb+1;
-  rgb_blue=global_scase.nrgb+2;
-  rgb_red=global_scase.nrgb+3;
 
   float zero3[3]={0.0, 0.0, 0.0}, one3[3]={1.0, 1.0, 1.0};
 

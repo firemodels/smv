@@ -949,7 +949,6 @@ void ReadZone(int ifile, int flag, int *errorcode){
   have_wall_data = 0;
   have_target_data = 0;
 
-  activezone=NULL;
   if(flag==UNLOAD){
     zonei->loaded=0;
     zonei->display=0;
@@ -1207,7 +1206,6 @@ void ReadZone(int ifile, int flag, int *errorcode){
       zoneglobalmax = MAX(slicei->valmax_slice, zoneglobalmax);
     }
   }
-  zone_temp_bounds_defined = 1;
   if(setzonemin==GLOBAL_MIN)zonemin = zoneglobalmin;
   if(setzonemax==GLOBAL_MAX)zonemax = zoneglobalmax;
   if(setzonemin==SET_MIN)zonemin = zoneusermin;
@@ -1229,7 +1227,6 @@ void ReadZone(int ifile, int flag, int *errorcode){
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   UpdateTimes();
   updatemenu=1;
-  activezone = global_scase.zoneinfo + ifile;
   if(global_scase.nzhvents>0||global_scase.nzvvents>0||global_scase.nzmvents>0){
     PRINTF("computing vent bounds\n");
     GetZoneVentBounds();

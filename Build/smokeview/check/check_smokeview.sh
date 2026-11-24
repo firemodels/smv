@@ -7,4 +7,4 @@ else
   platform="linux"
 fi
 
-eval make -j 8 $PLATFORM -f ../Makefile linux_osx_check
+eval make -j 8 $PLATFORM CHECK_SOURCE_REPORT="checksource_${platform}.txt" -f ../Makefile linux_osx_check

@@ -193,11 +193,6 @@ int SetupCase(char *filename){
     bufferstreamdata *smv_streaminfo = NULL;
 
     PRINTF("reading  %s\n", input_file);
-    char *smvzip_filename = CasePathSmvZip(&global_scase);
-    if(FileExistsOrig(smvzip_filename) == 1){
-      parse_opts.lookfor_compressed_files = 1;
-    }
-    FREEMEMORY(smvzip_filename);
     char *iso_filename = CasePathIso(&global_scase);
     char *fedsmv_filename = CasePathFed(&global_scase);
     smv_streaminfo = GetSMVBuffer(input_file);
@@ -347,12 +342,8 @@ int SetupCase(char *filename){
   printf("\n***before glutDetatchMenu\n");
   glutDetachMenu(GLUT_RIGHT_BUTTON);
   attachmenu_status = 0;
-  printf("\n***before THREADcontrol\n");
-  ThreadLock(checkfiles_threads);
   printf("\n***before InitMenus\n");
   InitMenus();
-  printf("\n***before THREADcontrol\n");
-  ThreadUnlock(checkfiles_threads);
   printf("\n***before glutAttachMenu\n");
   glutAttachMenu(GLUT_RIGHT_BUTTON);
   attachmenu_status = 1;
@@ -364,9 +355,7 @@ int SetupCase(char *filename){
   InitMisc();
   glutDetachMenu(GLUT_RIGHT_BUTTON);
   attachmenu_status = 0;
-  ThreadLock(checkfiles_threads);
   InitMenus();
-  ThreadUnlock(checkfiles_threads);
   glutAttachMenu(GLUT_RIGHT_BUTTON);
   attachmenu_status = 1;
 #endif
@@ -411,8 +400,6 @@ int GetScreenHeight(void){
 /* ------------------ InitStartupDirs ------------------------ */
 
 void InitStartupDirs(void){
-  startup_pass = 2;
-
   // Create the user config directory if it doesn't already exist.
   char *smokeview_scratchdir = GetUserConfigDir();
   if(FileExistsOrig(smokeview_scratchdir)==NO){
@@ -1419,13 +1406,6 @@ void InitVars(void){
   else{
     strcpy(movie_ext, ".avi");
   }
-  for(i=0; i<200; i++){
-    face_id[i]=1;
-  }
-  for(i=0; i<10; i++){
-    face_vis[i]=1;
-    face_vis_old[i]=1;
-  }
   strcpy((char *)degC,"C");
   strcpy((char *)degF,"F");
 
@@ -1488,59 +1468,9 @@ void InitVars(void){
   direction_color[1]=0.250980;
   direction_color[2]=0.545098;
   direction_color[3]=1.0;
-  direction_color_ptr=GetColorPtr(&global_scase, direction_color);
+  GetColorPtr(&global_scase, direction_color);
 
   GetGitInfo(smv_githash,smv_gitdate, NULL );
-
-  rgb_terrain[0][0]=1.0;
-  rgb_terrain[0][1]=0.0;
-  rgb_terrain[0][2]=0.0;
-  rgb_terrain[0][3]=1.0;
-
-  rgb_terrain[1][0]=0.5;
-  rgb_terrain[1][1]=0.5;
-  rgb_terrain[1][2]=0.0;
-  rgb_terrain[1][3]=1.0;
-
-  rgb_terrain[2][0]=0.0;
-  rgb_terrain[2][1]=1.0;
-  rgb_terrain[2][2]=0.0;
-  rgb_terrain[2][3]=1.0;
-
-  rgb_terrain[3][0]=0.0;
-  rgb_terrain[3][1]=0.5;
-  rgb_terrain[3][2]=0.0;
-  rgb_terrain[3][3]=1.0;
-
-  rgb_terrain[4][0]=0.0;
-  rgb_terrain[4][1]=0.5;
-  rgb_terrain[4][2]=0.5;
-  rgb_terrain[4][3]=1.0;
-
-  rgb_terrain[5][0]=0.0;
-  rgb_terrain[5][1]=0.0;
-  rgb_terrain[5][2]=1.0;
-  rgb_terrain[5][3]=1.0;
-
-  rgb_terrain[6][0]=0.5;
-  rgb_terrain[6][1]=0.0;
-  rgb_terrain[6][2]=0.5;
-  rgb_terrain[6][3]=1.0;
-
-  rgb_terrain[7][0]=1.0;
-  rgb_terrain[7][1]=0.5;
-  rgb_terrain[7][2]=0.0;
-  rgb_terrain[7][3]=1.0;
-
-  rgb_terrain[8][0]=1.0;
-  rgb_terrain[8][1]=0.5;
-  rgb_terrain[8][2]=0.5;
-  rgb_terrain[8][3]=1.0;
-
-  rgb_terrain[9][0]=1.0;
-  rgb_terrain[9][1]=0.25;
-  rgb_terrain[9][2]=0.5;
-  rgb_terrain[9][3]=1.0;
 
   strcpy(script_inifile_suffix,"");
   strcpy(script_renderdir,"");
@@ -1578,7 +1508,6 @@ void InitVars(void){
 
   aperture = Zoom2Aperture(zoom);
   aperture_glui = aperture;
-  aperture_default = aperture;
 
   {
     int ii;

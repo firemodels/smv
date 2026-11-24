@@ -26,8 +26,8 @@ assoc .smv=smvDoc>Nul
 
 echo.
 echo Adding %SMVBINDIR% to the system path
-call "%SMVBINDIR%\set_path.exe" -s -m -a "%SMVBINDIR%" >Nul
+call "%SMVBINDIR%\set_path.bat" -s -m -a "%SMVBINDIR%" >Nul
 
-erase "%SMVBINDIR%\set_path.exe"
+erase "%SMVBINDIR%\set_path.bat"
 echo Press any key to complete update
 pause>NUL

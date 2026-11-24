@@ -203,7 +203,7 @@ EXTERNCPP int IsFileNewer(char *file1, char *file2);
  * @return A buffer allocated by NEWMEMORY or NULL if an error occurred
  * (including hitting the maximum buffer size).
  */
-EXTERNCPP char *GetBinPath();
+EXTERNCPP char *GetBinPath(void);
 /**
  * @brief Find smokeview.ini beside the executable, then in the source tree's
  * Build/for_bundle directory relative to file_util.c's __FILE__ path.
@@ -228,7 +228,7 @@ EXTERNCPP char *GetSmokeviewIniPath(void);
  * @return A buffer allocated by NEWMEMORY or NULL if an error occurred
  * (including hitting the maximum buffer size).
  */
-EXTERNCPP char *GetSmvRootDir();
+EXTERNCPP char *GetSmvRootDir(void);
 /**
  * @brief Get the path of a subdirectory of the smokeview root directory.
  *
@@ -259,7 +259,7 @@ EXTERNCPP char *CombinePaths(const char *path_a, const char *path_b);
  * constructed.
  */
 EXTERNCPP char *GetSmvRootFile(const char *path);
-EXTERNCPP char *GetSmvUserDir();
+EXTERNCPP char *GetSmvUserDir(void);
 EXTERNCPP char *GetSmvUserFile(const char *path);
 /**
  * @brief Get the path of the smokeview config directory. This is generally in a
@@ -269,7 +269,7 @@ EXTERNCPP char *GetSmvUserFile(const char *path);
  * @return A buffer allocated by NEWMEMORY or NULL if an error occurred
  * (including hitting the maximum buffer size).
  */
-EXTERNCPP char *GetUserConfigDir();
+EXTERNCPP char *GetUserConfigDir(void);
 EXTERNCPP char *GetHomeDir(void);
 /**
  * @brief Get the path of a subdirectory of the smokeview config directory. This
@@ -280,8 +280,8 @@ EXTERNCPP char *GetHomeDir(void);
  */
 EXTERNCPP char *GetUserConfigSubPath(const char *subdir);
 EXTERNCPP char *GetScratchFilename(char *file);
-EXTERNCPP char *GetUserColorbarDirPath();
-EXTERNCPP char *GetSmokeviewHtmlPath();
+EXTERNCPP char *GetUserColorbarDirPath(void);
+EXTERNCPP char *GetSmokeviewHtmlPath(void);
 EXTERNCPP void PrintTime(const char *tag, int line, float *timer,
                          const char *label, int stop_flag);
 

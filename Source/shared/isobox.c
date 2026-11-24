@@ -1473,7 +1473,6 @@ int ResizeSurface(isosurface *surfacedata, int incvert, int inctriangles, int in
 /* ------------------ InitIsoSurface ------------------------ */
 
 void InitIsoSurface(isosurface *surfacedata, float level, float *color,int colorindex){
-  surfacedata->compression_type=UNCOMPRESSED;
   surfacedata->level = level;
   surfacedata->color = color;
   surfacedata->colorindex=colorindex;

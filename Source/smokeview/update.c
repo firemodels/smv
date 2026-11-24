@@ -10,7 +10,6 @@
 #include GLUT_H
 
 #include "smokeviewvars.h"
-#include "compress.h"
 #include "IOscript.h"
 #include "glui_smoke.h"
 #include "glui_motion.h"
@@ -70,14 +69,12 @@ void UpdateFrameNumber(int changetime){
           patchi->geom_nval_static  = patchi->geom_nstatics[patchi->geom_itime];
           patchi->geom_nval_dynamic = patchi->geom_ndynamics[patchi->geom_itime];
           sd->itime                 = patchi->geom_timeslist[iglobal_times];
-          slice_time                = sd->itime;
         }
         else{
           if(sd->timeslist == NULL)continue;
           sd->itime = sd->timeslist[iglobal_times];
 
           assert(sd->times_map == NULL || sd->times_map[sd->itime] == 1);
-          slice_time = sd->itime;
         }
       }
       for(i = 0; i < global_scase.npatchinfo; i++){
@@ -121,7 +118,6 @@ void UpdateFrameNumber(int changetime){
         }
         patchi->geom_nval_static  = patchi->geom_nstatics[patchi->geom_itime];
         patchi->geom_nval_dynamic = patchi->geom_ndynamics[patchi->geom_itime];
-        if(patchi->is_compressed==1)UncompressBoundaryDataGEOM(patchi, patchi->geom_itime);
       }
       for(i=0; i<global_scase.meshescoll.nmeshes; i++){
         patchdata *patchi;
@@ -132,14 +128,8 @@ void UpdateFrameNumber(int changetime){
         patchi=global_scase.patchinfo + meshi->patchfilenum;
         if(patchi->structured == NO||meshi->patch_times==NULL||meshi->patch_timeslist==NULL)continue;
         meshi->patch_itime=meshi->patch_timeslist[iglobal_times];
-        if(patchi->compression_type==UNCOMPRESSED){
-
-          meshi->patchval_iframe  = meshi->patchval  + meshi->patch_itime*meshi->npatchsize;
-          meshi->cpatchval_iframe = meshi->cpatchval + meshi->patch_itime * meshi->npatchsize;
-        }
-        else{
-          UncompressBoundaryDataBNDF(meshi, meshi->patch_itime);
-        }
+        meshi->patchval_iframe  = meshi->patchval  + meshi->patch_itime*meshi->npatchsize;
+        meshi->cpatchval_iframe = meshi->cpatchval + meshi->patch_itime * meshi->npatchsize;
       }
     }
     if(showiso==1){
@@ -2139,8 +2129,6 @@ int GetColorbarState(void){
   // if colorbars are hidden then research mode needs to be off
   visColorbarVertical = 0;
   visColorbarHorizontal = 0;
-  visColorbarVertical_save = 0;
-  visColorbarHorizontal_save = 0;
   return COLORBAR_HIDDEN;
 }
 
@@ -2634,7 +2622,6 @@ void UpdateDisplay(void){
     INIT_PRINT_TIMER(timer_update_menus);
     if(opengl_finalized==1)glutDetachMenu(GLUT_RIGHT_BUTTON);
     attachmenu_status = 0;
-    ThreadLock(checkfiles_threads);
 #ifdef pp_GLUT_DEBUG
     printf("\n***before menu setup\n");
 #endif
@@ -2642,7 +2629,6 @@ void UpdateDisplay(void){
 #ifdef pp_GLUT_DEBUG
     printf("***after menu setup\n\n");
 #endif
-    ThreadUnlock(checkfiles_threads);
     if(opengl_finalized==1)glutAttachMenu(GLUT_RIGHT_BUTTON);
     attachmenu_status = 1;
     updatemenu = 0;

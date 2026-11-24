@@ -154,13 +154,6 @@ char *CasePathFfmpegCommand(smv_case *scase){
 #endif
 }
 
-/* ------------------ CasePathSmvZip ------------------------ */
-
-// char *smvzip_filename;
-char *CasePathSmvZip(smv_case *scase){
-  return SetupPath(NULL, scase->fdsprefix, ".smvzip");
-}
-
 /* ------------------ CasePathSliceInfo ------------------------ */
 
 // char *sliceinfo_filename;

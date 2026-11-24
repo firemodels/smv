@@ -46,10 +46,6 @@ SVEXTERN threaderdata SVDECL(*meshnabors_threads, NULL);
 SVEXTERN int SVDECL(n_makeiblank_threads, 1), SVDECL(use_makeiblank_threads, 1);
 SVEXTERN threaderdata SVDECL(*makeiblank_threads,       NULL);
 
-//***checkfiles
-SVEXTERN int SVDECL(n_checkfiles_threads, 1), SVDECL(use_checkfiles_threads, 1);
-SVEXTERN threaderdata SVDECL(*checkfiles_threads,       NULL);
-
 //*** ffmpeg
 SVEXTERN int SVDECL(n_ffmpeg_threads, 1), SVDECL(use_ffmpeg_threads, 1);
 SVEXTERN threaderdata SVDECL(*ffmpeg_threads,         NULL);
@@ -135,9 +131,6 @@ SVEXTERN float SVDECL(*hvac_circ_x, NULL), SVDECL(*hvac_circ_y, NULL);
 #define MAXFILELEN 360
 SVEXTERN float SVDECL(*part_bound_buffer, NULL);
 
-SVEXTERN FILE_SIZE SVDECL(last_size_for_slice, 0);
-SVEXTERN FILE_SIZE SVDECL(last_size_for_boundary, 0);
-
 SVEXTERN char SVDECL(*plot3d_gbnd_filename, NULL), SVDECL(**sorted_plot3d_filenames, NULL);
 SVEXTERN char SVDECL(*slice_gbnd_filename,  NULL), SVDECL(**sorted_slice_filenames,  NULL);
 SVEXTERN char SVDECL(*patch_gbnd_filename,  NULL), SVDECL(**sorted_patch_filenames,  NULL);
@@ -218,7 +211,6 @@ SVEXTERN int SVDECL(hide_scene, 0);
 SVEXTERN int SVDECL(have_obsts, 0);
 SVEXTERN int SVDECL(have_geometry_dialog, 0);
 SVEXTERN int SVDECL(chop_patch, 0);
-SVEXTERN float SVDECL(colorbar_slice_min, 0.0), SVDECL(colorbar_slice_max, 1.0);
 SVEXTERN int SVDECL(have_geom_triangles, 0);
 SVEXTERN int SVDECL(force_fixedpoint, FORCE_FIXEDPOINT_NO);
 SVEXTERN int SVDECL(force_exponential, 0);
@@ -380,7 +372,6 @@ SVEXTERN int SVDECL(selected_geom_triangle, -1);
 
 SVEXTERN int SVDECL(nlist_slice_index, 0);
 SVEXTERN int SVDECL(slice_fileupdate, 0);
-SVEXTERN int SVDECL(zone_temp_bounds_defined, 0);
 SVEXTERN int SVDECL(slice_temp_bounds_defined, 0);
 
 SVEXTERN int nplot3dloaded, nsmoke3dloaded, nisoloaded, nsliceloaded, nvsliceloaded;
@@ -394,11 +385,7 @@ SVEXTERN int SVDECL(nsliceloaded_old,0),      SVDECL(nvsliceloaded_old,0),  SVDE
 SVEXTERN int SVDECL(npart5loaded_old, 0), SVDECL(npartloaded_old, 0);
 
 SVEXTERN int SVDECL(select_part, 0), SVDECL(selected_part_index, -1);
-SVEXTERN int SVDECL(smoke3d_compression_type, COMPRESSED_UNKNOWN);
 SVEXTERN int SVDECL(update_smoke3dmenulabels, 0);
-
-SVEXTERN int SVDECL(global_have_global_bound_file, 0);
-SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
 
 SVEXTERN int SVDECL(glui_mesh_intersection_option, 0);
 
@@ -424,7 +411,6 @@ SVEXTERN int SVDECL(update_windrose, 0);
 SVEXTERN int SVDECL(update_use_lighting, 0), SVDECL(use_lighting, 1);
 
 SVEXTERN cellmeshdata SVDECL(*cellmeshinfo, NULL);
-SVEXTERN int SVDECL(is_convex, 0);
 
 SVEXTERN int SVDECL(cancel_update_triangles, 0);
 SVEXTERN int SVDECL(updating_triangles, 0);
@@ -473,7 +459,6 @@ SVEXTERN float SVDECL(geomboundary_linewidth, 5.0);
 SVEXTERN int SVDECL(update_tour_path,1);
 SVEXTERN int SVDECL(tour_circular_index, -1);
 SVEXTERN float tour_circular_center[3], tour_circular_radius, tour_circular_view[3], SVDECL(tour_circular_angle0,0.0);
-SVEXTERN float tour_circular_center_default[3], tour_circular_radius_default, tour_circular_view_default[3];
 SVEXTERN float SVDECL(tour_speedup_factor, 1.0);
 SVEXTERN int SVDECL(ncircletournodes, 16);
 
@@ -549,7 +534,6 @@ SVEXTERN int SVDECL(showbeam_as_line, 1), SVDECL(use_beamcolor,0), beam_color[3]
 SVEXTERN float SVDECL(beam_line_width, 4.0);
 
 SVEXTERN float SVDECL(zone_hvac_diam, 0.05);
-SVEXTERN int SVDECL(slice_time, 0);
 SVEXTERN int SVDECL(in_part_mt, 0);
 SVEXTERN histogramdata SVDECL(*full_plot3D_histograms, NULL);
 SVEXTERN histogramdata SVDECL(*full_part_histogram, NULL);
@@ -654,7 +638,7 @@ SVEXTERN int SVDECL(update_playmovie, 0);
 SVEXTERN int SVDECL(play_movie_now, 1);
 SVEXTERN int SVDECL(update_makemovie, 0),SVDECL(movie_filetype,AVI);
 SVEXTERN char movie_name[1024], movie_ext[10];
-SVEXTERN int SVDECL(movie_framerate, 10), SVDECL(have_ffmpeg, 0), SVDECL(have_ffplay, 0), SVDECL(overwrite_movie, 1);
+SVEXTERN int SVDECL(movie_framerate, 10), SVDECL(have_ffmpeg, 0), SVDECL(overwrite_movie, 1);
 
 SVEXTERN int SVDECL(show_missing_objects, 1);
 SVEXTERN int SVDECL(toggle_dialogs, 1);
@@ -684,14 +668,12 @@ SVEXTERN int SVDECL(hide_all_exterior_patch_data, 0);
 SVEXTERN int SVDECL(show_all_interior_patch_data, 1);
 SVEXTERN int SVDECL(glui_show_all_interior_patch_data, 1);
 SVEXTERN int SVDECL(show_triangle_count,0);
-SVEXTERN int SVDECL(triangle_count ,0);
 SVEXTERN int SVDECL(n_geom_triangles,0);
 SVEXTERN int SVDECL(show_device_orientation,0);
 SVEXTERN float SVDECL(orientation_scale,1.0);
 SVEXTERN int SVDECL(clipon,0);
 SVEXTERN int SVDECL(vectortype,0);
 SVEXTERN int SVDECL(show_cutcells,0);
-SVEXTERN int face_id[200],face_vis[10], face_vis_old[10];
 SVEXTERN int SVDECL(show_node_slices_and_vectors,0);
 SVEXTERN int SVDECL(show_cell_slices_and_vectors,1);
 SVEXTERN int SVDECL(update_patch_vis, 0);
@@ -705,7 +687,6 @@ SVEXTERN int SVDECL(wall_cell_color_flag,0);
 SVEXTERN circdata cvent_circ, object_circ, windrose_circ;
 SVEXTERN int SVDECL(show_all_units,0);
 SVEXTERN int SVDECL(circle_outline,0);
-SVEXTERN unsigned char SVDECL(*patchmin_unit,NULL),SVDECL(*patchmax_unit,NULL);
 SVEXTERN unsigned char SVDECL(*glui_slicemin_unit,NULL),SVDECL(*glui_slicemax_unit,NULL);
 SVEXTERN unsigned char SVDECL(*plot3dmin_unit,NULL),SVDECL(*plot3dmax_unit,NULL);
 SVEXTERN unsigned char SVDECL(*partmin_unit,NULL),SVDECL(*partmax_unit,NULL);
@@ -719,10 +700,9 @@ SVEXTERN int SVDECL(check_colorbar, 0);
 SVEXTERN int SVDECL(script_startframe,-1), SVDECL(script_skipframe,-1);
 SVEXTERN int SVDECL(render_startframe0,-1), SVDECL(render_skipframe0,-1);
 SVEXTERN int SVDECL(update_smokecolorbar,0);
-SVEXTERN int SVDECL(combine_meshes,1);
 SVEXTERN int vcolorbar_left_pos, vcolorbar_right_pos, vcolorbar_down_pos, vcolorbar_top_pos;
 SVEXTERN int hcolorbar_left_pos, hcolorbar_right_pos, hcolorbar_down_pos, hcolorbar_top_pos;
-SVEXTERN float scale_2d_x, scale_2d_y;
+SVEXTERN float scale_2d_x;
 SVEXTERN int SVDECL(vcolorbar_delta,35);
 SVEXTERN int SVDECL(hcolorbar_delta, 25);
 SVEXTERN int colorbar_label_width;
@@ -734,7 +714,6 @@ SVEXTERN int SVDECL(h_space,2), SVDECL(v_space,2);
 SVEXTERN portdata VP_fullscreen, VP_title, VP_timebar, VP_vcolorbar, VP_scene, VP_info;
 SVEXTERN portdata VP_hrr_plot, VP_slice_plot;
 
-SVEXTERN int SVDECL(in_external,0);
 SVEXTERN int SVDECL(label_list_index,0);
 SVEXTERN labeldata LABEL_global, SVDECL(*LABEL_global_ptr,NULL), LABEL_default;
 
@@ -865,7 +844,7 @@ SVEXTERN int SVDECL(niso_trans,0),SVDECL(niso_opaques,0);
 SVEXTERN int SVDECL(sort_iso_triangles,1);
 SVEXTERN int SVDECL(object_outlines,0), SVDECL(object_box, 0);
 SVEXTERN int SVDECL(usemenu,1);
-SVEXTERN float direction_color[4], SVDECL(*direction_color_ptr,NULL);
+SVEXTERN float direction_color[4];
 #ifdef INMAIN
 SVEXTERN float hrrpuv_iso_color[4]={1.0,0.5,0.0,1.0};
 #else
@@ -941,7 +920,7 @@ SVEXTERN int SVDECL(demo_option,0);
 SVEXTERN int SVDECL(outout_patch_faces, 0);
 SVEXTERN int SVDECL(boundary_interface_unhide, 0), SVDECL(boundary_loaded, 0);
 
-SVEXTERN int colorbar_font_height, font_height;
+SVEXTERN int font_height;
 SVEXTERN void SVDECL(*colorbar_font_ptr, NULL), SVDECL(*font_ptr,NULL);
 
 SVEXTERN float SVDECL(cb_valmin,0.0), SVDECL(cb_valmax,100.0), SVDECL(cb_val,50.0);
@@ -1071,7 +1050,7 @@ SVEXTERN int SVDECL(glui_post_redisplay_on, 0);
 SVEXTERN int SVDECL(demo_mode,0);
 SVEXTERN int SVDECL(smoke3d_demo_mode, 0);
 SVEXTERN int SVDECL(loadplot3dall,0);
-SVEXTERN char *shortp3label[MAXPLOT3DVARS], *unitp3label[MAXPLOT3DVARS];
+SVEXTERN char *shortp3label[MAXPLOT3DVARS];
 SVEXTERN int SVDECL(update_plot3d_bnd, 0);
 
 SVEXTERN int show3dsmoke;
@@ -1099,7 +1078,6 @@ SVEXTERN float rgb_iso[4*MAXRGB];
 SVEXTERN float rgb_patch[4*MAXRGB];
 SVEXTERN float rgb_plot3d[4*MAXRGB];
 SVEXTERN float rgb_part[4*MAXRGB];
-SVEXTERN float rgb_trans[4*MAXRGB];
 SVEXTERN float rgb_cad[MAXRGB][4];
 
 //keep comment until changes are merged
@@ -1191,7 +1169,7 @@ SVEXTERN float motion_ab[2];
 SVEXTERN float motion_dir[2];
 #endif
 SVEXTERN float motion_ab[2], motion_dir[2];
-SVEXTERN int SVDECL(trainerload,0),SVDECL(trainerload_old,0);
+SVEXTERN int SVDECL(trainerload,0);
 SVEXTERN int SVDECL(trainer_mode,0);
 SVEXTERN int SVDECL(trainer_active,0);
 
@@ -1207,7 +1185,6 @@ SVEXTERN int SVDECL(itourknots,-1);
 
 SVEXTERN int SVDECL(showhide_option,SHOWALL_FILES);
 SVEXTERN int SVDECL(xyz_dir,0);
-SVEXTERN int SVDECL(which_face,2);
 
 SVEXTERN float SVDECL(vecfactor,1.0);
 
@@ -1215,7 +1192,7 @@ SVEXTERN int SVDECL(glui_active,0);
 
 SVEXTERN int SVDECL(old_draw_colorlabel,0);
 SVEXTERN int SVDECL(vis3DSmoke3D,1);
-SVEXTERN int SVDECL(smokeskip,1),SVDECL(smoke3d_frame_inc,1),SVDECL(update_smoke3d_frame_inc,0);
+SVEXTERN int SVDECL(smoke3d_frame_inc,1),SVDECL(update_smoke3d_frame_inc,0);
 SVEXTERN float SVDECL(scene_aspect_ratio,1.0);
 
 SVEXTERN int SVDECL(fix_window_aspect, 0);
@@ -1226,13 +1203,12 @@ SVEXTERN int SVDECL(screenWidth,640), SVDECL(screenHeight,480);
 SVEXTERN int SVDECL(screenX0, 0), SVDECL(screenY0, 0);
 SVEXTERN int SVDECL(dialogX0, 0), SVDECL(dialogY0, 0);
 SVEXTERN int SVDECL(have_dialogX0, 0), SVDECL(have_dialogY0, 0);
-SVEXTERN int SVDECL(use_commandline_origin, 0);
 SVEXTERN int screenWidth_save;
 SVEXTERN int SVDECL(screenWidthINI,640), SVDECL(screenHeightINI,480);
 SVEXTERN int SVDECL(glui_screenWidth,640), SVDECL(glui_screenHeight,480);
 SVEXTERN int SVDECL(windowsize_pointer,0);
 SVEXTERN int SVDECL(zonecolortype, ZONETEMP_COLOR);
-SVEXTERN int SVDECL(timebar_drag,0),SVDECL(colorbar_drag,0),SVDECL(colorbar_splitdrag,0),SVDECL(colorbaredit_drag,0);
+SVEXTERN int SVDECL(timebar_drag,0),SVDECL(colorbar_drag,0),SVDECL(colorbaredit_drag,0);
 SVEXTERN int SVDECL(global_colorbar_index,-1);
 
 SVEXTERN int SVDECL(fontindex,SMALL_FONT);
@@ -1266,10 +1242,8 @@ SVEXTERN int SVDECL(cache_file_data, 1);
 SVEXTERN int SVDECL(update_cache_data, 0);
 
 SVEXTERN int SVDECL(editwindow_status,-1);
-SVEXTERN int SVDECL(startup_pass,1);
 
 SVEXTERN int SVDECL(slicefilenumber,0);
-SVEXTERN int SVDECL(frame_count,1), SVDECL(last_frame_count,1);
 SVEXTERN int SVDECL(nspr,0);
 SVEXTERN int SVDECL(render_skip, RENDER_CURRENT_SINGLE);
 SVEXTERN int SVDECL(render_skip_save, RENDER_CURRENT_SINGLE);
@@ -1288,7 +1262,6 @@ SVEXTERN float slice_line_contour_max;
 SVEXTERN int slice_line_contour_num;
 SVEXTERN int setpartmin_old, setpartmax_old;
 SVEXTERN int SVDECL(glui_setpatchmin,GLOBAL_MIN), SVDECL(glui_setpatchmax,GLOBAL_MAX), SVDECL(setzonemin,GLOBAL_MIN), SVDECL(setzonemax,GLOBAL_MAX);
-SVEXTERN int SVDECL(loadpatchbysteps,UNCOMPRESSED );
 SVEXTERN int SVDECL(settargetmin,0), SVDECL(settargetmax,0);
 SVEXTERN int SVDECL(setpartchopmin,0), SVDECL(setpartchopmax,0);
 SVEXTERN int SVDECL(setpatchchopmin,0), SVDECL(setpatchchopmax,0);
@@ -1331,12 +1304,12 @@ SVEXTERN float shooter_uvw[3]={0.0,0.0,0.0};
 #else
 SVEXTERN float shooter_uvw[3];
 #endif
-SVEXTERN float shooter_velx, shooter_vely, shooter_velz, shooter_time;
+SVEXTERN float shooter_velx, shooter_vely, shooter_velz;
 SVEXTERN int SVDECL(shooter_cont_update,0),SVDECL(shooter_firstframe,0);
 //keep comment until changes are merged
 //SVEXTERN float SVDECL(shooter_u0,2.0), SVDECL(shooter_z0,1.0), SVDECL(shooter_p,1.0/7.0), SVDECL(shooter_v_inf,1.0);
 SVEXTERN float SVDECL(shooter_u0,2.0), SVDECL(shooter_z0,1.0), SVDECL(shooter_p, 0.1428571), SVDECL(shooter_v_inf,1.0);
-SVEXTERN float shooter_velmag, shooter_veldir, shooter_duration, SVDECL(shooter_history,10.0);
+SVEXTERN float shooter_velmag, shooter_veldir, shooter_duration;
 SVEXTERN int SVDECL(shooter_active,0);
 SVEXTERN int shooter_fps,shooter_vel_type, shooter_nparts, SVDECL(visShooter,0), showshooter, nshooter_frames, max_shooter_points;
 SVEXTERN shootpointdata SVDECL(*shootpointinfo,NULL);
@@ -1384,14 +1357,12 @@ SVEXTERN int SVDECL(update_bound_chop_data, 0);
 SVEXTERN int SVDECL(windowresized,0);
 
 SVEXTERN int SVDECL(updatemenu,0), SVDECL(first_display,2);
-SVEXTERN int SVDECL(updatezoommenu,0),SVDECL(updatezoomini,0);
+SVEXTERN int SVDECL(updatezoommenu,0);
 SVEXTERN int SVDECL(use_graphics,1), SVDECL(opengl_setup, 0);
 
 SVEXTERN int SVDECL(updatefacelists,0);
 
 SVEXTERN int SVDECL(periodic_reloads, 0), SVDECL(periodic_reload_value, 2);
-
-SVEXTERN int SVDECL(slicefilenum,-1);
 
 SVEXTERN float min_gridcell_size;
 
@@ -1399,12 +1370,12 @@ SVEXTERN int SVDECL(menustatus,GLUT_MENU_NOT_IN_USE);
 SVEXTERN int SVDECL(visTimeZone,1), SVDECL(visTimeParticles,1), SVDECL(visTimeSlice,1), SVDECL(visTimeBoundary,1);
 SVEXTERN int SVDECL(visTimeIso,1);
 SVEXTERN int SVDECL(vishmsTimelabel,0), SVDECL(visTimebar,1);
-SVEXTERN int SVDECL(visColorbarVertical,1), SVDECL(visColorbarVertical_save,1);
+SVEXTERN int SVDECL(visColorbarVertical,1);
 SVEXTERN int SVDECL(update_visColorbars,0), visColorbarVertical_val, visColorbarHorizontal_val;
 SVEXTERN int SVDECL(update_idle, 0);
 SVEXTERN int SVDECL(update_setmainwindow, 0);
 
-SVEXTERN int SVDECL(visColorbarHorizontal, 0), SVDECL(visColorbarHorizontal_save, 0);
+SVEXTERN int SVDECL(visColorbarHorizontal, 0);
 SVEXTERN int SVDECL(visFramerate, 0);
 SVEXTERN int SVDECL(visFramelabel,1), SVDECL(visTimelabel,1);
 SVEXTERN int SVDECL(vis_hrr_label,0);
@@ -1424,7 +1395,6 @@ SVEXTERN int SVDECL(hide_internal_blockages, 0);
 SVEXTERN int SVDECL(outline_color_flag,0);
 SVEXTERN int visBlocks,                SVDECL(solid_state,-1),      SVDECL(outline_state,-1);
 SVEXTERN int visBlocks_save,           SVDECL(solid_state_save,-1), SVDECL(outline_state_save,-1);
-SVEXTERN int SVDECL(visBlocks_ini,-1), SVDECL(solid_state_ini, -1), SVDECL(outline_state_ini, -1);
 #define OBSTGEOM_SAVE    1
 #define OBSTGEOM_RESTORE 0
 SVEXTERN int SVDECL(obstgeom_state, -1);
@@ -1474,7 +1444,7 @@ SVEXTERN float SVDECL(ventoffset_smv_ini, -1.0);
 SVEXTERN int SVDECL(planar_terrain_slice,0);
 SVEXTERN int SVDECL(nrgb_ini,-1);
 SVEXTERN int SVDECL(nrgb2_ini,0);
-SVEXTERN int SVDECL(rgb_white,NRGB), SVDECL(rgb_yellow,NRGB+1), SVDECL(rgb_blue,NRGB+2), SVDECL(rgb_red,NRGB+3);
+SVEXTERN int SVDECL(rgb_white,NRGB);
 SVEXTERN int SVDECL(rgb_black,NRGB+7);
 SVEXTERN int SVDECL(num_colorbars,0);
 SVEXTERN int SVDECL(setbw,0),SVDECL(setbwdata,0);
@@ -1528,7 +1498,7 @@ SVEXTERN int SVDECL(glui_set_tour_time, 0);
 SVEXTERN float SVDECL(glui_tour_time, 0.0);
 SVEXTERN float SVDECL(glui_tour_pause_time, 0.0);
 
-SVEXTERN float gslice_xyz0[3],gslice_normal_azelev0[2];
+SVEXTERN float gslice_xyz0[3];
 SVEXTERN int SVDECL(vis_gslice_data,0),SVDECL(SHOW_gslice_data,0),SVDECL(SHOW_gslice_data_old,0),SVDECL(show_gslice_triangles,0);
 SVEXTERN int SVDECL(show_gslice_triangulation,0);
 SVEXTERN int SVDECL(show_gslice_normal,0),SVDECL(show_gslice_normal_keyboard,0);
@@ -1611,8 +1581,7 @@ SVEXTERN int SVDECL(n_blockages_debug, 0);
   SVEXTERN unsigned char rgb_below_min[3], rgb_above_max[3];
 #endif
 SVEXTERN int SVDECL(colorbar_select_index,-1),SVDECL(update_colorbar_select_index,0);
-SVEXTERN float fds_eyepos[3],smv_eyepos[3],fds_viewdir[3],smv_viewpos[3];
-SVEXTERN int SVDECL(tour_usecurrent,0);
+SVEXTERN float fds_eyepos[3],smv_eyepos[3],fds_viewdir[3];
 SVEXTERN int SVDECL(output_slicedata,0),SVDECL(output_patchdata,0);
 SVEXTERN f_units SVDECL(*unitclasses,NULL),SVDECL(*unitclasses_default,NULL),SVDECL(*unitclasses_ini,NULL);
 SVEXTERN int SVDECL(nunitclasses,0),SVDECL(nunitclasses_default,0),SVDECL(nunitclasses_ini,0);
@@ -1648,8 +1617,7 @@ SVEXTERN float trunccolor[4]={0.6,0.2,0.0,1.0};
 SVEXTERN float treecharcolor[4];
 SVEXTERN float trunccolor[4];
 #endif
-SVEXTERN unsigned char treecolor_uc[4], treecharcolor_uc[4], trunccolor_uc[4];
-SVEXTERN float rgb_terrain[10][4];
+SVEXTERN unsigned char treecolor_uc[4], trunccolor_uc[4];
 SVEXTERN keyframe SVDECL(**tourknotskeylist,NULL);
 SVEXTERN tourdata SVDECL(**tourknotstourlist,NULL);
 SVEXTERN keyframe SVDECL(*selected_frame,NULL);
@@ -1673,7 +1641,7 @@ SVEXTERN float apertures[5];
 #endif
 SVEXTERN float SVDECL(zoom_min, 0.1), SVDECL(zoom_max, 10.0);
 SVEXTERN float aperture_min, aperture_max;
-SVEXTERN float aperture,aperture_glui,aperture_default,aperture_glui0;
+SVEXTERN float aperture,aperture_glui,aperture_glui0;
 #define MAX_ZOOMS 6
 #define ZOOMINDEX_ONE 2
 SVEXTERN int SVDECL(zoomindex, ZOOMINDEX_ONE);
@@ -1682,7 +1650,7 @@ SVEXTERN float zooms[MAX_ZOOMS+1]={0.25,0.5,1.0,2.0,4.0,10.0,-1.0};
 #else
 SVEXTERN float zooms[MAX_ZOOMS+1];
 #endif
-SVEXTERN float SVDECL(zoom,1.0),SVDECL(zoomini,1.0);
+SVEXTERN float SVDECL(zoom,1.0);
 SVEXTERN int rgbmask[16];
 SVEXTERN GLint nredbits, ngreenbits, nbluebits;
 SVEXTERN int nredshift, ngreenshift, nblueshift;
@@ -1696,7 +1664,7 @@ SVEXTERN int old_listview;
 SVEXTERN int SVDECL(titlesafe_offset,0);
 SVEXTERN int SVDECL(titlesafe_offsetBASE,45);
 SVEXTERN int   SVDECL(reset_frame,0);
-SVEXTERN float SVDECL(reset_time,0.0),SVDECL(start_frametime,0.0),SVDECL(stop_frametime,0.0);
+SVEXTERN float SVDECL(reset_time,0.0);
 SVEXTERN float SVDECL(max_velocity,0.0);
 SVEXTERN int nslice_loaded, ngeomslice_loaded;
 SVEXTERN int SVDECL(*slice_loaded_list,NULL), SVDECL(*slice_sorted_loaded_list,NULL);
@@ -1726,7 +1694,7 @@ SVEXTERN int   SVDECL(update_slice2device, 0);
 SVEXTERN int SVDECL(script_multislice,0), SVDECL(script_multivslice,0), SVDECL(script_iso,0);
 SVEXTERN FILE SVDECL(*scriptoutstream,NULL);
 SVEXTERN FILE SVDECL(*LOG_FILENAME,NULL);
-SVEXTERN int SVDECL(csv_loaded, 0), SVDECL(devices_setup,0),SVDECL(update_csv_load,0);
+SVEXTERN int SVDECL(csv_loaded, 0), SVDECL(update_csv_load,0);
 SVEXTERN char SVDECL(*INI_fds_filein,NULL);
 SVEXTERN int SVDECL(event_file_exists,0);
 SVEXTERN char SVDECL(*zonelonglabels,NULL), SVDECL(*zoneshortlabels,NULL), SVDECL(*zoneunits,NULL);
@@ -1765,14 +1733,12 @@ SVEXTERN float xslicemid, yslicemid, zslicemid;
 SVEXTERN float delx;
 SVEXTERN float delz;
 SVEXTERN float d_eye_xyz[3],dsave_eye_xyz[3];
-SVEXTERN float eyex0, eyey0, eyez0;
 SVEXTERN float viewx, viewy, viewz;
-SVEXTERN float anglexy0,azimuth0;
 SVEXTERN int mouse_down_xy0[2];
 SVEXTERN int touring;
 SVEXTERN int SVDECL(update_tour_list,0);
 SVEXTERN float SVDECL(desired_view_height,1.5);
-SVEXTERN int thistime, lasttime, SVDECL(resetclock,1);
+SVEXTERN int thistime, lasttime;
 SVEXTERN int SVDECL(realtime_flag,0);
 SVEXTERN char timelabel[30];
 SVEXTERN char framelabel[30];
@@ -1797,7 +1763,6 @@ SVEXTERN int SVDECL(ntimes_buffer, 0);
 SVEXTERN int SVDECL(cpuframe,0);
 
 SVEXTERN float eye_position_smv[3];
-SVEXTERN float eye_position_fds[3];
 //#ifdef INMAIN
 //  SVEXTERN float eyzeyeorig_OLD[3]={-1.000000, -1.000000, -1.000000};
 // #else
@@ -1882,7 +1847,6 @@ SVEXTERN int SVDECL(user_tick_show_x,1), SVDECL(user_tick_show_y,1), SVDECL(user
 SVEXTERN int SVDECL(visCadTextures,1);
 SVEXTERN int SVDECL(viscolorbarpath,0);
 SVEXTERN int SVDECL(*sortedblocklist,NULL),SVDECL(*changed_idlist,NULL),SVDECL(nchanged_idlist,0);
-SVEXTERN int SVDECL(nselectblocks,0);
 #ifdef INMAIN
 SVEXTERN int surface_indices[7]={0,0,0,0,0,0};
 #else
@@ -1923,7 +1887,6 @@ SVEXTERN int SVDECL(updateUpdateFrameRateMenu,0);
 SVEXTERN int ntextures_loaded_used, SVDECL(iterrain_textures,0);
 SVEXTERN int SVDECL(nskyboxinfo,0);
 SVEXTERN skyboxdata SVDECL(*skyboxinfo,NULL);
-SVEXTERN zonedata SVDECL(*activezone,NULL);
 SVEXTERN int SVDECL(update_screensize,0);
 SVEXTERN int SVDECL(part5show,1);
 SVEXTERN int SVDECL(streak5show,0), SVDECL(streak5step,0), SVDECL(showstreakhead,1);
@@ -1953,7 +1916,6 @@ SVEXTERN int SVDECL(update_glui_bounds, 0), SVDECL(update_ini, 0), SVDECL(update
 SVEXTERN cpp_boundsdata SVDECL(*hvacductbounds_cpp, NULL), SVDECL(*hvacnodebounds_cpp, NULL);
 SVEXTERN int SVDECL(nhvacductbounds_cpp, 0), SVDECL(nhvacnodebounds_cpp, 0);
 SVEXTERN boundsdata SVDECL(*slicebounds,NULL), SVDECL(*isobounds,NULL), SVDECL(*patchbounds,NULL);
-SVEXTERN boundsdata SVDECL(*slicebounds_temp, NULL);
 SVEXTERN boundsdata SVDECL(*hvacductbounds, NULL), SVDECL(*hvacnodebounds, NULL);
 SVEXTERN int SVDECL(nhvacductbounds, 0), SVDECL(nhvacnodebounds, 0);
 
@@ -1993,7 +1955,6 @@ SVEXTERN int SVDECL(show_firecolormap,0);
 SVEXTERN int SVDECL(fire_colormap_type,      FIRECOLOR_COLORBAR);
 SVEXTERN int SVDECL(fire_colormap_type_save, FIRECOLOR_COLORBAR);
 
-SVEXTERN int SVDECL(use_smoke_rgb, 1);
 SVEXTERN int SVDECL(use_fire_colormap, 0),  SVDECL(use_fire_rgb, 1);
 SVEXTERN int SVDECL(use_co2_colormap, 0),   SVDECL(use_co2_rgb, 1);
 
@@ -2003,7 +1964,7 @@ SVEXTERN int SVDECL(show_cad_and_grid,0);
 SVEXTERN int SVDECL(iplot3dtimelist, -1), SVDECL(nplot3dtimelist, 0);
 SVEXTERN float SVDECL(*plot3dtimelist,NULL);
 
-SVEXTERN blockagedata SVDECL(*bchighlight,NULL),SVDECL(*bchighlight_old,NULL);
+SVEXTERN blockagedata SVDECL(*bchighlight,NULL);
 
 SVEXTERN int SVDECL(buffertype,DOUBLE_BUFFER);
 SVEXTERN int SVDECL(opengl_finalized,0);

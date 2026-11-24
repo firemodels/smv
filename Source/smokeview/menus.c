@@ -403,18 +403,12 @@ int ComparePatchLabels(const void *arg1, const void *arg2){
 
 /* ----------------------- PrintFileSizes ----------------------------- */
 
-void PrintFileSizes(char *type, float val, float val2){
-  char label[100], label2[100], *labelptr=NULL, *labelptr2=NULL;
+void PrintFileSizes(char *type, float val){
+  char label[100], *labelptr=NULL;
 
-  if(val>0.0)labelptr=GetFloatFileSizeLabel(val, label);
-  if(val2>0.0)labelptr2=GetFloatFileSizeLabel(val2, label2);
   if(val>0.0){
-    if(val2>0.0){
-      if(labelptr!=NULL&&labelptr2!=NULL)printf("  %s/compressed: %s/%s\n", type,labelptr,labelptr2);
-    }
-    else{
-      if(labelptr != NULL)printf("  %s: %s\n", type,labelptr);
-    }
+    labelptr = GetFloatFileSizeLabel(val, label);
+    if(labelptr != NULL)printf("  %s: %s\n", type,labelptr);
   }
 }
 /* ------------------ GetFileSizes ------------------------ */
@@ -425,39 +419,33 @@ void GetFileSizes(void){
   printf("\n");
   if(global_scase.smoke3dcoll.nsmoke3dinfo>0){
     float hrrpuv = 0.0, soot = 0.0, temp = 0.0, co2 = 0.0;
-    float hrrpuv2 = 0.0, soot2 = 0.0, temp2 = 0.0, co22 = 0.0;
 
     for(i = 0; i<global_scase.smoke3dcoll.nsmoke3dinfo; i++){
       smoke3ddata *smoke3di;
-      FILE_SIZE file_size, compressed_file_size;
+      FILE_SIZE file_size;
 
       smoke3di = global_scase.smoke3dcoll.smoke3dinfo+i;
 
       file_size = GetFileSizeSMV(smoke3di->reg_file);
-      compressed_file_size = GetFileSizeSMV(smoke3di->comp_file);
 
       if(smoke3di->type==SOOT_index){
         soot += file_size;
-        soot2 += compressed_file_size;
       }
       else if(smoke3di->type==HRRPUV_index){
         hrrpuv += file_size;
-        hrrpuv2 += compressed_file_size;
       }
       else if(smoke3di->type==TEMP_index){
         temp += file_size;
-        temp2 += compressed_file_size;
       }
       else if(smoke3di->type==CO2_index){
         co2 += file_size;
-        co22 += compressed_file_size;
       }
     }
     printf("3d smoke file sizes:\n");
-    PrintFileSizes("soot",soot,soot2);
-    PrintFileSizes("hrrpuv",hrrpuv,hrrpuv2);
-    PrintFileSizes("temp",temp,temp2);
-    PrintFileSizes("co2",co2,co22);
+    PrintFileSizes("soot",soot);
+    PrintFileSizes("hrrpuv",hrrpuv);
+    PrintFileSizes("temp",temp);
+    PrintFileSizes("co2",co2);
     printf("\n");
   }
 
@@ -479,7 +467,7 @@ void GetFileSizes(void){
 
   if(global_scase.npatchinfo>0){
     patchdata **patchlist;
-    float sum = 0.0, compressed_sum=0;
+    float sum = 0.0;
 
     printf("boundary files sizes: \n");
     NewMemory((void **)&patchlist, global_scase.npatchinfo*sizeof(patchdata *));
@@ -489,24 +477,21 @@ void GetFileSizes(void){
     qsort((patchdata **)patchlist, (size_t)global_scase.npatchinfo, sizeof(patchdata *), ComparePatchLabels);
     for(i = 0; i<global_scase.npatchinfo; i++){
       patchdata *patchi, *patchim1;
-      FILE_SIZE file_size, compressed_file_size;
+      FILE_SIZE file_size;
 
       patchi = patchlist[i];
       file_size = GetFileSizeSMV(patchi->reg_file);
-      compressed_file_size = GetFileSizeSMV(patchi->comp_file);
 
       if(i>0)patchim1 = patchlist[i-1];
       if(i==0||strcmp(patchim1->label.longlabel, patchi->label.longlabel)==0){
         sum += file_size;
-        compressed_sum += compressed_file_size;
       }
       else{
-        PrintFileSizes(patchim1->label.longlabel,sum,compressed_sum);
+        PrintFileSizes(patchim1->label.longlabel,sum);
         sum = file_size;
-        compressed_sum = compressed_file_size;
       }
       if(i==global_scase.npatchinfo-1){
-        PrintFileSizes(patchi->label.longlabel,sum,compressed_sum);
+        PrintFileSizes(patchi->label.longlabel,sum);
       }
     }
     printf("\n");
@@ -627,7 +612,6 @@ void ShowMultiSliceMenu(int value){
     }
     break;
   }
-  UpdateSliceFilenum();
   plotstate = GetPlotState(DYNAMIC_PLOTS);
 
   UpdateShow();
@@ -668,7 +652,6 @@ void TrainerViewMenu(int value){
     LoadSmoke3DMenu(0);
     LoadSmoke3DMenu(1);
     ShowAllSmoke();
-    trainerload_old=1;
     break;
   case MENU_TRAINER_temp:  // temperature slices
     HideAllSmoke();
@@ -676,7 +659,6 @@ void TrainerViewMenu(int value){
     sliceload_dir = 1;
     LoadAllSlicesLabel("temp");
     ShowAllSlices("TEMPERATURE");
-    trainerload_old=2;
     break;
   case MENU_TRAINER_oxy:  //  oxygen slices
     HideAllSmoke();
@@ -684,12 +666,10 @@ void TrainerViewMenu(int value){
     sliceload_dir = 1;
     LoadAllSlicesLabel("X_O2");
     ShowAllSlices("OXYGEN VOLUME FRACTION");
-    trainerload_old=3;
     break;
   case MENU_TRAINER_CLEAR: // unload
     LoadUnloadMenu(UNLOADALL);
     trainerload=0;
-    trainerload_old=0;
     break;
   default:
     assert(FFALSE);
@@ -1421,7 +1401,6 @@ void ShowHideSliceMenu(int value){
     }
   }
   update_flipped_colorbar = 1;
-  UpdateSliceFilenum();
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
   UpdateShow();
@@ -1681,7 +1660,6 @@ void FontMenu(int value){
     colorbar_font_ptr = GLUT_BITMAP_HELVETICA_12;
 #endif
     font_height          = 12;
-    colorbar_font_height = 10;
     break;
   case LARGE_FONT:
     fontindex=LARGE_FONT;
@@ -1699,7 +1677,6 @@ void FontMenu(int value){
     colorbar_font_ptr   = GLUT_BITMAP_HELVETICA_18;
 #endif
     font_height          = 18;
-    colorbar_font_height = 18;
     break;
   case SCALED_FONT:
     fontindex=SCALED_FONT;
@@ -4000,8 +3977,6 @@ void LoadParticleMenu(int value){
   if(value==MENU_DUMMY)return;
   part_load_size = 0;
   part_file_count = 0;
-  global_part_boundsize = 0;
-  global_have_global_bound_file = 0;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
     char  *partfile;
@@ -4463,7 +4438,6 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     break;
     }
   }
-  smoke3d_compression_type = COMPRESSED_UNKNOWN;
   for(i=0; i<global_scase.smoke3dcoll.nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
 
@@ -5950,12 +5924,6 @@ void HideInternalBlockages(void){
   updatefacelists = 1;
 }
 
-/* ------------------ HideImmersedMenu ------------------------ */
-
-void HideImmersedMenu(void){
-  ImmersedMenu(GEOMETRY_HIDE);
-}
-
 /* ------------------ ShowBoundaryMenu ------------------------ */
 
 void ShowBoundaryMenu(int value){
@@ -7298,11 +7266,13 @@ int IsBoundaryType(int type){
     int n;
 
     patchi = global_scase.patchinfo + i;
-    for(n = 0; n < patchi->npatches; n++){
-      patchfacedata *pfi;
+    if(patchi->patchfaceinfo != NULL){
+      for(n = 0; n < patchi->npatches; n++){
+        patchfacedata *pfi;
 
-      pfi = patchi->patchfaceinfo + n;
-      if(pfi->type == type)return 1;
+        pfi = patchi->patchfaceinfo + n;
+        if(pfi->type == type)return 1;
+      }
     }
   }
   return 0;
@@ -7330,32 +7300,6 @@ void IsoLoadState(isodata *isoi, int  *load_state){
     if(strcmp(isoi->surface_label.longlabel, isoii->surface_label.longlabel)!=0)continue;
     total++;
     if(isoii->loaded==1)loaded++;
-  }
-  if(loaded==0){
-    *load_state = 0;
-  }
-  else{
-    if(loaded<total){
-      *load_state = 1;
-    }
-    else{
-      *load_state = 2;
-    }
-  }
-}
-
-/* ------------------ PatchLoadState ------------------------ */
-
-void PatchLoadState(patchdata *patchi, int  *load_state){
-  int i, total=0, loaded=0;
-
-  for(i=0; i<global_scase.npatchinfo; i++){
-    patchdata *patchii;
-
-    patchii = global_scase.patchinfo + i;
-    if(strcmp(patchi->label.longlabel, patchii->label.longlabel)!=0)continue;
-    total++;
-    if(patchii->loaded==1)loaded++;
   }
   if(loaded==0){
     *load_state = 0;
@@ -7747,9 +7691,7 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
     if(mslicei->slice_filetype==SLICE_GEOM){
       strcat(menulabel, " - geometry");
     }
-    if(sd->compression_type == COMPRESSED_ZLIB){
-      strcat(menulabel, "(ZLIB)");
-    }
+
     if(mslicei->loadable == 0)strcat(menulabel, " - unavailable, no meshes with this data were selected");
     glutAddMenuEntry(menulabel, i);
   }
@@ -7799,7 +7741,7 @@ int CompareSubSliceMenu(const void *arg1, const void *arg2){
 
 /* ------------------ InitSubSliceMenuInfo ------------------------ */
 
-void InitSubSliceMenuInfo(){
+void InitSubSliceMenuInfo(void){
   int i;
 
   if(global_scase.slicecoll.nsliceinfo == 0 || subslicemenuinfo != NULL)return;
@@ -7863,7 +7805,7 @@ void InitSubSliceMenuInfo(){
 
 /* ------------------ InitSubVectorSliceMenuInfo ------------------------ */
 
-void InitSubVectorSliceMenuInfo(){
+void InitSubVectorSliceMenuInfo(void){
   int i;
 
   if(global_scase.slicecoll.nmultivsliceinfo == 0 || subvectorslicemenuinfo != NULL)return;
@@ -8259,9 +8201,7 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
       STRCAT(menulabel, " - ");
       STRCAT(menulabel, si->slicelabel);
     }
-    if(si->compression_type == COMPRESSED_ZLIB){
-      STRCAT(menulabel, "(ZLIB)");
-    }
+
     if(mvslicei->loadable == 0)strcat(menulabel, " - unavailable, no meshes with this data were selected");
     glutAddMenuEntry(menulabel, i);
     if(i==0||strcmp(si->label.longlabel, sim1->label.longlabel)!=0){
@@ -10517,10 +10457,8 @@ if(opengl_finalized == 0)return;
         STRCAT(levellabel,"Levels");
         GLUTADDSUBMENU(levellabel,isolevelmenu);
       }
-      if(global_scase.niso_compressed==0){
-        if(smooth_iso_normal == 1)glutAddMenuEntry("*Smooth", MENU_ISOSHOW_SMOOTH);
-        if(smooth_iso_normal == 0)glutAddMenuEntry("Smooth", MENU_ISOSHOW_SMOOTH);
-      }
+      if(smooth_iso_normal == 1)glutAddMenuEntry("*Smooth", MENU_ISOSHOW_SMOOTH);
+      if(smooth_iso_normal == 0)glutAddMenuEntry("Smooth", MENU_ISOSHOW_SMOOTH);
       if(show_iso_normal == 1)glutAddMenuEntry("*Show normals", MENU_ISOSHOW_NORMALS);
       if(show_iso_normal == 0)glutAddMenuEntry("Show normals", MENU_ISOSHOW_NORMALS);
       glutAddMenuEntry("Output bounds", MENU_ISOSHOW_OUTPUT);
@@ -11326,12 +11264,6 @@ if(opengl_finalized == 0)return;
         else{
           strcpy(menulabel,uci->units[j].unit);
         }
-        if(global_scase.smokediff==1&&uci->diff_index==j&&uci->units[j].rel_defined==1){
-          strcat(menulabel," rel to ");
-          strcat(menulabel,uci->units[j].rel_val);
-          strcat(menulabel," ");
-          strcat(menulabel,uci->units[0].unit);
-        }
         glutAddMenuEntry(menulabel,1000*i+j);
       }
     }
@@ -11757,15 +11689,11 @@ if(opengl_finalized == 0)return;
       if(nsmoke3dloaded>0){
         CREATEMENU(unloadsmoke3dmenu,UnLoadSmoke3DMenu);
         for(i = 0; i<global_scase.smoke3dcoll.nsmoke3dtypes; i++){
-          int j, doit, is_zlib;
+          int j, doit;
 
           doit = 0;
-          is_zlib = 0;
           for(j = 0; j<global_scase.smoke3dcoll.nsmoke3dinfo; j++){
             if(global_scase.smoke3dcoll.smoke3dinfo[j].loaded==1&&global_scase.smoke3dcoll.smoke3dinfo[j].type==i){
-              if(global_scase.smoke3dcoll.smoke3dinfo[j].compression_type == COMPRESSED_ZLIB){
-                is_zlib = 1;
-              }
               doit = 1;
               break;
             }
@@ -11774,9 +11702,6 @@ if(opengl_finalized == 0)return;
             char smvmenulabel[256];
 
             strcpy(smvmenulabel, global_scase.smoke3dcoll.smoke3dtypes[i].longlabel);
-            if(is_zlib == 1){
-              strcat(smvmenulabel, "(ZLIB)");
-            }
             glutAddMenuEntry(smvmenulabel, -(i + 1));
           }
         }
@@ -11828,9 +11753,6 @@ if(opengl_finalized == 0)return;
 #endif
               if(global_scase.smoke3dcoll.smoke3dinfo[jj].type==ii){
                 if(global_scase.smoke3dcoll.smoke3dinfo[jj].loaded==1)nloaded++;
-                if(global_scase.smoke3dcoll.smoke3dinfo[jj].compression_type == COMPRESSED_ZLIB){
-                  is_zlib = 1;
-                }
                 ntotal++;
               }
             }

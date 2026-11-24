@@ -781,17 +781,7 @@ void CreateTourPaths(void){
 /* ------------------ DefaultTour ------------------------ */
 
 void DefaultTour(void){
-  float *xyz,*az_elev;
-
   touring=1;
-  xyz = camera_current->eye;
-  az_elev = camera_current->az_elev;
-
-  anglexy0 = az_elev[0];
-  azimuth0 = camera_current->azimuth;
-  eyex0 = xyz[0];
-  eyey0 = xyz[1];
-  eyez0 = xyz[2];
   selected_tour=NULL;
   selected_frame=NULL;
   selectedtour_index = TOURINDEX_MANUAL;
@@ -866,7 +856,6 @@ void NewSelect(keyframe *newselect){
 
 void SetupCircularTourNodes(void){
   float dx, dy, dz, max_xyz;
-  int i;
 
   tour_circular_view[0]=(global_scase.xbar0+xbarORIG)/2.0;
   tour_circular_view[1]=(global_scase.ybar0+ybarORIG)/2.0;
@@ -879,11 +868,6 @@ void SetupCircularTourNodes(void){
   max_xyz=MAX(dx,dy);
   max_xyz=MAX(max_xyz,dz);
   tour_circular_radius = max_xyz+max_xyz/tan(20.0*DEG2RAD);
-  for(i=0; i<3; i++){
-    tour_circular_view_default[i] = tour_circular_view[i];
-    tour_circular_center_default[i] = tour_circular_center[i];
-  }
-  tour_circular_radius_default = tour_circular_radius;
 }
 
 /* ------------------ InitCircularTour ------------------------ */

@@ -8,9 +8,7 @@ LIB_DIR = $(BUILD_DIR)/LIBS
 FREEGLUT_DIR=../../../../libs/freeglut
 
 SMV_TESTFLAG =
-SMV_TESTSTRING =
-SMV_PROFILEFLAG =
-SMV_PROFILESTRING =
+CHECK_SOURCE_REPORT ?= checksource_linux.txt
 
 # Intel compiler definitions
 include ../../scripts/intel_compiler.mak
@@ -118,7 +116,7 @@ C_STANDARD     = -std=gnu99
 CPP_STANDARD_WIN =
 CPP_STANDARD = -std=c++11
 
-CFLAGS_COM=$(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(CPUINFO)
+CFLAGS_COM= $(GITINFO) $(CPUINFO)
 ifeq ($(SANITIZE),1)
 CFLAGS_COM   += $(SANITIZE_OPTIONS)
 endif
@@ -135,7 +133,7 @@ CFLAG_WIN_COM   += -D GLEW_STATIC -D PTW32_STATIC_LIB -D BGDWIN32 -D _CONSOLE
 #------------------------------------------------------------
 #*** common linker flags
 
-LFLAGS_COM    = $(SMV_PROFILEFLAG)
+LFLAGS_COM    =
 ifeq ($(SANITIZE),1)
   LFLAGS_COM   += $(SANITIZE_OPTIONS)
 endif
@@ -166,9 +164,9 @@ no_target:
 
 # linux and osx clang checks
 .c.chk:
-	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@
+	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@ || { cat $@ >&2; rm -f $@; exit 1; }
 .cpp.chk:
-	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@
+	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@ || { cat $@ >&2; rm -f $@; exit 1; }
 
 # windows clang checks
 .c.winchk:
@@ -199,7 +197,7 @@ intel_win_db : LFLAGS   =   /traceback /Zi /DEBUG \
                            $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/intel_win
 intel_win_db : CC        = icx
 intel_win_db : CPP       = icx
-intel_win_db : exe       = smokeview_win$(SMV_TESTSTRING)_db
+intel_win_db : exe       = smokeview_win_db
 
 intel_win_db : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
@@ -210,18 +208,27 @@ intel_win : CFLAGS    = -O1 -D pp_INTEL -D NDEBUG $(CFLAG_WIN_COM)
 intel_win : LFLAGS    = $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/intel_win
 intel_win : CC        = icx
 intel_win : CPP       = icx
-intel_win : exe       = smokeview_win$(SMV_TESTSTRING)
+intel_win : exe       = smokeview_win
 
 intel_win : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
 
 # ------------- clang_win_db ----------------
 
-clang_win_db : CFLAGS    = -D _DEBUG $(CFLAG_WIN_COM)
+clang_win_db : CFLAGS    = -D _DEBUG $(CFLAG_WIN_COM) \
+                          /clang:-Wall /clang:-Wextra /clang:-Wpedantic /clang:-Wshadow /clang:-Wno-unused-parameter \
+                          /clang:-Wconversion /clang:-Wno-sign-conversion /clang:-Wformat=2 \
+                          /clang:-Wno-implicit-int-conversion /clang:-Wno-shorten-64-to-32 \
+                          /clang:-Wno-float-conversion /clang:-Wno-implicit-float-conversion /clang:-Wno-implicit-int-float-conversion \
+                          /clang:-Wcast-qual /clang:-Wcast-align /clang:-Wundef /clang:-Wno-switch-enum \
+                          /clang:-Wnull-dereference /clang:-Winit-self /clang:-Wpointer-arith \
+                          /clang:-Wunreachable-code /clang:-Wwrite-strings /clang:-Wno-language-extension-token
+clang_win_db : C_STANDARD_WIN += /clang:-Wstrict-prototypes /clang: \
+                                  /clang:-Wold-style-definition /clang:-Wbad-function-cast
 clang_win_db : LFLAGS    = $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/clang_win
 clang_win_db : CC        = clang-cl
 clang_win_db : CPP       = clang-cl
-clang_win_db : exe       = smokeview_win$(SMV_TESTSTRING)$(SMV_PROFILESTRING)_db
+clang_win_db : exe       = smokeview_win_db
 
 clang_win_db : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
@@ -232,7 +239,7 @@ clang_win : CFLAGS    = -D NDEBUG $(CFLAG_WIN_COM)
 clang_win : LFLAGS    = $(LFLAGS_COM) $(LFLAG_WIN) /LIBPATH:$(LIB_DIR)/clang_win
 clang_win : CC        = clang-cl
 clang_win : CPP       = clang-cl
-clang_win : exe       = smokeview_win$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
+clang_win : exe       = smokeview_win
 
 clang_win : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(objwin) $(SMV_LIBS_WIN) $(SYSTEM_LIBS_WIN) $(LFLAGS)
@@ -249,18 +256,12 @@ else
 endif
 SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lXi -lGLU -lGL -lm -lrt
 
-# to profile smokeview on linux
-# 1.  cd smv/Build/smokeview/intel_linux
-# 1.  type: ./make_smv.sh -p
-# 2.  run case as usual
-# 3.  type: gprof smokeview_application_name > results.out
-
 # ------------- intel_linux ----------------
 
 intel_linux : CFLAGS    = -O0 -traceback -D NDEBUG $(CFLAGS_COM)
 intel_linux : CC        = icx
 intel_linux : CPP       = icpx
-intel_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
+intel_linux : exe       = smokeview_linux
 
 intel_linux : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) -L $(LIB_DIR)/intel_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
@@ -272,14 +273,14 @@ intel_linux_db : CFLAGS    = -O0 -traceback  -fstack-protector -fno-omit-frame-p
 	                         -Wno-sign-compare -Wno-unused-parameter $(CFLAGS_COM)
 intel_linux_db : CC        = icx
 intel_linux_db : CPP       = icpx
-intel_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
+intel_linux_db : exe       = smokeview_linux_db
 
 intel_linux_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/intel_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS) -L$(LIB_DIR)/intel_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
 
 # ------------- gnu_linux_db ----------------
 
-gnu_linux_db = -O0 -ggdb -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion \
+gnu_linux_db : CFLAGS = -O0 -ggdb -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion \
                -Wformat=2 -Wstrict-prototypes -Wmissing-prototypes -Wold-style-definition \
                -Wbad-function-cast -Wcast-qual -Wcast-align -Wundef -Wswitch-enum -Wnull-dereference \
                -Winit-self -Wpointer-arith -Wunreachable-code -Wwrite-strings -D_DEBUG \
@@ -297,10 +298,10 @@ gnu_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -W
                         -D NDEBUG  $(CFLAGS_COM)
 gnu_linux : CC        = gcc
 gnu_linux : CPP       = g++
-gnu_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
+gnu_linux : exe       = smokeview_linux
 
 gnu_linux : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/gnu_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS) -L $(LIB_DIR)/gnu_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
 
 # ------------- clang_linux_db ----------------
 
@@ -310,7 +311,7 @@ clang_linux_db : CFLAGS    = -O0 -ggdb -Wall -Wextra -Wunused-variable -Wunreach
                              -D _DEBUG $(CFLAGS_COM)
 clang_linux_db : CC        = clang
 clang_linux_db : CPP       = clang++
-clang_linux_db : exe       = smokeview_linux$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
+clang_linux_db : exe       = smokeview_linux_db
 
 clang_linux_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/clang_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
@@ -320,7 +321,7 @@ clang_linux_db : $(obj)
 clang_linux : CFLAGS    = -O0 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas $(CFLAGS_COM)
 clang_linux : CC        = clang
 clang_linux : CPP       = clang++
-clang_linux : exe       = smokeview_linux$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
+clang_linux : exe       = smokeview_linux
 
 clang_linux : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR)/clang_linux $(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX)
@@ -337,16 +338,20 @@ gnu_linux_check : $(src)
 
 # ------------- linux_osx_check ----------------
 
-linux_osx_check : CFLAGS    = $(SMV_TESTFLAG)
+linux_osx_check : CFLAGS    =
 linux_osx_check : $(linux_osx_chk)
-	$(CLANGSUMMARY) smokeview.summary
+	$(CLANGSUMMARY) $(CHECK_SOURCE_REPORT)
+	@clang --version
+	@clang --version >> $(CHECK_SOURCE_REPORT)
 
 # ------------- win_check ----------------
 
 win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB
 win_check : INC += $(WININC)
 win_check : $(win_chk)
-	$(CLANGWINSUMMARY) smokeview.summary
+	$(CLANGWINSUMMARY) checksource_win.txt
+	@clang --version
+	@clang --version >> checksource_win.txt
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   OSX   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
@@ -367,10 +372,10 @@ endif
 
 # ------------- gnu_osx_db ----------------
 
-gnu_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-deprecated-declarations$(CFLAGS_COM)
+gnu_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -Wall -Wno-deprecated-declarations $(CFLAGS_COM)
 gnu_osx_db : CC        = ${COMPILER}
 gnu_osx_db : CPP       = ${COMPILER2}
-gnu_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
+gnu_osx_db : exe       = smokeview_osx_db
 
 gnu_osx_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -L$(LIB_DIR)/gnu_osx $(SMV_LIBS_OSX)
@@ -380,30 +385,30 @@ gnu_osx_db : $(obj)
 gnu_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-deprecated-declarations $(CFLAGS_COM)
 gnu_osx : CC        = ${COMPILER}
 gnu_osx : CPP       = ${COMPILER2}
-gnu_osx : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
+gnu_osx : exe       = smokeview_osx
 
 gnu_osx : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -L$(LIB_DIR)/gnu_osx $(SMV_LIBS_OSX)
 
 # ------------- clang_osx_db ----------------
 
-clang_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -fsanitize=thread -pthread -Wall -Wno-deprecated-declarations $(CFLAGS_COM)
+clang_osx_db : CFLAGS    = -O0 -ggdb -D _DEBUG -fsanitize=thread -pthread -Wall -Wno-deprecated-declarations $(CFLAGS_COM) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH))
 clang_osx_db : CC        = ${COMPILER}
 clang_osx_db : CPP       = ${COMPILER2}
-clang_osx_db : exe       = smokeview_osx$(SMV_TESTSTRING)_db$(SMV_PROFILESTRING)
+clang_osx_db : exe       = smokeview_osx_db
 
 clang_osx_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -fsanitize=thread -pthread -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX)
+	$(CPP) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH)) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -fsanitize=thread -pthread -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX)
 
 # ------------- clang_osx ----------------
 
-clang_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-deprecated-declarations $(CFLAGS_COM)
+clang_osx : CFLAGS    = -O0 -D NDEBUG -Wall -Wno-deprecated-declarations $(CFLAGS_COM) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH))
 clang_osx : CC        = ${COMPILER}
 clang_osx : CPP       = ${COMPILER2}
-clang_osx : exe       = smokeview_osx$(SMV_TESTSTRING)$(SMV_PROFILESTRING)
+clang_osx : exe       = smokeview_osx
 
 clang_osx : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX)
+	$(CPP) $(if $(SMV_OSX_ARCH),-arch $(SMV_OSX_ARCH)) -o $(bin)/$(exe) $(obj) $(LFLAGS_COM) $(LFLAGS_OSX) -L$(LIB_DIR)/clang_osx $(SMV_LIBS_OSX)
 
 #-------------- Clean Target to remove Object -----------
 

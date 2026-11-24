@@ -189,11 +189,10 @@ endif()
 add_subdirectory(Source/shared)
 
 # The programs to build
+add_subdirectory(Source/part2iso)
 add_subdirectory(Source/fds2fed)
 add_subdirectory(Source/pnginfo)
-add_subdirectory(Source/smokediff)
 add_subdirectory(Source/smokeview)
-add_subdirectory(Source/smokezip)
 if (NOT VENDORED_LIBS)
     add_subdirectory(Source/smvq)
 endif()

@@ -33,7 +33,7 @@ BUILD_LIBS=
 BUILD_ALL=1
 GLTYPE=COCOA
 TESTOPT=
-while getopts 'CfGhiIl:LprX' OPTION
+while getopts 'CfGhiIl:LrX' OPTION
 do
 case $OPTION in
   C)
@@ -53,7 +53,6 @@ case $OPTION in
   echo "-h - show this help info"
   echo "-i - incremental build"
   echo "-L - rebuild all libraries"
-  echo "-p - build a profiling version of smokeview"
   exit
   ;;
   i)
@@ -68,10 +67,6 @@ case $OPTION in
   ;;
   L)
    BUILD_LIBS=1
-  ;;
-  p)
-   SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_PROFILEFLAG=\"-pg\" "
-   SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_PROFILESTRING=\"p\" "
   ;;
   r)
   ;;

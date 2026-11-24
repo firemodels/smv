@@ -1405,7 +1405,7 @@ char *GetSmokeviewIniPath(void){
 
 /* ------------------ GetBinPath ------------------------ */
 #ifdef _WIN32
-char *GetBinPath(){
+char *GetBinPath(void){
   size_t max_buffer_size = MAX_PATH * 20;
   char *buffer;
   size_t buffer_size = MAX_PATH * sizeof(char);
@@ -1430,7 +1430,7 @@ char *GetBinPath(){
 #elif __linux__
 /* ------------------ GetBinPath ------------------------ */
 
-char *GetBinPath(){
+char *GetBinPath(void){
   size_t max_buffer_size = 2048 * 20;
   char *buffer;
   size_t buffer_size = 256 * sizeof(char);
@@ -1455,7 +1455,7 @@ char *GetBinPath(){
 #else
 /* ------------------ GetBinPath ------------------------ */
 
-char *GetBinPath(){
+char *GetBinPath(void){
   uint32_t  max_buffer_size = 2048 * 20;
   char *buffer;
   uint32_t buffer_size = 256 * sizeof(char);
@@ -1480,7 +1480,7 @@ char *GetBinPath(){
 
 /* ------------------ GetBinDir ------------------------ */
 #ifdef _WIN32
-char *GetBinDir(){
+char *GetBinDir(void){
   char *buffer = GetBinPath();
   // NB: This uses on older function in order to support "char *".
   // PathCchRemoveFileSpec would be better but requires switching to "wchar *".
@@ -1492,7 +1492,7 @@ char *GetBinDir(){
 #elif __linux__
 /* ------------------ GetBinDir ------------------------ */
 
-char *GetBinDir(){
+char *GetBinDir(void){
   char *buffer = GetBinPath();
   dirname(buffer);
   int pathlen = strlen(buffer);
@@ -1504,7 +1504,7 @@ char *GetBinDir(){
 #else
 /* ------------------ GetBinDir ------------------------ */
 
-char *GetBinDir(){
+char *GetBinDir(void){
   char *buffer = GetBinPath();
   // The BSD and OSX version of dirname uses an internal buffer, therefore we
   // need to copy the string out.
@@ -1538,7 +1538,7 @@ void SetSmvRootOverride(const char *path){
 
 /* ------------------ GetSmvRootDir ------------------------ */
 
-char *GetSmvRootDir(){
+char *GetSmvRootDir(void){
   char *envar_path, *buffer;
   int len;
 
@@ -1624,7 +1624,7 @@ char *GetSmvRootSubPath(const char *subdir){
 
 /* ------------------ GetHomeDir ------------------------ */
 
-char *GetHomeDir(){
+char *GetHomeDir(void){
 #ifdef _WIN32
   char *homedir_env = getenv("userprofile");
 #else
@@ -1640,7 +1640,7 @@ char *GetHomeDir(){
 
 /* ------------------ GetUserConfigDir ------------------------ */
 
-char *GetUserConfigDir(){
+char *GetUserConfigDir(void){
   char *homedir = GetHomeDir();
   if(homedir == NULL) return NULL;
   char *config_path = CombinePaths(homedir, ".smokeview");
@@ -1658,27 +1658,27 @@ char *GetUserConfigSubPath(const char *subdir){
 
 /* ------------------ GetUserColorbarDirPath ------------------------ */
 
-char *GetUserColorbarDirPath(){
+char *GetUserColorbarDirPath(void){
   return GetUserConfigSubPath("colorbars");
 }
 
 /* ------------------ GetSmokeviewHtmlPath ------------------------ */
 
-char *GetSmokeviewHtmlPath(){
+char *GetSmokeviewHtmlPath(void){
   return GetSmvRootSubPath("smokeview.html");
 }
 
 /* ------------------ GetSmokeviewHtmlVrPath ------------------------ */
 
 // TODO: This is currently unused
-char *GetSmokeviewHtmlVrPath(){
+char *GetSmokeviewHtmlVrPath(void){
   return GetSmvRootSubPath("smokeview_vr.html");
 }
 
 /* ------------------ GetSmvScreenIni ------------------------ */
 
 // TODO: This is currently unused
-char *GetSmvScreenIni(){
+char *GetSmvScreenIni(void){
   return GetSmvRootSubPath("smv_screen.ini");
 }
 
@@ -1693,7 +1693,7 @@ char *GetSmvRootFile(const char *path){
 
 /* ------------------ GetSmvUserDir ------------------------ */
 
-char *GetSmvUserDir(){
+char *GetSmvUserDir(void){
   char *home_path = GetHomeDir();
   char *result = CombinePaths(home_path, ".smokeview");
   FREEMEMORY(home_path);

@@ -66,14 +66,6 @@
 #define NOT_FDSBLOCK 0
 #define FDSBLOCK     1
 
-#define UNCOMPRESSED_ALLFRAMES 0
-#define COMPRESSED_ALLFRAMES   1
-
-#define COMPRESSED_UNKNOWN -1
-#define UNCOMPRESSED        2
-#define COMPRESSED_RLE      0 // 3d smoke file format assumes rle parameter is 0
-#define COMPRESSED_ZLIB     1 // 3d smoke file format assumes zlib parameter is 1
-
 #define CFACE_NORMALS_NO  0
 #define CFACE_NORMALS_YES 1
 

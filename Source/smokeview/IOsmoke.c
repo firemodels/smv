@@ -23,9 +23,6 @@
 #define FIRE_USE_ALPHAMAP   1
 #define FIRE_USE_HALFDEPTH  2
 
-int cull_count=0;
-int smoke_function_count;
-
 /* ------------------ UpdateSmoke3dFileParms ------------------------ */
 
 void UpdateSmoke3dFileParms(void){
@@ -1235,9 +1232,6 @@ void DrawSmokeFrame(void){
 
 #ifdef pp_GPU
   usegpu_local = usegpu;
-#endif
-  triangle_count = 0;
-#ifdef pp_GPU
   if(usegpu_local == 1){
     LoadSmokeShaders();
     load_shaders = 1;
@@ -1370,15 +1364,10 @@ FILE *FopenSmokeSizefile(char *smokefile, int fortran_skip){
       smoke_sizefilename[lentext - 4] = 0;
     }
   }
-  strcat(smoke_sizefilename, ".szz");
-  SMOKE_SIZE_FILE = FOPEN_2DIR(smoke_sizefilename, "r");
 
-  if(SMOKE_SIZE_FILE == NULL){
-    // not .szz so try .sz
-    strcpy(smoke_sizefilename, smokefile);
-    strcat(smoke_sizefilename, ".sz");
-    SMOKE_SIZE_FILE = FOPEN_2DIR(smoke_sizefilename, "r");
-  }
+  strcpy(smoke_sizefilename, smokefile);
+  strcat(smoke_sizefilename, ".sz");
+  SMOKE_SIZE_FILE = FOPEN_2DIR(smoke_sizefilename, "r");
   if(SMOKE_SIZE_FILE == NULL){
     char *ext;
 
@@ -1643,68 +1632,6 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile,
   return 0;
 }
 
-/* ------------------ GetSmoke3DVersion ------------------------ */
-
-int GetSmoke3DVersion2(smoke3ddata *smoke3di){
-  FILE *SMOKE3DFILE = NULL, *SMOKE3D_REGFILE = NULL, *SMOKE3D_COMPFILE = NULL;
-  int nxyz[8];
-  char *file;
-  int fortran_skip = 0;
-
-  if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0)fortran_skip = 4;
-
-  file = smoke3di->comp_file;
-  if(file!=NULL)SMOKE3D_COMPFILE = FOPEN(file, "rb");
-  if(SMOKE3D_COMPFILE==NULL){
-    file = smoke3di->reg_file;
-    SMOKE3D_REGFILE = FOPEN(file, "rb");
-    if(SMOKE3D_REGFILE == NULL){
-      file = smoke3di->smoke_density_file;
-      SMOKE3D_REGFILE = FOPEN(file, "rb");
-    }
-  }
-  if(SMOKE3D_REGFILE==NULL&&SMOKE3D_COMPFILE==NULL)return -1;
-  if(SMOKE3D_COMPFILE!=NULL)SMOKE3DFILE = SMOKE3D_COMPFILE;
-  if(SMOKE3D_REGFILE!=NULL)SMOKE3DFILE = SMOKE3D_REGFILE;
-  smoke3di->file = file;
-
-  SKIP_SMOKE(SMOKE3DFILE);fread(nxyz, 4, 8, SMOKE3DFILE); SKIP_SMOKE(SMOKE3DFILE);
-  if(smoke3di->version == 2){
-    float bounds_local[2];
-    
-    SKIP_SMOKE(SMOKE3DFILE);fread(bounds_local,4,2,SMOKE3DFILE);SKIP_SMOKE(SMOKE3DFILE);
-  }
-  {
-    float time_local;
-    int nchars[2];
-
-    SKIP_SMOKE(SMOKE3DFILE);fread(&time_local, 4, 1, SMOKE3DFILE);SKIP_SMOKE(SMOKE3DFILE);
-    if(feof(SMOKE3DFILE)==0){
-      SKIP_SMOKE(SMOKE3DFILE);fread(nchars, 4, 2, SMOKE3DFILE);SKIP_SMOKE(SMOKE3DFILE);
-    }
-  }
-
-  fclose(SMOKE3DFILE);
-
-  return nxyz[1];
-}
-
-/* ------------------ GetSmoke3DVersion ------------------------ */
-
-int GetSmoke3DVersion(smoke3ddata *smoke3di){
-  if(smoke3d_compression_type == COMPRESSED_UNKNOWN){
-    smoke3d_compression_type = GetSmoke3DVersion2(smoke3di);
-  }
-  else if(smoke3d_compression_type == COMPRESSED_RLE){
-    smoke3di->file = smoke3di->reg_file;
-  }
-  else{
-    smoke3di->file = smoke3di->comp_file;
-    smoke3d_compression_type = COMPRESSED_ZLIB;
-  }
-  return smoke3d_compression_type;
-}
-
 /* ------------------ SetSmokeColorFlags ------------------------ */
 
 void SetSmokeColorFlags(smoke3d_collection *smoke3dcoll_arg){
@@ -1933,10 +1860,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
     }
   }
 
-  if(smoke3di->compression_type==COMPRESSED_UNKNOWN){
-    smoke3di->compression_type = GetSmoke3DVersion(smoke3di);
-    update_smoke3dmenulabels = 1;
-  }
+  update_smoke3dmenulabels = 1;
   if(iframe_arg==ALL_SMOKE_FRAMES)PRINTF("\nLoading %s(%s)\n", smoke3di->file, smoke3di->label.shortlabel);
   CheckMemory;
   smoke3di->ntimes_old = smoke3di->ntimes;
@@ -2090,7 +2014,6 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   smoke3di->js2=nxyz_local[5];
   smoke3di->ks1=nxyz_local[6];
   smoke3di->ks2=nxyz_local[7];
-  smoke3di->compression_type=COMPRESSED_RLE;
 
   // read smoke data
   START_TIMER(read_time_local);
@@ -2140,16 +2063,11 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
 
       nframes_found_local++;
       SKIP_SMOKE(SMOKE3DFILE);fread(smoke3di->smokeframe_comp_list[iii],1,smoke3di->nchars_compressed_smoke[iii],SMOKE3DFILE); SKIP_SMOKE(SMOKE3DFILE);
-      if(smoke3di->compression_type==COMPRESSED_RLE){
-        if(AllZeroRLE(smoke3di->smokeframe_comp_list[iii],smoke3di->nchars_compressed_smoke[iii])==1){
-          smoke3di->frame_all_zeros[iii] = SMOKE3D_ZEROS_ALL;
-        }
-        else{
-          smoke3di->frame_all_zeros[iii] = SMOKE3D_ZEROS_SOME;
-        }
+      if(AllZeroRLE(smoke3di->smokeframe_comp_list[iii],smoke3di->nchars_compressed_smoke[iii])==1){
+        smoke3di->frame_all_zeros[iii] = SMOKE3D_ZEROS_ALL;
       }
       else{
-        smoke3di->frame_all_zeros[iii] = SMOKE3D_ZEROS_UNKNOWN;
+        smoke3di->frame_all_zeros[iii] = SMOKE3D_ZEROS_SOME;
       }
       file_size_local +=4+smoke3di->nchars_compressed_smoke[iii]+4;
       iii++;
@@ -2213,27 +2131,6 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   return file_size_local;
 }
 
-/* ------------------ ReadSmoke3DAllMeshes ------------------------ */
-
-void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode){
-  int i;
-
-  for(i = 0; i < global_scase.smoke3dcoll.nsmoke3dinfo; i++){
-    smoke3ddata *smoke3di;
-    int first_time;
-
-    smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
-    if(smoke3di->type != smoketype)continue;
-    if(iframe==0){
-      first_time = FIRST_TIME;
-    }
-    else{
-      first_time = LATER_TIME;
-    }
-    ReadSmoke3D(iframe, i, LOAD, first_time, errorcode);
-  }
-}
-
 /* ------------------ UncompressSmoke3D ------------------------ */
 
 int UncompressSmoke3D(smoke3ddata *smoke3di){
@@ -2243,11 +2140,8 @@ int UncompressSmoke3D(smoke3ddata *smoke3di){
 
   iframe_local = smoke3di->ismoke3d_time;
   countin = smoke3di->nchars_compressed_smoke[iframe_local];
-  countout=smoke3di->nchars_uncompressed;
 
   unsigned char *buffer_in;
-  switch(smoke3di->compression_type){
-  case COMPRESSED_RLE:
     buffer_in = smoke3di->smokeframe_comp_list[iframe_local];
     countout = UnCompressRLE(buffer_in,countin,smoke3di->smokeframe_in);
     if(update_fire_histogram == 1 && smoke3di->is_fire==1 && smoke3di->histtimes != NULL && smoke3di->histtimes[iframe_local] == 0){
@@ -2272,15 +2166,6 @@ int UncompressSmoke3D(smoke3ddata *smoke3di){
         smoke3d_firevals[i] /= denom;
       }
     }
-    CheckMemory;
-    break;
-  case COMPRESSED_ZLIB:
-    UnCompressZLIB(smoke3di->smokeframe_in,&countout,smoke3di->smokeframe_comp_list[iframe_local],countin);
-    break;
-  default:
-    assert(FFALSE);
-    break;
-  }
   CheckMemory;
   if(smoke3di->frame_all_zeros[iframe_local] == SMOKE3D_ZEROS_UNKNOWN){
     int i;
@@ -2731,19 +2616,6 @@ void UpdateSmoke3dMenuLabels(void){
     if(showfiles==1){
       if(strcmp(smoke3di->menulabel, "") != 0)STRCAT(smoke3di->menulabel, ", ");
       STRCAT(smoke3di->menulabel,smoke3di->file);
-    }
-    switch(smoke3di->compression_type){
-    case COMPRESSED_UNKNOWN:
-      // compression type not determined yet
-      break;
-    case COMPRESSED_RLE: // 3d smoke files are rle compressed by default
-      break;
-    case COMPRESSED_ZLIB:
-      STRCAT(smoke3di->menulabel," (ZLIB) ");
-      break;
-    default:
-      assert(FFALSE);
-      break;
     }
   }
 }
@@ -3237,211 +3109,3 @@ void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
     memcpy(fire_rgbs + 3*i, fire_emission, 3*sizeof(float));
   }
 }
-
-#ifdef pp_VOLRENDER
-/* ------------------ IntegrateFireColors ------------------------ */
-
-void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlength, meshdata *meshi, int iwall){
-  float t_intersect_min, *boxmin, *boxmax;
-  int i;
-  int nsteps;
-  float dxyz[3];
-  float distseg, dxseg, dyseg, dzseg;
-  float xyz[3];
-  float *vert_beg=NULL, *vert_end=NULL;
-  int iwall_min=0;
-  float xyzvals[3];
-  char *blank_local;
-  float taun, alphan;
-  meshdata *xyz_mesh=NULL;
-
-  if(combine_meshes==1){
-    boxmin = meshi->super->boxmin_smv;
-    boxmax = meshi->super->boxmax_smv;
-  }
-  else{
-    boxmin = meshi->boxmin_smv;
-    boxmax = meshi->boxmax_smv;
-  }
-
-  if(meshi->inside==1){
-    vert_beg=eye_position_smv;
-    vert_end=xyzvert;
-  }
-  else{
-    int first;
-
-    vert_beg=xyzvert;
-    vert_end=xyzvals;
-
-    first = 1;
-    dxyz[0] = xyzvert[0] - eye_position_smv[0];
-    dxyz[1] = xyzvert[1] - eye_position_smv[1];
-    dxyz[2] = xyzvert[2] - eye_position_smv[2];
-    for(i=1; i<4; i++){
-      int ii;
-
-      // xyz(t) = xyzvert + t*(xyzvert - eye_position_smv )
-      // xyzvert_ii + t*(xyzvert_ii - eye_position_smv_ii) = boxmin_ii
-      // t = (xyzvert_ii - boxmin_ii)/(xyzvert_ii-eye_position_smv_ii)
-      //
-      // integrate from t=0 to t=t_intersect_min  (if outside mesh)
-      //     ie from vertex to nearest wall along a line from the eye position
-      //        intersecting the vertex position
-      // integrate from t=-1 to t=0 (if inside mesh)
-      //     ie from the eye position to the vertex position
-      ii=i-1;
-      float t_intersect;
-
-      if(iwall!=-i&&dxyz[ii]<0.0){
-        t_intersect = (boxmin[ii]-xyzvert[ii])/dxyz[ii];
-        if(first==1||t_intersect<t_intersect_min){
-          first = 0;
-          t_intersect_min=t_intersect;
-          iwall_min=-i;
-        }
-      }
-      if(iwall!=i&&dxyz[ii]>0.0){
-        t_intersect = (boxmax[ii]-xyzvert[ii])/dxyz[ii];
-        if(first==1||t_intersect<t_intersect_min){
-          first = 0;
-          t_intersect_min=t_intersect;
-          iwall_min=i;
-        }
-      }
-    }
-    vert_end[0] = 0.0;
-    vert_end[1] = 0.0;
-    vert_end[2] = 0.0;
-    switch(iwall_min){
-      case XWALLMIN:
-        vert_end[0] = boxmin[0];
-        vert_end[1] = CLAMP(xyzvert[1] + t_intersect_min*dxyz[1], boxmin[1], boxmax[1]);
-        vert_end[2] = CLAMP(xyzvert[2] + t_intersect_min*dxyz[2], boxmin[2], boxmax[2]);
-        break;
-      case XWALLMAX:
-        vert_end[0] = boxmax[0];
-        vert_end[1] = CLAMP(xyzvert[1] + t_intersect_min* dxyz[1],boxmin[1],boxmax[1]);
-        vert_end[2] = CLAMP(xyzvert[2] + t_intersect_min* dxyz[2],boxmin[2],boxmax[2]);
-        break;
-      case YWALLMIN:
-        vert_end[0] = CLAMP(xyzvert[0] + t_intersect_min* dxyz[0],boxmin[0],boxmax[0]);
-        vert_end[1] = boxmin[1];
-        vert_end[2] = CLAMP(xyzvert[2] + t_intersect_min* dxyz[2],boxmin[2],boxmax[2]);
-        break;
-      case YWALLMAX:
-        vert_end[0] = CLAMP(xyzvert[0] + t_intersect_min* dxyz[0],boxmin[0],boxmax[0]);
-        vert_end[1] = boxmax[1];
-        vert_end[2] = CLAMP(xyzvert[2] + t_intersect_min* dxyz[2],boxmin[2],boxmax[2]);
-        break;
-      case ZWALLMIN:
-        vert_end[0] = CLAMP(xyzvert[0] + t_intersect_min* dxyz[0],boxmin[0],boxmax[0]);
-        vert_end[1] = CLAMP(xyzvert[1] + t_intersect_min* dxyz[1],boxmin[1],boxmax[1]);
-        vert_end[2] = boxmin[2];
-        break;
-      case ZWALLMAX:
-        vert_end[0] = CLAMP(xyzvert[0] + t_intersect_min* dxyz[0],boxmin[0],boxmax[0]);
-        vert_end[1] = CLAMP(xyzvert[1] + t_intersect_min* dxyz[1],boxmin[1],boxmax[1]);
-        vert_end[2] = boxmax[2];
-        break;
-      default:
-        assert(FFALSE);
-        break;
-    }
-  }
-
-  dxseg = vert_end[0] - vert_beg[0];
-  dyseg = vert_end[1] - vert_beg[1];
-  dzseg = vert_end[2] - vert_beg[2];
-  distseg = sqrt(dxseg*dxseg+dyseg*dyseg+dzseg*dzseg);
-  integrated_firecolor[0] = 0.0;
-  integrated_firecolor[1] = 0.0;
-  integrated_firecolor[2] = 0.0;
-  integrated_firecolor[3] = 0.0;
-
-  if(distseg<0.001)return;
-
-  nsteps = 2*distseg/dlength;
-  if(nsteps<1)nsteps=1;
-  dlength=SCALE2FDS(distseg/(float)nsteps);
-  taun=1.0;
-  alphan=0.0;
-  for(i=0; i<nsteps; i++){
-    int inobst;
-    float factor;
-    float fire_emission[3];
-    float alphai, taui, xi;
-
-    xi = 0.5 + (float)i;
-    factor = xi/(float)nsteps;
-    xyz[0] = factor*vert_end[0] + (1.0 - factor)*vert_beg[0];
-    xyz[1] = factor*vert_end[1] + (1.0 - factor)*vert_beg[1];
-    xyz[2] = factor*vert_end[2] + (1.0 - factor)*vert_beg[2];
-
-    if(combine_meshes==1){
-      xyz_mesh = GetMeshInSmesh(xyz_mesh,meshi->super,xyz);
-      if(xyz_mesh==NULL)break;
-      blank_local = NULL;
-      if(block_volsmoke==1)blank_local=xyz_mesh->c_iblank_cell;
-      GetFireEmission(&taui, fire_emission, dlength, xyz, xyz_mesh, &inobst, blank_local);
-    }
-    else{
-      blank_local = NULL;
-      if(block_volsmoke==1)blank_local=meshi->c_iblank_cell;
-      GetFireEmission(&taui, fire_emission, dlength, xyz, meshi, &inobst, blank_local);
-    }
-    if(blank_local!=NULL&&inobst==1)break; // terminate ray when a blockage is encountered
-
-//         taui = exp(-mass_extinct*soot_val*dstep);
-//         new_color = taui*current_color + old_color
-
-    taun *= taui;
-    alphai = 1.0 - taui;
-    alphan = 1.0 - taun;
-
-    if(hrrpuv_max_blending==1){
-      integrated_firecolor[0] = MAX(integrated_firecolor[0], fire_emission[0]);
-      integrated_firecolor[1] = MAX(integrated_firecolor[1], fire_emission[1]);
-      integrated_firecolor[2] = MAX(integrated_firecolor[2], fire_emission[2]);
-    }
-    // https://developer.nvidia.com/sites/all/modules/custom/gpugems/books/GPUGems/gpugems_ch39.html
-    // equation 6 - integrate forward
-    else{
-      integrated_firecolor[0] += taun*alphai*fire_emission[0];
-      integrated_firecolor[1] += taun*alphai*fire_emission[1];
-      integrated_firecolor[2] += taun*alphai*fire_emission[2];
-    }
-  }
-
-  if(alphan>0.0){
-    alphan = CLAMP(alphan, 0.0, 1.0);
-    float max_rgb;
-
-    max_rgb = MAX(integrated_firecolor[0], MAX(integrated_firecolor[1], integrated_firecolor[2]));
-    if(max_rgb>1.0){
-      integrated_firecolor[0] /= max_rgb;
-      integrated_firecolor[1] /= max_rgb;
-      integrated_firecolor[2] /= max_rgb;
-    }
-
- //   float fire_rgb_from[3], fire_rgb_to[3];
- //   memcpy(fire_rgb_from, integrated_firecolor, 3*sizeof(float));
- //   Xyz2Rgb(&HDTVsystem, fire_rgb_from, fire_rgb_to);
- //   ConstrainRgb(fire_rgb_to);
-
- //    memcpy(integrated_firecolor, fire_rgb_to, 3*sizeof(float));
-    integrated_firecolor[3] = alphan;
-    if(volbw==1){
-      float gray;
-
-      gray = TOBW(integrated_firecolor);
-      integrated_firecolor[0] = gray;
-      integrated_firecolor[1] = gray;
-      integrated_firecolor[2] = gray;
-    }
-  }
-  else{
-    VEC4EQCONS(integrated_firecolor,0.0);
-  }
-}
-#endif

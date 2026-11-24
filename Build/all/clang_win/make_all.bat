@@ -5,7 +5,7 @@ cd ..\..
 set BUILDDIR=%CD%
 set BUILD=clang_win
 
-set allprogs=fds2fed pnginfo smokediff smokeview smokezip wind2fds
+set allprogs=fds2fed part2iso pnginfo smokeview wind2fds
 
 for %%x in ( %allprogs% ) do ( call :make_prog %%x )
 goto eof

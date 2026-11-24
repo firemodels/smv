@@ -50,16 +50,10 @@ erase_helpinfo_files()
   rm -f *.help
 
   rm -f smokeview.version
-  rm -f smokediff.version
-  rm -f smokezip.version
-  rm -f background.version
   rm -f wind2fds.version
   rm -f fds.version
 
   rm -f smokeview.help
-  rm -f smokediff.help
-  rm -f smokezip.help
-  rm -f background.help
   rm -f wind2fds.help
   rm -f cfastbot.help
   rm -f firebot.help
@@ -76,18 +70,12 @@ make_helpinfo_files()
   cd $dir
 
   $SMV        -help_all > smokeview.help
-  $SMOKEZIP   -help     > smokezip.help
-  $SMOKEDIFF  -help     > smokediff.help
-  $BACKGROUND -help     > background.help
   $WIND2FDS   -help     > wind2fds.help
   $CFASTBOT   -H        > cfastbot.help
   $FIREBOT    -H        > firebot.help
   $SMOKEBOT   -H        > smokebot.help
 
   $SMV -version        > smokeview.version
-  $SMOKEZIP -v         > smokezip.version
-  $SMOKEDIFF -v        > smokediff.version
-  $BACKGROUND -version > background.version
   $WIND2FDS            > wind2fds.version
   if [ -e $FDSEXE ]; then
     echo "" | $FDSEXE 2> $GITROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
@@ -173,22 +161,18 @@ fi
 
 if [ "$use_installed" == "1" ] ; then
   export SMV=smokeview
-  export SMOKEZIP=smokezip
-  export SMOKEDIFF=smokediff
   export FDS2FED=fds2fed
+  export PART2ISO=part2iso
   export WIND2FDS=wind2fds
-  export BACKGROUND=background
   export SMVBINDIR=`which smokeview`
   if [ "$SMVBINDIR" != "" ]; then
     SMVBINDIR=${SMVBINDIR%/*}
   fi
 else
   export SMV=$GITROOT/smv/Build/smokeview/${COMPILER}_$VERSION2/smokeview_$VERSION
-  export SMOKEZIP=$GITROOT/smv/Build/smokezip/${COMPILER}_$VERSION2/smokezip_$VERSION2
-  export SMOKEDIFF=$GITROOT/smv/Build/smokediff/${COMPILER}_$VERSION2/smokediff_$VERSION2
   export FDS2FED=$GITROOT/smv/Build/fds2fed/${COMPILER}_$VERSION2/fds2fed_$VERSION2
+  export PART2ISO=$GITROOT/smv/Build/part2iso/${COMPILER}_$VERSION2/part2iso_$VERSION2
   export WIND2FDS=$GITROOT/smv/Build/wind2fds/${COMPILER}_$VERSION2/wind2fds_$VERSION2
-  export BACKGROUND=$GITROOT/smv/Build/background/${COMPILER}_$VERSION2/background_$VERSION2
   export SMVBINDIR=$GITROOT/smv/Build/for_bundle
 fi
 
@@ -197,10 +181,7 @@ FIREBOT=$GITROOT/bot/Firebot/run_firebot.sh
 CFASTBOT=$GITROOT/bot/Cfastbot/run_cfastbot.sh
 
 echo Generating smokeview images using:
-echo background: $BACKGROUND
-echo smokediff : $SMOKEDIFF
 echo smokeview : $SMV
-echo smokezip  : $SMOKEZIP
 echo
 
 RUNSMV="$GITROOT/smv/Utilities/Scripts/qsmv.sh $CPUS_PER_TASK -j $JOBPREFIX $use_installed -q $QUEUE"
@@ -213,9 +194,7 @@ export SMVVG=$GITROOT/smv/Manuals/SMV_Verification_Guide
 SUMMARY=$GITROOT/smv/Manuals/SMV_Summary
 
 is_file_installed $SMV
-is_file_installed $SMOKEZIP
-is_file_installed $SMOKEDIFF
-is_file_installed $BACKGROUND
+is_file_installed $PART2ISO
 is_file_installed $WIND2FDS
 
 erase_helpinfo_files $SMVUG/SCRIPT_FIGURES
@@ -246,46 +225,26 @@ pid_fede=$1
 # compute isosurface from particles
 
 cd $GITROOT/smv/Verification/Visualization
-echo Compressing sphere_propanec case
-$SMOKEZIP -f sphere_propanec &
-pid_casea=$!
-
-# compute isosurface from particles
-
-cd $GITROOT/smv/Verification/Visualization
 echo Converting particles to isosurfaces in case plumeiso
-$SMOKEZIP -f -part2iso plumeiso &
+$PART2ISO plumeiso &
 pid_caseb=$!
 
 cd $GITROOT/smv/Verification/WUI
 if  [ -e pine_tree.smv ]; then
   echo Converting particles to isosurfaces in case pine_tree
-  $SMOKEZIP -f -part2iso pine_tree &
+  $PART2ISO pine_tree &
   pid_casec=$!
 fi
-
-# difference plume5c and thouse5
-
-cd $GITROOT/smv/Verification/Visualization
-
-echo Differencing cases plume5c and plume5cdelta
-$SMOKEDIFF -w -r plume5c plume5cdelta &
-pid_cased=$!
-echo Differencing cases thouse5 and thouse5delta
-$SMOKEDIFF -w -r thouse5 thouse5delta &
-pid_cased=$!
 
 wait $pid_feda
 wait $pid_fedb
 wait $pid_fedc
 wait $pid_fedd
 wait $pid_fede
-wait $pid_casea
 wait $pid_caseb
 if  [ -e $GITROOT/smv/Verification/WUI/pine_tree.smv ]; then
   wait $pid_casec
 fi
-wait $pid_cased
 
 echo Generating images
 
@@ -293,7 +252,6 @@ cd $GITROOT/smv/Verification
 scripts/SMV_Cases.sh
 scripts/RESTART_Cases.sh
 cd $GITROOT/smv/Verification
-scripts/SMV_DIFF_Cases.sh
 cd $CURDIDR
 
 # generate geometry images

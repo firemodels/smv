@@ -1,10 +1,10 @@
 
 ## Building Smokeview and Utilities
 
-The directories under smv/Build contain scripts for building smokeview and utilities such as smokediff and smokezip.
-Most of these scripts assume you have an Intel C/C++ compiler.  Smokeview, smokediff and smokezip also
-assume you have an Intel Fortran Compiler.  Linux and OSX build directories also have scripts for building
-using gcc and gfortran gnu compilers.
+The directories under smv/Build contain scripts for building smokeview and other programs such as wind2fds.
+Most of these scripts assume you have an Intel C/C++ compiler.  
+Linux and OSX build directories also have build scripts
+using the gcc gnu compilers.
 
 ### Preliminaries
 
@@ -27,11 +27,6 @@ using gcc and gfortran gnu compilers.
 On a Windows system cd into the `intel_win` directory and type
 
    ```.\make_smokeview.bat ```
-
-### Building Smokeview Utilities
-
-Similarly to build a smokeview utiltity such as smokezip or smokediff using the Intel compilers cd into `smv/Build/prog/intel_platform` and type
-`./make_prog.sh` on a linux or osx system and `make_prog` on a windows sytem where `prog` is the name of the utility (`smokediff` or `smokezip` for example) and `platform` is `linux`, `osx` or `win` .
 
 ## Building Smokeview and Utilities via CMake
 

@@ -1910,13 +1910,3 @@ int HaveTerrainSlice(void){
   }
   return 0;
 }
-
-/* ------------------ UpdateTerrainOptions ------------------------ */
-
-void UpdateTerrainOptions(void){
-  if(global_scase.nterraininfo>0||global_scase.auto_terrain==1){
-    visOpenVents=0;
- //   visDummyVents=0;
-    updatemenu=1;
-  }
-}

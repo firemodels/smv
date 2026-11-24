@@ -371,7 +371,6 @@ void MouseEditBlockage(int x, int y){
     highlight_mesh=sd->mesh;
     meshi = global_scase.meshescoll.meshinfo + highlight_mesh;
     UpdateCurrentMesh(meshi);
-    bchighlight_old=bchighlight;
     bchighlight = meshi->blockageinfoptrs[highlight_block];
     for(i=0; i<6; i++){
       surface_indices[i]=global_scase.surfcoll.inv_sorted_surfidlist[bchighlight->surf_index[i]];
@@ -394,21 +393,6 @@ void MouseEditBlockage(int x, int y){
       case DOWN_Z:
       case UP_Z:
         xyz_dir=ZDIR;
-        break;
-      default:
-        assert(FFALSE);
-        break;
-    }
-    switch(sd->dir){
-      case DOWN_X:
-      case DOWN_Y:
-      case DOWN_Z:
-        which_face=0;
-        break;
-      case UP_X:
-      case UP_Y:
-      case UP_Z:
-        which_face=1;
         break;
       default:
         assert(FFALSE);
@@ -1060,7 +1044,6 @@ void MouseCBWorker(int button, int state, int xm, int ym){
     GLUIUpdateTranslate();
     timebar_drag=0;
     colorbar_drag=0;
-    colorbar_splitdrag=0;
     GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
     GLUIUpdateTrainerMoves();
     GLUTPOSTREDISPLAY;
@@ -1077,8 +1060,6 @@ void MouseCBWorker(int button, int state, int xm, int ym){
       gslice_xyz0[0]=gslice_xyz[0];
       gslice_xyz0[1]=gslice_xyz[1];
       gslice_xyz0[2]=gslice_xyz[2];
-      gslice_normal_azelev0[0]=gslice_normal_azelev[0];
-      gslice_normal_azelev0[1]=gslice_normal_azelev[1];
       move_gslice=1;
       show_gslice_normal_keyboard=1;
     }
@@ -1467,8 +1448,6 @@ void MouseDragCB(int xm, int ym){
   }
 #endif
 
-  in_external=0;
-
   if(colorbar_drag==1&&(showtime==1 || showplot3d==1)){
     ColorbarDrag(xm,ym);
     GLUTPOSTREDISPLAY;
@@ -1504,7 +1483,6 @@ void MouseDragCB(int xm, int ym){
 /* ------------------ KeyboardUpCB ------------------------ */
 
 void KeyboardUpCB(unsigned char key, int x, int y){
-  resetclock=1;
   alt_ctrl_key_state = KEY_NONE;
 }
 
@@ -3144,7 +3122,9 @@ void HandleIso(void){
 /* ------------------ SpecialKeyboardUpCB ------------------------ */
 
 void SpecialKeyboardUpCB(int key, int x, int y){
-  resetclock=1;
+  (void)key;
+  (void)x;
+  (void)y;
 }
 
 /* ------------------ SpecialKeyboardCB ------------------------ */
@@ -3580,8 +3560,6 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
     cpuframe++;
     if(cpuframe>=20)cpuframe=0;
 
-    last_frame_count=frame_count;
-    frame_count=1;
     lasttime = thistime;
     if(nglobal_times>0){
       *changetime=1;
@@ -3664,7 +3642,6 @@ void IdleCB(void){
   thistime     = glutGet(GLUT_ELAPSED_TIME);
   AFTERGLUT;
   thisinterval = thistime - lasttime;
-  frame_count++;
 
   /* increment frame counter if the proper amount of time has passed
      or if we are rendering images or stepping by hand */
@@ -3752,10 +3729,6 @@ void ResetGLTime(void){
   if(showtime!=1)return;
   reset_frame=iglobal_times;
   START_TIMER(reset_time);
-  if(global_times!=NULL&&nglobal_times>0){
-    start_frametime=global_times[0];
-    stop_frametime=global_times[nglobal_times-1];
-  }
 }
 
 /* ------------------ UpdatePlot3dTitle ------------------------ */

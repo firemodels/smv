@@ -166,7 +166,6 @@ void GetViewportInfo(void){
 #endif
   if(fontindex==SCALED_FONT){
     scale_2d_x = (scaled_font2d_height2width*(float)scaled_font2d_height/(float)104.76);
-    scale_2d_y = ((float)scaled_font2d_height/(float)152.38);
 
     text_height = MAX(18,(int)( (12.0/18.0)*(25.0/18.0)*(float)scaled_font2d_height));
     text_width =  MAX(18, (25.0/36.0)*(scaled_font2d_height2width*(float)scaled_font2d_height));
@@ -1444,9 +1443,6 @@ void GetSmokeDir(float *mm){
   eye_position_smv[0] = -DOT3(mm + 0, mm + 12) / mscale[0];
   eye_position_smv[1] = -DOT3(mm + 4, mm + 12) / mscale[1];
   eye_position_smv[2] = -DOT3(mm + 8, mm + 12) / mscale[2];
-  eye_position_fds[0] = SMV2FDS_X(eye_position_smv[0]);
-  eye_position_fds[1] = SMV2FDS_Y(eye_position_smv[1]);
-  eye_position_fds[2] = SMV2FDS_Z(eye_position_smv[2]);
 
 #ifdef pp_GETMESH
   for(j = 0; j < global_scase.meshescoll.nmeshes + 1; j++){
@@ -1706,39 +1702,6 @@ float DistPtXYZ(float *pt, float x, float y, float z){
   dy = (pt[1] - y)*mscale[1];
   dz = (pt[2] - z)*mscale[2];
   return sqrt(dx*dx + dy*dy + dz*dz);
-}
-
-/* ------------------ DistPointLineSeg  ------------------------ */
-
-float DistPointLineSeg(float *point, float *xyz1, float *xyz2){
-  int i;
-  float dp[3], dxyz[3];
-  float num, denom;
-  float t;
-  // xt = xyz1*(1-t) + xyz2*t
-  // (point - xt) .dot. (xyz2 - xyz1) = 0
-  // solve for t and compute distance between xt and point
-
-  for(i=0; i<3; i++){
-    dp[i]   = point[i]  - xyz1[i];
-    dxyz[i] = xyz2[i] - xyz1[i];
-  }
-  num   = DOT3(dp, dxyz);
-  denom = DOT3(dxyz, dxyz);
-  if(denom>0.0){
-    float xyz[3];
-    float dist;
-
-    t = num/denom;
-    if(t<0.0||t>1.0)return -1.0;
-    for(i=0; i<3; i++){
-      xyz[i] = xyz1[i]*(1.0-t)+xyz2[i]*t;
-      dxyz[i] = point[i] - xyz[i];
-    }
-    dist = sqrt(DOT3(dxyz,dxyz));
-    return dist;
-  }
-  return -1.0;
 }
 
 /* ------------------ DistPointBox  ------------------------ */
@@ -2110,9 +2073,6 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
         (double)viewx,  (double)viewy,  (double)viewz,
         (double)uup[0], (double)uup[1], (double)uup[2]
       );
-      smv_viewpos[0] = viewx;
-      smv_viewpos[1] = viewy;
-      smv_viewpos[2] = viewz;
     }
     else{
       float *view, *uup, *right;
@@ -2142,9 +2102,6 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
         (double)vview[0],(double)vview[1],(double)vview[2],
           (double)uup[0],  (double)uup[1],  (double)uup[2]
       );
-      smv_viewpos[0] = vview[0];
-      smv_viewpos[1] = vview[1];
-      smv_viewpos[2] = vview[2];
     }
 
     glGetFloatv(GL_MODELVIEW_MATRIX,modelview_setup);
