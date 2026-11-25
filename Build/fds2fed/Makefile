@@ -88,13 +88,13 @@ linux_osx_check : $(linux_osx_chk)
 # ------------- win_check ----------------
 
 win_check : CFLAGS    = -D NDEBUG -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB
-win_check : INC_DIR += -I $(SOURCE_DIR)/pthreads
+win_check : INC_DIR += -I $(SOURCE_DIR)/LIBS/pthreads
 win_check : $(win_chk)
 	$(CLANGWINSUMMARY) fds2fed.summary
 
 # ------------- intel win db ----------------
 
-intel_win_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -I $(SOURCE_DIR)/pthreads -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -I $(SOURCE_DIR)/LIBS/pthreads -D _CONSOLE -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_win_db : CC        = $(I_CC)
 intel_win_db : exe       = fds2fed_win_db.exe
 
@@ -103,7 +103,7 @@ intel_win_db : $(objwin)
 
 # ------------- intel win ----------------
 
-intel_win : CFLAGS    = /O2 /nologo -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads $(GITINFO) $(SMV_TESTFLAG) $(INTEL_COMPINFO)
+intel_win : CFLAGS    = /O2 /nologo -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/LIBS/pthreads $(GITINFO) $(SMV_TESTFLAG) $(INTEL_COMPINFO)
 intel_win : CC        = $(I_CC)
 intel_win : exe       = fds2fed_win.exe
 
@@ -112,7 +112,7 @@ intel_win : $(objwin)
 
 # ------------- clang win ----------------
 
-clang_win : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
+clang_win : CFLAGS    = -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/LIBS/pthreads
 clang_win : LFLAGS    = -m64
 clang_win : CC        = clang-cl
 clang_win : exe       = fds2fed_win.exe
@@ -122,7 +122,7 @@ clang_win : $(objwin)
 
 # ------------- clang win debug ----------------
 
-clang_win_db : CFLAGS    = /Od /Z7 -D _DEBUG -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/pthreads
+clang_win_db : CFLAGS    = /Od /Z7 -D _DEBUG -m64 -D PTW32_STATIC_LIB -I $(SOURCE_DIR)/LIBS/pthreads
 clang_win_db : LFLAGS    = -m64
 clang_win_db : CC        = clang-cl
 clang_win_db : exe       = fds2fed_win_db.exe

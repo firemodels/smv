@@ -1,6 +1,6 @@
 @echo off
 setlocal
-call ..\scripts\setopts %*
+call ..\..\scripts\setopts %*
 title Building gd library
 git clean -dxf
 set target=libgd.lib

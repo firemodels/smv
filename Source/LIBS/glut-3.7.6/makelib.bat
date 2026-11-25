@@ -1,6 +1,6 @@
 @echo off
 setlocal
-call ..\scripts\setopts %*
+call ..\..\scripts\setopts %*
 title Building glut library
 git clean -dxf
 

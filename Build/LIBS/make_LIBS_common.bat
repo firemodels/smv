@@ -8,10 +8,10 @@ set LIBDIR=%CD%
 echo *** Cleaning %CD%
 git clean -dxf > Nul
 
-cd ..\..\..\Source
+cd ..\..\..\Source\LIBS
 set SRCDIR=%CD%
 
-cd ..\Build
+cd ..\..\Build
 set BUILDDIR=%CD%
 
 cd ..\Utilities

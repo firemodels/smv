@@ -1,6 +1,6 @@
 @echo off
 setlocal
-call ..\scripts\setopts %*
+call ..\..\scripts\setopts %*
 title Building jpeg library
 git clean -dxf
 set target=libjpeg.lib

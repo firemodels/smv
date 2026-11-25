@@ -38,7 +38,7 @@ SANITIZE_OPTIONS=-fsanitize=address -fsanitize=undefined -D pp_SANITIZE
 
 # The variable VPATH defines the source code directory relative to the current directory
 
-VPATH = $(SOURCE_DIR)/smokeview:$(SOURCE_DIR)/shared:$(SOURCE_DIR)/glew
+VPATH = $(SOURCE_DIR)/smokeview:$(SOURCE_DIR)/shared:$(SOURCE_DIR)/LIBS/glew
 bin = .
 
 # Definition of the object variables
@@ -92,20 +92,20 @@ objwin = $(obj:.o=.obj)
 #------------------------------------------------------------
 #*** common include directories
 
-INC  = -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.3.3 -I $(SOURCE_DIR)/shared \
-       -I $(SOURCE_DIR)/smokeview      -I $(SOURCE_DIR)/glew     -I $(SOURCE_DIR)/zlib131
+INC  = -I $(SOURCE_DIR)/LIBS/glui_v2_1_beta -I $(SOURCE_DIR)/LIBS/gd-2.3.3 -I $(SOURCE_DIR)/shared \
+       -I $(SOURCE_DIR)/smokeview      -I $(SOURCE_DIR)/LIBS/glew     -I $(SOURCE_DIR)/LIBS/zlib131
 
 ifeq ($(GLUT),freeglut)
   INC += -I $(FREEGLUT_DIR)/include
 else
   ifeq ($(shell echo "check_quotes"),"check_quotes")
-    INC += -I $(SOURCE_DIR)/glut_gl
+    INC += -I $(SOURCE_DIR)/LIBS/glut_gl
   else
-    INC += -I $(SOURCE_DIR)/glut_gl2
+    INC += -I $(SOURCE_DIR)/LIBS/glut_gl2
   endif
 endif
 ifeq ($(shell echo "check_quotes"),"check_quotes")
-  INC += -I $(SOURCE_DIR)/pthreads
+  INC += -I $(SOURCE_DIR)/LIBS/pthreads
 endif
 
 #------------------------------------------------------------

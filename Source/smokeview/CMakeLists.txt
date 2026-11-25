@@ -61,16 +61,16 @@ target_link_libraries(smokeview PRIVATE smv)
 # remove.Because of this custom code and the potential conflict with native libs
 # this needs to be early in the include order.
 if (WIN32)
-    target_include_directories(smokeview PRIVATE ../glut_gl)
+    target_include_directories(smokeview PRIVATE ../LIBS/glut_gl)
 else()
-    target_include_directories(smokeview PRIVATE ../glui_gl)
+    target_include_directories(smokeview PRIVATE ../LIBS/glui_gl)
 endif ()
 
 if(WIN32)
     target_link_libraries(smokeview PRIVATE wsock32 ws2_32)
 endif()
 if (VENDORED_UI_LIBS)
-    target_include_directories(smokeview PRIVATE ../glui_v2_1_beta)
+    target_include_directories(smokeview PRIVATE ../LIBS/glui_v2_1_beta)
     target_link_libraries(smokeview PRIVATE glui_static)
 else()
     FetchContent_MakeAvailable(glui-git)
@@ -112,7 +112,7 @@ if (SMOKEVIEW_OBJECT_DEFS_PATH)
 endif()
 
 if (MSVC)
-    # The headers in Source/glut_gl redefine some macros. Ideally those headers
+    # The headers in Source/LIBS/glut_gl redefine some macros. Ideally those headers
     # could be removed but for now we just ignore the warning.
     target_compile_options(smokeview PRIVATE /wd4005)
 endif()
