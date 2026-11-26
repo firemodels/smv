@@ -11,6 +11,6 @@ set mingwparms=
 if %COMPILER% == gcc set minggwparms=-D __MINGW32__ -Wno-pointer-to-int-cast
 
 if exist finished erase finished
-make COMPILER=%COMPILER% LIB=%LIB% SIZE=%SIZE% FILTERC="-D WIN32 -D _WIN32 %minggwparms% " -f ./makefile %target%
+make COMPILER=%COMPILER% LIB=%SMV_LIB_TOOL% SIZE=%SIZE% FILTERC="-D WIN32 -D _WIN32 %minggwparms% " -f ./makefile %target%
 echo finished > finished
 endlocal
