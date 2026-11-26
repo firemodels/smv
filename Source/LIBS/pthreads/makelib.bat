@@ -19,6 +19,6 @@ if  NOT "x%COMPILER%" == "xicx" goto endif3
 set OPT=-DHAVE_STRUCT_TIMESPEC
 
 if exist finished erase finished
-make CFLAGS=%CFLAGS% COMPILER=%COMPILER% LIB=%LIB% SIZE=%SIZE% OPT=%OPT% RM=erase -f ./makefile %target%
+make CFLAGS=%CFLAGS% COMPILER=%COMPILER% LIB=%SMV_LIB_TOOL% SIZE=%SIZE% OPT=%OPT% RM=erase -f ./makefile %target%
 echo finished > finished
 endlocal
