@@ -6315,16 +6315,16 @@ B_BOUNDARY
 Smokeview uses configuration or .ini files to save the visualization state.
 Smokeview reads configuration files in this order:
 \begin{enumerate}
-\item a file named casename.ini in the current directory, the directory where the case is located.
-
 \item a file specified by the -load\_ini command line option, for example
 
 {\tt smokeview -load\_ini C:\textbackslash Users\textbackslash username\textbackslash custom.ini casename}
+
+\item a file named casename.ini in the current directory, the directory where the case is located. Its settings override those from the file specified with -load\_ini.
 \end{enumerate}
 
 The {\tt casename.ini}\ file may be created by selecting the {\tt Save settings to casename.ini}\ menu item.
-The smokeview.ini file may be created by typing {\tt smokeview -ini}\ in a command shell.
-Use the {	t -load_ini} option to load this file for a case.
+A file named smokeview.ini file is created by typing {\tt smokeview -ini}\ in a command shell.
+Use the {\tt -load\_ini} option to load this file for a case.
 
 All configuration file parameters unless otherwise noted consist of a {\tt KEYWORD}
 followed by one or more values, as in:
