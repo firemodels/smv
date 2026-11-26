@@ -6313,26 +6313,18 @@ B_BOUNDARY
 % --------------------CONFIGURATION FILES -----------------------
 
 Smokeview uses configuration or .ini files to save the visualization state.
-Smokeview looks for these files in three locations:
+Smokeview reads configuration files in this order:
 \begin{enumerate}
-\item a file named smokeview.ini in the installation directory.  On a PC this is typically at\\
-{\tt C:\textbackslash Program~Files\textbackslash firemodels\textbackslash SMV6\textbackslash smokeview.ini}~.
-The installation directory may be
-overridden by using the -bindir command line option, for example
-
-{\tt smokeview -bindir C:\textbackslash Users\textbackslash username\textbackslash bindir casename}
-
 \item a file named casename.ini in the current directory, the directory where the case is located.
 
-\item a file specfied by the -load\_ini command line option, for example
+\item a file specified by the -load\_ini command line option, for example
 
 {\tt smokeview -load\_ini C:\textbackslash Users\textbackslash username\textbackslash custom.ini casename}
 \end{enumerate}
 
 The {\tt casename.ini}\ file may be created by selecting the {\tt Save settings to casename.ini}\ menu item.
 The smokeview.ini file may be created by typing {\tt smokeview -ini}\ in a command shell.
-This file may be used to change default smokeview settings by copying it
-to the installation directory.
+Use the {	t -load_ini} option to load this file for a case.
 
 All configuration file parameters unless otherwise noted consist of a {\tt KEYWORD}
 followed by one or more values, as in:
