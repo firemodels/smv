@@ -258,7 +258,7 @@ int SetupCase(char *filename){
 
   CheckMemory;
   readini_output = 0;
-  ReadIni(load_ini);
+  ReadStartupIni(load_ini);
   FREEMEMORY(load_ini);
   readini_output = 1;
 
