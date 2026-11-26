@@ -6919,23 +6919,23 @@ static int ReadIni2(const char *inifile){
 
 /* ------------------ ReadIni ------------------------ */
 
-int ReadIni(char *inifile){
-  static int read_startup_ini = 1;
+static int ReadExplicitIni(const char *inifile){
+  if(inifile == NULL)return 0;
 
-  // Read global startup settings, then case settings and explicit overrides.
+  int return_code = ReadIni2(inifile);
+  if(return_code == 0 && readini_output == 1 && verbose_output == 1){
+    PRINTF("- complete\n");
+  }
+  if(return_code == 1 || return_code == 2){
+    fprintf(stderr,"*** Error: Unable to read %s\n",inifile);
+  }
+  return return_code;
+}
+
+static int ReadIniFiles(const char *startup_ini, const char *override_ini){
   global_scase.ntickinfo=global_scase.ntickinfo_smv;
 
-  if(read_startup_ini == 1){
-    char *smokeviewini_filename = GetSmokeviewIniPath();
-
-    read_startup_ini = 0;
-    if(smokeviewini_filename != NULL){
-      int return_code = ReadIni2(smokeviewini_filename);
-
-      FREEMEMORY(smokeviewini_filename);
-      if(return_code == 2)return 2;
-    }
-  }
+  if(ReadExplicitIni(startup_ini) == 2)return 2;
 
   // Read "${fdsprefix}.ini" from the current directory
   char *caseini_filename = CasePathCaseIni(&global_scase);
@@ -6963,25 +6963,8 @@ int ReadIni(char *inifile){
   }
   FREEMEMORY(caseini_filename);
 
-  // Read file specified in the SSF script
-  if(inifile!=NULL){
-    int return_code;
-
-    return_code = ReadIni2(inifile);
-    if(return_code == 0 && readini_output==1){
-      if(verbose_output==1)PRINTF("- complete\n");
-    }
-
-    if(return_code==1||return_code==2){
-      if(inifile==NULL){
-        fprintf(stderr,"*** Error: Unable to read .ini file\n");
-      }
-      else{
-        fprintf(stderr,"*** Error: Unable to read %s\n",inifile);
-      }
-    }
-    if(return_code==2)return 2;
-
+  if(ReadExplicitIni(override_ini) == 2)return 2;
+  if(startup_ini != NULL || override_ini != NULL){
     UpdateRGBColors(colorbar_select_index);
   }
 
@@ -6998,6 +6981,14 @@ int ReadIni(char *inifile){
   updatezoommenu=1;
   GetSliceParams2();
   return 0;
+}
+
+int ReadIni(char *inifile){
+  return ReadIniFiles(NULL, inifile);
+}
+
+int ReadStartupIni(const char *inifile){
+  return ReadIniFiles(inifile, NULL);
 }
 
 /* ------------------ OutputViewpoints ------------------------ */

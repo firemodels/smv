@@ -199,5 +199,4 @@ endif()
 add_subdirectory(Source/wind2fds)
 
 # Install config files
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/Build/for_bundle/smokeview.ini" DESTINATION "${CMAKE_INSTALL_SYSCONFDIR}/smokeview")
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/Build/for_bundle/objects.svo" DESTINATION "${CMAKE_INSTALL_SYSCONFDIR}/smokeview")

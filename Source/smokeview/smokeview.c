@@ -212,15 +212,6 @@ void DisplayVersionInfo(char *progname, common_opts *opts){
   FREEMEMORY(caseini_filename);
   FREEMEMORY(smokeview_scratchdir);
 
-  char *globalini_filename = GetSmokeviewIniPath();
-  if(globalini_filename != NULL){
-    PRINTF("Smokeview ini    : %s\n", globalini_filename);
-  }
-  else{
-    PRINTF("Smokeview ini    : not found\n");
-  }
-  FREEMEMORY(globalini_filename);
-
   if(smv_filename != NULL || opts->show_version == 0){
     if(strlen(fullini_filename) > 0){
       PRINTF("Casename ini     : %s\n", fullini_filename);
