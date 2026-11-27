@@ -62,7 +62,6 @@ typedef struct CommandlineArgs {
   bool csv;
   float max_mem_GB;
   /// @brief output information about geometry triangles
-  bool geominfo;
   /// @brief assume slice files exist in order to reduce startup time
   bool fast;
   bool full;

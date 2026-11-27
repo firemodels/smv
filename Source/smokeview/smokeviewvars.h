@@ -323,8 +323,6 @@ SVEXTERN int SVDECL(terrain_show_geometry_points, 0);
 SVEXTERN int SVDECL(terrain_showonly_top, 1), SVDECL(terrain_update_normals, 1);
 SVEXTERN int SVDECL(showhide_textures, 0);
 
-SVEXTERN int SVDECL(print_geominfo, 1);
-
 SVEXTERN float SVDECL(slice_dz, 0.0);
 SVEXTERN float SVDECL(terrain_normal_length, 1.0);
 SVEXTERN int SVDECL(terrain_normal_skip, 1);

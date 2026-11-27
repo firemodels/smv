@@ -182,9 +182,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
       i++;
       sscanf(argv[i], "%i", &args.Y0);
     }
-    else if(strcmp(argv[i], "-geominfo") == 0){
-      args.geominfo = true;
-    }
     else if(strcmp(argv[i], "-fast") == 0){
       args.fast = true;
     }

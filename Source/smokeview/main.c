@@ -52,7 +52,6 @@ void Usage(int option){
     PRINTF("%s\n", " -fast          - assume slice files exist in order to reduce startup time,");
     PRINTF("%s\n", "                  don't compute blanking arrays");
     PRINTF("%s\n", " -full          - full startup - check if files exist");
-    PRINTF("%s\n", " -geominfo      - output information about geometry triangles");
     PRINTF("%s\n", " -info          - generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info");
     PRINTF("%s\n", " -ini           - output smokeview parameter values to smokeview.ini");
     PRINTF("%s\n", " -large         - take some shortcuts when reading in large geometry cases");
@@ -348,9 +347,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
     if(args->make_movie){
       open_movie_dialog = 1;
-    }
-    if(args->geominfo){
-      print_geominfo = 1;
     }
     if(args->load_co2){
       loadfiles_commandline[0]          = 1;
