@@ -47,15 +47,15 @@ void Usage(int option){
 #endif
     PRINTF("%s\n", " -big           - hide scene and data when moving scene or selecting menus");
     PRINTF("%s\n", " -casedir dir   - specify location of case (if different than current directory)");
-    PRINTF("%s\n", " -demo          - use demonstrator mode of Smokeview");
-    PRINTF("%s\n", " -encode_png v  - encode png's with fds and smv repo revisions if v=1, do not encode if v=0");
-    PRINTF("%s\n", " -fast          - assume slice files exist in order to reduce startup time,");
-    PRINTF("%s\n", "                  don't compute blanking arrays");
+    PRINTF("%s\n", " -demo          - use Smokeview demonstrator mode");
+    PRINTF("%s\n", " -encode_png v  - encode PNGs with fds and smv repo revisions if v=1, do not encode if v=0");
+    PRINTF("%s\n", " -fast          - assume FDS output files exist (slice, particle etc)");
+    PRINTF("%s\n", "                  and do not compute blanking arrays in order to reduce startup time.");
     PRINTF("%s\n", " -full          - full startup - check if files exist");
-    PRINTF("%s\n", " -info          - generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info");
+    PRINTF("%s\n", " -info          - generate casename.slcf and casename.viewpoints files containing slice file and viewpoint info");
     PRINTF("%s\n", " -ini           - output smokeview parameter values to smokeview.ini");
     PRINTF("%s\n", " -large         - take some shortcuts when reading in large geometry cases");
-    PRINTF("%s\n", " -make_movie    - open the movie generating dialog box");
+    PRINTF("%s\n", " -make_movie    - open the movie generating dialog box at startup");
     PRINTF("%s\n", " -max_mem mem   - specify maximum memory used in GB");
     PRINTF("%s\n", " -outline       - show geometry bounding boxes instead of geometry");
     PRINTF("%s\n", " -ng_ini        - non-graphics version of -ini.");
@@ -68,8 +68,8 @@ void Usage(int option){
     PRINTF("%s\n", " -startframe n  - start rendering at frame n");
     PRINTF("%s\n", " -stereo        - activate stereo mode");
     PRINTF("%s\n", " -timings       - show timings");
-    PRINTF("%s\n", " -x0 val - horizontal screen coordinate in pixels where smokeview window is place at startup");
-    PRINTF("%s\n", " -y0 val - vertical screen coordinate in pixels where smokeview window is place at startup");
+    PRINTF("%s\n", " -x0 val - horizontal screen coordinate in pixels where smokeview window is placed at startup");
+    PRINTF("%s\n", " -y0 val - vertical screen coordinate in pixels where smokeview window is placed at startup");
     PRINTF("%s\n", " -X0 val - horizontal screen coordinate in pixels where dialog windows are placed when opened");
     PRINTF("%s\n", " -Y0 val - vertical screen coordinate in pixels where dialog windows are placed when opened");
     UsageCommon(HELP_ALL);

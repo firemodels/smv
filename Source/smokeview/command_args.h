@@ -20,10 +20,10 @@ typedef struct CommandlineArgs {
   bool encode_png_commandline;
   bool no_graphics;
   bool nogpu;
-  /// @brief use demonstrator mode of Smokeview"
+  /// @brief use Smokeview demonstrator mode
   bool demo;
-  /// @brief generate casename.slcf and casename.viewpoint files containing
-  /// slice file and viewpiont info
+  /// @brief generate casename.slcf and casename.viewpoints files containing
+  /// slice file and viewpoint info
   bool info;
   /// @brief activate stereo mode
   bool stereo;
