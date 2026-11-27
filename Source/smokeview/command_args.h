@@ -16,10 +16,6 @@ typedef struct CommandlineArgs {
   bool print_version;
   bool update_bounds;
   bool large_case;
-  bool load_co2;
-  bool load_hrrpuv;
-  bool load_soot;
-  bool load_temp;
   bool encode_png;
   bool encode_png_commandline;
   bool no_graphics;

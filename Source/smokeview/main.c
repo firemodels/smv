@@ -55,10 +55,6 @@ void Usage(int option){
     PRINTF("%s\n", " -info          - generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info");
     PRINTF("%s\n", " -ini           - output smokeview parameter values to smokeview.ini");
     PRINTF("%s\n", " -large         - take some shortcuts when reading in large geometry cases");
-    PRINTF("%s\n", " -load_co2      - load 3D smoke of type co2 at startup ");
-    PRINTF("%s\n", " -load_hrrpuv   - load 3D smoke of type hrrpuv at startup ");
-    PRINTF("%s\n", " -load_soot     - load 3D smoke of type soot at startup ");
-    PRINTF("%s\n", " -load_temp     - load 3D smoke of type temperature at startup ");
     PRINTF("%s\n", " -make_movie    - open the movie generating dialog box");
     PRINTF("%s\n", " -max_mem mem   - specify maximum memory used in GB");
     PRINTF("%s\n", " -outline       - show geometry bound boxes instead of geometry");
@@ -347,24 +343,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
     if(args->make_movie){
       open_movie_dialog = 1;
-    }
-    if(args->load_co2){
-      loadfiles_commandline[0]          = 1;
-      loadfiles_commandline[LOAD_3DCO2] = 1;
-    }
-    if(args->load_hrrpuv){
-      loadfiles_commandline[0]             = 1;
-      loadfiles_commandline[LOAD_3DHRRPUV] = 1;
-      loadfiles_commandline[LOAD_3DTEMP]   = 0;
-    }
-    if(args->load_soot){
-      loadfiles_commandline[0]           = 1;
-      loadfiles_commandline[LOAD_3DSOOT] = 1;
-    }
-    if(args->load_temp){
-      loadfiles_commandline[0]             = 1;
-      loadfiles_commandline[LOAD_3DTEMP]   = 1;
-      loadfiles_commandline[LOAD_3DHRRPUV] = 0;
     }
     if(args->fast){
       parse_opts.fast_startup = 1;
