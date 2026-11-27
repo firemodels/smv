@@ -57,7 +57,7 @@ void Usage(int option){
     PRINTF("%s\n", " -large         - take some shortcuts when reading in large geometry cases");
     PRINTF("%s\n", " -make_movie    - open the movie generating dialog box");
     PRINTF("%s\n", " -max_mem mem   - specify maximum memory used in GB");
-    PRINTF("%s\n", " -outline       - show geometry bound boxes instead of geometry");
+    PRINTF("%s\n", " -outline       - show geometry bounding boxes instead of geometry");
     PRINTF("%s\n", " -ng_ini        - non-graphics version of -ini.");
     PRINTF("%s\n", " -render_overwrite - allow rendered images to be overwritten");
     PRINTF("%s\n", " -scriptrenderdir dir - directory containing script rendered images");
@@ -65,7 +65,6 @@ void Usage(int option){
     PRINTF("%s\n", " -setup         - only show geometry");
     PRINTF("%s\n", " -script scriptfile - run the script file scriptfile");
     PRINTF("%s\n", " -skipframe n   - render every n frames");
-    PRINTF("%s\n", " -smoke3d       - only show 3D smoke");
     PRINTF("%s\n", " -startframe n  - start rendering at frame n");
     PRINTF("%s\n", " -stereo        - activate stereo mode");
     PRINTF("%s\n", " -timings       - show timings");
@@ -313,9 +312,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
     if(args->isotest){
       isotest = 1;
-    }
-    if(args->smoke3d){
-      parse_opts.smoke3d_only = 1;
     }
     if(args->no_slcf){
     parse_opts.handle_slice_files = 0;

@@ -124,9 +124,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     else if(strcmp(argv[i], "-isotest") == 0){
       args.isotest = true;
     }
-    else if(strcmp(argv[i], "-smoke3d") == 0){
-      args.smoke3d = true;
-    }
     else if(strcmp(argv[i], "-no_slcf") == 0){
       args.no_slcf = true;
     }

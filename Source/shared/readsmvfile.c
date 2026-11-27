@@ -57,7 +57,6 @@
 #define NO_SCAN 1
 
 parse_options parse_opts = {
-  .smoke3d_only = 0,
   .setup_only = 0,
   .fast_startup = 1,
   .handle_slice_files = 1
@@ -1230,7 +1229,7 @@ void ReadSMVDynamic(smv_case *scase, char *file){
       int n;
 
       do_pass2=1;
-      if(parse_opts.setup_only==1||parse_opts.smoke3d_only==1)continue;
+      if(parse_opts.setup_only==1)continue;
       FGETS(buffer, 255, stream);
       for(n = 0; n<5; n++){
         if(ReadLabels(NULL, stream, NULL)==LABEL_ERR)break;
@@ -1465,7 +1464,7 @@ void ReadSMVDynamic(smv_case *scase, char *file){
       int len,blocknumber,blocktemp;
       char *bufferptr;
 
-      if(parse_opts.setup_only==1||parse_opts.smoke3d_only==1)continue;
+      if(parse_opts.setup_only==1)continue;
       if(minmaxpl3d==1)do_pass3=1;
       nn_plot3d++;
       TrimBack(buffer);
@@ -2995,7 +2994,7 @@ void MakeFileLists(smv_case *scase){
 /* ------------------ ParseISOFCount ------------------------ */
 
 void ParseISOFCount(smv_case *scase){
-  if(parse_opts.setup_only == 1 || parse_opts.smoke3d_only == 1)return;
+  if(parse_opts.setup_only == 1)return;
   scase->nisoinfo++;
 }
 
@@ -3014,7 +3013,7 @@ int ParseISOFProcess(smv_case *scase, bufferstreamdata *stream, char *buffer, in
 
   int ioffset, iiso, nn_iso, nisos_per_mesh;
 
-  if(parse_opts.setup_only==1||parse_opts.smoke3d_only==1)return RETURN_CONTINUE;
+  if(parse_opts.setup_only==1)return RETURN_CONTINUE;
 
   iiso = *iiso_in;
   ioffset = *ioffset_in;
@@ -3179,7 +3178,7 @@ int ParseCHIDProcess(smv_case *scase, bufferstreamdata *stream, int option){
 /* ------------------ ParsePRT5Count ------------------------ */
 
 void ParsePRT5Count(smv_case *scase){
-  if(parse_opts.setup_only==1||parse_opts.smoke3d_only==1)return;
+  if(parse_opts.setup_only==1)return;
   scase->npartinfo++;
 }
 
@@ -3194,7 +3193,7 @@ int ParsePRT5Process(smv_case *scase, bufferstreamdata *stream, char *buffer, in
 
   int nn_part, ipart, ioffset;
 
-  if(parse_opts.setup_only==1||parse_opts.smoke3d_only==1)return RETURN_CONTINUE;
+  if(parse_opts.setup_only==1)return RETURN_CONTINUE;
 
   nn_part = *nn_part_in;
   ioffset = *ioffset_in;
@@ -3334,7 +3333,7 @@ int ParsePRT5Process(smv_case *scase, bufferstreamdata *stream, char *buffer, in
 /* ------------------ ParseBNDFCount ------------------------ */
 
 int ParseBNDFCount(smv_case *scase){
-  if(parse_opts.setup_only==1||parse_opts.smoke3d_only==1)return RETURN_CONTINUE;
+  if(parse_opts.setup_only==1)return RETURN_CONTINUE;
   scase->npatchinfo++;
   return RETURN_CONTINUE;
 }
@@ -3353,7 +3352,7 @@ int ParseBNDFProcess(smv_case *scase, bufferstreamdata *stream, char *buffer, in
   patchdata *patchgeom;
   char *bufferptr;
 
-  if(parse_opts.setup_only==1||parse_opts.smoke3d_only==1)return RETURN_CONTINUE;
+  if(parse_opts.setup_only==1)return RETURN_CONTINUE;
 
   nn_patch = *nn_patch_in;
   ioffset = *ioffset_in;
@@ -3766,7 +3765,7 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
 /* ------------------ ParseSLCFCount ------------------------ */
 
 int ParseSLCFCount(smv_case *scase, int option, bufferstreamdata *stream, char *buffer, int *nslicefiles_in){
-  if(parse_opts.setup_only==1||parse_opts.smoke3d_only==1||parse_opts.handle_slice_files==0)return RETURN_CONTINUE;
+  if(parse_opts.setup_only==1||parse_opts.handle_slice_files==0)return RETURN_CONTINUE;
   if(option==SCAN){
     for(;;){
       if(FGETS(buffer, 255, stream)==NULL){
@@ -3834,7 +3833,7 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   int nslicefiles, nn_slice;
   slicedata *sliceinfo_copy;
 
-  if(parse_opts.setup_only==1||parse_opts.smoke3d_only==1||parse_opts.handle_slice_files==0)return RETURN_CONTINUE;
+  if(parse_opts.setup_only==1||parse_opts.handle_slice_files==0)return RETURN_CONTINUE;
   if(option==SCAN){
     for(;;){
       if(FGETS(buffer, 255, stream)==NULL){

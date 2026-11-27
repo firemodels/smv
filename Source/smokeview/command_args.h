@@ -39,7 +39,6 @@ typedef struct CommandlineArgs {
   bool timings;
   bool isotest;
   /// @brief only show 3D smoke
-  bool smoke3d;
   bool no_slcf;
   bool show_help_summary;
   bool show_help_all;
