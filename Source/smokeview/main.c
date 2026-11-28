@@ -33,34 +33,34 @@ void Usage(int option){
 
   PRINTF("\nsmokeview [options] casename\n");
   PRINTF("%s - %s\n\n", githash, __DATE__);
-  PRINTF("%s\n\n", "Visualize fire/smoke flow simulations specified by casename.smv.");
+  PRINTF("%s\n\n", "Visualize fire and smoke flow simulations specified by casename.smv");
   PRINTF("options:\n");
-  PRINTF("%s\n", " -bindir dir    - specify location of smokeview bin directory");
-  PRINTF("%s\n", " -load_ini inifile - load the specified ini file (before casename.ini) at startup");
-  PRINTF("%s\n", " -runscript     - run the script file casename.ssf");
+  PRINTF("%s\n", " -bindir dir    - specify the location of the smokeview bin directory");
+  PRINTF("%s\n", " -load_ini file.ini - load file.ini (before casename.ini if it exists) at startup");
+  PRINTF("%s\n", " -runscript     - run the script casename.ssf");
   UsageCommon(HELP_SUMMARY);
   if(option==HELP_ALL){
     PRINTF("\n%s\n", "Other options:");
 #ifdef pp_OSX
-    PRINTF("%s\n", " -1x            - turn off 2x scene scaling (do not scale scene).");
-    PRINTF("%s\n", " -2x            - turn on 2x scene scaling.");
+    PRINTF("%s\n", " -1x            - turn off 2x scene scaling (do not scale scene)");
+    PRINTF("%s\n", " -2x            - turn on 2x scene scaling");
 #endif
-    PRINTF("%s\n", " -big           - hide scene and data when moving scene or selecting menus");
-    PRINTF("%s\n", " -casedir dir   - specify location of case (if different than current directory)");
-    PRINTF("%s\n", " -demo          - use Smokeview demonstrator mode");
+    PRINTF("%s\n", " -big           - hide scene and data when moving the scene or selecting menus");
+    PRINTF("%s\n", " -casedir dir   - specify the location of casename.smv (if different than current directory)");
+    PRINTF("%s\n", " -demo          - run Smokeview in demonstrator mode (a simplified dialog box)");
     PRINTF("%s\n", " -encode_png v  - encode PNGs with fds and smv repo revisions if v=1, do not encode if v=0");
-    PRINTF("%s\n", " -fast          - skip file existance checks when creating load menus at startup,");
-    PRINTF("%s\n", "                  also do not compute blanking arrays.  Both are done to reduce startup time.");
+    PRINTF("%s\n", " -fast          - skip file existance checks at startup when creating load menus,");
+    PRINTF("%s\n", "                  also do not compute blanking arrays.  Both are done to reduce startup time");
     PRINTF("%s\n", " -full          - full startup - opposite of -fast option");
     PRINTF("%s\n", " -ini           - save smokeview settings to smokeview.ini");
     PRINTF("%s\n", " -large         - take some shortcuts when reading in large geometry cases");
-    PRINTF("%s\n", " -max_mem mem   - specify maximum memory (GB) used by smokeview.");
-    PRINTF("%s\n", " -outline       - show geometry bounding boxes instead of full geometry");
-    PRINTF("%s\n", " -ng_ini        - skip graphics initialization when creating a smokeview.ini file.");
+    PRINTF("%s\n", " -max_mem mem   - specify the maximum memory (GB) that can be used by smokeview");
+    PRINTF("%s\n", " -outline       - show geometry bounding boxes instead of the full geometry");
+    PRINTF("%s\n", " -ng_ini        - skip graphics initialization when creating a smokeview.ini file");
     PRINTF("%s\n", " -render_overwrite - allow rendered images to be overwritten");
-    PRINTF("%s\n", " -scriptrenderdir dir - directory containing script rendered images");
-    PRINTF("%s\n", "                  (override directory specified by RENDERDIR script keyword)");
-    PRINTF("%s\n", " -setup         - do not parse casename.smv file entries for generating Load menus, only show geometry");
+    PRINTF("%s\n", " -scriptrenderdir dir - specify the directory containing script rendered images");
+    PRINTF("%s\n", "                  (overrides the directory specified by the RENDERDIR script keyword)");
+    PRINTF("%s\n", " -setup         - ignore file entries (slice, 3d smoke etc) when reading the smv file");
     PRINTF("%s\n", " -script scriptfile - run the script file scriptfile");
     PRINTF("%s\n", " -skipframe n   - render every n frames");
     PRINTF("%s\n", " -startframe n  - start rendering at frame n");
