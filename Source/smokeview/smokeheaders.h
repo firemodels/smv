@@ -505,7 +505,7 @@ EXTERNCPP void DrawVGSliceData(vslicedata *vslicei);
 EXTERNCPP void DrawVolSliceLines(const slicedata *sd);
 EXTERNCPP void DrawVolSliceVerts(const slicedata *sd);
 EXTERNCPP void DrawVSliceFrame(void);
-EXTERNCPP void GenerateSliceMenu(int from_commandline);
+EXTERNCPP void GenerateSliceMenu(void);
 EXTERNCPP void GetGSliceParams(void);
 EXTERNCPP void GetHistogramValProc(histogramdata *histogram, float cdf, float *val);
 EXTERNCPP int  GetSliceBoundsIndex(const slicedata *sd);

@@ -106,9 +106,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     else if(strcmp(argv[i], "-demo") == 0){
       args.demo = true;
     }
-    else if(strcmp(argv[i], "-info") == 0){
-      args.info = true;
-    }
     else if(strcmp(argv[i], "-stereo") == 0){
       args.stereo = true;
     }

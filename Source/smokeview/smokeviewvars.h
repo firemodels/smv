@@ -310,7 +310,6 @@ SVEXTERN int SVDECL(show_bound_diffs, 0);
 SVEXTERN int SVDECL(meshface_horiz, 0);
 
 SVEXTERN slicemenudata SVDECL(*slicemenuinfo, NULL);
-SVEXTERN int SVDECL(generate_info_from_commandline, 0);
 SVEXTERN int SVDECL(vector_debug, 0);
 SVEXTERN float SVDECL(*terrain_vertices, NULL), SVDECL(*terrain_tvertices, NULL), SVDECL(*terrain_colors, NULL);
 SVEXTERN unsigned int SVDECL(*terrain_indices, NULL);

@@ -22,9 +22,6 @@ typedef struct CommandlineArgs {
   bool nogpu;
   /// @brief use Smokeview demonstrator mode
   bool demo;
-  /// @brief generate casename.slcf and casename.viewpoints files containing
-  /// slice file and viewpoint info
-  bool info;
   /// @brief activate stereo mode
   bool stereo;
   /// @brief hide scene and data when moving scene or selecting menus

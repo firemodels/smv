@@ -52,7 +52,6 @@ void Usage(int option){
     PRINTF("%s\n", " -fast          - assume FDS output files exist (slice, particle etc)");
     PRINTF("%s\n", "                  and do not compute blanking arrays in order to reduce startup time.");
     PRINTF("%s\n", " -full          - full startup - check if files exist");
-    PRINTF("%s\n", " -info          - generate casename.slcf and casename.viewpoints files containing slice file and viewpoint info");
     PRINTF("%s\n", " -ini           - output smokeview parameter values to smokeview.ini");
     PRINTF("%s\n", " -large         - take some shortcuts when reading in large geometry cases");
     PRINTF("%s\n", " -make_movie    - open the movie generating dialog box at startup");
@@ -291,10 +290,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
     if(args->demo){
       demo_option = 1;
-    }
-    if(args->info){
-      generate_info_from_commandline = 1;
-      use_graphics = 0;
     }
     if(args->stereo){
       stereoactive = 1;
