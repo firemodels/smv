@@ -254,11 +254,6 @@ scripts/RESTART_Cases.sh
 cd $GITROOT/smv/Verification
 cd $CURDIDR
 
-# generate geometry images
-
-cd $GITROOT/smv/Verification
-scripts/WUI_Cases.sh
-
 wait_cases_end
 
 # copy generated images to web summary directory

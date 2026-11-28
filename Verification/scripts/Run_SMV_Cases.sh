@@ -172,10 +172,8 @@ if [[ ! $stop_cases ]] ; then
   echo "Removing FDS/CFAST output files"
   export RUNCFAST="$VDIR/scripts/Remove_CFAST_Files.sh"
   export QFDS="$VDIR/scripts/Remove_FDS_Files.sh"
-  scripts/RESTART1_Cases.sh
-  scripts/RESTART2_Cases.sh
+  scripts/RESTART_Cases.sh
   scripts/SMV_Cases.sh
-  scripts/WUI_Cases.sh
   echo "FDS/CFAST output files removed"
 fi
 
@@ -196,7 +194,6 @@ if [[ ! $stop_cases ]] && [[ "$FDS_DEBUG" == "0" ]] ; then
 fi
 
 cd $VDIR
-scripts/RESTART1_Cases.sh
 scripts/SMV_Cases.sh
 if [ "$WAIT" == "1" ] ; then
   wait_cases_end
