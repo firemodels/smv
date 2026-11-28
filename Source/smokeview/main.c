@@ -33,49 +33,40 @@ void Usage(int option){
 
   PRINTF("\nsmokeview [options] casename\n");
   PRINTF("%s - %s\n\n", githash, __DATE__);
-  PRINTF("%s\n\n", "Visualize fire/smoke flow simulations specified by casename.smv.");
+  PRINTF("%s\n\n", "Visualize fire and smoke flow simulations specified by casename.smv");
   PRINTF("options:\n");
-  PRINTF("%s\n", " -bindir dir    - specify location of smokeview bin directory");
-  PRINTF("%s\n", " -load_ini inifile - load the specified ini file (before casename.ini) at startup");
-  PRINTF("%s\n", " -runscript     - run the script file casename.ssf");
+  PRINTF("%s\n", " -bindir dir    - specify the location of the smokeview bin directory");
+  PRINTF("%s\n", " -load_ini file.ini - load file.ini (before casename.ini if it exists) at startup");
+  PRINTF("%s\n", " -runscript     - run the script casename.ssf");
   UsageCommon(HELP_SUMMARY);
   if(option==HELP_ALL){
     PRINTF("\n%s\n", "Other options:");
 #ifdef pp_OSX
-    PRINTF("%s\n", " -1x            - turn off 2x scene scaling (do not scale scene).");
-    PRINTF("%s\n", " -2x            - turn on 2x scene scaling.");
+    PRINTF("%s\n", " -1x            - turn off 2x scene scaling (do not scale scene)");
+    PRINTF("%s\n", " -2x            - turn on 2x scene scaling");
 #endif
-    PRINTF("%s\n", " -big           - hide scene and data when moving scene or selecting menus");
-    PRINTF("%s\n", " -casedir dir   - specify location of case (if different than current directory)");
-    PRINTF("%s\n", " -demo          - use demonstrator mode of Smokeview");
-    PRINTF("%s\n", " -encode_png v  - encode png's with fds and smv repo revisions if v=1, do not encode if v=0");
-    PRINTF("%s\n", " -fast          - assume slice files exist in order to reduce startup time,");
-    PRINTF("%s\n", "                  don't compute blanking arrays");
-    PRINTF("%s\n", " -full          - full startup - check if files exist");
-    PRINTF("%s\n", " -geominfo      - output information about geometry triangles");
-    PRINTF("%s\n", " -info          - generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info");
-    PRINTF("%s\n", " -ini           - output smokeview parameter values to smokeview.ini");
+    PRINTF("%s\n", " -big           - hide scene and data when moving the scene or selecting menus");
+    PRINTF("%s\n", " -casedir dir   - specify the location of casename.smv (if different than current directory)");
+    PRINTF("%s\n", " -demo          - run Smokeview in demonstrator mode (a simplified dialog box)");
+    PRINTF("%s\n", " -encode_png v  - encode PNGs with fds and smv repo revisions if v=1, do not encode if v=0");
+    PRINTF("%s\n", " -fast          - skip file existance checks at startup when creating load menus,");
+    PRINTF("%s\n", "                  also do not compute blanking arrays.  Both are done to reduce startup time");
+    PRINTF("%s\n", " -full          - full startup - opposite of -fast option");
+    PRINTF("%s\n", " -ini           - save smokeview settings to smokeview.ini");
     PRINTF("%s\n", " -large         - take some shortcuts when reading in large geometry cases");
-    PRINTF("%s\n", " -load_co2      - load 3D smoke of type co2 at startup ");
-    PRINTF("%s\n", " -load_hrrpuv   - load 3D smoke of type hrrpuv at startup ");
-    PRINTF("%s\n", " -load_soot     - load 3D smoke of type soot at startup ");
-    PRINTF("%s\n", " -load_temp     - load 3D smoke of type temperature at startup ");
-    PRINTF("%s\n", " -make_movie    - open the movie generating dialog box");
-    PRINTF("%s\n", " -max_mem mem   - specify maximum memory used in GB");
-    PRINTF("%s\n", " -outline       - show geometry bound boxes instead of geometry");
-    PRINTF("%s\n", " -ng_ini        - non-graphics version of -ini.");
+    PRINTF("%s\n", " -max_mem mem   - specify the maximum memory (GB) that can be used by smokeview");
+    PRINTF("%s\n", " -outline       - show geometry bounding boxes instead of the full geometry");
+    PRINTF("%s\n", " -ng_ini        - skip graphics initialization when creating a smokeview.ini file");
     PRINTF("%s\n", " -render_overwrite - allow rendered images to be overwritten");
-    PRINTF("%s\n", " -scriptrenderdir dir - directory containing script rendered images");
-    PRINTF("%s\n", "                  (override directory specified by RENDERDIR script keyword)");
-    PRINTF("%s\n", " -setup         - only show geometry");
+    PRINTF("%s\n", " -scriptrenderdir dir - specify the directory containing script rendered images");
+    PRINTF("%s\n", "                  (overrides the directory specified by the RENDERDIR script keyword)");
+    PRINTF("%s\n", " -setup         - ignore file entries (slice, 3d smoke etc) when reading the smv file");
     PRINTF("%s\n", " -script scriptfile - run the script file scriptfile");
     PRINTF("%s\n", " -skipframe n   - render every n frames");
-    PRINTF("%s\n", " -smoke3d       - only show 3D smoke");
     PRINTF("%s\n", " -startframe n  - start rendering at frame n");
-    PRINTF("%s\n", " -stereo        - activate stereo mode");
     PRINTF("%s\n", " -timings       - show timings");
-    PRINTF("%s\n", " -x0 val - horizontal screen coordinate in pixels where smokeview window is place at startup");
-    PRINTF("%s\n", " -y0 val - vertical screen coordinate in pixels where smokeview window is place at startup");
+    PRINTF("%s\n", " -x0 val - horizontal screen coordinate in pixels where smokeview window is placed at startup");
+    PRINTF("%s\n", " -y0 val - vertical screen coordinate in pixels where smokeview window is placed at startup");
     PRINTF("%s\n", " -X0 val - horizontal screen coordinate in pixels where dialog windows are placed when opened");
     PRINTF("%s\n", " -Y0 val - vertical screen coordinate in pixels where dialog windows are placed when opened");
     UsageCommon(HELP_ALL);
@@ -298,15 +289,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     if(args->demo){
       demo_option = 1;
     }
-    if(args->info){
-      generate_info_from_commandline = 1;
-      use_graphics = 0;
-    }
-    if(args->stereo){
-      stereoactive = 1;
-      stereotype = STEREO_TIME;
-      PRINTF("stereo option activated\n");
-    }
     if(args->big){
       hide_scene = 1;
     }
@@ -318,9 +300,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
     if(args->isotest){
       isotest = 1;
-    }
-    if(args->smoke3d){
-      parse_opts.smoke3d_only = 1;
     }
     if(args->no_slcf){
     parse_opts.handle_slice_files = 0;
@@ -345,30 +324,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
     if(args->outline){
       hide_scene = 1;
-    }
-    if(args->make_movie){
-      open_movie_dialog = 1;
-    }
-    if(args->geominfo){
-      print_geominfo = 1;
-    }
-    if(args->load_co2){
-      loadfiles_commandline[0]          = 1;
-      loadfiles_commandline[LOAD_3DCO2] = 1;
-    }
-    if(args->load_hrrpuv){
-      loadfiles_commandline[0]             = 1;
-      loadfiles_commandline[LOAD_3DHRRPUV] = 1;
-      loadfiles_commandline[LOAD_3DTEMP]   = 0;
-    }
-    if(args->load_soot){
-      loadfiles_commandline[0]           = 1;
-      loadfiles_commandline[LOAD_3DSOOT] = 1;
-    }
-    if(args->load_temp){
-      loadfiles_commandline[0]             = 1;
-      loadfiles_commandline[LOAD_3DTEMP]   = 1;
-      loadfiles_commandline[LOAD_3DHRRPUV] = 0;
     }
     if(args->fast){
       parse_opts.fast_startup = 1;

@@ -1872,7 +1872,6 @@ typedef struct _smv_cases {
 /* --------------------------  parse_options ------------------------------------ */
 
 typedef struct _parse_options {
-  int smoke3d_only;
   int setup_only;
   int fast_startup;
   int handle_slice_files;

@@ -13,7 +13,6 @@ set(TEST_SMALL_SMV ${FIG_DIR}/smv/Tests/test_model_small/test_model_small.smv)
 add_test(NAME "Execute smokeview" COMMAND smokeview -v)
 
 add_test(NAME "Execute smokeview sizes" COMMAND smokeview -sizes ${TEST_SMALL_SMV})
-add_test(NAME "Execute smokeview info" COMMAND smokeview -info ${TEST_SMALL_SMV})
 
 if (DISPLAY_TESTS)
     add_test(NAME "Execute smokeview good-script" COMMAND smokeview -script good-script.ssf ${CMAKE_SOURCE_DIR}/Tests/test_model_small/test_model_small.smv)

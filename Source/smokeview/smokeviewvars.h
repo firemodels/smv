@@ -229,7 +229,6 @@ SVEXTERN char viewpoint_label_saved[256];
 SVEXTERN int SVDECL(update_saving_viewpoint, 0);
 SVEXTERN float SVDECL(timer_startup, 0.0), SVDECL(timer_render, -1.0);
 SVEXTERN int SVDECL(frames_total, 0 );
-SVEXTERN int SVDECL(open_movie_dialog, 0);
 SVEXTERN float SVDECL(plot2d_time_average, 0.0);
 SVEXTERN int SVDECL(periodic_refresh, 0), SVDECL(update_refresh, 1);
 SVEXTERN int SVDECL(glui_refresh_rate, 10), SVDECL(glui_refresh_rate_old, 10), SVDECL(refresh_interval, 100);
@@ -310,7 +309,6 @@ SVEXTERN int SVDECL(show_bound_diffs, 0);
 SVEXTERN int SVDECL(meshface_horiz, 0);
 
 SVEXTERN slicemenudata SVDECL(*slicemenuinfo, NULL);
-SVEXTERN int SVDECL(generate_info_from_commandline, 0);
 SVEXTERN int SVDECL(vector_debug, 0);
 SVEXTERN float SVDECL(*terrain_vertices, NULL), SVDECL(*terrain_tvertices, NULL), SVDECL(*terrain_colors, NULL);
 SVEXTERN unsigned int SVDECL(*terrain_indices, NULL);
@@ -322,8 +320,6 @@ SVEXTERN int SVDECL(terrain_show_geometry_outline, 0);
 SVEXTERN int SVDECL(terrain_show_geometry_points, 0);
 SVEXTERN int SVDECL(terrain_showonly_top, 1), SVDECL(terrain_update_normals, 1);
 SVEXTERN int SVDECL(showhide_textures, 0);
-
-SVEXTERN int SVDECL(print_geominfo, 1);
 
 SVEXTERN float SVDECL(slice_dz, 0.0);
 SVEXTERN float SVDECL(terrain_normal_length, 1.0);
@@ -1546,15 +1542,6 @@ SVEXTERN float redcolor[4];
 #endif
 
 SVEXTERN int SVDECL(loadfiles_at_startup,0);
-#define LOAD_3DCO2    1
-#define LOAD_3DHRRPUV 2
-#define LOAD_3DSOOT   3
-#define LOAD_3DTEMP   4
-#ifdef INMAIN
-SVEXTERN int loadfiles_commandline[5]={0,0,0,0,0};
-#else
-SVEXTERN int loadfiles_commandline[5];
-#endif
 
 SVEXTERN int SVDECL(nmenus,0);
 #define MAXMENUS 10000
@@ -1625,7 +1612,6 @@ SVEXTERN tourdata SVDECL(*selected_tour,NULL);
 SVEXTERN int SVDECL(callfrom_tourglui,0);
 SVEXTERN int SVDECL(showtours_whenediting,0);
 
-SVEXTERN int SVDECL(stereoactive,0);
 SVEXTERN int SVDECL(stereotype,STEREO_NONE), SVDECL(stereotypeOLD, STEREO_NONE);
 SVEXTERN int SVDECL(show_parallax,0), SVDECL(stereotype_frame, BOTH_EYES);
 

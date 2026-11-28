@@ -106,12 +106,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     else if(strcmp(argv[i], "-demo") == 0){
       args.demo = true;
     }
-    else if(strcmp(argv[i], "-info") == 0){
-      args.info = true;
-    }
-    else if(strcmp(argv[i], "-stereo") == 0){
-      args.stereo = true;
-    }
     else if(strcmp(argv[i], "-render_overwrite") == 0){
       args.render_overwrite = true;
     }
@@ -123,9 +117,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     }
     else if(strcmp(argv[i], "-isotest") == 0){
       args.isotest = true;
-    }
-    else if(strcmp(argv[i], "-smoke3d") == 0){
-      args.smoke3d = true;
     }
     else if(strcmp(argv[i], "-no_slcf") == 0){
       args.no_slcf = true;
@@ -149,9 +140,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     }
     else if(strcmp(argv[i], "-outline") == 0){
       args.outline = true;
-    }
-    else if(strcmp(argv[i], "-make_movie") == 0){
-      args.make_movie = true;
     }
     else if(strcmp(argv[i], "-csv") == 0){
       args.csv = true;
@@ -182,23 +170,8 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
       i++;
       sscanf(argv[i], "%i", &args.Y0);
     }
-    else if(strcmp(argv[i], "-geominfo") == 0){
-      args.geominfo = true;
-    }
     else if(strcmp(argv[i], "-fast") == 0){
       args.fast = true;
-    }
-    else if(strcmp(argv[i], "-load_co2") == 0){
-      args.load_co2 = true;
-    }
-    else if(strcmp(argv[i], "-load_hrrpuv") == 0){
-      args.load_hrrpuv = true;
-    }
-    else if(strcmp(argv[i], "-load_soot") == 0){
-      args.load_soot = true;
-    }
-    else if(strcmp(argv[i], "-load_temp") == 0){
-      args.load_temp = true;
     }
     else if(strcmp(argv[i], "-full") == 0){
       args.full = true;

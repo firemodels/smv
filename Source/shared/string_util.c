@@ -2081,8 +2081,6 @@ void UsageCommon(int option){
     PRINTF(" -version   - display version information\n");
   }
   if(option == HELP_ALL){
-    PRINTF(" -md5       - display an md5 hash when -version is invoked\n");
-    PRINTF(" -sha1      - display a sha1 hash when -version is invoked\n");
     PRINTF(" -sha256    - display a sha256 hash when -version is invoked\n");
   }
 }
@@ -2094,8 +2092,6 @@ int IsCommonOption(char *argi){
   if(STRCMP("-help_all", argi) == 0)return 1;
   if(STRCMP("-version", argi)==0||STRCMP("-v", argi)==0)return 1;
   if(STRCMP("-sha256", argi)==0)return 1;
-  if(STRCMP("-sha1", argi)==0)return 1;
-  if(STRCMP("-md5", argi)==0)return 1;
   return 0;
 }
 
@@ -2132,14 +2128,6 @@ common_opts ParseCommonOptions(int argc, char **argv){
     }
     if(STRCMP("-sha256", argi)==0){
       opts.hash_option = HASH_SHA256;
-      continue;
-    }
-    if(STRCMP("-sha1", argi)==0){
-      opts.hash_option = HASH_SHA1;
-      continue;
-    }
-    if(STRCMP("-md5", argi)==0){
-      opts.hash_option = HASH_MD5;
       continue;
     }
   }

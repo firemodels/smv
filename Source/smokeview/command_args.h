@@ -16,21 +16,12 @@ typedef struct CommandlineArgs {
   bool print_version;
   bool update_bounds;
   bool large_case;
-  bool load_co2;
-  bool load_hrrpuv;
-  bool load_soot;
-  bool load_temp;
   bool encode_png;
   bool encode_png_commandline;
   bool no_graphics;
   bool nogpu;
-  /// @brief use demonstrator mode of Smokeview"
+  /// @brief use Smokeview demonstrator mode
   bool demo;
-  /// @brief generate casename.slcf and casename.viewpoint files containing
-  /// slice file and viewpiont info
-  bool info;
-  /// @brief activate stereo mode
-  bool stereo;
   /// @brief hide scene and data when moving scene or selecting menus
   bool big;
 #ifdef pp_OSX
@@ -43,7 +34,6 @@ typedef struct CommandlineArgs {
   bool timings;
   bool isotest;
   /// @brief only show 3D smoke
-  bool smoke3d;
   bool no_slcf;
   bool show_help_summary;
   bool show_help_all;
@@ -55,14 +45,11 @@ typedef struct CommandlineArgs {
   bool verbose;
   /// @brief show geometry bound boxes instead of geometry
   bool outline;
-  /// @brief open the movie generating dialog box
-  bool make_movie;
   /// @brief specify maximum memory used
   bool max_mem;
   bool csv;
   float max_mem_GB;
   /// @brief output information about geometry triangles
-  bool geominfo;
   /// @brief assume slice files exist in order to reduce startup time
   bool fast;
   bool full;
