@@ -587,18 +587,6 @@ void InitOpenGL(int option){
     type |= GLUT_SINGLE;
   }
 
-//  glutInitDisplayMode(GLUT_STEREO);
-  if(stereoactive==1){
-    if(glutGet(GLUT_DISPLAY_MODE_POSSIBLE)==1){
-      videoSTEREO=1;
-      type |= GLUT_STEREO;
-    }
-    else{
-      videoSTEREO=0;
-      fprintf(stderr,"*** Error: video hardware does not support stereo\n");
-    }
-  }
-
 #ifdef _DEBUG
   if(option==PRINT)PRINTF("%s","   Initializing Glut display mode - ");
 #endif

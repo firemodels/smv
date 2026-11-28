@@ -1612,7 +1612,6 @@ SVEXTERN tourdata SVDECL(*selected_tour,NULL);
 SVEXTERN int SVDECL(callfrom_tourglui,0);
 SVEXTERN int SVDECL(showtours_whenediting,0);
 
-SVEXTERN int SVDECL(stereoactive,0);
 SVEXTERN int SVDECL(stereotype,STEREO_NONE), SVDECL(stereotypeOLD, STEREO_NONE);
 SVEXTERN int SVDECL(show_parallax,0), SVDECL(stereotype_frame, BOTH_EYES);
 

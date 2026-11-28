@@ -106,9 +106,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     else if(strcmp(argv[i], "-demo") == 0){
       args.demo = true;
     }
-    else if(strcmp(argv[i], "-stereo") == 0){
-      args.stereo = true;
-    }
     else if(strcmp(argv[i], "-render_overwrite") == 0){
       args.render_overwrite = true;
     }

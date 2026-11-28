@@ -64,7 +64,6 @@ void Usage(int option){
     PRINTF("%s\n", " -script scriptfile - run the script file scriptfile");
     PRINTF("%s\n", " -skipframe n   - render every n frames");
     PRINTF("%s\n", " -startframe n  - start rendering at frame n");
-    PRINTF("%s\n", " -stereo        - turn on stereo mode");
     PRINTF("%s\n", " -timings       - show timings");
     PRINTF("%s\n", " -x0 val - horizontal screen coordinate in pixels where smokeview window is placed at startup");
     PRINTF("%s\n", " -y0 val - vertical screen coordinate in pixels where smokeview window is placed at startup");
@@ -289,11 +288,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
     if(args->demo){
       demo_option = 1;
-    }
-    if(args->stereo){
-      stereoactive = 1;
-      stereotype = STEREO_TIME;
-      PRINTF("stereo option activated\n");
     }
     if(args->big){
       hide_scene = 1;

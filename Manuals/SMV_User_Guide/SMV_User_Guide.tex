@@ -2343,8 +2343,7 @@ to specify the near and far depth planes.
 
 %%-----------------------------------------------------------------------
 \subsection{Stereo}
-\label{section:stereo}\ Smokeview implements several methods for displaying scenes in stereo or 3D. These methods are temporal (sending odd frames to the left eye and even frames to right eye), spatial (drawing two frames side by side) and color (super imposing red/blue or magenta/cyan frames).  Each method then creates two versions of the scene, one version for each eye. Figure \ref{figstereodialog}\ shows the dialog box used to configure this option.  The {\em shuttered checkbox}\ is enabled if the {\em -stereo}\ command line
-option is used when invoking Smokeview and the video card supports shuttered stereo display.
+\label{section:stereo}\ Smokeview displays stereo scenes as side-by-side images or as color-filtered images. Each method draws one view for each eye. Figure \ref{figstereodialog}\ shows the Stereo dialog.
 
 \begin{figure}[bph]
 \begin{center}
@@ -2356,20 +2355,7 @@ option is used when invoking Smokeview and the video card supports shuttered ste
 \end{center}
 \end{figure}
 
-The first method, denoted sequential stereo, works by displaying
-images for the left and right eye alternately in time.  Shuttered
-glasses  synchronized with the monitor are used to ensure that
-only the left eye sees the left image and only the right eye sees
-the right image.  A monitor displaying this type of stereo should
-have a refresh rate of at least 120 frames per second (60 frames
-per second for each eye) otherwise flickering is noticeable.
-Unfortunately, most of today's LCD flat panel monitors typically
-do not have refresh rates faster than 60 to 80 frames per second.
-This method (for Smokeview) requires a video card that supports
-OpenGL {\em QUAD buffering}. This Smokeview stereo option may be
-enabled from the command line by using the {\tt -stereo}\ option.
-
-The second method, denoted left/right stereo, displays the two
+Left/right stereo displays the two
 images side by side.  With practice, one can merge both images
 without requiring specialized glasses (though they are available
 if desired) especially if the images are small and not separated
@@ -2394,7 +2380,7 @@ into one. }
 \end{center}
 \end{figure}
 
-The third method, uses color to separate left and right images.
+Color stereo uses color filters to separate the left and right images.
 One method denoted red/blue stereo, displays red and blue versions
 of each image.  Glasses with a red left lens and a blue right lens
 are required to view the image.  As with the shuttered glasses for

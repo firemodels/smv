@@ -22,8 +22,6 @@ typedef struct CommandlineArgs {
   bool nogpu;
   /// @brief use Smokeview demonstrator mode
   bool demo;
-  /// @brief activate stereo mode
-  bool stereo;
   /// @brief hide scene and data when moving scene or selecting menus
   bool big;
 #ifdef pp_OSX
