@@ -47,8 +47,6 @@ typedef struct CommandlineArgs {
   bool verbose;
   /// @brief show geometry bound boxes instead of geometry
   bool outline;
-  /// @brief open the movie generating dialog box
-  bool make_movie;
   /// @brief specify maximum memory used
   bool max_mem;
   bool csv;

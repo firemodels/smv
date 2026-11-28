@@ -1833,17 +1833,6 @@ void UpdateShowScene(void){
     GLUIUpdatePlotLabel();
     END_SHOW_UPDATE(update_plot_label);
   }
-  if(open_movie_dialog==1){
-    SHOW_UPDATE(open_movie_dialog);
-    open_movie_dialog = 0;
-    if(have_slurm==1&&nmovie_queues>0){
-      GLUIShowMotion(DIALOG_MOVIE_BATCH);
-    }
-    else{
-      GLUIShowMotion(DIALOG_MOVIE);
-    }
-    END_SHOW_UPDATE(open_movie_dialog);
-  }
   if(terrain_update_normals==1&&global_scase.ngeominfo>0){
     SHOW_UPDATE(terrain_update_normals);
     terrain_update_normals = 0;

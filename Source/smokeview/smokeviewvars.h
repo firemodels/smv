@@ -229,7 +229,6 @@ SVEXTERN char viewpoint_label_saved[256];
 SVEXTERN int SVDECL(update_saving_viewpoint, 0);
 SVEXTERN float SVDECL(timer_startup, 0.0), SVDECL(timer_render, -1.0);
 SVEXTERN int SVDECL(frames_total, 0 );
-SVEXTERN int SVDECL(open_movie_dialog, 0);
 SVEXTERN float SVDECL(plot2d_time_average, 0.0);
 SVEXTERN int SVDECL(periodic_refresh, 0), SVDECL(update_refresh, 1);
 SVEXTERN int SVDECL(glui_refresh_rate, 10), SVDECL(glui_refresh_rate_old, 10), SVDECL(refresh_interval, 100);

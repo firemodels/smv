@@ -54,7 +54,6 @@ void Usage(int option){
     PRINTF("%s\n", " -full          - full startup - check if files exist");
     PRINTF("%s\n", " -ini           - output smokeview parameter values to smokeview.ini");
     PRINTF("%s\n", " -large         - take some shortcuts when reading in large geometry cases");
-    PRINTF("%s\n", " -make_movie    - open the movie generating dialog box at startup");
     PRINTF("%s\n", " -max_mem mem   - specify maximum memory used in GB");
     PRINTF("%s\n", " -outline       - show geometry bounding boxes instead of geometry");
     PRINTF("%s\n", " -ng_ini        - non-graphics version of -ini.");
@@ -331,9 +330,6 @@ char *ProcessCommandLine(CommandlineArgs *args, common_opts *opts){
     }
     if(args->outline){
       hide_scene = 1;
-    }
-    if(args->make_movie){
-      open_movie_dialog = 1;
     }
     if(args->fast){
       parse_opts.fast_startup = 1;
